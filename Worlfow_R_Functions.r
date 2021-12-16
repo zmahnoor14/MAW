@@ -242,6 +242,11 @@ peakdf <- function(a, b){
 
 # x is one pre_mz, db is GNPS, HMDB, MassBank
 spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
+    
+    ####-------------------------------------------------------------
+    #### Dereplication with GNPS ----
+    ####-------------------------------------------------------------
+    
     if (db == "GNPS"){
         nx <- 0
         nx <- nx+1
@@ -262,6 +267,9 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             df_peaklists <- peakdf(gnps_best_match, sps[idx[1]])
             
             if (!(is.null(df_peaklists))){
+                
+                print("more spectra and more gnps spectra")
+                
                 dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -296,6 +304,8 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 Source <- "GNPS"
             }
             else{
+                print("NO - more spectra and more gnps spectra")
+                
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -318,6 +328,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
         }
         else if (length(sps) == 1 && length(gnps_with_mz) >1){
             #' obtain GNPS spectra that matches the most with m/z MS2 spectra
+            
             gx <- which(res == max(res))
             gx <- gx[1]
             gnps_best_match <- gnps_with_mz[gx]
@@ -327,6 +338,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
+                print("one spectra and more gnps spectra")
                 dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -361,6 +373,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 Source <- "GNPS"
             }
             else{
+                print("NO - one spectra and more gnps spectra")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -391,6 +404,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             gnps_best_match <- gnps_with_mz
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
+                print("more spectra and one gnps spectra")
                 dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -424,6 +438,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 Source <- "GNPS"
                 }
             else{
+                print("NO - more spectra and one gnps spectra")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -448,6 +463,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             gnps_best_match <- gnps_with_mz
             df_peaklists <- peakdf(gnps_best_match, sps)
             if (!(is.null(df_peaklists))){
+                print("one spectra and one gnps spectra")
                 dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -480,6 +496,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 Source <- "GNPS"
             }
             else{
+                print("NO - one spectra and one gnps spectra")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -502,6 +519,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 
         }
         else{
+            print("NO Results")
             id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -528,6 +546,11 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                         GNPSSMILES, GNPSspectrumID, GNPScompound_name, GNPSmirrorSpec, Source)
         return(df_gnps)
     }
+    
+    ####-------------------------------------------------------------
+    #### Dereplication with HMDB ----
+    ####-------------------------------------------------------------
+    
     if (db == "HMDB"){
         nx <- 0
         nx <- nx+1
@@ -535,19 +558,19 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
         #### input spec with pre_mz
         sps <- spec2_Processing(a, spec = "sps_all", ppmx = NULL)
         
-        #### GNPS spec with pre_mz
+        #### HMDB spec with pre_mz
         hmdb_with_mz <- spec2_Processing(a, spec = "hmdb", ppmx = 15)
         
-        if (length(sps) > 1 && length(hmdb_with_mz) >1){
+        if (length(sps) > 1 && length(hmdb_with_mz) > 1){
             #' Compare experimental spectra against HMDB
             res <- compareSpectra(sps, hmdb_with_mz, ppm = 15)
-            #' obtain GNPS spectra that matches the most with m/z MS2 spectra
+            #' obtain HMDB spectra that matches the most with m/z MS2 spectra
             idx <- which(res == max(res), arr.ind = TRUE)
             hmdb_best_match <- hmdb_with_mz[idx[2]]
             df_peaklists <- peakdf(hmdb_best_match, sps[idx[1]])
             
             if (!(is.null(df_peaklists))){
-                print("more sps and more hmsb_with_mz")
+                print("more sps and more hmdb_with_mz")
                 dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -575,12 +598,12 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 HQMatchingPeaks <- nrow(df_peaklists)
                 HMDBTotalPeaks <- nrow(peaksData(hmdb_best_match)[[1]])
                 hQueryTotalPeaks<- nrow(peaksData(sps[idx[1]])[[1]])
-                HMDBcompoundID <- gnps_best_match$compound_id
+                HMDBcompoundID <- hmdb_best_match$compound_id
                 HMDBmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
                 Source <- "HMDB"
             }
             else{
-                print("NO more sps and more hmsb_with_mz")
+                print("NO - more sps and more hmdb_with_mz")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -601,7 +624,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
         }
         else if (length(sps) == 1 && length(hmdb_with_mz) >1){
             
-            #' obtain GNPS spectra that matches the most with m/z MS2 spectra
+            #' obtain HMDB spectra that matches the most with m/z MS2 spectra
             gx <- which(res == max(res))
             gx <- gx[1]
             hmdb_best_match <- hmdb_with_mz[gx]
@@ -611,7 +634,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                print("one sps and more hmsb_with_mz")
+                print("one sps and more hmdb_with_mz")
                 dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -634,17 +657,17 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmed <- median(sps$rtime, na.rm = TRUE)
                  
                 HMDBmax_similarity <- max(res)
-                HMDBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_best_match)[[1]])+nrow(peaksData(sps[idx[1]])[[1]]))
+                HMDBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
                 HMDBintScore <- mean(1-(df_peaklists[,"diff"]/100))
                 HQMatchingPeaks <- nrow(df_peaklists)
                 HMDBTotalPeaks <- nrow(peaksData(hmdb_best_match)[[1]])
-                hQueryTotalPeaks<- nrow(peaksData(sps[idx[1]])[[1]])
-                HMDBcompoundID <- gnps_best_match$compound_id
+                hQueryTotalPeaks<- nrow(peaksData(sps)[[1]])
+                HMDBcompoundID <- hmdb_best_match$compound_id
                 HMDBmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
                 Source <- "HMDB"
             }
             else{
-                print("NO one sps and more hmsb_with_mz")
+                print("NO one sps and more hmdb_with_mz")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -665,7 +688,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
         
         }
         else if (length(sps) > 1 && length(hmdb_with_mz) == 1){
-            #' obtain MB spectra that matches the most with m/z MS2 spectra
+            #' obtain hmdb spectra that matches the most with m/z MS2 spectra
             gx <- which(res == max(res))
             gx <- gx[1]
             sps <- sps[gx]
@@ -673,7 +696,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             hmdb_best_match <- hmdb_with_mz
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                print("more sps and one hmsb_with_mz")
+                print("more sps and one hmdb_with_mz")
                 dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -696,17 +719,17 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmed <- median(sps$rtime, na.rm = TRUE)
                  
                 HMDBmax_similarity <- max(res)
-                HMDBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_best_match)[[1]])+nrow(peaksData(sps[idx[1]])[[1]]))
+                HMDBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
                 HMDBintScore <- mean(1-(df_peaklists[,"diff"]/100))
                 HQMatchingPeaks <- nrow(df_peaklists)
                 HMDBTotalPeaks <- nrow(peaksData(hmdb_best_match)[[1]])
-                hQueryTotalPeaks<- nrow(peaksData(sps[idx[1]])[[1]])
-                HMDBcompoundID <- gnps_best_match$compound_id
+                hQueryTotalPeaks<- nrow(peaksData(sps)[[1]])
+                HMDBcompoundID <- hmdb_best_match$compound_id
                 HMDBmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
                 Source <- "HMDB"
                 }
             else{
-                print("NO more sps and one hmsb_with_mz")
+                print("NO more sps and one hmdb_with_mz")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -729,7 +752,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             hmdb_best_match <- hmdb_with_mz
             df_peaklists <- peakdf(hmdb_best_match, sps)
             if (!(is.null(df_peaklists))){
-                print("one sps and one hmsb_with_mz")
+                print("one sps and one hmdb_with_mz")
                 dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -751,17 +774,17 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmed <- median(sps$rtime, na.rm = TRUE)
                  
                 HMDBmax_similarity <- max(res)
-                HMDBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_best_match)[[1]])+nrow(peaksData(sps[idx[1]])[[1]]))
+                HMDBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
                 HMDBintScore <- mean(1-(df_peaklists[,"diff"]/100))
                 HQMatchingPeaks <- nrow(df_peaklists)
                 HMDBTotalPeaks <- nrow(peaksData(hmdb_best_match)[[1]])
-                hQueryTotalPeaks<- nrow(peaksData(sps[idx[1]])[[1]])
-                HMDBcompoundID <- gnps_best_match$compound_id
+                hQueryTotalPeaks<- nrow(peaksData(sps)[[1]])
+                HMDBcompoundID <- hmdb_best_match$compound_id
                 HMDBmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
                 Source <- "HMDB"
             }
             else{
-                print("NO one sps and one hmsb_with_mz")
+                print("NO one sps and one hmdb_with_mz")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -782,7 +805,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 
         }
         else{
-            print("NO sps and NO hmsb_with_mz")
+            print("NO sps and NO hmdb_with_mz")
             id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -806,7 +829,13 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                          HMDBcompoundID, HMDBmirrorSpec, Source)
         return(df_hmdb)
     }
-    if (db == "MB"){
+    
+    ####-------------------------------------------------------------
+    #### Dereplication with MassBank ----
+    ####-------------------------------------------------------------
+    
+    if (db == "MassBank"){
+        
         nx <- 0
         nx <- nx+1
         
@@ -826,7 +855,8 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             df_peaklists <- peakdf(mbank_best_match, sps[idx[1]])
             
             if (!(is.null(df_peaklists))){
-                dir_name <- paste(result_dir, "/spectral_dereplication/MB/", sep = "")
+                print("more spectra and more mbank spectra")
+                dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
                 }
@@ -847,19 +877,21 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
                  
-                GNPSmax_similarity <- max(res)
-                GNPSmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_best_match)[[1]])+nrow(peaksData(sps[idx[1]])[[1]]))
-                GNPSintScore <- mean(1-(df_peaklists[,"diff"]/100))
-                GQMatchingPeaks <- nrow(df_peaklists)
-                GNPSTotalPeaks <- nrow(peaksData(gnps_best_match)[[1]])
-                gQueryTotalPeaks<- nrow(peaksData(sps[idx[1]])[[1]])
-                GNPSSMILES <- gnps_best_match$SMILES
-                GNPSspectrumID <- gnps_best_match$SPECTRUMID
-                GNPScompound_name <- gnps_best_match$NAME
-                GNPSmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
-                Source <- "GNPS"
+                MBmax_similarity <- max(res)
+                MBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(mbank_best_match)[[1]])+nrow(peaksData(sps[idx[1]])[[1]]))
+                MBintScore <- mean(1-(df_peaklists[,"diff"]/100))
+                MQMatchingPeaks <- nrow(df_peaklists)
+                MBTotalPeaks <- nrow(peaksData(mbank_best_match)[[1]])
+                mQueryTotalPeaks<- nrow(peaksData(sps[idx[1]])[[1]])
+                MBformula <- mbank_best_match$formula
+                MBinchiKEY <- mbank_best_match$inchikey
+                MBspectrumID <- mbank_best_match$accession
+                MBcompound_name <- mbank_best_match$name
+                MBmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
+                Source <- "MassBank"
             }
             else{
+                print("NO - more spectra and more mbank spectra")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -867,44 +899,46 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                GNPSmax_similarity <- NA
-                GNPSmzScore <- NA
-                GNPSintScore <- NA
-                GQMatchingPeaks <- NA
-                GNPSTotalPeaks <- NA
-                gQueryTotalPeaks<- NA
-                GNPSSMILES <- NA
-                GNPSspectrumID <- NA
-                GNPScompound_name <- NA
-                GNPSmirrorSpec <- NA
+                 
+                MBmax_similarity <- NA
+                MBmzScore <- NA
+                MBintScore <- NA
+                MQMatchingPeaks <- NA
+                MBTotalPeaks <- NA
+                mQueryTotalPeaks<- NA
+                MBformula <- NA
+                MBinchiKEY <- NA
+                MBspectrumID <- NA
+                MBcompound_name <- NA
+                MBmirrorSpec <- NA
                 Source <- NA
             }
         }
-        else if (length(sps) == 1 && length(gnps_with_mz) >1){
-            #' obtain GNPS spectra that matches the most with m/z MS2 spectra
+        else if (length(sps) == 1 && length(mbank_with_mz) >1){
+            #' obtain MassBank spectra that matches the most with m/z MS2 spectra
             gx <- which(res == max(res))
             gx <- gx[1]
-            gnps_best_match <- gnps_with_mz[gx]
+            mbank_best_match <- mbank_with_mz[gx]
 
-            df_peaklists <- peakdf(gnps_best_match, sps)
+            df_peaklists <- peakdf(mbank_best_match, sps)
 
             
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
+                print("one spectra and more mbank spectra")
+                dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
                 }
                 #' plotMirror
-                name_plotmirror <- paste(dir_name, x,"_spectra_vs_", gnps_best_match$SPECTRUMID, "_spectra.pdf", sep ="")
+                name_plotmirror <- paste(dir_name, x,"_spectra_vs_", mbank_best_match$accession, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
-                plotSpectraMirror(sps, gnps_best_match, tolerance = 0.2,
+                plotSpectraMirror(sps, mbank_best_match, tolerance = 0.2,
                                     labels = label_fun, labelPos = 2, labelOffset = 0.2,
                                     labelSrt = -30)
                 grid()
                 dev.off() 
                 
-                #' Identify the best-matching pair
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -912,19 +946,22 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                GNPSmax_similarity <- max(res)
-                GNPSintScore <- mean(1-(df_peaklists[,"diff"]/100))
-                GNPSmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
-                GQMatchingPeaks <- nrow(df_peaklists)
-                GNPSTotalPeaks <- nrow(peaksData(gnps_best_match)[[1]])
-                gQueryTotalPeaks<- nrow(peaksData(sps)[[1]])
-                GNPScompound_name <- gnps_best_match$NAME 
-                GNPSspectrumID <- gnps_best_match$SPECTRUMID
-                GNPSSMILES <- gnps_best_match$SMILES
-                GNPSmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
-                Source <- "GNPS"
+                 
+                MBmax_similarity <- max(res)
+                MBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(mbank_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
+                MBintScore <- mean(1-(df_peaklists[,"diff"]/100))
+                MQMatchingPeaks <- nrow(df_peaklists)
+                MBTotalPeaks <- nrow(peaksData(mbank_best_match)[[1]])
+                mQueryTotalPeaks<- nrow(peaksData(sps)[[1]])
+                MBformula <- mbank_best_match$formula
+                MBinchiKEY <- mbank_best_match$inchikey
+                MBspectrumID <- mbank_best_match$accession
+                MBcompound_name <- mbank_best_match$name
+                MBmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
+                Source <- "MassBank"
             }
             else{
+                print("NO - one spectra and more mbank spectra")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -932,37 +969,40 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                GNPSmax_similarity <- NA
-                GNPSmzScore <- NA
-                GNPSintScore <- NA
-                GQMatchingPeaks <- NA
-                GNPSTotalPeaks <- NA
-                gQueryTotalPeaks<- NA
-                GNPSSMILES <- NA
-                GNPSspectrumID <- NA
-                GNPScompound_name <- NA
-                GNPSmirrorSpec <- NA
+                 
+                MBmax_similarity <- NA
+                MBmzScore <- NA
+                MBintScore <- NA
+                MQMatchingPeaks <- NA
+                MBTotalPeaks <- NA
+                mQueryTotalPeaks<- NA
+                MBformula <- NA
+                MBinchiKEY <- NA
+                MBspectrumID <- NA
+                MBcompound_name <- NA
+                MBmirrorSpec <- NA
                 Source <- NA
             }
         
         }
-        else if (length(sps) > 1 && length(gnps_with_mz) == 1){
+        else if (length(sps) > 1 && length(mbank_with_mz) == 1){
             #' obtain MB spectra that matches the most with m/z MS2 spectra
             gx <- which(res == max(res))
             gx <- gx[1]
             sps <- sps[gx]
-            df_peaklists <- peakdf(gnps_with_mz, sps[gx])
-            gnps_best_match <- gnps_with_mz
+            df_peaklists <- peakdf(mbank_with_mz, sps[gx])
+            mbank_best_match <- mbank_with_mz
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
+                print("more spectra and one mbank spectra")
+                dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
                 }
                 #' plotMirror
-                name_plotmirror <- paste(dir_name, x,"_spectra_vs_", gnps_best_match$SPECTRUMID, "_spectra.pdf", sep ="")
+                name_plotmirror <- paste(dir_name, x,"_spectra_vs_", mbank_best_match$accession, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
-                plotSpectraMirror(sps, gnps_best_match, tolerance = 0.2,
+                plotSpectraMirror(sps, mbank_best_match, tolerance = 0.2,
                                     labels = label_fun, labelPos = 2, labelOffset = 0.2,
                                     labelSrt = -30)
                 grid()
@@ -975,19 +1015,22 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                GNPSmax_similarity <- max(res)
-                GNPSintScore <- mean(1-(df_peaklists[,"diff"]/100))
-                GNPSmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
-                GQMatchingPeaks <- nrow(df_peaklists)
-                GNPSTotalPeaks <- nrow(peaksData(gnps_best_match)[[1]])
-                gQueryTotalPeaks<- nrow(peaksData(sps)[[1]])
-                GNPScompound_name <- gnps_best_match$NAME 
-                GNPSspectrumID <- gnps_best_match$SPECTRUMID
-                GNPSSMILES <- gnps_best_match$SMILES
-                GNPSmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
-                Source <- "GNPS"
+                 
+                MBmax_similarity <- max(res)
+                MBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(mbank_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
+                MBintScore <- mean(1-(df_peaklists[,"diff"]/100))
+                MQMatchingPeaks <- nrow(df_peaklists)
+                MBTotalPeaks <- nrow(peaksData(mbank_best_match)[[1]])
+                mQueryTotalPeaks<- nrow(peaksData(sps)[[1]])
+                MBformula <- mbank_best_match$formula
+                MBinchiKEY <- mbank_best_match$inchikey
+                MBspectrumID <- mbank_best_match$accession
+                MBcompound_name <- mbank_best_match$name
+                MBmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
+                Source <- "MassBank"
                 }
             else{
+                print("NO - more spectra and one mbank spectra")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -995,31 +1038,34 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                GNPSmax_similarity <- NA
-                GNPSmzScore <- NA
-                GNPSintScore <- NA
-                GQMatchingPeaks <- NA
-                GNPSTotalPeaks <- NA
-                gQueryTotalPeaks<- NA
-                GNPSSMILES <- NA
-                GNPSspectrumID <- NA
-                GNPScompound_name <- NA
-                GNPSmirrorSpec <- NA
+                 
+                MBmax_similarity <- NA
+                MBmzScore <- NA
+                MBintScore <- NA
+                MQMatchingPeaks <- NA
+                MBTotalPeaks <- NA
+                mQueryTotalPeaks<- NA
+                MBformula <- NA
+                MBinchiKEY <- NA
+                MBspectrumID <- NA
+                MBcompound_name <- NA
+                MBmirrorSpec <- NA
                 Source <- NA
             }
         }
-        else if (length(sps) == 1 && length(gnps_with_mz) == 1){
-            gnps_best_match <- gnps_with_mz
-            df_peaklists <- peakdf(gnps_best_match, sps)
+        else if (length(sps) == 1 && length(mbank_with_mz) == 1){
+            mbank_best_match <- mbank_with_mz
+            df_peaklists <- peakdf(mbank_best_match, sps)
             if (!(is.null(df_peaklists))){
-                dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
+                print("one spectra and one mbank spectra")
+                dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
                 }
                 #' plotMirror
-                name_plotmirror <- paste(dir_name, x,"_spectra_vs_", gnps_best_match$SPECTRUMID, "_spectra.pdf", sep ="")
+                name_plotmirror <- paste(dir_name, x,"_spectra_vs_", mbank_best_match$accession, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
-                plotSpectraMirror(sps, gnps_best_match, tolerance = 0.2,
+                plotSpectraMirror(sps, mbank_best_match, tolerance = 0.2,
                                     labels = label_fun, labelPos = 2, labelOffset = 0.2,
                                     labelSrt = -30)
                 grid()
@@ -1031,19 +1077,22 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                GNPSmax_similarity <- max(res)
-                GNPSintScore <- mean(1-(df_peaklists[,"diff"]/100))
-                GNPSmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
-                GQMatchingPeaks <- nrow(df_peaklists)
-                GNPSTotalPeaks <- nrow(peaksData(gnps_best_match)[[1]])
-                gQueryTotalPeaks<- nrow(peaksData(sps)[[1]])
-                GNPScompound_name <- gnps_best_match$NAME 
-                GNPSspectrumID <- gnps_best_match$SPECTRUMID
-                GNPSSMILES <- gnps_best_match$SMILES
-                GNPSmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
-                Source <- "GNPS"
+                 
+                MBmax_similarity <- max(res)
+                MBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(mbank_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
+                MBintScore <- mean(1-(df_peaklists[,"diff"]/100))
+                MQMatchingPeaks <- nrow(df_peaklists)
+                MBTotalPeaks <- nrow(peaksData(mbank_best_match)[[1]])
+                mQueryTotalPeaks<- nrow(peaksData(sps)[[1]])
+                MBformula <- mbank_best_match$formula
+                MBinchiKEY <- mbank_best_match$inchikey
+                MBspectrumID <- mbank_best_match$accession
+                MBcompound_name <- mbank_best_match$name
+                MBmirrorSpec <- str_replace(name_plotmirror, input_dir, "./")
+                Source <- "MassBank"
             }
             else{
+                print("NO - one spectra and one mbank spectra")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -1051,21 +1100,24 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                GNPSmax_similarity <- NA
-                GNPSmzScore <- NA
-                GNPSintScore <- NA
-                GQMatchingPeaks <- NA
-                GNPSTotalPeaks <- NA
-                gQueryTotalPeaks<- NA
-                GNPSSMILES <- NA
-                GNPSspectrumID <- NA
-                GNPScompound_name <- NA
-                GNPSmirrorSpec <- NA
+                 
+                MBmax_similarity <- NA
+                MBmzScore <- NA
+                MBintScore <- NA
+                MQMatchingPeaks <- NA
+                MBTotalPeaks <- NA
+                mQueryTotalPeaks<- NA
+                MBformula <- NA
+                MBinchiKEY <- NA
+                MBspectrumID <- NA
+                MBcompound_name <- NA
+                MBmirrorSpec <- NA
                 Source <- NA
             }
                 
         }
         else{
+            print("NO results in MassBank")
             id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -1073,24 +1125,26 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             rtmin <- max(sps$rtime)
             rtmax <- min(sps$rtime)
             rtmed <- median(sps$rtime, na.rm = TRUE)
-            GNPSmax_similarity <- NA
-            GNPSmzScore <- NA
-            GNPSintScore <- NA
-            GQMatchingPeaks <- NA
-            GNPSTotalPeaks <- NA
-            gQueryTotalPeaks<- NA
-            GNPSSMILES <- NA
-            GNPSspectrumID <- NA
-            GNPScompound_name <- NA
-            GNPSmirrorSpec <- NA
+                 
+            MBmax_similarity <- NA
+            MBmzScore <- NA
+            MBintScore <- NA
+            MQMatchingPeaks <- NA
+            MBTotalPeaks <- NA
+            mQueryTotalPeaks<- NA
+            MBformula <- NA
+            MBinchiKEY <- NA
+            MBspectrumID <- NA
+            MBcompound_name <- NA
+            MBmirrorSpec <- NA
             Source <- NA
 
         }
         
-        df_gnps <- cbind(id_X, premz, rtmin, rtmax, rtmed, GNPSmax_similarity, GNPSmzScore, 
-                        GNPSintScore, GQMatchingPeaks, GNPSTotalPeaks, gQueryTotalPeaks, 
-                        GNPSSMILES, GNPSspectrumID, GNPScompound_name, GNPSmirrorSpec, Source)
-        return(df_gnps)
+        df_mbank <- cbind(id_X, premz, rtmin, rtmax, rtmed, MBmax_similarity, MBmzScore, MBintScore, MQMatchingPeaks, 
+                         MBTotalPeaks, mQueryTotalPeaks, MBformula, MBinchiKEY, MBspectrumID, MBcompound_name, MBmirrorSpec, 
+                         Source)
+        return(df_mbank)
     }
     
 }
