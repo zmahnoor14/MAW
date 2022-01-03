@@ -1923,17 +1923,93 @@ sirius_postprocess <- function(x, SL = TRUE){
         }
     }
     write.csv(msdata, paste(x, "/insilico/MS1DATAsirius.csv", sep = ''))
+    return(msdata)
 }
 
 
 
 save.image(file = "R_Functions.RData")
 
+metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE){
 
+    if (!file.exists(paste(result_dir, "/insilico/MetFrag", sep = ""))){
+        dir.create(paste(result_dir, "/insilico/MetFrag", sep = ""), recursive = TRUE) ##create folder
+    }
+    
+    db <- c("PubChem", "KEGG")
+    
+    parameter_file <- c()
+    par <- 0
+    metfrag_param_file <- c()
+    
+    AdductsMF <- data.frame(read.csv(adducts))
+    
+    for (j in 1:nrow(x)){
+        if (!(is.na(x[j, 'Adducts']))){
+            for (k in db){
+                par <- par+1
+                para <- as.character(par)
+                fileR <- paste(result_dir, "/insilico/MetFrag/", para, "_id_", x[j, 'id_X'], "_mz_", x[j, 'premz'], "_rt_", x[j, 'rtmed'], "_db_", k, ".txt", sep = '')
+                metfrag_param_file <- c(metfrag_param_file, fileR)
 
-
-
-
+                file.create(fileR, recursive = TRUE)
+                file.conn <- file(fileR)
+                open(file.conn, open = "at")
+                
+                
+                peakspath <- str_replace(x[j, "ms2Peaks"], "./", input_dir)
+                
+                
+                #writeLines(paste("PeakListPath = ",as.character(peakspath),sep=""),con=file.conn)
+                writeLines(paste("PeakListPath = ",peakspath, sep=""),con=file.conn)
+                writeLines(paste("IonizedPrecursorMass = ", x[j, "premz"]),con = file.conn)
+                
+                # write code here
+                
+                
+                PrecursorIonMode <- AdductsMF[which(AdductsMF[, "PrecursorIonType"] == gsub("[[:blank:]]", "", x[j, 'Adducts'])), "PrecursorIonMode"]
+                IsPositiveIonMode <- AdductsMF[which(AdductsMF[, "PrecursorIonType"] == gsub("[[:blank:]]", "", x[j, 'Adducts'])), "IsPositiveIonMode"]
+            
+                
+                writeLines(paste("PrecursorIonMode = ", PrecursorIonMode, sep = ''), con = file.conn)
+                writeLines(paste("IsPositiveIonMode = ", IsPositiveIonMode, sep = ''), con = file.conn)
+                
+                writeLines(paste("MetFragDatabaseType = ", k),con = file.conn)
+            
+                writeLines("DatabaseSearchRelativeMassDeviation = 5",con=file.conn)
+                writeLines("FragmentPeakMatchAbsoluteMassDeviation = 0.001",con=file.conn)
+                writeLines("FragmentPeakMatchRelativeMassDeviation = 15",con=file.conn)
+                
+                if (SL){
+                    writeLines(paste("ScoreSuspectLists = ", sl_mtfrag),con=file.conn)
+            
+                    writeLines("MetFragScoreTypes = FragmenterScore, SuspectListScore",con=file.conn)
+                    writeLines("MetFragScoreWeights = 1.0, 1.0", con=file.conn)
+                }
+                else{
+                    writeLines("MetFragScoreTypes = FragmenterScore", con=file.conn)
+                    writeLines("MetFragScoreWeights = 1.0", con=file.conn)
+                }
+                
+                
+                writeLines("MetFragCandidateWriter = ExtendedFragmentsXLS",con=file.conn)
+            
+                writeLines(paste("SampleName = ", para, "_id_", x[j, 'id_X'], "_mz_", x[j, 'premz'], "_rt_", x[j, 'rtmed'], "_db_", k, sep = ''),con=file.conn)
+                writeLines(paste("ResultsPath = ", result_dir, "/insilico/MetFrag/", sep = ''),con=file.conn)
+            
+                writeLines("MetFragPreProcessingCandidateFilter = UnconnectedCompoundFilter",con=file.conn)
+                writeLines("MetFragPostProcessingCandidateFilter = InChIKeyFilter",con=file.conn)
+                writeLines("MaximumTreeDepth = 2",con=file.conn)
+                writeLines("NumberThreads = 1",con=file.conn)
+                
+                close(file.conn)
+                parameter_file <- c(parameter_file,file.conn)
+            
+            }
+        }
+    }
+    return(metfrag_param_file)
+}
 
 
 
