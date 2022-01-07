@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ### SIRIUS post processing
-
-# In[72]:
+# In[27]:
 
 
 import pandas as pd
@@ -30,16 +28,18 @@ import openpyxl
 import statistics
 
 
-# In[77]:
+# ### SIRIUS post processing
+
+# In[1]:
 
 
-input_table = pd.read_csv("/Users/mahnoorzulfiqar/Standards_CodeSet/ input_table.csv")
-input_table
+#input_table = pd.read_csv("/Users/mahnoorzulfiqar/Standards_CodeSet/ input_table.csv")
+#input_table
 
 
 # ### MetFrag Result Post Processing
 
-# In[55]:
+# In[2]:
 
 
 def metfrag_postproc(input_table, input_dir):
@@ -137,7 +137,7 @@ def metfrag_postproc(input_table, input_dir):
 
 # ### SIRIUS Result Post Processing
 
-# In[64]:
+# In[3]:
 
 
 def sirius_postProc2(input_table, input_dir):
@@ -175,7 +175,7 @@ def sirius_postProc2(input_table, input_dir):
 
 # ### COMBINE IN SILICO -All files with SIRIUS results separate and with MetFragresults separate
 
-# In[65]:
+# In[4]:
 
 
 def combine_insilico(input_table, Source = "SIRIUS"):
@@ -220,7 +220,7 @@ def combine_insilico(input_table, Source = "SIRIUS"):
 
 # ### Classification using Canopus and ClassyFire
 
-# In[66]:
+# In[5]:
 
 
 def classification(frame):
@@ -324,29 +324,29 @@ def isNaN(string):
 # In[7]:
 
 
-input_dir = '/Users/mahnoorzulfiqar/Standards_CodeSet/'
+#input_dir = '/Users/mahnoorzulfiqar/Standards_CodeSet/'
+
+
+# In[8]:
+
+
+#hmdb_sdf = '/Users/mahnoorzulfiqar/OneDriveUNI/S_CResults/structures.sdf'
 
 
 # In[9]:
 
 
-hmdb_sdf = '/Users/mahnoorzulfiqar/OneDriveUNI/S_CResults/structures.sdf'
+#dframe = PandasTools.LoadSDF(hmdb_sdf,
+                                #idName='HMDB_ID',
+                                #smilesName='SMILES',
+                                #molColName='Molecule',
+                                #includeFingerprints=False)
 
 
-# In[12]:
+# In[10]:
 
 
-dframe = PandasTools.LoadSDF(hmdb_sdf,
-                                idName='HMDB_ID',
-                                smilesName='SMILES',
-                                molColName='Molecule',
-                                includeFingerprints=False)
-
-
-# In[13]:
-
-
-dframe.columns
+#dframe.columns
 
 
 # In[ ]:
@@ -355,15 +355,15 @@ dframe.columns
 
 
 
-# In[15]:
+# In[11]:
 
 
-input_dir = os.getcwd() +"/"
+#input_dir = os.getcwd() +"/"
 
 
 # ### GNPS, MassBank and HMDB Results post processing
 
-# In[67]:
+# In[12]:
 
 
 def spec_postproc(input_dir, dframe):
@@ -494,15 +494,15 @@ def spec_postproc(input_dir, dframe):
     return(df)
 
 
-# In[ ]:
+# In[13]:
 
 
-spec_df = spec_postproc(input_dir, frame)
+#spec_df = spec_postproc(input_dir, dframe)
 
 
 # ### Combine_all Spectral DBs
 
-# In[68]:
+# In[14]:
 
 
 def combine_specdb(df):
@@ -521,15 +521,15 @@ def combine_specdb(df):
     return(Merged_Result_df)
 
 
-# In[50]:
+# In[15]:
 
 
-Merged_Result_df = combine_specdb(spec_df)
+#Merged_Result_df = combine_specdb(spec_df)
 
 
 # ### Combine all files for spectral db dereplication
 
-# In[69]:
+# In[16]:
 
 
 def combine_allspec(comb_df):
@@ -549,15 +549,15 @@ def combine_allspec(comb_df):
     return(combined_csv)
 
 
-# In[82]:
+# In[17]:
 
 
-combined = combine_allspec(Merged_Result_df)
+#combined = combine_allspec(Merged_Result_df)
 
 
 # ### Scoring Scheme for Spectral DB Dereplication
 
-# In[92]:
+# In[18]:
 
 
 def HMDB_Scoring(db, i):
@@ -567,7 +567,7 @@ def HMDB_Scoring(db, i):
         return False
 
 
-# In[93]:
+# In[19]:
 
 
 def GNPS_Scoring(db, i):
@@ -577,7 +577,7 @@ def GNPS_Scoring(db, i):
         return False
 
 
-# In[94]:
+# In[20]:
 
 
 def MB_Scoring(db, i):
@@ -593,7 +593,7 @@ def MB_Scoring(db, i):
 
 
 
-# In[99]:
+# In[21]:
 
 
 def scoring_spec(combined):
@@ -689,10 +689,10 @@ def scoring_spec(combined):
 
 
 
-# In[103]:
+# In[22]:
 
 
-SpectralDB_Results = scoring_spec(combined)
+#SpectralDB_Results = scoring_spec(combined)
 
 
 # In[ ]:
@@ -703,13 +703,13 @@ SpectralDB_Results = scoring_spec(combined)
 
 # ### Suspect List Screening
 
-# In[104]:
+# In[24]:
 
 
-Suspect_list = pd.read_csv('/Users/mahnoorzulfiqar/OneDriveUNI/SuspectList/Use_This_CURATED_SUSPECT_LIST.csv')
+#Suspect_list = pd.read_csv('/Users/mahnoorzulfiqar/OneDriveUNI/SuspectList/Use_This_CURATED_SUSPECT_LIST.csv')
 
 
-# In[113]:
+# In[25]:
 
 
 def suspectListScreening(Suspect_list, SpectralDB_Results):
@@ -757,10 +757,10 @@ def suspectListScreening(Suspect_list, SpectralDB_Results):
     return(SpectralDB_Results)
 
 
-# In[114]:
+# In[26]:
 
 
-suspectListScreening(Suspect_list, SpectralDB_Results)
+#suspectListScreening(Suspect_list, SpectralDB_Results)
 
 
 # In[ ]:
