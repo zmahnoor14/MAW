@@ -9,13 +9,4 @@ For entries with names and other metadata but no structure notation, the names w
 
 Lastly, the SMILES were checked again for syntax errors or invalid chemistry by ```RdKit``` and the duplicates were removed. The final list contains 903 entries with the following columns.
 
-| Name | Formula | Species | SMILES | Name | Formula | InChI | Monoisotopic_mass | PubChemId | source_database | Source | nonIsomeric_SMILES_byRDKit | 
-| ----------- | ----------- | ----------- | ----------- || ----------- | ----------- | ----------- | ----------- || ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-
-
-| 84.06544 | Positive | 5.84 | 6.84 |
-| 102.26589 | Negative | 10.57 | 11.57 |
-
-
-|iupac', 'synonyms', 'PubChemPY',
-       'correct_Name', 'Molecular mass', 'subclass', 'class', 'superclass'
+'Name', 'Formula', 'Species', 'SMILES', 'InChI', 'Monoisotopic_mass', 'ChEBIid', 'KEGGid', 'PubChemId', 'source_database', 'Source', 'nonIsomeric_SMILES_byRDKit', 'iupac', 'synonyms', 'PubChemPY', 'correct_Name', 'Molecular mass', 'subclass', 'class', 'superclass'.
