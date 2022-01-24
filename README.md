@@ -7,6 +7,4 @@ First, entries with chemical structure notation such as SMILES were checked for 
 
 For entries with names and other metadata but no structure notation, the names were searched in PubChem for isomeric SMILES and other missing metadata. Some enteries had non-conventional names such as Disccharide or 18:1 fatty alcohol. The names were manually checked and changed to conventional names of the compound. for others such as 18:1 fatty alochol, there was not much information to find the right name or strcuture. Such entries were also discarded. For some earlier entries with wrong or non-standardized SMILES syntax, the names were used to extract compounds from PubChem.
 
-Lastly, the SMILES were checked again for syntax errors or invalid chemistry by ```RdKit``` and the duplicates were removed. The final list contains 903 entries with the following columns.
-
-'Name', 'Formula', 'Species', 'SMILES', 'InChI', 'Monoisotopic_mass', 'ChEBIid', 'KEGGid', 'PubChemId', 'source_database', 'Source', 'nonIsomeric_SMILES_byRDKit', 'iupac', 'synonyms', 'PubChemPY', 'correct_Name', 'Molecular mass', 'subclass', 'class', 'superclass'.
+Lastly, the SMILES were checked again for syntax errors or invalid chemistry by ```RdKit``` and the duplicates were removed. The final list contains 903 entries with the following columns: Name, Formula, Species, SMILES, InChI, Monoisotopic_mass, ChEBIid, KEGGid, PubChemId, source_database, Source, nonIsomeric_SMILES_byRDKit, iupac, synonyms, PubChemPY, correct_Name, Molecular mass, subclass, class', 'superclass.
