@@ -3,7 +3,7 @@
 
 # # Suspect List Curation
 
-# In[5]:
+# In[1]:
 
 
 ####import libraries
@@ -2363,13 +2363,21 @@ for i, rows in df_sl.iterrows():
 sl_new = df_sl.drop_duplicates(['SMILES','InChI','PubChemId', 'iupac', 'Name', 'Monoisotopic_mass'],keep= 'last')
 
 
-# In[ ]:
+# In[266]:
 
 
+sl_new.columns
 
 
+# In[269]:
 
-# In[264]:
+
+for i, row in sl_new.iterrows():
+    if isNaN(sl_new['Species'][i]) or sl_new['Species'][i] == '':
+        sl_new['Species'][i] = 'S .costatum'
+
+
+# In[270]:
 
 
 sl_new.to_csv("Use_This_CURATED_SUSPECT_LIST_with_classes_noDups.csv")
@@ -2401,6 +2409,54 @@ sl = pd.read_csv("Use_This_CURATED_SUSPECT_LIST_with_classes.csv")
    # for line in y:
         #f.write(line)
         #f.write('\n')
+
+
+# ### statistics
+
+# In[3]:
+
+
+resultsx = pd.read_csv("Use_This_CURATED_SUSPECT_LIST_with_classes_noDups.csv")
+
+
+# In[4]:
+
+
+classes = resultsx[-resultsx['superclass'].isna()]
+
+
+# In[5]:
+
+
+classes
+
+
+# In[6]:
+
+
+lsc = np.unique(list(classes['class']))
+lsc
+lscc = list(classes['class'])
+
+
+# In[7]:
+
+
+classesData = []
+for i in lsc:
+    num = lscc.count(i)
+    classesData.append({
+        'Class':i,
+        'Count':num
+    })
+classDB = pd.DataFrame(classesData)
+classDB
+
+
+# In[8]:
+
+
+classDB.sort_values(by = ['Count'], ascending=False).to_csv("SLtopclasses.csv")
 
 
 # In[ ]:
