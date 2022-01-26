@@ -8,3 +8,29 @@ First, entries with chemical structure notation such as SMILES were checked for 
 For entries with names and other metadata but no structure notation, the names were searched in PubChem for isomeric SMILES and other missing metadata. Some enteries had non-conventional names such as Disccharide or 18:1 fatty alcohol. The names were manually checked and changed to conventional names of the compound. for others such as 18:1 fatty alochol, there was not much information to find the right name or strcuture. Such entries were also discarded. For some earlier entries with wrong or non-standardized SMILES syntax, the names were used to extract compounds from PubChem.
 
 Lastly, the SMILES were checked again for syntax errors or invalid chemistry by ```RdKit``` and the duplicates were removed. The final list contains 903 entries with the following columns: Name, Formula, Species, SMILES, InChI, Monoisotopic_mass, ChEBIid, KEGGid, PubChemId, source_database, Source, nonIsomeric_SMILES_byRDKit, iupac, synonyms, PubChemPY, correct_Name, Molecular mass, subclass, class', 'superclass.
+
+## Candidate List Curation
+Since top candidates for each feature are obtained from different database sources, hence when different sources give different candidates, then a prioritization scheme is requried. The idenification od reference standards has shown that among spectral databases, GNPS and MassBank are prioritized HMDB and among the compound databases, results from SIRIUS are prioritized over MetFrag. In terms of overall prioritizaton, if the candidate has a match in Suspect list, it is given prioritization. In general the scheme is: GNPS > Massbank > SIRIUS > HMDB > MetFrag(PubChem) > MetFrag(KEGG)
+
+### MetFrag Curation
+1. for compounds with only Pubchem, or only KEGG, will remain as it is.
+2. if there is KEGG and PubChem, calculate a tanimoto score, if it is equal to 1, keep PubChem entry but add KEGG to source add well.
+3. if there is less than 1 tanimoto, Check whether the entry has a suspect list compound, add the entry with Suspct list , if no suspectlist, then add PubChem
+
+### SIRIUS Curation
+important scores to consider are
+
+SIRIUSscore
+CSIFingerIDscore
+exp_int >= 0.70
+SL_comp (if present, give priority and mention in the annotation)
+
+1. If the explained intensity is greater than 0.70 and there is no suspect list entry
+2. If the explained intensity is greater than 0.70 and there is an entry from suspect list
+3. if the intensity is less thna 0.70 but it still is similar to an entry in Suspect list,
+
+### Candidate Selection from Compound Databases
+
+
+
+### Compound Database Dereplication Results Curation'
