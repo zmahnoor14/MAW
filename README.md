@@ -53,3 +53,5 @@ if there are annoatations from both sources:
 3. if there are two spectral databse sources, and HMDB is on of the sources, prioritize Sirius candidate if there is no strcutural similarity.
 4. if there is only one spectral db source prioritize Sirius
 5. Add SMILES from one of the sources mentioned in the Annotation_Source Column.
+
+
