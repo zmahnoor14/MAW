@@ -1,3 +1,149 @@
+### remove later
+
+# 4 dependencies for spectral db download
+library(Spectra)
+library(MsBackendMgf)
+library(MsBackendHmdb)
+library(MsBackendMsp)
+# 3 dependencies for latest MassBank version
+library(rvest)
+library(stringr)
+library(xml2)
+
+##-----------------------------------------------------------------
+## Download Spectral DBs
+##-----------------------------------------------------------------
+
+## Define function to download one of the open source spectral databases
+
+## inputs
+# input_dir = full directory where all MZML input files
+# db = either one of the spectral libraries which can be gnps, hmdb, mbank or all
+
+download_specDB <- function(input_dir, db, error = TRUE){
+    databases <- 'gnps, hmdb, mbank, all'
+    
+    
+    summaryFile <- paste(input_dir, "summaryFile.txt", sep = "")
+    file.create(summaryFile, recursive = TRUE)
+    file.conn <- file(summaryFile)
+    open(file.conn, open = "at")
+            
+    
+    if (db == "all" || db =="gnps"){
+        # gnps
+        
+        # Download file
+        system(paste("wget -P", 
+                     input_dir,
+                     "https://gnps-external.ucsd.edu/gnpslibrary/ALL_GNPS.mgf", 
+                     sep =  " "))
+        # load the spectra into MsBackendMgf
+        #gnps <- Spectra(paste(input_dir, "ALL_GNPS.mgf", sep = ''), source = MsBackendMgf())
+        #save(gnps, file = paste(input_dir,"gnps.rda", sep = ""))
+        
+        # delete the database in its format to free up space
+        system(paste("rm", (paste(input_dir, "ALL_GNPS.mgf", sep = '')), sep = " "))
+        
+        writeLines(paste("GNPS saved at", Sys.time(), sep=" "),con=file.conn)
+        
+    }
+    if (db == "all" || db =="hmdb"){
+        # hmdb
+        
+        #Download file
+        system(paste("wget - P", input_dir,
+                     "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_all_spectra.zip",
+                     sep = " "))
+        # unzip
+        system(paste("unzip -d", input_dir, paste(input_dir, "hmdb_all_spectra.zip", sep = ""), sep = " "))
+        # load the spectra into MsBackendHMDB
+        #hmdb <- Spectra(paste(input_dir, "hmdb_all_spectra.xml", sep = ''), source = MsBackendHmdb())
+        #save(hmdb, file = paste(input_dir,"hmdb.rda", sep = ""))
+        
+        # delete the database in its format to free up space
+        system(paste("rm", (paste(input_dir, "hmdb_all_spectra.xml", sep = '')), sep = " "))
+        
+        writeLines(paste("HMDB saved at", Sys.time(), sep=" "),con=file.conn)
+    }
+    if (db == "all" || db =="mbank"){
+        #mbank
+        
+        page <- read_html("https://github.com/MassBank/MassBank-data/releases")
+        page %>%
+            html_nodes("a") %>%       # find all links
+            html_attr("href") %>%     # get the url
+            str_subset("MassBank_NIST.msp") -> tmp # find those that have the name MassBank_NIST.msp
+        
+        #download file
+        system(paste("wget -P", input_dir,
+                     "https://github.com/", tmp[1], 
+                     sep =  " "))
+        
+        #mbank <- Spectra(paste(input_dir, "MassBank_NIST.msp", sep = ''), source = MsBackendMgf())
+        #save(mbank, file = paste(input_dir,"mbankNIST.rda", sep = ""))
+        
+        # delete the database in its format to free up space
+        system(paste("rm", (paste(input_dir, "MassBank_NIST.msp", sep = '')), sep = " "))
+        
+        # obtain the month and year for the database release to add to summary
+        res <- str_match(tmp[1], "download/\\s*(.*?)\\s*/MassBank_NIST")
+        
+        writeLines(paste("MassBank saved at", Sys.time(), "with release version", res[,2], sep=" "),con=file.conn)
+    }
+    
+    #wrong input error message
+    else if (!grepl(db, databases, fixed = TRUE)){
+        stop("Wrong db input. Following inputs apply: gnps, hmdb, mbank or all")
+    }
+    close(file.conn)
+}
+
+## outputs
+# Spectral DB saved with the following name in the input_dir: gnps.rda, hmdb.rda, mbank.rda
+# summary file saved as summaryFile.txt which contains the timings of saved databases
+
+## Usage:
+# download_specDB(input_dir, db = "all")
+
+##-----------------------------------------------------------------
+## Load Spectral DBs
+##-----------------------------------------------------------------
+## Define function to load one of the open source spectral databases or all. Load rda datafiles
+
+## inputs
+# input_dir = full directory where all MZML input files
+# db = either one of the spectral libraries which can be gnps, hmdb, mbank or all
+
+load_specDB <- function(input_dir, db){
+    
+    databases <- 'gnps, hmdb, mbank, all'
+    
+    if (db == "all" || db =="gnps"){
+        load(file = paste(input_dir,"gnps.rda", sep = ""))
+        # loaded with the name gnps
+    }
+    if (db == "all" || db =="hmdb"){
+        load(file = paste(input_dir,"hmdb.rda", sep = ""))
+        # loaded with the name hmdb
+    }
+    if (db == "all" || db =="mbank"){
+        load(file = paste(input_dir,"mbank.rda", sep = ""))
+        # loaded with the name mbank
+    }
+    #wrong input error message
+    else if (!grepl(db, databases, fixed = TRUE)){
+        stop("Wrong db input. Following inputs apply: gnps, hmdb, mbank or all")
+    }
+
+}
+
+## outputs
+# gnps.rda, hmdb.rda, mbank.rda all or either one of them are re-loaded into R session
+
+## Usage:
+# load_specDB(input_dir, db = "all")
+
 ##-----------------------------------------------------------------
 ## filter intensity 
 ##-----------------------------------------------------------------
@@ -29,29 +175,12 @@ norm_int <- function(x, ...) {
 #' addProcessing is a predefined function in Spectra package
 
 ##-----------------------------------------------------------------
-## Plotting Mirror Spectra 
-##-----------------------------------------------------------------
-
-#' Specifying a function to draw peak labels
-label_fun <- function(x) {
-    ints <- unlist(intensity(x))
-    mzs <- format(unlist(mz(x)), digits = 4)
-    mzs[ints < 5] <- ""
-    mzs
-}
-# Usage: 
-# plotSpectraMirror(sps[idx[1]], gnps_with_mz[idx[2]], tolerance = 0.2,
-# labels = label_fun, labelPos = 2, labelOffset = 0.2, labelSrt = -30)
-
-#' plotSpectraMirror is a predefined function in Spectra package
-
-##-----------------------------------------------------------------
 ## Result Directories 
 ##-----------------------------------------------------------------
 
-#' Specifying a function for creating result directories for each input mzml
-# inputs for the function:
-# x is mzML File, input directory and working directory
+## Specifying a function for creating result directories for each input mzml
+# input for the function:
+# input directory
 ms2_rfilename<- function(input_dir){
     #list_ms2_files <- intersect(list.files(input_dir, pattern = "_PRM_"), list.files(input_dir, pattern = ".mzML"))
     list_ms2_files <- list.files(input_dir, pattern = ".mzML")
@@ -74,8 +203,18 @@ ms2_rfilename<- function(input_dir){
         File_id <- c(File_id, paste("file_", nx, sep = ""))
     }
     input_table <- cbind(mzml_files, ResultFileNames, File_id)
+    write.csv(input_table, paste(input_dir, "input_table.csv"))
     return(input_table)
 }
+
+# usage:
+## input directory ##
+#input_dir <- paste(getwd(), "/", sep = '')
+#ms2_rfilename(input_dir)
+
+##-----------------------------------------------------------------
+## Read mzML files and extract precursor m/z(s)
+##-----------------------------------------------------------------
 
 #' All spectra in mzML files preprocessing, return two outputs, pre-processed MS2 spectra and all precursor masses
 # x is one mzML file
@@ -83,7 +222,7 @@ spec_Processing <- function(x){
     # read the spectra
     sps_all <- Spectra(x, backend = MsBackendMzR())
     #' Change backend to a MsBackendDataFrame: load data into memory
-    #sps_all <- setBackend(sps_all, MsBackendDataFrame())
+    sps_all <- setBackend(sps_all, MsBackendDataFrame())
     #' Filter Empty Spectra
     sps_all <- filterEmptySpectra(sps_all)
     #' Extract Precursor m/z(s) in each file
@@ -94,8 +233,15 @@ spec_Processing <- function(x){
     return(spsall_pmz)
 }
 
+##-----------------------------------------------------------------
+## Pre-process MS2 spectra
+##-----------------------------------------------------------------
+
 #' processing on spectra with one precursor mass
-# inputs: x is precursor mass, spec is the spectra file (sps_all is mzML input processed spectra, gnps, hmdb), ppmx is ppm value
+# inputs: 
+# x is precursor mass, 
+# spec is the spectra file (sps_all is mzML input processed spectra, gnps, hmdb or mbank), 
+# ppmx is ppm value
 spec2_Processing <- function(x, spec = "sps_all", ppmx = 15){
     if (spec == "sps_all"){
         #' Subset the dataset to MS2 spectra matching the m/z
@@ -115,6 +261,12 @@ spec2_Processing <- function(x, spec = "sps_all", ppmx = 15){
         #' Subset the HMDB Spectra
         sps <- mbank[has_mz]
     }
+    
+    #wrong input error message
+    else if (!grepl(db, databases, fixed = TRUE)){
+        stop("Wrong db input. Following inputs apply: gnps, hmdb, mbank or all")
+    }
+
     if (length(sps)>0){
         #' Apply the function to filter the spectra
         sps <- filterIntensity(sps, intensity = low_int)
@@ -122,6 +274,7 @@ spec2_Processing <- function(x, spec = "sps_all", ppmx = 15){
         sps <- addProcessing(sps, norm_int)
         # cleaning peaks that are heavier or equal to the precursor mass
         pkd <- peaksData(sps)@listData
+        
         #obtain the list of peaks that are higher or equal to precursor mass
         # y is peaksData from spectra
         removePrecursorPeaks <- function(y){
@@ -143,7 +296,7 @@ spec2_Processing <- function(x, spec = "sps_all", ppmx = 15){
                 store_i <- c(store_i, i)
             }
         }
-        # if 0 peaks, remove the relevant spectra from gnps or hmdb
+        # if 0 peaks, remove the relevant spectra from gnps or hmdb or mbank
         if (!(is.null(store_i))){
             pkd <- pkd[-(store_i)]
             sps <- sps[-(store_i)]
@@ -158,19 +311,24 @@ spec2_Processing <- function(x, spec = "sps_all", ppmx = 15){
         return(sps)
     }
 }
+# Usage:
+# spec2_Processing(x = 231.15, spec = "sps_all", ppmx = 15)
+
+
+##-----------------------------------------------------------------
+## Extract peaksdata in a dataframe
+##-----------------------------------------------------------------
 
 #' obtain peaksData for each spectral matching between query and database spectra
 #inputs a is best match from Database, b is best match from query spectra
-peakdf <- function(a, b){
-    ##----------------------------------------------------------------
-    ## SCORING -
-    ##----------------------------------------------------------------
+peakdf <- function(a, b, ppmx){
+
     #' obtain peaklists for both query spectra and best matched spectra from MassBank
     z<- peaksData(a)[[1]] #from GNPS/HMDB
     y <- peaksData(b)[[1]] #from query
     if (!(nrow(z)==0)){
     #' Since we used 15 ppm, so to find the range, calculate the mass error range
-    range <-  (15/1000000)*y[,"mz"]
+    range <-  (ppmx/1000000)*y[,"mz"]
     y <- cbind(y, range)
     low_range <- y[,"mz"]-y[,"range"] # low range of m/z
     high_range <- y[,"mz"]+y[,"range"] # high range of m/z
@@ -226,24 +384,44 @@ peakdf <- function(a, b){
     }
     #output is a dataframe with mz and intensity from db spectra and query spectra and their difference
 }
+# Usage:
+# peakdf(sps[[1]], gnps_best_match, ppmx = 15)
 
+##-----------------------------------------------------------------
+## Plotting Mirror Spectra 
+##-----------------------------------------------------------------
+
+#' Specifying a function to draw peak labels
+label_fun <- function(x) {
+    ints <- unlist(intensity(x))
+    mzs <- format(unlist(mz(x)), digits = 4)
+    mzs[ints < 5] <- ""
+    mzs
+}
+# Usage: 
+# plotSpectraMirror(sps[idx[1]], gnps_with_mz[idx[2]], tolerance = 0.2,
+# labels = label_fun, labelPos = 2, labelOffset = 0.2, labelSrt = -30)
+
+#' plotSpectraMirror is a predefined function in Spectra package
 
 # x is one pre_mz, db is GNPS, HMDB, MassBank
-spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
+spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx){
     
     ####-------------------------------------------------------------
-    #### Dereplication with GNPS ----
+    #### Dereplication with all or GNPS ----
     ####-------------------------------------------------------------
     
-    if (db == "GNPS"){
+    databases <- 'gnps, hmdb, mbank, all'
+    
+    if (db == "all" || db =="gnps"){
         nx <- 0
         nx <- nx+1
         
         #### input spec with pre_mz
-        sps <- spec2_Processing(x, spec = "sps_all", ppmx = 15)
+        sps <- spec2_Processing(x, spec = "sps_all", ppmx)
         
         #### GNPS spec with pre_mz
-        gnps_with_mz <- spec2_Processing(x, spec = "gnps", ppmx = 15)
+        gnps_with_mz <- spec2_Processing(x, spec = "gnps", ppmx)
         
         
         if (length(sps) > 1 && length(gnps_with_mz) >1){
@@ -256,7 +434,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             
             if (!(is.null(df_peaklists))){
                 
-                print("more spectra and more gnps spectra")
+                #print("more spectra and more gnps spectra")
                 
                 dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
                 if (!file.exists(dir_name)){
@@ -348,6 +526,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 GNPSmax_similarity <- max(res)
                 GNPSintScore <- mean(1-(df_peaklists[,"diff"]/100))
                 GNPSmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
@@ -369,6 +548,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 GNPSmax_similarity <- NA
                 GNPSmzScore <- NA
                 GNPSintScore <- NA
@@ -413,6 +593,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 GNPSmax_similarity <- max(res)
                 GNPSintScore <- mean(1-(df_peaklists[,"diff"]/100))
                 GNPSmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
@@ -434,6 +615,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 GNPSmax_similarity <- NA
                 GNPSmzScore <- NA
                 GNPSintScore <- NA
@@ -471,6 +653,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 GNPSmax_similarity <- max(res)
                 GNPSintScore <- mean(1-(df_peaklists[,"diff"]/100))
                 GNPSmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
@@ -492,6 +675,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 GNPSmax_similarity <- NA
                 GNPSmzScore <- NA
                 GNPSintScore <- NA
@@ -515,6 +699,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             rtmin <- max(sps$rtime)
             rtmax <- min(sps$rtime)
             rtmed <- median(sps$rtime, na.rm = TRUE)
+            rtmean <- mean(sps$rtime, na.rm = TRUE)
             GNPSmax_similarity <- NA
             GNPSmzScore <- NA
             GNPSintScore <- NA
@@ -529,17 +714,20 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
 
         }
         
-        df_gnps <- cbind(id_X, premz, rtmin, rtmax, rtmed, GNPSmax_similarity, GNPSmzScore, 
+        df_gnps <- cbind(id_X, premz, rtmin, rtmax, rtmed, rtmean, GNPSmax_similarity, GNPSmzScore, 
                         GNPSintScore, GQMatchingPeaks, GNPSTotalPeaks, gQueryTotalPeaks, 
                         GNPSSMILES, GNPSspectrumID, GNPScompound_name, GNPSmirrorSpec, Source)
-        return(df_gnps)
+        
+        write.csv(df_gnps, paste(result_dir, "/spectral_dereplication/gnps.csv", sep = ""))
+        #return(df_gnps)
+        
     }
     
     ####-------------------------------------------------------------
-    #### Dereplication with HMDB ----
+    #### Dereplication with all or HMDB ----
     ####-------------------------------------------------------------
     
-    if (db == "HMDB"){
+    if (db == "all" || db =="hmdb"){
         nx <- 0
         nx <- nx+1
         
@@ -579,7 +767,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 HMDBmax_similarity <- max(res)
                 HMDBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_best_match)[[1]])+nrow(peaksData(sps[idx[1]])[[1]]))
                 HMDBintScore <- mean(1-(df_peaklists[,"diff"]/100))
@@ -599,13 +787,14 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 HMDBmax_similarity <- NA
                 HMDBmzScore <- NA
                 HMDBintScore <- NA
                 HQMatchingPeaks <- NA
                 HMDBTotalPeaks <- NA
                 hQueryTotalPeaks<- NA
-                HMDBcompoundID <- NA
+                HMDBcompoundID <- "none"
                 HMDBmirrorSpec <- NA
                 Source <- NA
             }
@@ -643,7 +832,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 HMDBmax_similarity <- max(res)
                 HMDBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
                 HMDBintScore <- mean(1-(df_peaklists[,"diff"]/100))
@@ -663,13 +852,14 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 HMDBmax_similarity <- NA
                 HMDBmzScore <- NA
                 HMDBintScore <- NA
                 HQMatchingPeaks <- NA
                 HMDBTotalPeaks <- NA
                 hQueryTotalPeaks<- NA
-                HMDBcompoundID <- NA
+                HMDBcompoundID <- "none"
                 HMDBmirrorSpec <- NA
                 Source <- NA
             }
@@ -705,7 +895,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 HMDBmax_similarity <- max(res)
                 HMDBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
                 HMDBintScore <- mean(1-(df_peaklists[,"diff"]/100))
@@ -725,13 +915,14 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 HMDBmax_similarity <- NA
                 HMDBmzScore <- NA
                 HMDBintScore <- NA
                 HQMatchingPeaks <- NA
                 HMDBTotalPeaks <- NA
                 hQueryTotalPeaks<- NA
-                HMDBcompoundID <- NA
+                HMDBcompoundID <- "none"
                 HMDBmirrorSpec <- NA
                 Source <- NA
             }
@@ -760,7 +951,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 HMDBmax_similarity <- max(res)
                 HMDBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
                 HMDBintScore <- mean(1-(df_peaklists[,"diff"]/100))
@@ -780,13 +971,14 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 HMDBmax_similarity <- NA
                 HMDBmzScore <- NA
                 HMDBintScore <- NA
                 HQMatchingPeaks <- NA
                 HMDBTotalPeaks <- NA
                 hQueryTotalPeaks<- NA
-                HMDBcompoundID <- NA
+                HMDBcompoundID <- "none"
                 HMDBmirrorSpec <- NA
                 Source <- NA
             }
@@ -801,28 +993,32 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             rtmin <- max(sps$rtime)
             rtmax <- min(sps$rtime)
             rtmed <- median(sps$rtime, na.rm = TRUE)
+            rtmean <- mean(sps$rtime, na.rm = TRUE)
             HMDBmax_similarity <- NA
             HMDBmzScore <- NA
             HMDBintScore <- NA
             HQMatchingPeaks <- NA
             HMDBTotalPeaks <- NA
             hQueryTotalPeaks<- NA
-            HMDBcompoundID <- NA
+            HMDBcompoundID <- "none"
             HMDBmirrorSpec <- NA
             Source <- NA
         }
         
-        df_hmdb <- cbind(id_X, premz, rtmin, rtmax, rtmed, HMDBmax_similarity, HMDBmzScore, 
+        df_hmdb <- cbind(id_X, premz, rtmin, rtmax, rtmed, rtmean, HMDBmax_similarity, HMDBmzScore, 
                          HMDBintScore, HQMatchingPeaks, HMDBTotalPeaks, hQueryTotalPeaks, 
                          HMDBcompoundID, HMDBmirrorSpec, Source)
-        return(df_hmdb)
+        
+        write.csv(df_hmdb, paste(result_dir, "/spectral_dereplication/hmdb.csv", sep = ""))
+
+        #return(df_hmdb)
     }
     
     ####-------------------------------------------------------------
-    #### Dereplication with MassBank ----
+    #### Dereplication with all or MassBank ----
     ####-------------------------------------------------------------
     
-    if (db == "MassBank"){
+    if (db == "all" || db =="mbank"){
         
         nx <- 0
         nx <- nx+1
@@ -864,7 +1060,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 MBmax_similarity <- max(res)
                 MBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(mbank_best_match)[[1]])+nrow(peaksData(sps[idx[1]])[[1]]))
                 MBintScore <- mean(1-(df_peaklists[,"diff"]/100))
@@ -887,7 +1083,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 MBmax_similarity <- NA
                 MBmzScore <- NA
                 MBintScore <- NA
@@ -934,7 +1130,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 MBmax_similarity <- max(res)
                 MBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(mbank_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
                 MBintScore <- mean(1-(df_peaklists[,"diff"]/100))
@@ -957,7 +1153,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 MBmax_similarity <- NA
                 MBmzScore <- NA
                 MBintScore <- NA
@@ -1003,7 +1199,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 MBmax_similarity <- max(res)
                 MBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(mbank_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
                 MBintScore <- mean(1-(df_peaklists[,"diff"]/100))
@@ -1026,7 +1222,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 MBmax_similarity <- NA
                 MBmzScore <- NA
                 MBintScore <- NA
@@ -1065,7 +1261,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 MBmax_similarity <- max(res)
                 MBmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(mbank_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
                 MBintScore <- mean(1-(df_peaklists[,"diff"]/100))
@@ -1088,7 +1284,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 MBmax_similarity <- NA
                 MBmzScore <- NA
                 MBintScore <- NA
@@ -1113,7 +1309,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
             rtmin <- max(sps$rtime)
             rtmax <- min(sps$rtime)
             rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+            rtmean <- mean(sps$rtime, na.rm = TRUE)
             MBmax_similarity <- NA
             MBmzScore <- NA
             MBintScore <- NA
@@ -1129,15 +1325,24 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir){
 
         }
         
-        df_mbank <- cbind(id_X, premz, rtmin, rtmax, rtmed, MBmax_similarity, MBmzScore, MBintScore, MQMatchingPeaks, 
+        df_mbank <- cbind(id_X, premz, rtmin, rtmax, rtmed, rtmena, MBmax_similarity, MBmzScore, MBintScore, MQMatchingPeaks, 
                          MBTotalPeaks, mQueryTotalPeaks, MBformula, MBinchiKEY, MBspectrumID, MBcompound_name, MBmirrorSpec, 
                          Source)
-        return(df_mbank)
+        write.csv(df_mbank, paste(result_dir, "/spectral_dereplication/mbank.csv", sep = ""))
+        
+        #return(df_mbank)
+    }
+    #wrong input error message
+    else if (!grepl(db, databases, fixed = TRUE)){
+        stop("Wrong db input. Following inputs apply: gnps, hmdb, mbank or all")
     }
     
 }
+# Usage
+# spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx)
 
-save.image(file = "R_Functions.RData")
+
+#save.image(file = "R_Functions.RData")
 
 #' Extract MS2 Fragment peaks
 # This functon returns a dataframe and stores a csv file 
@@ -1928,7 +2133,7 @@ sirius_postprocess <- function(x, SL = TRUE){
 
 
 
-save.image(file = "R_Functions.RData")
+#save.image(file = "R_Functions.RData")
 
 metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE){
 
@@ -2011,13 +2216,16 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
     return(metfrag_param_file)
 }
 
-
-
-
-
-
-
 save.image(file = "R_Functions.RData")
+
+input_dir <- paste(getwd(), "/", sep = '')
+input_dir
+
+
+
+
+
+
 
 
 
