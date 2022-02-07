@@ -1356,6 +1356,7 @@ ms2_peaks <- function(x, result_dir){
     rtmin <- c() # stores rtmin
     rtmax <- c() # stores rtmax
     rtmed <- c() # stores calculated median of rtmin and rtmax
+    rtmean <- c() # stores calculated mean of rtmin and rtmax
     col_eng <- c() # stores collision energy
     pol <- c() # stores polarity
     ms2Peaks <- c() # stores the peak list file directory
@@ -1384,6 +1385,11 @@ ms2_peaks <- function(x, result_dir){
         #rtmedian
         rtm <- median(sps$rtime, na.rm = TRUE)
         rtmed <- c(rtmed, rtm)
+        
+        #rtmean
+        rtme <- mean(sps$rtime, na.rm = TRUE)
+        rtmean <- c(rtmean, rtme)
+        
         
         #collision energy
         ce <- max(sps$collisionEnergy)
@@ -1553,6 +1559,9 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
 # Usage
 #ms1p <- ms1_peaks(x = spec_pr2, y = './MZML/QC/NEW/Combined_Camera_neg.csv', result_dir = './MZML/DS_201124_SC_full_PRM_neg_09', QC = TRUE)
 #ms1p
+
+# input x is result from either ms1_peaks and ms2_peaks
+# SL is if a suspect list is present
 
 sirius_param <- function(x, result_dir, SL = TRUE){
     
