@@ -1,15 +1,3 @@
-### remove later
-
-# 4 dependencies for spectral db download
-library(Spectra)
-library(MsBackendMgf)
-library(MsBackendHmdb)
-library(MsBackendMsp)
-# 3 dependencies for latest MassBank version
-library(rvest)
-library(stringr)
-library(xml2)
-
 ##-----------------------------------------------------------------
 ## Download Spectral DBs
 ##-----------------------------------------------------------------
@@ -39,8 +27,8 @@ download_specDB <- function(input_dir, db, error = TRUE){
                      "https://gnps-external.ucsd.edu/gnpslibrary/ALL_GNPS.mgf", 
                      sep =  " "))
         # load the spectra into MsBackendMgf
-        #gnps <- Spectra(paste(input_dir, "ALL_GNPS.mgf", sep = ''), source = MsBackendMgf())
-        #save(gnps, file = paste(input_dir,"gnps.rda", sep = ""))
+        gnps <- Spectra(paste(input_dir, "ALL_GNPS.mgf", sep = ''), source = MsBackendMgf())
+        save(gnps, file = paste(input_dir,"gnps.rda", sep = ""))
         
         # delete the database in its format to free up space
         system(paste("rm", (paste(input_dir, "ALL_GNPS.mgf", sep = '')), sep = " "))
@@ -58,8 +46,8 @@ download_specDB <- function(input_dir, db, error = TRUE){
         # unzip
         system(paste("unzip -d", input_dir, paste(input_dir, "hmdb_all_spectra.zip", sep = ""), sep = " "))
         # load the spectra into MsBackendHMDB
-        #hmdb <- Spectra(paste(input_dir, "hmdb_all_spectra.xml", sep = ''), source = MsBackendHmdb())
-        #save(hmdb, file = paste(input_dir,"hmdb.rda", sep = ""))
+        hmdb <- Spectra(paste(input_dir, "hmdb_all_spectra.xml", sep = ''), source = MsBackendHmdb())
+        save(hmdb, file = paste(input_dir,"hmdb.rda", sep = ""))
         
         # delete the database in its format to free up space
         system(paste("rm", (paste(input_dir, "hmdb_all_spectra.xml", sep = '')), sep = " "))
@@ -80,8 +68,8 @@ download_specDB <- function(input_dir, db, error = TRUE){
                      "https://github.com/", tmp[1], 
                      sep =  " "))
         
-        #mbank <- Spectra(paste(input_dir, "MassBank_NIST.msp", sep = ''), source = MsBackendMgf())
-        #save(mbank, file = paste(input_dir,"mbankNIST.rda", sep = ""))
+        mbank <- Spectra(paste(input_dir, "MassBank_NIST.msp", sep = ''), source = MsBackendMgf())
+        save(mbank, file = paste(input_dir,"mbankNIST.rda", sep = ""))
         
         # delete the database in its format to free up space
         system(paste("rm", (paste(input_dir, "MassBank_NIST.msp", sep = '')), sep = " "))
@@ -115,7 +103,7 @@ download_specDB <- function(input_dir, db, error = TRUE){
 # input_dir = full directory where all MZML input files
 # db = either one of the spectral libraries which can be gnps, hmdb, mbank or all
 
-load_specDB <- function(input_dir, db){
+load_specDB <- function(input_dir, db, error = TRUE){
     
     databases <- 'gnps, hmdb, mbank, all'
     
@@ -405,7 +393,7 @@ label_fun <- function(x) {
 #' plotSpectraMirror is a predefined function in Spectra package
 
 # x is one pre_mz, db is GNPS, HMDB, MassBank
-spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx){
+spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error = TRUE){
     
     ####-------------------------------------------------------------
     #### Dereplication with all or GNPS ----
@@ -1560,6 +1548,10 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
 #ms1p <- ms1_peaks(x = spec_pr2, y = './MZML/QC/NEW/Combined_Camera_neg.csv', result_dir = './MZML/DS_201124_SC_full_PRM_neg_09', QC = TRUE)
 #ms1p
 
+
+
+
+
 # input x is result from either ms1_peaks and ms2_peaks
 # SL is if a suspect list is present
 
@@ -1745,14 +1737,18 @@ sirius_param <- function(x, result_dir, SL = TRUE){
     
 }
 
+# Usage 
+# sirius_param_files <- sirius_param(ms1p, result_dir = './MZML/DS_201124_SC_full_PRM_neg_09')
 
-#sirius_param_files <- sirius_param(ms1p, result_dir = './MZML/DS_201124_SC_full_PRM_neg_09')
 
-feat_scale <- function(x) {
-    (x - min(x)) / (max(x) - min(x))
-  }
+
+
+
 
 sirius_postprocess <- function(x, SL = TRUE){
+    feat_scale <- function(x) {
+    (x - min(x)) / (max(x) - min(x))
+    }
     #the result directory name for each file
     dir_name <- paste(x, "/insilico/SIRIUS", sep = '')
     ##result json files in each result directory
@@ -2139,10 +2135,19 @@ sirius_postprocess <- function(x, SL = TRUE){
     write.csv(msdata, paste(x, "/insilico/MS1DATAsirius.csv", sep = ''))
     return(msdata)
 }
+# Usage: 
+# sirius_postprocess(x, SL = TRUE)
 
 
 
 #save.image(file = "R_Functions.RData")
+
+#x is the dataframe result from sirius_postprocess
+#result_dir 
+#input_dir 
+#adducts 
+#sl_mtfrag 
+#SL = TRUE if suspect list present
 
 metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE){
 
@@ -2206,7 +2211,7 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
                 }
                 
                 
-                writeLines("MetFragCandidateWriter = ExtendedFragmentsXLS",con=file.conn)
+                writeLines("MetFragCandidateWriter = CSV",con=file.conn)
             
                 writeLines(paste("SampleName = ", para, "_id_", x[j, 'id_X'], "_mz_", x[j, 'premz'], "_rt_", x[j, 'rtmed'], "_db_", k, sep = ''),con=file.conn)
                 writeLines(paste("ResultsPath = ", result_dir, "/insilico/MetFrag/", sep = ''),con=file.conn)
@@ -2225,18 +2230,10 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
     return(metfrag_param_file)
 }
 
+# Usage:
+# metfrag_param(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE)
+
 save.image(file = "R_Functions.RData")
-
-input_dir <- paste(getwd(), "/", sep = '')
-input_dir
-
-
-
-
-
-
-
-
 
 
 
