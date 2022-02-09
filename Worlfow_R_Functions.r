@@ -44,7 +44,7 @@ download_specDB <- function(input_dir, db, error = TRUE){
                      "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_all_spectra.zip",
                      sep = " "))
         # unzip
-        system(paste("unzip -d", input_dir, paste(input_dir, "hmdb_all_spectra.zip", sep = ""), sep = " "))
+        system(paste("jar xvf", input_dir, paste(input_dir, "hmdb_all_spectra.zip", sep = ""), sep = " "))
         # load the spectra into MsBackendHMDB
         hmdb <- Spectra(paste(input_dir, "hmdb_all_spectra.xml", sep = ''), source = MsBackendHmdb())
         save(hmdb, file = paste(input_dir,"hmdb.rda", sep = ""))
@@ -68,7 +68,7 @@ download_specDB <- function(input_dir, db, error = TRUE){
                      "https://github.com/", tmp[1], 
                      sep =  " "))
         
-        mbank <- Spectra(paste(input_dir, "MassBank_NIST.msp", sep = ''), source = MsBackendMgf())
+        mbank <- Spectra(paste(input_dir, "MassBank_NIST.msp", sep = ''), source = MsBackendMsp())
         save(mbank, file = paste(input_dir,"mbankNIST.rda", sep = ""))
         
         # delete the database in its format to free up space
@@ -2232,6 +2232,8 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
 
 # Usage:
 # metfrag_param(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE)
+
+
 
 save.image(file = "R_Functions.RData")
 
