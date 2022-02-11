@@ -172,17 +172,19 @@ norm_int <- function(x, ...) {
 ms2_rfilename<- function(input_dir){
     #list_ms2_files <- intersect(list.files(input_dir, pattern = "_PRM_"), list.files(input_dir, pattern = ".mzML"))
     list_ms2_files <- list.files(input_dir, pattern = ".mzML")
-    mzml_files <- paste(input_dir, list_ms2_files, sep = "")
+    mzml_file <- paste(input_dir, list_ms2_files, sep = "")
     
     #store the result file names to return to this function as output
     ResultFileNames <- c()
     File_id <- c()
     nx <- 0
     # x is mzML files
-    for (i in 1:length(mzml_files)){
+    for (i in 1:length(mzml_file)){
         nx <- nx+1
         # remove .mzML to extract just the names
-        name_mzml <- str_remove(as.character(mzml_files[i]), ".mzML")      
+        mzml_files <- str_replace(mzml_file[i], input_dir, "./")
+        name_mzmls <- str_remove(as.character(mzml_file[i]), ".mzML")
+        name_mzml <- str_replace(name_mzmls, input_dir, "./")
         #' for each file a subdirectory is created to store all results in that, add working directory
         if (!file.exists(name_mzml)){
             dir.create(name_mzml) ##create folder
@@ -191,6 +193,7 @@ ms2_rfilename<- function(input_dir){
         File_id <- c(File_id, paste("file_", nx, sep = ""))
     }
     input_table <- cbind(mzml_files, ResultFileNames, File_id)
+    
     write.csv(input_table, paste(input_dir, "input_table.csv"))
     return(input_table)
 }
@@ -210,7 +213,7 @@ spec_Processing <- function(x){
     # read the spectra
     sps_all <- Spectra(x, backend = MsBackendMzR())
     #' Change backend to a MsBackendDataFrame: load data into memory
-    sps_all <- setBackend(sps_all, MsBackendDataFrame())
+    #sps_all <- setBackend(sps_all, MsBackendDataFrame())
     #' Filter Empty Spectra
     sps_all <- filterEmptySpectra(sps_all)
     #' Extract Precursor m/z(s) in each file
@@ -418,7 +421,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             #' obtain GNPS spectra that matches the most with m/z MS2 spectra
             idx <- which(res == max(res), arr.ind = TRUE)
             gnps_best_match <- gnps_with_mz[idx[2]]
-            df_peaklists <- peakdf(gnps_best_match, sps[idx[1]])
+            df_peaklists <- peakdf(gnps_best_match, sps[idx[1]], ppmx)
             
             if (!(is.null(df_peaklists))){
                 
@@ -444,7 +447,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
-                 
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 GNPSmax_similarity <- max(res)
                 GNPSmzScore <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_best_match)[[1]])+nrow(peaksData(sps[idx[1]])[[1]]))
                 GNPSintScore <- mean(1-(df_peaklists[,"diff"]/100))
@@ -458,7 +461,6 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "GNPS"
             }
             else{
-                print("NO - more spectra and more gnps spectra")
                 
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
@@ -467,6 +469,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 rtmin <- max(sps$rtime)
                 rtmax <- min(sps$rtime)
                 rtmed <- median(sps$rtime, na.rm = TRUE)
+                rtmean <- mean(sps$rtime, na.rm = TRUE)
                 GNPSmax_similarity <- NA
                 GNPSmzScore <- NA
                 GNPSintScore <- NA
@@ -487,12 +490,11 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             gx <- gx[1]
             gnps_best_match <- gnps_with_mz[gx]
 
-            df_peaklists <- peakdf(gnps_best_match, sps)
+            df_peaklists <- peakdf(gnps_best_match, sps, ppmx)
 
             
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                print("one spectra and more gnps spectra")
                 dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -528,7 +530,6 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "GNPS"
             }
             else{
-                print("NO - one spectra and more gnps spectra")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -556,11 +557,10 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             gx <- which(res == max(res))
             gx <- gx[1]
             sps <- sps[gx]
-            df_peaklists <- peakdf(gnps_with_mz, sps[gx])
+            df_peaklists <- peakdf(gnps_with_mz, sps[gx], ppmx)
             gnps_best_match <- gnps_with_mz
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                print("more spectra and one gnps spectra")
                 dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -595,7 +595,6 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "GNPS"
                 }
             else{
-                print("NO - more spectra and one gnps spectra")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -619,9 +618,8 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         }
         else if (length(sps) == 1 && length(gnps_with_mz) == 1){
             gnps_best_match <- gnps_with_mz
-            df_peaklists <- peakdf(gnps_best_match, sps)
+            df_peaklists <- peakdf(gnps_best_match, sps, ppmx)
             if (!(is.null(df_peaklists))){
-                print("one spectra and one gnps spectra")
                 dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -655,7 +653,6 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "GNPS"
             }
             else{
-                print("NO - one spectra and one gnps spectra")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -731,10 +728,10 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             #' obtain HMDB spectra that matches the most with m/z MS2 spectra
             idx <- which(res == max(res), arr.ind = TRUE)
             hmdb_best_match <- hmdb_with_mz[idx[2]]
-            df_peaklists <- peakdf(hmdb_best_match, sps[idx[1]])
+            df_peaklists <- peakdf(hmdb_best_match, sps[idx[1]], ppmx)
             
             if (!(is.null(df_peaklists))){
-                print("more sps and more hmdb_with_mz")
+
                 dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -767,7 +764,6 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "HMDB"
             }
             else{
-                print("NO - more sps and more hmdb_with_mz")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -794,12 +790,11 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             gx <- gx[1]
             hmdb_best_match <- hmdb_with_mz[gx]
 
-            df_peaklists <- peakdf(hmdb_best_match, sps)
+            df_peaklists <- peakdf(hmdb_best_match, sps, ppmx)
 
             
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                print("one sps and more hmdb_with_mz")
                 dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -832,7 +827,6 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "HMDB"
             }
             else{
-                print("NO one sps and more hmdb_with_mz")
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -858,11 +852,11 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             gx <- which(res == max(res))
             gx <- gx[1]
             sps <- sps[gx]
-            df_peaklists <- peakdf(hmdb_with_mz, sps[gx])
+            df_peaklists <- peakdf(hmdb_with_mz, sps[gx], ppmx)
             hmdb_best_match <- hmdb_with_mz
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                print("more sps and one hmdb_with_mz")
+
                 dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -895,7 +889,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "HMDB"
                 }
             else{
-                print("NO more sps and one hmdb_with_mz")
+
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -917,9 +911,9 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         }
         else if (length(sps) == 1 && length(hmdb_with_mz) == 1){
             hmdb_best_match <- hmdb_with_mz
-            df_peaklists <- peakdf(hmdb_best_match, sps)
+            df_peaklists <- peakdf(hmdb_best_match, sps, ppmx)
             if (!(is.null(df_peaklists))){
-                print("one sps and one hmdb_with_mz")
+
                 dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -951,7 +945,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "HMDB"
             }
             else{
-                print("NO one sps and one hmdb_with_mz")
+
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -973,7 +967,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 
         }
         else{
-            print("NO sps and NO hmdb_with_mz")
+
             id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -1024,10 +1018,9 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             #' obtain GNPS spectra that matches the most with m/z MS2 spectra
             idx <- which(res == max(res), arr.ind = TRUE)
             mbank_best_match <- mbank_with_mz[idx[2]]
-            df_peaklists <- peakdf(mbank_best_match, sps[idx[1]])
+            df_peaklists <- peakdf(mbank_best_match, sps[idx[1]], ppmx)
             
             if (!(is.null(df_peaklists))){
-                print("more spectra and more mbank spectra")
                 dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -1063,7 +1056,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "MassBank"
             }
             else{
-                print("NO - more spectra and more mbank spectra")
+
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -1092,12 +1085,12 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             gx <- gx[1]
             mbank_best_match <- mbank_with_mz[gx]
 
-            df_peaklists <- peakdf(mbank_best_match, sps)
+            df_peaklists <- peakdf(mbank_best_match, sps, ppmx)
 
             
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                print("one spectra and more mbank spectra")
+
                 dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -1133,7 +1126,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "MassBank"
             }
             else{
-                print("NO - one spectra and more mbank spectra")
+
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -1162,11 +1155,11 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             gx <- which(res == max(res))
             gx <- gx[1]
             sps <- sps[gx]
-            df_peaklists <- peakdf(mbank_with_mz, sps[gx])
+            df_peaklists <- peakdf(mbank_with_mz, sps[gx], ppmx)
             mbank_best_match <- mbank_with_mz
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                print("more spectra and one mbank spectra")
+
                 dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -1202,7 +1195,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "MassBank"
                 }
             else{
-                print("NO - more spectra and one mbank spectra")
+
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -1227,9 +1220,9 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         }
         else if (length(sps) == 1 && length(mbank_with_mz) == 1){
             mbank_best_match <- mbank_with_mz
-            df_peaklists <- peakdf(mbank_best_match, sps)
+            df_peaklists <- peakdf(mbank_best_match, sps, ppmx)
             if (!(is.null(df_peaklists))){
-                print("one spectra and one mbank spectra")
+
                 dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
@@ -1264,7 +1257,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 Source <- "MassBank"
             }
             else{
-                print("NO - one spectra and one mbank spectra")
+
                 id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -1289,7 +1282,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 
         }
         else{
-            print("NO results in MassBank")
+
             id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -1313,7 +1306,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
 
         }
         
-        df_mbank <- cbind(id_X, premz, rtmin, rtmax, rtmed, rtmena, MBmax_similarity, MBmzScore, MBintScore, MQMatchingPeaks, 
+        df_mbank <- cbind(id_X, premz, rtmin, rtmax, rtmed, rtmean, MBmax_similarity, MBmzScore, MBintScore, MQMatchingPeaks, 
                          MBTotalPeaks, mQueryTotalPeaks, MBformula, MBinchiKEY, MBspectrumID, MBcompound_name, MBmirrorSpec, 
                          Source)
         write.csv(df_mbank, paste(result_dir, "/spectral_dereplication/mbank.csv", sep = ""))
@@ -1437,6 +1430,249 @@ ms2_peaks <- function(x, result_dir){
 # Usage
 #spec_pr2 <- ms2_peaks(spec_pr, './MZML/DS_201124_SC_full_PRM_neg_09/')
 #spec_pr2
+
+# for QC files, which have both polarities in one file or the polarities are unknown
+# inputs:
+#path e.g: “/users/name/project/QC”
+#pattern (define this so that the function only catches the file 
+#with a certain pattern e.g: “common”, if no pattern, by default 
+#function takes “.mzML” as the pattern which is all the .mzML files, 
+#so make sure only the QC files are in this directory and not the MS2.mzML files)
+
+cam_funcMode <- function(path, pattern = ".mzML"){
+    library("CAMERA")
+    # List all files present in QC folder 
+    files_QC_N <- list.files(path, pattern = pattern ,full.names=TRUE)
+    
+    for (i in 1:length(files_QC_N)){
+    
+        # read each file using Spectra
+        sps_all <- Spectra(files_QC_N[i], backend = MsBackendMzR())
+        
+        
+        if (length(unique(sps_all$polarity)) == 1){
+            if(unique(sps_all$polarity) == 1){
+                #Read the same file with MS1 information; note CAMERA reads xcmsSet object
+                xs <- xcmsSet(file = as.character(files_QC_N[i]),
+                              profmethod = "bin", profparam = list(), lockMassFreq=FALSE,
+                              mslevel= 1, progressCallback=NULL, polarity="positive",
+                              scanrange = NULL, BPPARAM = bpparam(),
+                              stopOnError = TRUE)
+                # Create an xsAnnotate object 
+                an <- xsAnnotate(xs) 
+                # Group based on RT 
+                anF <- groupFWHM(an, perfwhm = 0.6)
+                # Annotate isotopes 
+                anI <- findIsotopes(anF, mzabs = 0.01) 
+                # Verify grouping 
+                anIC <- groupCorr(anI, cor_eic_th = 0.75)
+                #Annotate adducts 
+                anFA <- findAdducts(anIC, polarity="positive") 
+                #get a feature list
+                peaklist <- getPeaklist(anFA)
+                # add file_origin information
+                peaklist$file_origin <- as.character(files_QC_N[i])
+                file_name <- paste(path,"/posCAMERA_Results_", i, ".csv", sep = "")
+                # write individual QC files which are in pos mode (later code will combine them)
+                write.csv(peaklist, file = file_name)
+            }else if (unique(sps_all$polarity) == 0){
+                #Read the same file with MS1 information; note CAMERA reads xcmsSet object
+                xs <- xcmsSet(file = as.character(files_QC_N[i]),
+                              profmethod = "bin", profparam = list(), lockMassFreq=FALSE,
+                              mslevel= 1, progressCallback=NULL, polarity="negative",
+                              scanrange = NULL, BPPARAM = bpparam(),
+                              stopOnError = TRUE)
+                # Create an xsAnnotate object 
+                an <- xsAnnotate(xs) 
+                # Group based on RT 
+                anF <- groupFWHM(an, perfwhm = 0.6)
+                # Annotate isotopes 
+                anI <- findIsotopes(anF, mzabs = 0.01) 
+                # Verify grouping 
+                anIC <- groupCorr(anI, cor_eic_th = 0.75)
+                #Annotate adducts 
+                anFA <- findAdducts(anIC, polarity="negative") 
+                #get a feature list
+                peaklist <- getPeaklist(anFA)
+                # add file_origin information
+                peaklist$file_origin <- as.character(files_QC_N[i])
+                file_name <- paste(path, "/negCAMERA_Results_", i, ".csv", sep = "")
+                # write individual QC files which are in pos mode (later code will combine them)
+                write.csv(peaklist, file = file_name)
+            }
+        }
+    else{
+        pos <- sps_all[sps_all$polarity == 1]
+        neg <- sps_all[sps_all$polarity == 0]
+        file_p <- paste(path, "/QC_280k_pos", i, ".mzML", sep = "")
+        file_n <- paste(path, "/QC_280k_neg", i, ".mzML", sep = "")
+        
+        # create new mzML QC files for pos and neg modes from each common QC file
+        export(pos, backend = MsBackendMzR(), file = file_p)
+        export(neg, backend = MsBackendMzR(), file = file_n)
+        #Read the same file with MS1 information; note CAMERA reads xcmsSet object
+        xs <- xcmsSet(file = as.character(file_p),
+                        profmethod = "bin", profparam = list(), lockMassFreq=FALSE,
+                        mslevel= 1, progressCallback=NULL, polarity="positive",
+                        scanrange = NULL, BPPARAM = bpparam(),
+                        stopOnError = TRUE)
+        # Create an xsAnnotate object 
+        an <- xsAnnotate(xs) 
+        # Group based on RT 
+        anF <- groupFWHM(an, perfwhm = 0.6)
+        # Annotate isotopes 
+        anI <- findIsotopes(anF, mzabs = 0.01) 
+        # Verify grouping 
+        anIC <- groupCorr(anI, cor_eic_th = 0.75)
+        #Annotate adducts 
+        anFA <- findAdducts(anIC, polarity="positive") 
+        #get a feature list
+        peaklist <- getPeaklist(anFA)
+        # add file_origin information
+        peaklist$file_origin <- as.character(files_QC_N[i])
+        file_name <- paste(path, "/posCAMERA_Results_", i, ".csv", sep = "")
+        # write individual QC files which are in pos mode (later code will combine them)
+        write.csv(peaklist, file = file_name)
+        
+        #Read the same file with MS1 information; note CAMERA reads xcmsSet object
+        xs <- xcmsSet(file = as.character(file_n),
+                        profmethod = "bin", profparam = list(), lockMassFreq=FALSE,
+                        mslevel= 1, progressCallback=NULL, polarity="negative",
+                        scanrange = NULL, BPPARAM = bpparam(),
+                        stopOnError = TRUE)
+        # Create an xsAnnotate object 
+        an <- xsAnnotate(xs) 
+        # Group based on RT 
+        anF <- groupFWHM(an, perfwhm = 0.6)
+        # Annotate isotopes 
+        anI <- findIsotopes(anF, mzabs = 0.01) 
+        # Verify grouping 
+        anIC <- groupCorr(anI, cor_eic_th = 0.75)
+        #Annotate adducts 
+        anFA <- findAdducts(anIC, polarity="negative") 
+        #get a feature list
+        peaklist <- getPeaklist(anFA)
+        # add file_origin information
+        peaklist$file_origin <- as.character(files_QC_N[i])
+        file_name <- paste(path, "/negCAMERA_Results_", i, ".csv", sep = "")
+        # write individual QC files which are in pos mode (later code will combine them)
+        write.csv(peaklist, file = file_name)
+    }
+    
+    }
+    
+    detach("package:CAMERA", unload=TRUE)
+}
+
+#Usage: cam_funcMode(path, pattern)
+
+merge_qc<- function(path){
+    # combine all QC which are in positive mode
+    df_pos <- list.files(path, pattern = "posCAMERA_Results_", full.names = TRUE) %>% 
+        lapply(read_csv) %>% 
+        bind_rows
+    # remove any duplicated rows
+    df_pos <- as.data.frame(df_pos[!duplicated(df_pos), ])
+
+    #extract isotope column numbers, the numbers represent the group of isotope
+    nm_p <- regmatches(df_pos[, "isotopes"],gregexpr("[[:digit:]]+\\.*[[:digit:]]*",df_pos[, "isotopes"]))
+
+    # for all the numbers, extract only first number, since it is the group number, 
+    # second number can be charge
+    for (i in 1:length(nm_p)){
+        y <- as.numeric(unlist(nm_p[i]))
+        df_pos[i,'istops'] = y[1]
+    }
+
+    # write csv for the combined_camera_pos results
+    write.csv(df_pos, paste(path, "/Combined_Camera_pos.csv", sep = ""))
+    
+    # combine all QC which are in negative mode
+    df_neg <- list.files(path, pattern = "negCAMERA_Results_", full.names = TRUE) %>% 
+        lapply(read_csv) %>% 
+        bind_rows
+    # remove any duplicated rows based on mz
+    df_neg <- as.data.frame(df_neg[!duplicated(df_neg), ])
+
+    #extract isotope column numbers, the numbers represent the group of isotope
+    nm_n <- regmatches(df_neg[, "isotopes"],gregexpr("[[:digit:]]+\\.*[[:digit:]]*",df_neg[, "isotopes"]))
+
+    # for all the numbers, extract only first number, since it is the group number, 
+    # second number can be charge
+    for (i in 1:length(nm_n)){
+        y <- as.numeric(unlist(nm_n[i]))
+        df_neg[i,'istops'] = y[1]
+    }
+    # write csv for the combined_camera_neg results
+    write.csv(df_neg, paste(path, "/Combined_Camera_neg.csv", sep = ""))
+}
+# Usage: merge_qc(path)
+
+cam_func <- function(path, f, mode = "pos"){
+    library("CAMERA")
+    fl <- paste(path, f, sep ="")
+    if(mode == "pos"){
+        xs <- xcmsSet(file = fl,profmethod = "bin", 
+              profparam = list(), lockMassFreq=FALSE,
+              mslevel= 1, progressCallback=NULL, polarity="positive",
+              scanrange = NULL, BPPARAM = bpparam(),stopOnError = TRUE)
+        # Create an xsAnnotate object 
+        an <- xsAnnotate(xs) 
+        # Group based on RT 
+        anF <- groupFWHM(an, perfwhm = 0.6)
+        # Annotate isotopes 
+        anI <- findIsotopes(anF, mzabs = 0.01) 
+        # Verify grouping 
+        anIC <- groupCorr(anI, cor_eic_th = 0.75)
+        #Annotate adducts 
+        anFA <- findAdducts(anIC, polarity="positive") 
+        peaklist <- getPeaklist(anFA)
+        peaklist$file_origin <- fl
+
+        #extract isotope column numbers, the numbers represent the group of isotope
+        nm_po <- regmatches(peaklist[, "isotopes"],gregexpr("[[:digit:]]+\\.*[[:digit:]]*",peaklist[, "isotopes"]))
+        # for all the numbers in v, extract only first number, since it is the group number, 
+        # second number can be charge
+        for (i in 1:length(nm_po)){
+            y <- as.numeric(unlist(nm_po[i]))
+            peaklist[i,'istops'] = y[1]
+        }
+        name <- str_remove(f, ".mzML")
+        write.csv(peaklist, file = paste(input_dir, "posCAMERAResults_", name,".csv", sep = ""))
+    }
+    else if(mode == "neg"){
+        xs <- xcmsSet(file = fl,profmethod = "bin", 
+              profparam = list(), lockMassFreq=FALSE,
+              mslevel= 1, progressCallback=NULL, polarity="negative",
+              scanrange = NULL, BPPARAM = bpparam(),stopOnError = TRUE)
+        # Create an xsAnnotate object 
+        an <- xsAnnotate(xs) 
+        # Group based on RT 
+        anF <- groupFWHM(an, perfwhm = 0.6)
+        # Annotate isotopes 
+        anI <- findIsotopes(anF, mzabs = 0.01) 
+        # Verify grouping 
+        anIC <- groupCorr(anI, cor_eic_th = 0.75)
+        #Annotate adducts 
+        anFA <- findAdducts(anIC, polarity="negative") 
+        peaklist <- getPeaklist(anFA)
+        peaklist$file_origin <- fl
+
+        #extract isotope column numbers, the numbers represent the group of isotope
+        nm_ne <- regmatches(peaklist[, "isotopes"],gregexpr("[[:digit:]]+\\.*[[:digit:]]*",peaklist[, "isotopes"]))
+        # for all the numbers in v, extract only first number, since it is the group number, 
+        # second number can be charge
+        for (i in 1:length(nm_ne)){
+            y <- as.numeric(unlist(nm_ne[i]))
+            peaklist[i,'istops'] = y[1]
+        }
+        name <- str_remove(f, ".mzML")
+        write.csv(peaklist, file = paste(input_dir, "posCAMERAResults_", name,".csv", sep = ""))
+    }
+    detach("package:CAMERA", unload=TRUE)
+    
+}
+# Usage: cam_func(f, mode = "pos")
 
 # Extract isotopic peaks for each pre_mz
 # The input is x = first_list (from ms2peaks function) and y = camera results 
