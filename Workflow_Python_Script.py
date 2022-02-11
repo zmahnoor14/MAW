@@ -40,10 +40,17 @@ from Workflow_Python_Functions import *
 input_dir = os.getcwd() +"/"
 
 
-# In[20]:
+# In[ ]:
 
 
-input_dir
+slist_metfrag("/Users/mahnoorzulfiqar/OneDriveUNI/SuspectList/", "Use_This_CURATED_SUSPECT_LIST_with_classes_noDups.csv")
+
+
+# In[ ]:
+
+
+slist_sirius(input_dir = "/Users/mahnoorzulfiqar/OneDriveUNI/SuspectList/", 
+             slist_csv = "Use_This_CURATED_SUSPECT_LIST_with_classes_noDups.csv", substring = ["Fe+3"])
 
 
 # In[9]:
