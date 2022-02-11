@@ -1,49 +1,100 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[27]:
+# ## SIRIUS_Metfrag_SList
+
+# In[ ]:
 
 
-import pandas as pd
-from rdkit import Chem
-from rdkit import DataStructs
-from rdkit.Chem import AllChem
-from rdkit.Chem import rdFMCS
-import pubchempy as pcp
-import numpy as np
-def isNaN(string):
-    return string != string
-import os
-import glob
-import re
-from pybatchclassyfire import *
-import csv 
-import time
-import json
-from pandas import json_normalize
-import pandas.io.formats.style
-from rdkit.Chem import PandasTools
-import xlrd
-import openpyxl
-import statistics
 
 
-# ### SIRIUS post processing
 
 # In[1]:
 
 
-#input_table = pd.read_csv("/Users/mahnoorzulfiqar/Standards_CodeSet/ input_table.csv")
-#input_table
+# make sure your Smiles entries in the suspect list csv are in a column named "SMILES"
+def slist_metfrag(input_dir, slist_csv):
+    sl = pd.read_csv(slist_csv)
+    sl_mtfrag= []
+    for i, rows in sl.iterrows():
+        mols = Chem.MolFromSmiles(sl['SMILES'][i])
+        sl.loc[i, 'InChIKey'] = Chem.inchi.MolToInchiKey(mols)
+        sl_mtfrag.append(sl['InChIKey'][i])
+    return(sl_mtfrag)
+    with open((input_dir + 'SL_metfrag.txt'), 'w') as filehandle:
+        for listitem in sl_mtfrag:
+            filehandle.write('%s\n' % listitem)
+# usage:
+# slist_metfrag("/Users/user/project/SuspectList/", "SUSPECT_LIST.csv")
 
-
-# ### MetFrag Result Post Processing
 
 # In[2]:
 
 
-def metfrag_postproc(input_table, input_dir):
+def slist_sirius(input_dir, slist_csv, substring = None):
+    
+    sl = pd.read_csv(slist_csv)
+    
+    # define function to neutralize the charged SMILES
+    def neutralize_atoms(mol):
+        
+        pattern = Chem.MolFromSmarts("[+1!h0!$([*]~[-1,-2,-3,-4]),-1!$([*]~[+1,+2,+3,+4])]")
+        at_matches = mol.GetSubstructMatches(pattern)
+        at_matches_list = [y[0] for y in at_matches]
+        if len(at_matches_list) > 0:
+            for at_idx in at_matches_list:
+                atom = mol.GetAtomWithIdx(at_idx)
+                chg = atom.GetFormalCharge()
+                hcount = atom.GetTotalNumHs()
+                atom.SetFormalCharge(0)
+                atom.SetNumExplicitHs(hcount - chg)
+                atom.UpdatePropertyCache()
+        return mol
+    
 
+    for i, row in sl.iterrows():
+        # remove SMILES with wild card
+        if "*" in sl["SMILES"][i]:
+            sl = sl.drop(labels = i, axis = 0) 
+    for i, row in sl.iterrows():
+        # remove SMILES with any string present in the substring
+        if substring:
+            if bool([ele for ele in substring if(ele in sl["SMILES"][i])]):
+                sl = sl.drop(labels = i, axis = 0)
+    for i, row in sl.iterrows():
+        if "." in sl["SMILES"][i]:
+            sl.loc[i, "SMILES"] = sl["SMILES"][i].split('.')[0]
+    # Neutralize the charged SMILES
+    for i, row in sl.iterrows():
+        if "+" in sl["SMILES"][i] or "-" in sl["SMILES"][i]:
+            mol = Chem.MolFromSmiles(sl["SMILES"][i])
+            neutralize_atoms(mol)
+            sl.loc[i, "SMILES"] = Chem.MolToSmiles(mol)
+            
+            # Remove multiple charged SMILES
+            if "+" in sl["SMILES"][i] or "-" in sl["SMILES"][i]:
+                pos = sl["SMILES"][i].count('+')
+                neg = sl["SMILES"][i].count('-')
+                charge = pos + neg 
+                if charge > 1:
+                    sl = sl.drop(labels = i, axis = 0) 
+                    
+    slsirius = pd.DataFrame({'smiles':smiles})
+    slsirius.to_csv(input_dir+ "SL_Sirius.tsv", sep = "\t", header = False, index = False)
+    os.system("sirius --input " + input_dir + "SL_Sirius.tsv custom-db --name=ScostSLS --output "+ input_dir)
+# Usage:
+# slist_sirius("/Users/user/project/SuspectList/", "SUSPECT_LIST.csv", substring = None)
+
+
+# ### SIRIUS post processing
+
+# ### MetFrag Result Post Processing
+
+# In[4]:
+
+
+def metfrag_postproc(input_table, input_dir):
+    heavy_atoms = ['C', 'N', 'P', 'O', 'S']
     for m, row in input_table.iterrows():
         result = input_table.loc[m, "ResultFileNames"] + "/insilico/MetFrag"
         files_met = (glob.glob(result+'/*.xls'))
@@ -75,7 +126,7 @@ def metfrag_postproc(input_table, input_dir):
                         for k, row in sl.iterrows():
                             try:
                                 SSms = [mol, Chem.MolFromSmiles(sl['SMILES'][k])]
-                                SSfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in SSms]
+                                SSfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in SSms]
                                 SStn = DataStructs.FingerprintSimilarity(SSfps[0],SSfps[1])
                                 if SStn >= 0.8:
                                     file1['KG_Top_can_SL'][i] = j
@@ -87,8 +138,11 @@ def metfrag_postproc(input_table, input_dir):
                         Kegg_smiles.append(sm)
                     if len(Kegg_smiles) > 1:
                         res = rdFMCS.FindMCS(Kegg_smiles)
-                        file1['KG_MCSSstring'][i] = res.smartsString
-                        file1['KG_MCSS_SMILES'][i] = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+                        sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+                        elem = [ele for ele in heavy_atoms if(ele in sm_res)]
+                        if elem and len(sm_res)>=3:
+                            file1['KG_MCSSstring'][i] = res.smartsString
+                            file1['KG_MCSS_SMILES'][i] = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
                     
                 #file1.at[i, 'KG_SMILESforMCSS'] = str(Kegg_s)
             except:
@@ -114,7 +168,7 @@ def metfrag_postproc(input_table, input_dir):
                         for n, row in sl.iterrows():
                             try:
                                 SSms = [l, Chem.MolFromSmiles(sl['SMILES'][n])]
-                                SSfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in SSms]
+                                SSfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in SSms]
                                 SStn2 = DataStructs.FingerprintSimilarity(SSfps[0],SSfps[1])
                                 if SStn2 >= 0.8:
                                     file1['PC_Top_can_SL'][i] = l
@@ -126,8 +180,11 @@ def metfrag_postproc(input_table, input_dir):
                         Pubchem_smiles.append(sm2)
                         if len(Pubchem_smiles) > 1:
                             res2 = rdFMCS.FindMCS(Pubchem_smiles)
-                            file1['PC_MCSSstring'][i] = res2.smartsString
-                            file1['PC_MCSS_SMILES'][i] = Chem.MolToSmiles(Chem.MolFromSmarts(res2.smartsString))
+                            sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+                            elem = [ele for ele in heavy_atoms if(ele in sm_res)]
+                            if elem and len(sm_res)>=3:
+                                file1['PC_MCSSstring'][i] = res2.smartsString
+                                file1['PC_MCSS_SMILES'][i] = Chem.MolToSmiles(Chem.MolFromSmarts(res2.smartsString))
         
                     #file1.at[i, 'PC_SMILESforMCSS'] = PubChem_file["SMILES"][0:5].tolist()
             except:
@@ -137,12 +194,12 @@ def metfrag_postproc(input_table, input_dir):
 
 # ### SIRIUS Result Post Processing
 
-# In[3]:
+# In[5]:
 
 
 def sirius_postProc2(input_table, input_dir):
     
-    
+    heavy_atoms = ['C', 'N', 'P', 'O', 'S']
     for m, row in input_table.iterrows():
         file1  = pd.read_csv(input_table['ResultFileNames'][m] + '/insilico/MS1DATAsirius.csv')
         file1  = pd.read_csv(input_table['ResultFileNames'][m] + '/insilico/MS1DATAsirius.csv')
@@ -158,7 +215,7 @@ def sirius_postProc2(input_table, input_dir):
                 for j in top_smiles:
                     for k, row in sl.iterrows():
                         SSms = [Chem.MolFromSmiles(j), Chem.MolFromSmiles(sl['SMILES'][k])]
-                        SSfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in SSms]
+                        SSfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in SSms]
                         SStn = DataStructs.FingerprintSimilarity(SSfps[0],SSfps[1])
                         if SStn >= 0.8:
                             file1['Top_can_SL'][i] = j
@@ -168,14 +225,17 @@ def sirius_postProc2(input_table, input_dir):
                     mols.append(sm)
                 if len(mols) > 1:
                     res = rdFMCS.FindMCS(mols)
-                    file1['MCSSstring'][i] = res.smartsString
-                    file1['MCSS_SMILES'][i] = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+                    sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+                    elem = [ele for ele in heavy_atoms if(ele in sm_res)]
+                    if elem and len(sm_res)>=3:
+                        file1['MCSSstring'][i] = res.smartsString
+                        file1['MCSS_SMILES'][i] = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
         file1.to_csv(input_table['ResultFileNames'][m] + '/insilico/SiriusResults.csv')
 
 
 # ### COMBINE IN SILICO -All files with SIRIUS results separate and with MetFragresults separate
 
-# In[4]:
+# In[6]:
 
 
 def combine_insilico(input_table, Source = "SIRIUS"):
@@ -220,7 +280,7 @@ def combine_insilico(input_table, Source = "SIRIUS"):
 
 # ### Classification using Canopus and ClassyFire
 
-# In[5]:
+# In[7]:
 
 
 def classification(frame):
@@ -314,26 +374,26 @@ def classification(frame):
 
 # ### Spectral DB Dereplication Results Post Processing
 
-# In[6]:
+# In[8]:
 
 
 def isNaN(string):
     return string != string
 
 
-# In[7]:
+# In[9]:
 
 
 #input_dir = '/Users/mahnoorzulfiqar/Standards_CodeSet/'
 
 
-# In[8]:
+# In[10]:
 
 
 #hmdb_sdf = '/Users/mahnoorzulfiqar/OneDriveUNI/S_CResults/structures.sdf'
 
 
-# In[9]:
+# In[11]:
 
 
 #dframe = PandasTools.LoadSDF(hmdb_sdf,
@@ -343,7 +403,7 @@ def isNaN(string):
                                 #includeFingerprints=False)
 
 
-# In[10]:
+# In[12]:
 
 
 #dframe.columns
@@ -355,7 +415,7 @@ def isNaN(string):
 
 
 
-# In[11]:
+# In[13]:
 
 
 #input_dir = os.getcwd() +"/"
@@ -363,7 +423,7 @@ def isNaN(string):
 
 # ### GNPS, MassBank and HMDB Results post processing
 
-# In[12]:
+# In[14]:
 
 
 def spec_postproc(input_dir, dframe):
@@ -494,7 +554,7 @@ def spec_postproc(input_dir, dframe):
     return(df)
 
 
-# In[13]:
+# In[15]:
 
 
 #spec_df = spec_postproc(input_dir, dframe)
@@ -502,7 +562,7 @@ def spec_postproc(input_dir, dframe):
 
 # ### Combine_all Spectral DBs
 
-# In[14]:
+# In[16]:
 
 
 def combine_specdb(df):
@@ -521,7 +581,7 @@ def combine_specdb(df):
     return(Merged_Result_df)
 
 
-# In[15]:
+# In[17]:
 
 
 #Merged_Result_df = combine_specdb(spec_df)
@@ -529,7 +589,7 @@ def combine_specdb(df):
 
 # ### Combine all files for spectral db dereplication
 
-# In[16]:
+# In[18]:
 
 
 def combine_allspec(comb_df):
@@ -549,7 +609,7 @@ def combine_allspec(comb_df):
     return(combined_csv)
 
 
-# In[17]:
+# In[19]:
 
 
 #combined = combine_allspec(Merged_Result_df)
@@ -557,7 +617,7 @@ def combine_allspec(comb_df):
 
 # ### Scoring Scheme for Spectral DB Dereplication
 
-# In[18]:
+# In[20]:
 
 
 def HMDB_Scoring(db, i):
@@ -567,7 +627,7 @@ def HMDB_Scoring(db, i):
         return False
 
 
-# In[19]:
+# In[21]:
 
 
 def GNPS_Scoring(db, i):
@@ -577,7 +637,7 @@ def GNPS_Scoring(db, i):
         return False
 
 
-# In[20]:
+# In[22]:
 
 
 def MB_Scoring(db, i):
@@ -593,7 +653,7 @@ def MB_Scoring(db, i):
 
 
 
-# In[21]:
+# In[23]:
 
 
 def scoring_spec(combined):
@@ -601,13 +661,13 @@ def scoring_spec(combined):
     for i, row in combined.iterrows():
         if HMDB_Scoring(combined, i) and GNPS_Scoring(combined, i) and MB_Scoring(combined, i) and not isNaN(combined['GNPSSMILES'][i]) and not isNaN(combined['MBSMILES'][i]) and not isNaN(combined['HMDBSMILES'][i]):
             HGms = [Chem.MolFromSmiles(combined['HMDBSMILES'][i]), Chem.MolFromSmiles(combined['GNPSSMILES'][i])]
-            HGfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in HGms]
+            HGfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in HGms]
             HGtn = DataStructs.FingerprintSimilarity(HGfps[0],HGfps[1])
             GMms = [Chem.MolFromSmiles(combined['GNPSSMILES'][i]), Chem.MolFromSmiles(combined['MBSMILES'][i])]
-            GMfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in GMms]
+            GMfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in GMms]
             GMtn = DataStructs.FingerprintSimilarity(GMfps[0],GMfps[1])
             HMms = [Chem.MolFromSmiles(combined['HMDBSMILES'][i]), Chem.MolFromSmiles(combined['MBSMILES'][i])]
-            HMfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in HMms]
+            HMfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in HMms]
             HMtn = DataStructs.FingerprintSimilarity(HMfps[0],HMfps[1])
             
             combined.loc[i, 'annotation'] = 'HMDB, GNPS, MassBank'
@@ -618,7 +678,7 @@ def scoring_spec(combined):
         
         if HMDB_Scoring(combined, i) and GNPS_Scoring(combined, i) and not MB_Scoring(combined, i) and not isNaN(combined['GNPSSMILES'][i]) and not isNaN(combined['HMDBSMILES'][i]):
             HGms = [Chem.MolFromSmiles(combined['HMDBSMILES'][i]), Chem.MolFromSmiles(combined['GNPSSMILES'][i])]
-            HGfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in HGms]
+            HGfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in HGms]
             HGtn = DataStructs.FingerprintSimilarity(HGfps[0],HGfps[1])
         
             combined.loc[i, 'annotation'] = 'HMDB, GNPS'
@@ -629,7 +689,7 @@ def scoring_spec(combined):
         
         if not HMDB_Scoring(combined, i) and GNPS_Scoring(combined, i) and MB_Scoring(combined, i) and not isNaN(combined['MBSMILES'][i]) and not isNaN(combined['GNPSSMILES'][i]):
             GMms = [Chem.MolFromSmiles(combined['GNPSSMILES'][i]), Chem.MolFromSmiles(combined['MBSMILES'][i])]
-            GMfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in GMms]
+            GMfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in GMms]
             GMtn = DataStructs.FingerprintSimilarity(GMfps[0],GMfps[1])
         
             combined.loc[i, 'annotation'] = 'GNPS, MassBank'
@@ -640,7 +700,7 @@ def scoring_spec(combined):
         
         if HMDB_Scoring(combined, i) and not GNPS_Scoring(combined, i) and MB_Scoring(combined, i) and not isNaN(combined['MBSMILES'][i]) and not isNaN(combined['HMDBSMILES'][i]):
             HMms = [Chem.MolFromSmiles(combined['HMDBSMILES'][i]), Chem.MolFromSmiles(combined['MBSMILES'][i])]
-            HMfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in HMms]
+            HMfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in HMms]
             HMtn = DataStructs.FingerprintSimilarity(HMfps[0],HMfps[1])
         
             combined.loc[i, 'annotation'] = 'HMDB, MassBank'
@@ -689,7 +749,7 @@ def scoring_spec(combined):
 
 
 
-# In[22]:
+# In[24]:
 
 
 #SpectralDB_Results = scoring_spec(combined)
@@ -703,13 +763,13 @@ def scoring_spec(combined):
 
 # ### Suspect List Screening
 
-# In[24]:
+# In[25]:
 
 
 #Suspect_list = pd.read_csv('/Users/mahnoorzulfiqar/OneDriveUNI/SuspectList/Use_This_CURATED_SUSPECT_LIST.csv')
 
 
-# In[25]:
+# In[26]:
 
 
 def suspectListScreening(Suspect_list, SpectralDB_Results):
@@ -725,7 +785,7 @@ def suspectListScreening(Suspect_list, SpectralDB_Results):
         if not isNaN(SpectralDB_Results['HMDBSMILES'][i]) and SpectralDB_Results['HMDBSMILES'][i] is not " ":
             for j, row in Suspect_list.iterrows():
                 LHms2 = [Chem.MolFromSmiles(SpectralDB_Results['HMDBSMILES'][i]), Chem.MolFromSmiles(Suspect_list['SMILES'][j])]
-                LHfps2 = [AllChem.GetMorganFingerprintAsBitVect(x2,2, nBits=1024) for x2 in LHms2]
+                LHfps2 = [AllChem.GetMorganFingerprintAsBitVect(x2,2, nBits=2048) for x2 in LHms2]
                 LHtn2 = DataStructs.FingerprintSimilarity(LHfps2[0],LHfps2[1])
                 if LHtn2 == 1:
                     SpectralDB_Results.loc[i, 'HLsmiles'] = Suspect_list['SMILES'][j]
@@ -733,7 +793,7 @@ def suspectListScreening(Suspect_list, SpectralDB_Results):
         if not isNaN(SpectralDB_Results['GNPSSMILES'][i]) and SpectralDB_Results['GNPSSMILES'][i] is not " ":
             for k, row in Suspect_list.iterrows():
                 LGms2 = [Chem.MolFromSmiles(SpectralDB_Results['GNPSSMILES'][i]), Chem.MolFromSmiles(Suspect_list['SMILES'][k])]
-                LGfps2 = [AllChem.GetMorganFingerprintAsBitVect(x2,2, nBits=1024) for x2 in LGms2]
+                LGfps2 = [AllChem.GetMorganFingerprintAsBitVect(x2,2, nBits=2048) for x2 in LGms2]
                 LGtn2 = DataStructs.FingerprintSimilarity(LGfps2[0],LGfps2[1])
                 if LGtn2 == 1:
                     SpectralDB_Results.loc[i, 'GLsmiles'] = Suspect_list['SMILES'][k]
@@ -741,7 +801,7 @@ def suspectListScreening(Suspect_list, SpectralDB_Results):
         if not isNaN(SpectralDB_Results['MBSMILES'][i]) and SpectralDB_Results['MBSMILES'][i] is not " ":
             for l, row in Suspect_list.iterrows():
                 LMms2 = [Chem.MolFromSmiles(SpectralDB_Results['MBSMILES'][i]), Chem.MolFromSmiles(Suspect_list['SMILES'][l])]
-                LMfps2 = [AllChem.GetMorganFingerprintAsBitVect(x2,2, nBits=1024) for x2 in LMms2]
+                LMfps2 = [AllChem.GetMorganFingerprintAsBitVect(x2,2, nBits=2048) for x2 in LMms2]
                 LMtn2 = DataStructs.FingerprintSimilarity(LMfps2[0],LMfps2[1])
                 if LMtn2 == 1:
                     SpectralDB_Results.loc[i, 'MLsmiles'] = Suspect_list['SMILES'][l]
@@ -757,7 +817,7 @@ def suspectListScreening(Suspect_list, SpectralDB_Results):
     return(SpectralDB_Results)
 
 
-# In[26]:
+# In[27]:
 
 
 #suspectListScreening(Suspect_list, SpectralDB_Results)
