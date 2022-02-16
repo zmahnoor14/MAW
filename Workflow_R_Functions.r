@@ -9,9 +9,10 @@
 # db = either one of the spectral libraries which can be gnps, hmdb, mbank or all
 
 download_specDB <- function(input_dir, db, error = TRUE){
+    # only input available as of now
     databases <- 'gnps, hmdb, mbank, all'
     
-    
+    # creat a summary file, open and store timings of download and version if possible
     summaryFile <- paste(input_dir, "summaryFile.txt", sep = "")
     file.create(summaryFile, recursive = TRUE)
     file.conn <- file(summaryFile)
@@ -46,7 +47,7 @@ download_specDB <- function(input_dir, db, error = TRUE){
         # unzip
         system(paste("jar xvf", input_dir, paste(input_dir, "hmdb_all_spectra.zip", sep = ""), sep = " "))
         # load the spectra into MsBackendHMDB
-        hmdb <- Spectra(paste(input_dir, "hmdb_all_spectra.xml", sep = ''), source = MsBackendHmdb())
+        hmdb <- Spectra(paste(input_dir, "hmdb_all_spectra/", sep = ''), source = MsBackendHmdb())
         save(hmdb, file = paste(input_dir,"hmdb.rda", sep = ""))
         
         # delete the database in its format to free up space
@@ -175,6 +176,7 @@ ms2_rfilename<- function(input_dir){
     mzml_file <- paste(input_dir, list_ms2_files, sep = "")
     
     #store the result file names to return to this function as output
+    mzml_files <- c()
     ResultFileNames <- c()
     File_id <- c()
     nx <- 0
@@ -182,26 +184,29 @@ ms2_rfilename<- function(input_dir){
     for (i in 1:length(mzml_file)){
         nx <- nx+1
         # remove .mzML to extract just the names
-        mzml_files <- str_replace(mzml_file[i], input_dir, "./")
-        name_mzmls <- str_remove(as.character(mzml_file[i]), ".mzML")
-        name_mzml <- str_replace(name_mzmls, input_dir, "./")
+        mzml_filex <- str_replace(mzml_file[i], input_dir, "./")
+        name_mzmls <- str_remove(as.character(mzml_filex), ".mzML")
+        #name_mzml <- str_replace(name_mzmls, input_dir, "./")
         #' for each file a subdirectory is created to store all results in that, add working directory
-        if (!file.exists(name_mzml)){
-            dir.create(name_mzml) ##create folder
+        if (!file.exists(name_mzmls)){
+            dir.create(name_mzmls) ##create folder
         }
-        ResultFileNames<- c(ResultFileNames, name_mzml)
+        ResultFileNames<- c(ResultFileNames, name_mzmls)
+        mzml_files <- c(mzml_files, mzml_filex)
         File_id <- c(File_id, paste("file_", nx, sep = ""))
     }
     input_table <- cbind(mzml_files, ResultFileNames, File_id)
     
     write.csv(input_table, paste(input_dir, "input_table.csv"))
-    return(input_table)
+    return(data.frame(input_table))
 }
 
 # usage:
 ## input directory ##
 #input_dir <- paste(getwd(), "/", sep = '')
 #ms2_rfilename(input_dir)
+
+
 
 ##-----------------------------------------------------------------
 ## Read mzML files and extract precursor m/z(s)
@@ -1424,7 +1429,7 @@ ms2_peaks <- function(x, result_dir){
             }
         }
     }
-    first_list <- data.frame(cbind(id_X, premz, rtmed, int ,col_eng, pol, ms2Peaks))
+    first_list <- data.frame(cbind(id_X, premz, rtmed, rtmean, int ,col_eng, pol, ms2Peaks))
     return(first_list)
 }
 # Usage
@@ -1638,7 +1643,7 @@ cam_func <- function(path, f, mode = "pos"){
             peaklist[i,'istops'] = y[1]
         }
         name <- str_remove(f, ".mzML")
-        write.csv(peaklist, file = paste(input_dir, "posCAMERAResults_", name,".csv", sep = ""))
+        write.csv(peaklist, file = paste(input_dir, "/QC/posCAMERAResults_", name,".csv", sep = ""))
     }
     else if(mode == "neg"){
         xs <- xcmsSet(file = fl,profmethod = "bin", 
@@ -1667,7 +1672,7 @@ cam_func <- function(path, f, mode = "pos"){
             peaklist[i,'istops'] = y[1]
         }
         name <- str_remove(f, ".mzML")
-        write.csv(peaklist, file = paste(input_dir, "posCAMERAResults_", name,".csv", sep = ""))
+        write.csv(peaklist, file = paste(input_dir, "QC/negCAMERAResults_", name,".csv", sep = ""))
     }
     detach("package:CAMERA", unload=TRUE)
     
@@ -1705,11 +1710,12 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
             # indices with same pre m/z and same rt
             df_y <- y[store_c, ]
             df_y <- as.data.frame(df_y)
-            #print(df_y)
+
             #if there was only one index
             if (nrow(df_y) == 1){
+                
                 # if there was no isotope annotation for that one index
-                if (is.na(df_y[1, "isotopes"])){
+                if (is.na(df_y[1, "istops"])){
                 
                     mz <- df_y[1, "mz"] # save mz
                     int <- df_y[1, "into"] # save intensity
@@ -1719,6 +1725,7 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
                     name_file1 <- str_replace(name_file, input_dir, "./")
                     ms1Peaks <- c(ms1Peaks, name_file1) # add the path of the peak list to a list
                 }
+                
                 # if there was an isotope annotation
                 else{
                 
@@ -1977,13 +1984,49 @@ sirius_param <- function(x, result_dir, SL = TRUE){
 # sirius_param_files <- sirius_param(ms1p, result_dir = './MZML/DS_201124_SC_full_PRM_neg_09')
 
 
-
+run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, SL_path, candidates = 30){
+    for (b in 1:nrow(files)){
+        if (QC){
+            if (is.na(files[b, "isotopes"])){
+                system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                             "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates,", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                             sep = " "))
+                if(SL){
+                    system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
+                             "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
+                             sep = " "))
+                }
+                
+            }
+            else if(files[b, "isotopes"] == "present"){
+                system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                             "formula --profile orbitrap --candidates", candidates, "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure --database ALL canopus",
+                             sep = " "))
+                if(SL){
+                    system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
+                             "formula --profile orbitrap --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
+                             sep = " "))
+                }
+            }
+        }
+        else{
+            system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                             "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                             sep = " "))
+            if(SL){
+                system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
+                            "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
+                            sep = " "))
+            }
+        }
+    }
+}
 
 
 
 sirius_postprocess <- function(x, SL = TRUE){
-    feat_scale <- function(x) {
-    (x - min(x)) / (max(x) - min(x))
+    feat_scale <- function(p) {
+    (p - min(p)) / (max(p) - min(p))
     }
     #the result directory name for each file
     dir_name <- paste(x, "/insilico/SIRIUS", sep = '')
@@ -2385,7 +2428,7 @@ sirius_postprocess <- function(x, SL = TRUE){
 #sl_mtfrag 
 #SL = TRUE if suspect list present
 
-metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE){
+metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE, ppm_max = 5, ppm_max_ms2= 15){
 
     if (!file.exists(paste(result_dir, "/insilico/MetFrag", sep = ""))){
         dir.create(paste(result_dir, "/insilico/MetFrag", sep = ""), recursive = TRUE) ##create folder
@@ -2431,9 +2474,9 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
                 
                 writeLines(paste("MetFragDatabaseType = ", k),con = file.conn)
             
-                writeLines("DatabaseSearchRelativeMassDeviation = 5",con=file.conn)
+                writeLines(paste("DatabaseSearchRelativeMassDeviation = ", ppm_max, sep = ''),con=file.conn)
                 writeLines("FragmentPeakMatchAbsoluteMassDeviation = 0.001",con=file.conn)
-                writeLines("FragmentPeakMatchRelativeMassDeviation = 15",con=file.conn)
+                writeLines(paste("FragmentPeakMatchRelativeMassDeviation = ", ppm_max_ms2, sep = ''),con=file.conn)
                 
                 if (SL){
                     writeLines(paste("ScoreSuspectLists = ", sl_mtfrag),con=file.conn)
@@ -2468,10 +2511,6 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
 
 # Usage:
 # metfrag_param(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE)
-
-
-
-save.image(file = "R_Functions.RData")
 
 
 
