@@ -1814,7 +1814,7 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
     else{
         ms1Peaks <- c(ms1Peaks, 'no ms1 peaks in QC')
         second_list <- data.frame(cbind(x, ms1Peaks))
-        write.csv(second_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA.csv', sep = ""), "./"), sep ="")
+        write.csv(second_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA.csv', sep = ""), "./"), sep =""))
         return(second_list)
     }
     
@@ -2467,7 +2467,7 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
     dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/MetFrag", sep =""), "./"), sep = "")
     
     if (!file.exists(dir_name)){
-        dir.create(dir_name, sep = ""), recursive = TRUE) ##create folder
+        dir.create(dir_name, recursive = TRUE) ##create folder
     }
     
     db <- c("PubChem", "KEGG")
