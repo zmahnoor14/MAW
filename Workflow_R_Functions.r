@@ -197,7 +197,7 @@ ms2_rfilename<- function(input_dir){
     }
     input_table <- cbind(mzml_files, ResultFileNames, File_id)
     
-    write.csv(input_table, paste(input_dir, "input_table.csv"))
+    write.csv(input_table, paste(input_dir, "input_table.csv", sep = ""))
     return(data.frame(input_table))
 }
 
@@ -412,7 +412,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
     if (db == "all" || db =="gnps"){
         nx <- 0
         nx <- nx+1
-        
+       
         #### input spec with pre_mz
         sps <- spec2_Processing(x, spec = "sps_all", ppmx)
         
@@ -420,9 +420,11 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         gnps_with_mz <- spec2_Processing(x, spec = "gnps", ppmx)
         
         
+        
         if (length(sps) > 1 && length(gnps_with_mz) >1){
             #' Compare experimental spectra against GNPS
             res <- compareSpectra(sps, gnps_with_mz, ppm = 15, FUN = MsCoreUtils::gnps, MAPFUN = joinPeaksGnps)
+            
             #' obtain GNPS spectra that matches the most with m/z MS2 spectra
             idx <- which(res == max(res), arr.ind = TRUE)
             gnps_best_match <- gnps_with_mz[idx[2]]
@@ -432,7 +434,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 
                 #print("more spectra and more gnps spectra")
                 
-                dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
+                dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/GNPS/", sep = ""), "./"), sep ="")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
                 }
@@ -489,6 +491,9 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             }
         }
         else if (length(sps) == 1 && length(gnps_with_mz) >1){
+            
+            #' Compare experimental spectra against GNPS
+            res <- compareSpectra(sps, gnps_with_mz, ppm = 15, FUN = MsCoreUtils::gnps, MAPFUN = joinPeaksGnps)
             #' obtain GNPS spectra that matches the most with m/z MS2 spectra
             
             gx <- which(res == max(res))
@@ -558,6 +563,9 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         
         }
         else if (length(sps) > 1 && length(gnps_with_mz) == 1){
+            
+            #' Compare experimental spectra against GNPS
+            res <- compareSpectra(sps, gnps_with_mz, ppm = 15, FUN = MsCoreUtils::gnps, MAPFUN = joinPeaksGnps)
             #' obtain MB spectra that matches the most with m/z MS2 spectra
             gx <- which(res == max(res))
             gx <- gx[1]
@@ -622,6 +630,8 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             }
         }
         else if (length(sps) == 1 && length(gnps_with_mz) == 1){
+            #' Compare experimental spectra against GNPS
+            res <- compareSpectra(sps, gnps_with_mz, ppm = 15, FUN = MsCoreUtils::gnps, MAPFUN = joinPeaksGnps)
             gnps_best_match <- gnps_with_mz
             df_peaklists <- peakdf(gnps_best_match, sps, ppmx)
             if (!(is.null(df_peaklists))){
@@ -681,7 +691,6 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 
         }
         else{
-            print("NO Results")
             id_X <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
                       "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                       "ID", as.character(nx), sep = '')
@@ -708,7 +717,8 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                         GNPSintScore, GQMatchingPeaks, GNPSTotalPeaks, gQueryTotalPeaks, 
                         GNPSSMILES, GNPSspectrumID, GNPScompound_name, GNPSmirrorSpec, Source)
         
-        write.csv(df_gnps, paste(result_dir, "/spectral_dereplication/gnps.csv", sep = ""))
+        #write.csv(df_gnps, str_remove(paste(input_dir, result_dir, "/spectral_dereplication/gnps.csv", sep = ""), "./"))
+        write.csv(df_gnps, paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/gnps.csv", sep = ""), "./"), sep = ""))
         #return(df_gnps)
         
     }
@@ -727,9 +737,12 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         #### HMDB spec with pre_mz
         hmdb_with_mz <- spec2_Processing(x, spec = "hmdb", ppmx = 15)
         
+        
+        
         if (length(sps) > 1 && length(hmdb_with_mz) > 1){
             #' Compare experimental spectra against HMDB
             res <- compareSpectra(sps, hmdb_with_mz, ppm = 15)
+            
             #' obtain HMDB spectra that matches the most with m/z MS2 spectra
             idx <- which(res == max(res), arr.ind = TRUE)
             hmdb_best_match <- hmdb_with_mz[idx[2]]
@@ -737,7 +750,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             
             if (!(is.null(df_peaklists))){
 
-                dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
+                dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/HMDB/", sep = ""), "./"), sep ="")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
                 }
@@ -789,6 +802,8 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             }
         }
         else if (length(sps) == 1 && length(hmdb_with_mz) >1){
+            #' Compare experimental spectra against HMDB
+            res <- compareSpectra(sps, hmdb_with_mz, ppm = 15)
             
             #' obtain HMDB spectra that matches the most with m/z MS2 spectra
             gx <- which(res == max(res))
@@ -853,7 +868,10 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         
         }
         else if (length(sps) > 1 && length(hmdb_with_mz) == 1){
+            #' Compare experimental spectra against HMDB
+            res <- compareSpectra(sps, hmdb_with_mz, ppm = 15)
             #' obtain hmdb spectra that matches the most with m/z MS2 spectra
+            
             gx <- which(res == max(res))
             gx <- gx[1]
             sps <- sps[gx]
@@ -915,6 +933,8 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             }
         }
         else if (length(sps) == 1 && length(hmdb_with_mz) == 1){
+            #' Compare experimental spectra against HMDB
+            res <- compareSpectra(sps, hmdb_with_mz, ppm = 15)
             hmdb_best_match <- hmdb_with_mz
             df_peaklists <- peakdf(hmdb_best_match, sps, ppmx)
             if (!(is.null(df_peaklists))){
@@ -996,8 +1016,8 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                          HMDBintScore, HQMatchingPeaks, HMDBTotalPeaks, hQueryTotalPeaks, 
                          HMDBcompoundID, HMDBmirrorSpec, Source)
         
-        write.csv(df_hmdb, paste(result_dir, "/spectral_dereplication/hmdb.csv", sep = ""))
-
+        #write.csv(df_hmdb, str_remove(paste(result_dir, "/spectral_dereplication/hmdb.csv", sep = ""), "./"))
+        write.csv(df_hmdb, paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/hmdb.csv", sep = ""), "./"), sep = ""))
         #return(df_hmdb)
     }
     
@@ -1018,15 +1038,17 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         
         
         if (length(sps) > 1 && length(mbank_with_mz) >1){
-            #' Compare experimental spectra against GNPS
+            
+            #' Compare experimental spectra against MassBank
             res <- compareSpectra(sps, mbank_with_mz, ppm = 15)
+            
             #' obtain GNPS spectra that matches the most with m/z MS2 spectra
             idx <- which(res == max(res), arr.ind = TRUE)
             mbank_best_match <- mbank_with_mz[idx[2]]
             df_peaklists <- peakdf(mbank_best_match, sps[idx[1]], ppmx)
             
             if (!(is.null(df_peaklists))){
-                dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
+                dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/MassBank/", sep = ""), "./"), sep ="")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
                 }
@@ -1085,6 +1107,9 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             }
         }
         else if (length(sps) == 1 && length(mbank_with_mz) >1){
+            
+            #' Compare experimental spectra against MassBank
+            res <- compareSpectra(sps, mbank_with_mz, ppm = 15)
             #' obtain MassBank spectra that matches the most with m/z MS2 spectra
             gx <- which(res == max(res))
             gx <- gx[1]
@@ -1156,6 +1181,9 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         
         }
         else if (length(sps) > 1 && length(mbank_with_mz) == 1){
+            
+            #' Compare experimental spectra against MassBank
+            res <- compareSpectra(sps, mbank_with_mz, ppm = 15)
             #' obtain MB spectra that matches the most with m/z MS2 spectra
             gx <- which(res == max(res))
             gx <- gx[1]
@@ -1224,6 +1252,9 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             }
         }
         else if (length(sps) == 1 && length(mbank_with_mz) == 1){
+            
+            #' Compare experimental spectra against MassBank
+            res <- compareSpectra(sps, mbank_with_mz, ppm = 15)
             mbank_best_match <- mbank_with_mz
             df_peaklists <- peakdf(mbank_best_match, sps, ppmx)
             if (!(is.null(df_peaklists))){
@@ -1314,7 +1345,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         df_mbank <- cbind(id_X, premz, rtmin, rtmax, rtmed, rtmean, MBmax_similarity, MBmzScore, MBintScore, MQMatchingPeaks, 
                          MBTotalPeaks, mQueryTotalPeaks, MBformula, MBinchiKEY, MBspectrumID, MBcompound_name, MBmirrorSpec, 
                          Source)
-        write.csv(df_mbank, paste(result_dir, "/spectral_dereplication/mbank.csv", sep = ""))
+        write.csv(df_mbank, paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/mbank.csv", sep = ""), "./"), sep = ""))
         
         #return(df_mbank)
     }
@@ -1406,8 +1437,9 @@ ms2_peaks <- function(x, result_dir){
         names <- c()
         
         # create a new directory to store all the peak list txt files
-        if (!file.exists(paste(result_dir, "/insilico/peakfiles_ms2", sep =""))){
-            dir.create(paste(result_dir, "/insilico/peakfiles_ms2", sep =""), recursive = TRUE)
+        dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/peakfiles_ms2", sep =""), "./"), sep = "")
+        if (!file.exists(dir_name)){
+            dir.create(dir_name, recursive = TRUE)
         }
         
         for (j in 1:length(sps)){
@@ -1422,7 +1454,7 @@ ms2_peaks <- function(x, result_dir){
                 indeX <- indeX+1
                 Y <- as.character(indeX)# numbering for naming peak lists
                 #create separate folder for peaklists files
-                fileN <- paste(result_dir, '/insilico/peakfiles_ms2/Peaks_0', Y, '.txt', sep = '')
+                fileN <- paste(dir_name, '/Peaks_0', Y, '.txt', sep = '')
                 write.table(func, fileN, row.names = FALSE, col.names = FALSE)
                 fileN1 <- str_replace(fileN, input_dir, "./")
                 ms2Peaks <- c(ms2Peaks, fileN1)
@@ -1688,9 +1720,10 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
     
     if (QCfile){
         
+        dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/peakfiles_ms1", sep =""), "./"), sep = "")
         # create a new directory to store all the peak list txt files
-        if (!file.exists(paste(result_dir, "/insilico/peakfiles_ms1", sep =""))){
-            dir.create(paste(result_dir, "/insilico/peakfiles_ms1", sep =""), recursive = TRUE)
+        if (!file.exists(dir_name)){
+            dir.create(dir_name, recursive = TRUE)
         }
         
         # read the CAMERA results
@@ -1720,7 +1753,7 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
                     mz <- df_y[1, "mz"] # save mz
                     int <- df_y[1, "into"] # save intensity
                     no_isotop <- cbind(mz, int) # save as table
-                    name_file <- paste(result_dir, "/insilico/peakfiles_ms1/ms1_peaks_", x[i, 'premz'], "_no_isotopes.txt", sep = "") # save name of the peaklist
+                    name_file <- paste(dir_name, "/ms1_peaks_", x[i, 'premz'], "_no_isotopes.txt", sep = "") # save name of the peaklist
                     write.table(no_isotop, name_file, row.names = FALSE, col.names = FALSE) # save peak list
                     name_file1 <- str_replace(name_file, input_dir, "./")
                     ms1Peaks <- c(ms1Peaks, name_file1) # add the path of the peak list to a list
@@ -1734,7 +1767,7 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
                     mz <- df_x[, "mz"] # save mz
                     int <- df_x[, "into"] # save intensity
                     no_isotop <- cbind(mz, int) # save as table
-                    name_file <- paste(result_dir, "/insilico/peakfiles_ms1/ms1_peaksISOTOPE_", x[i, 'premz'], "_isotopeNum_", df_x[1, "istops"], ".txt", sep = "")
+                    name_file <- paste(dir_name, "/ms1_peaksISOTOPE_", x[i, 'premz'], "_isotopeNum_", df_x[1, "istops"], ".txt", sep = "")
                     write.table(no_isotop, name_file, row.names = FALSE, col.names = FALSE)
                     name_file1 <- str_replace(name_file, input_dir, "./")
                     ms1Peaks <- c(ms1Peaks, name_file1)
@@ -1749,7 +1782,7 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
                     mz <- df_z[1, "mz"] # save mz
                     int <- df_z[1, "into"] # save intensity
                     no_isotop <- cbind(mz, int) # save as table
-                    name_file <- paste(result_dir, "/insilico/peakfiles_ms1/ms1_peaks_", x[i, 'premz'], "_no_isotopes.txt", sep = "") # save name of the peaklist
+                    name_file <- paste(dir_name, "/ms1_peaks_", x[i, 'premz'], "_no_isotopes.txt", sep = "") # save name of the peaklist
                     write.table(no_isotop, name_file, row.names = FALSE, col.names = FALSE) # save peak list
                     name_file1 <- str_replace(name_file, input_dir, "./")
                     ms1Peaks <- c(ms1Peaks, name_file1) # add the path of the peak list to a list
@@ -1764,7 +1797,7 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
                     mz <- df_z1[, "mz"] # save mz
                     int <- df_z1[, "into"] # save intensity
                     no_isotop <- cbind(mz, int) # save as table
-                    name_file <- paste(result_dir, "/insilico/peakfiles_ms1/ms1_peaksISOTOPE_", x[i, 'premz'], "_isotopeNum_", df_z1[1, 'istops'],".txt", sep = "") # save name of the peaklist
+                    name_file <- paste(dir_name, "/ms1_peaksISOTOPE_", x[i, 'premz'], "_isotopeNum_", df_z1[1, 'istops'],".txt", sep = "") # save name of the peaklist
                     write.table(no_isotop, name_file, row.names = FALSE, col.names = FALSE) # save peak list
                     name_file1 <- str_replace(name_file, input_dir, "./")
                     ms1Peaks <- c(ms1Peaks, name_file1) # add the path of the peak list to a list
@@ -1781,7 +1814,7 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
     else{
         ms1Peaks <- c(ms1Peaks, 'no ms1 peaks in QC')
         second_list <- data.frame(cbind(x, ms1Peaks))
-        write.csv(second_list, file = paste(result_dir,'/insilico/MS1DATA.csv', sep = ""))
+        write.csv(second_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA.csv', sep = ""), "./"), sep ="")
         return(second_list)
     }
     
@@ -1800,8 +1833,9 @@ ms1_peaks <- function(x, y, result_dir, QCfile = TRUE){
 
 sirius_param <- function(x, result_dir, SL = TRUE){
     
-    if (!file.exists(paste(result_dir, "/insilico/SIRIUS", sep = ""))){
-        dir.create(paste(result_dir, "/insilico/SIRIUS", sep = ""), recursive = TRUE) ##create folder
+    dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/SIRIUS", sep =""), "./"), sep = "")
+    if (!file.exists(dir_name)){
+        dir.create(dir_name, recursive = TRUE) ##create folder
     }
     isotopes <- c() #NA or isotope group number
     sirius_param_file <- c() #input for SIRIUS
@@ -1824,7 +1858,7 @@ sirius_param <- function(x, result_dir, SL = TRUE){
         if (x[i, "ms1Peaks"] == 'no ms1 peaks in QC'){
 
             #INPUT FILE NAME
-            fileR <- paste(paste(result_dir, "/insilico/SIRIUS/", sep = ""), para, "_NA_iso_NA_MS1p_", x[i, "premz"], "_SIRIUS_param.ms", sep = "")
+            fileR <- paste(dir_name, "/" ,para, "_NA_iso_NA_MS1p_", x[i, "premz"], "_SIRIUS_param.ms", sep = "")
             
             sirius_param_file <- c(sirius_param_file, fileR)
             #ISOTOPE Information
@@ -1872,7 +1906,7 @@ sirius_param <- function(x, result_dir, SL = TRUE){
         else if (grepl("_no_isotopes.txt", x[i, "ms1Peaks"], fixed=TRUE)){
 
             #INPUT FILE NAME
-            fileR <- paste(paste(result_dir, "/insilico/SIRIUS/", sep = ""), para, "_NA_iso_MS1p_", x[i, "premz"], "_SIRIUS_param.ms", sep = "")
+            fileR <- paste(dir_name, "/", para, "_NA_iso_MS1p_", x[i, "premz"], "_SIRIUS_param.ms", sep = "")
             sirius_param_file <- c(sirius_param_file, fileR)
             #ISOTOPE Information
             isotopes <- c(isotopes, NA)
@@ -1923,7 +1957,7 @@ sirius_param <- function(x, result_dir, SL = TRUE){
         else if (grepl("_isotopeNum_", x[i, "ms1Peaks"], fixed=TRUE)){
 
             #INPUT FILE NAME
-            fileR <- paste(paste(result_dir, "/insilico/SIRIUS/", sep = ""), para, "_iso_MS1p_", as.character(x[i, "premz"]), "_SIRIUS_param.ms", sep = "")
+            fileR <- paste(dir_name, "/", para, "_iso_MS1p_", as.character(x[i, "premz"]), "_SIRIUS_param.ms", sep = "")
             sirius_param_file <- c(sirius_param_file, fileR)
             #ISOTOPE Information
             isotopes <- c(isotopes, "present")
@@ -2429,9 +2463,11 @@ sirius_postprocess <- function(x, SL = TRUE){
 #SL = TRUE if suspect list present
 
 metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE, ppm_max = 5, ppm_max_ms2= 15){
-
-    if (!file.exists(paste(result_dir, "/insilico/MetFrag", sep = ""))){
-        dir.create(paste(result_dir, "/insilico/MetFrag", sep = ""), recursive = TRUE) ##create folder
+    
+    dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/MetFrag", sep =""), "./"), sep = "")
+    
+    if (!file.exists(dir_name)){
+        dir.create(dir_name, sep = ""), recursive = TRUE) ##create folder
     }
     
     db <- c("PubChem", "KEGG")
@@ -2447,7 +2483,7 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
             for (k in db){
                 par <- par+1
                 para <- as.character(par)
-                fileR <- paste(result_dir, "/insilico/MetFrag/", para, "_id_", x[j, 'id_X'], "_mz_", x[j, 'premz'], "_rt_", x[j, 'rtmed'], "_db_", k, ".txt", sep = '')
+                fileR <- paste(dir_name, "/", para, "_id_", x[j, 'id_X'], "_mz_", x[j, 'premz'], "_rt_", x[j, 'rtmed'], "_db_", k, ".txt", sep = '')
                 metfrag_param_file <- c(metfrag_param_file, fileR)
 
                 file.create(fileR, recursive = TRUE)
@@ -2493,7 +2529,8 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
                 writeLines("MetFragCandidateWriter = CSV",con=file.conn)
             
                 writeLines(paste("SampleName = ", para, "_id_", x[j, 'id_X'], "_mz_", x[j, 'premz'], "_rt_", x[j, 'rtmed'], "_db_", k, sep = ''),con=file.conn)
-                writeLines(paste("ResultsPath = ", result_dir, "/insilico/MetFrag/", sep = ''),con=file.conn)
+                resultspath <- str_replace(result_dir, "./", input_dir)
+                writeLines(paste("ResultsPath = ", resultspath, "/insilico/MetFrag/", sep = ''),con=file.conn)
             
                 writeLines("MetFragPreProcessingCandidateFilter = UnconnectedCompoundFilter",con=file.conn)
                 writeLines("MetFragPostProcessingCandidateFilter = InChIKeyFilter",con=file.conn)
