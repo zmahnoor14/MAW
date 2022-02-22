@@ -42,7 +42,12 @@ Install latest SIRIUS version with <https://bio.informatik.uni-jena.de/software/
   source /etc/environment
   ```
 2. Installation with MAC
-  To use this command line, add the following path to either .bash_profile or .zprofile. You can find these files easily using FileZilla <>. open your user name folder. Open your .bash_profile, add this to the $PATH variable
+  To use this command line, add the following path to either .bash_profile or .zprofile. You can find these files easily using FileZilla <https://filezilla-project.org/>. open your user name folder. Open your .bash_profile, add this to the $PATH variable.
+  ```
+  PATH="/usr/s_cost/sirius.app/Contents/MacOS/:${PATH}"
+  export PATH
+  ```
+The path maybe different so check your sirius installation folder to get the correct path name.
 
 ### Input files and Directories
 
