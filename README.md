@@ -4,7 +4,26 @@ This repository hosts Metabolome Annotation Workflow from LCMS-2 spectra in mzML
 
 ## Usage of R-Workflow
 ### Installation
+Install latest R version (>=R 4.1). 
+Create a conda env and install following libraries. Note: R 4.1 can also be installed in the same conda env. 
+```
+conda update conda
+conda create --name myenv python=3.10.0 R=4.1.2
+conda activate myenv
+conda install -c bioconda bioconductor-camera
+conda install -c bioconda bioconductor-spectra
+conda install -c bioconda bioconductor-msbackendmgf
+conda install -c bioconda bioconductor-mscoreutils
+conda install -c r r-readr
+conda install -c r r-dplyr
+conda install -c r r-stringr
+conda install -c r r-xml2
+conda install -c r r-remotes
+R
+> remotes::install_github("rformassspectrometry/MsBackendHmdb")
+> remotes::install_github("rformassspectrometry/MsBackendMsp")
 
+```
 
 ### Input files and Directories
 
