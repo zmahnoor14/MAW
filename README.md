@@ -3,7 +3,7 @@
 This repository hosts Metabolome Annotation Workflow from LCMS-2 spectra in mzML format. The workflow has been developed using LCMS-2 dataset from a marine diatom _Skeletonema costatum_.
 
 ## Usage of R-Workflow
-### Installation
+### Installations via Conda
 Create a conda env and install following libraries. Note: R 4.1 can also be installed in the same conda env. 
 ```
 conda update conda
@@ -30,6 +30,8 @@ conda activate myenv
 echo $CONDA_PREFIX
 # you will receive a path, where you can keep the MsBackendMsp folder
 ```
+### Installations
+
 ### Input files and Directories
 
 An input directory (input_dir) should have the following files for the Workflow to run.
