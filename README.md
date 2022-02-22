@@ -70,3 +70,4 @@ merge_qc(path = paste(input_dir, "QC", sep =""))
 cam_func(path = "QC/", f = "01pos.mzML", mode = "pos")
 cam_func(path = "QC/", f = "02neg.mzML", mode = "neg")
 ```
+7. (optional, follow if followed 6.)
