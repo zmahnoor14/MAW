@@ -34,4 +34,8 @@ library(stringr)
 library(xml2)
 ```
 
+2. Define input directory. Make sure that you have input LCMS-2 spectra files in .mzML format in the input directory.
 
+```
+input_dir <- "usr/s_cost/"
+```
