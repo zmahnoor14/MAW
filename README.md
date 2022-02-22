@@ -59,7 +59,7 @@ input_table <- data.frame(ms2_rfilename(input_dir))
 ```
 
 6. (optional) If you are using QC files, follow these steps as well. QC samples are used to normalize the signals across all samples. So, generally, QC files contain all the signals from MS1 files with higher m/z resolution. These files also contain the isotopic peaks and can be usd for formula identification in SIRIUS. 
-i. takes all files in the QC folder with a certain pattern (choose a pattern from your file names, could be even .mzML as this is the format of all files in QC folder) and divides the pos and neg modes from each file and generate different mode .mzML files. These files are read by "CAMERA", which is loaded within the function. the outputs are several csv files with CAMERA results.
+               1. takes all files in the QC folder with a certain pattern (choose a pattern from your file names, could be even .mzML as this is the format of all files in QC folder) and divides the pos and neg modes from each file and generate different mode .mzML files. These files are read by "CAMERA", which is loaded within the function. the outputs are several csv files with CAMERA results.
 ```
 # 
                
