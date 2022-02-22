@@ -66,6 +66,7 @@ merge_qc(path = paste(input_dir, "QC", sep =""))
 ```
                
     2. If you have files with positive and negative modes in separate files, follow the next section of code. It takes one file in the QC folder with either pos or neg mode. These files are read by "CAMERA", which is loaded within the function.
+               
 ```
 cam_func(path = "QC/", f = "01pos.mzML", mode = "pos")
 cam_func(path = "QC/", f = "02neg.mzML", mode = "neg")
