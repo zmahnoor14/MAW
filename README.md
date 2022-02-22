@@ -86,5 +86,8 @@ for (i in 1:nrow(input_table)){
     }
 }
 ```
-
   
+8. After the previous steps, we have all the inputs, their directories and optionally the QC csv files. Next is to initiate the workflow, (assuming we want to process only one LCMS2 .mzML file). 
+```
+spec_pr <- spec_Processing(as.character(input_table[i, "mzml_files"]))
+```
