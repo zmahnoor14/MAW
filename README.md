@@ -1,4 +1,4 @@
-# MSmetaProfiler (tested on Linux and MAC OS)
+# Metabolome Profile of _Skeletonema costatum_ (tested on Linux and MAC OS)
 
 This repository hosts Metabolome Annotation Workflow from LCMS-2 spectra in mzML format. The workflow has been developed using LCMS-2 dataset from a marine diatom _Skeletonema costatum_.
 
