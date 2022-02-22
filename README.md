@@ -39,3 +39,9 @@ library(xml2)
 ```
 input_dir <- "usr/s_cost/"
 ```
+3. Load the open spectral libraries. This function will take a lot of computational resources. However, to skip this function, you can download the current versions of the these databases from <write the link here and ask where can you provide datasets>. The databases are stored in the same input directory and in .rda format, as a R object.
+
+```
+download_specDB(input_dir, db = "all")
+# db argument can take "all", "gnps", "mbank" and "hmdb". Default (and recommended) is "all".
+```
