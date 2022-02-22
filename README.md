@@ -4,6 +4,7 @@ This repository hosts Metabolome Annotation Workflow from LCMS-2 spectra in mzML
 
 ## Usage of R-Workflow
 ### Installations via Conda
+
 Create a conda env and install following libraries. Note: R 4.1 can also be installed in the same conda env. 
 ```
 conda update conda
@@ -23,14 +24,25 @@ R
 > remotes::install_github("rformassspectrometry/MsBackendMsp")
 
 ```
-Currently, MsBackendMsp requires R 4.2, but to avoid the need to install the R development version (currently available for WINDOWS), download the MsBackendMsp folder via following link <provide link here>.Follow the following instrcutions on terminal to make the pacakge availabel in your current R installation. 
-  
+
+Currently, MsBackendMsp requires R 4.2, but to avoid the need to install the R development version (currently available for WINDOWS), download the MsBackendMsp folder via following link <provide link here>.Follow the following instrcutions on terminal to make the pacakge availabel in your current R installation.
 ```
 conda activate myenv
 echo $CONDA_PREFIX
 # you will receive a path, where you can keep the MsBackendMsp folder
 ```
-### Installations
+  
+### Installation for SIRIUS
+Install latest SIRIUS version with <https://bio.informatik.uni-jena.de/software/sirius/> for Linux or MAC OS.
+1. Installation with Linux
+  ```
+  echo $PATH # check which is already added to PATH variable
+  sudo emacs /etc/environment
+  PATH="usr/s_cost/sirius-gui/bin"
+  source /etc/environment
+  ```
+2. Installation with MAC
+  To use this command line, add the following path to either .bash_profile or .zprofile. You can find these files easily using FileZilla <>. open your user name folder. Open your .bash_profile, add this to the $PATH variable
 
 ### Input files and Directories
 
