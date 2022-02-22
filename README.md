@@ -52,3 +52,9 @@ load(file = paste(input_dir,"gnps.rda", sep = ""))
 load(file = paste(input_dir,"hmdb.rda", sep = ""))
 load(file = paste(input_dir,"mbank.rda", sep = ""))
 ```
+5. Create a table that lists all the input .mzML files and the result directories with the same name as the input file. The function ```ms2_rfilename``` gives an id to the file as well.
+  
+```
+input_table <- data.frame(ms2_rfilename(input_dir))
+```
+               
