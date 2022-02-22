@@ -22,15 +22,15 @@ An input directory (input_dir) should have the following files for the Workflow 
 
 1. Load Dependencies:
 
-```library(Spectra) <br>
-library(MsBackendMgf) <br>
-library(MsBackendHmdb) <br>
-library(MsCoreUtils) <br>
-library(MsBackendMsp) <br>
-library(readr) <br>
-library(dplyr) <br>
-library(rvest) <br>
-library(stringr) <br>
-library(xml2) <br>```
+```library(Spectra)
+library(MsBackendMgf)
+library(MsBackendHmdb)
+library(MsCoreUtils)
+library(MsBackendMsp)
+library(readr)
+library(dplyr)
+library(rvest)
+library(stringr)
+library(xml2)```
 
 
