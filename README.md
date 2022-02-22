@@ -4,7 +4,7 @@ This repository hosts Metabolome Annotation Workflow from LCMS-2 spectra in mzML
 
 ## Usage
 ### Installation
-library(Spectra)
+library(Spectra) <br>
 library(MsBackendMgf)
 library(MsBackendHmdb)
 library(MsCoreUtils)
