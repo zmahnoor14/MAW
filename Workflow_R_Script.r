@@ -17,7 +17,6 @@ library(xml2)
 # ---------- Script ----------
 # input directory
 input_dir <- paste(getwd(), "/", sep = '')
-input_dir
 
 # load the functions file
 source(file = paste(input_dir, "Workflow_R_Functions.r", sep = ''))
@@ -53,10 +52,6 @@ for (i in 1:nrow(input_table)){
     }
 }
 
-input_table
-
-
-
 for (i in 1:nrow(input_table)){
     # Preprocess and Read the mzMLfiles
     spec_pr <- spec_Processing(as.character(input_table[i, "mzml_files"]))
@@ -72,8 +67,6 @@ for (i in 1:nrow(input_table)){
                                        file_id = input_table[i, "File_id"], input_dir, 
                                        ppmx = 15)
     }
-    
-    
     # Extract MS2 peak lists
     spec_pr2 <- ms2_peaks(spec_pr, input_table[i, "ResultFileNames"])
     
@@ -86,7 +79,11 @@ for (i in 1:nrow(input_table)){
                                        SL = TRUE)
     
     # Run sirius
-    run_sirius(files=sirius_param_files , ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, 
+    run_sirius(files=sirius_param_files , 
+               ppm_max = 5, 
+               ppm_max_ms2 = 15, 
+               QC = TRUE, 
+               SL = TRUE, 
                SL_path = paste(input_dir, 'ScostSLS/', sep = ""),
                candidates = 30)
     
@@ -94,10 +91,11 @@ for (i in 1:nrow(input_table)){
     sirius_pproc <- sirius_postprocess(input_table[i, "ResultFileNames"], SL = TRUE)
     
     # prepare Metfrag parameter files
-    met_param <- metfrag_param(sirius_pproc, result_dir = input_table[1, "ResultFileNames"],
+    met_param <- metfrag_param(sirius_pproc, 
+                               result_dir = input_table[1, "ResultFileNames"],
                                input_dir, 
-                               adducts = paste(input_dir, "MetFrag_AdductTypes.csv", paste("")), 
-                               sl_mtfrag = paste(input_dir, "sl_metfrag.txt", paste("")), 
+                               adducts = paste(input_dir, "MetFrag_AdductTypes.csv", sep = ""), 
+                               sl_mtfrag = paste(input_dir, "sl_metfrag.txt", sep = ""), 
                                SL = TRUE)
     # run metfrag
     for (files in met_param){
