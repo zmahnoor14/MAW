@@ -419,7 +419,10 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         #### GNPS spec with pre_mz
         gnps_with_mz <- spec2_Processing(x, spec = "gnps", ppmx)
         
-        
+        dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/GNPS/", sep = ""), "./"), sep ="")
+        if (!file.exists(dir_name)){
+            dir.create(dir_name, recursive = TRUE)
+        }
         
         if (length(sps) > 1 && length(gnps_with_mz) >1){
             #' Compare experimental spectra against GNPS
@@ -434,10 +437,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
                 
                 #print("more spectra and more gnps spectra")
                 
-                dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/GNPS/", sep = ""), "./"), sep ="")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
+                
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", gnps_best_match$SPECTRUMID, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
@@ -505,10 +505,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
+                
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", gnps_best_match$SPECTRUMID, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
@@ -574,10 +571,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             gnps_best_match <- gnps_with_mz
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
+                
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", gnps_best_match$SPECTRUMID, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
@@ -635,10 +629,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             gnps_best_match <- gnps_with_mz
             df_peaklists <- peakdf(gnps_best_match, sps, ppmx)
             if (!(is.null(df_peaklists))){
-                dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
+                
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", gnps_best_match$SPECTRUMID, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
@@ -738,7 +729,10 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         hmdb_with_mz <- spec2_Processing(x, spec = "hmdb", ppmx = 15)
         
         
-        
+        dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/HMDB/", sep = ""), "./"), sep ="")
+        if (!file.exists(dir_name)){
+            dir.create(dir_name, recursive = TRUE)
+        }
         if (length(sps) > 1 && length(hmdb_with_mz) > 1){
             #' Compare experimental spectra against HMDB
             res <- compareSpectra(sps, hmdb_with_mz, ppm = 15)
@@ -750,10 +744,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             
             if (!(is.null(df_peaklists))){
 
-                dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/HMDB/", sep = ""), "./"), sep ="")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
+                
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", hmdb_best_match$compound_id, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
@@ -815,10 +806,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
-                dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
+                
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", hmdb_best_match$compound_id, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
@@ -880,10 +868,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
 
-                dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
+                
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", hmdb_best_match$compound_id, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
@@ -938,11 +923,6 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             hmdb_best_match <- hmdb_with_mz
             df_peaklists <- peakdf(hmdb_best_match, sps, ppmx)
             if (!(is.null(df_peaklists))){
-
-                dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", hmdb_best_match$compound_id, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
@@ -1036,7 +1016,10 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
         #### GNPS spec with pre_mz
         mbank_with_mz <- spec2_Processing(x, spec = "mbank", ppmx = 15)
         
-        
+        dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/MassBank/", sep = ""), "./"), sep ="")
+        if (!file.exists(dir_name)){
+            dir.create(dir_name, recursive = TRUE)
+        }
         if (length(sps) > 1 && length(mbank_with_mz) >1){
             
             #' Compare experimental spectra against MassBank
@@ -1048,10 +1031,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             df_peaklists <- peakdf(mbank_best_match, sps[idx[1]], ppmx)
             
             if (!(is.null(df_peaklists))){
-                dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/MassBank/", sep = ""), "./"), sep ="")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
+                
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", mbank_best_match$accession, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
@@ -1121,10 +1101,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
 
-                dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
+                
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", mbank_best_match$accession, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
@@ -1193,10 +1170,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             #' if there are more than 2 peak matching
             if (!(is.null(df_peaklists))){
 
-                dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
+                
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", mbank_best_match$accession, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
@@ -1259,10 +1233,7 @@ spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx, error
             df_peaklists <- peakdf(mbank_best_match, sps, ppmx)
             if (!(is.null(df_peaklists))){
 
-                dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
-                if (!file.exists(dir_name)){
-                    dir.create(dir_name, recursive = TRUE)
-                }
+                
                 #' plotMirror
                 name_plotmirror <- paste(dir_name, x,"_spectra_vs_", mbank_best_match$accession, "_spectra.pdf", sep ="")
                 pdf(name_plotmirror)
