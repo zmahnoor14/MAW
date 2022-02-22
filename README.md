@@ -1,10 +1,9 @@
-# MSmetaProfiler
+# MSmetaProfiler (tested on Linux and MAC OS)
 
 This repository hosts Metabolome Annotation Workflow from LCMS-2 spectra in mzML format. The workflow has been developed using LCMS-2 dataset from a marine diatom _Skeletonema costatum_.
 
 ## Usage of R-Workflow
 ### Installation
-Install latest R version (>=R 4.1). 
 Create a conda env and install following libraries. Note: R 4.1 can also be installed in the same conda env. 
 ```
 conda update conda
@@ -24,13 +23,19 @@ R
 > remotes::install_github("rformassspectrometry/MsBackendMsp")
 
 ```
-
+Currently, MsBackendMsp requires R 4.2, but to avoid the need to install the R development version (currently available for WINDOWS), download the MsBackendMsp folder via following link <provide link here>.Follow the following instrcutions on terminal to make the pacakge availabel in your current R installation. 
+  
+```
+conda activate myenv
+echo $CONDA_PREFIX
+# you will receive a path, where you can keep the MsBackendMsp folder
+```
 ### Input files and Directories
 
 An input directory (input_dir) should have the following files for the Workflow to run.
 1. All LCMS-2 spectra .mzML files
 2. SIRIUS installation zip folder
-3. MetFrag jar file which can be downloaded from <https://github.com/ipb-halle/MetFragRelaunched/releases>. You can also download the MetFrag version shared in this repository.
+3. MetFrag jar file which can be downloaded from <https://github.com/ipb-halle/MetFragRelaunched/releases>. You can also download the MetFrag version shared in this repository (tested with the dataset).
 4. MetFrag_AdductTypes.csv can be downloaded from <https://github.com/schymane/ReSOLUTION/blob/master/inst/extdata/MetFrag_AdductTypes.csv>
 5. (optional) /QC folder containing all (MS1) QC .mzML files 
 6. (optional) Suspect List in csv format (important column - "SMILES")
