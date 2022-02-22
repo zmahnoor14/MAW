@@ -129,3 +129,9 @@ met_param <- metfrag_param(sirius_pproc, result_dir = input_table[1, "ResultFile
   adducts = paste(input_dir, "MetFrag_AdductTypes.csv", sep = ""), 
   sl_mtfrag = paste(input_dir, "sl_metfrag.txt", sep = ""), SL = TRUE)
 ```
+13. Run MetFrag.
+```
+for (files in met_param){
+    system(paste("java -jar",  paste(input_dir, "MetFrag2.4.5-CL.jar", sep = ''), files))
+}
+```
