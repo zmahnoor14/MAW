@@ -3,14 +3,11 @@
 
 # ## SIRIUS_Metfrag_SList
 
-# In[47]:
+# In[1]:
 
 
 import pandas as pd
-from rdkit import Chem
-from rdkit import DataStructs
-from rdkit.Chem import AllChem
-from rdkit.Chem import rdFMCS
+
 import pubchempy as pcp
 import numpy as np
 def isNaN(string):
@@ -23,13 +20,24 @@ import csv
 import time
 import json
 from pandas import json_normalize
-import pandas.io.formats.style
-from rdkit.Chem import PandasTools
+#import pandas.io.formats.style######### (not used)
+
+
 import openpyxl
 import statistics
 
 
-# In[48]:
+# In[2]:
+
+
+from rdkit import Chem
+from rdkit import DataStructs
+from rdkit.Chem import AllChem
+from rdkit.Chem import rdFMCS
+from rdkit.Chem import PandasTools
+
+
+# In[3]:
 
 
 # make sure your Smiles entries in the suspect list csv are in a column named "SMILES"
@@ -70,7 +78,7 @@ def slist_metfrag(input_dir, slist_csv):
             filehandle.write('%s\n' % listitem)
 
 
-# In[49]:
+# In[4]:
 
 
 #print(slist_metfrag.__doc__)
@@ -82,7 +90,7 @@ def slist_metfrag(input_dir, slist_csv):
 
 
 
-# In[50]:
+# In[5]:
 
 
 def slist_sirius(input_dir, slist_csv, substring = None):
@@ -178,7 +186,7 @@ def slist_sirius(input_dir, slist_csv, substring = None):
 # slist_sirius("/Users/user/project/SuspectList/", "SUSPECT_LIST.csv", substring = None)
 
 
-# In[51]:
+# In[6]:
 
 
 #print(slist_sirius.__doc__)
@@ -188,7 +196,7 @@ def slist_sirius(input_dir, slist_csv, substring = None):
 
 # ### SIRIUS Result Post Processing
 
-# In[52]:
+# In[7]:
 
 
 def sirius_postProc2(input_dir, input_table, slistcsv ,sl = True):
@@ -265,9 +273,9 @@ def sirius_postProc2(input_dir, input_table, slistcsv ,sl = True):
                     if sl:
                         
                         # Add columns 
-                        file1.loc['Top_can_SL'] = np.nan # top candidate among the top 5 candidates, according to similarity with a compound in suspect list
-                        file1.loc['tanimotoSLvsCAN'] = np.nan # tanimoto score
-                        file1.loc['SL_comp'] = np.nan # Smiles of the suspect listr compund with  high similairity with the one of the top 5 candidates
+                        file1['Top_can_SL'] = np.nan # top candidate among the top 5 candidates, according to similarity with a compound in suspect list
+                        file1['tanimotoSLvsCAN'] = np.nan # tanimoto score
+                        file1['SL_comp'] = np.nan # Smiles of the suspect listr compund with  high similairity with the one of the top 5 candidates
                         
                         # read the suspect list
                         slist = pd.read_csv(slistcsv)
@@ -285,7 +293,7 @@ def sirius_postProc2(input_dir, input_table, slistcsv ,sl = True):
                                 if SStn >= 0.8:
                                     file1.loc[i,'Top_can_SL'] = j
                                     file1.loc[i,'tanimotoSLvsCAN'] = SStn
-                                    file1.loc[i,'SL_comp'] = sl['SMILES'][k]
+                                    file1.loc[i,'SL_comp'] = slist['SMILES'][k]
                             # calculate the mol object from each smiles
                             mol_object = Chem.MolFromSmiles(j)
                             # add all these mol objects to mol
@@ -303,7 +311,7 @@ def sirius_postProc2(input_dir, input_table, slistcsv ,sl = True):
         file1.to_csv(input_table['ResultFileNames'][m] + '/insilico/SiriusResults.csv')
 
 
-# In[53]:
+# In[8]:
 
 
 #print(sirius_postProc2.__doc__)
@@ -311,7 +319,7 @@ def sirius_postProc2(input_dir, input_table, slistcsv ,sl = True):
 
 # ### MetFrag Result Post Processing
 
-# In[54]:
+# In[39]:
 
 
 def metfrag_postproc(input_dir, input_table, slistcsv ,sl = True):
@@ -418,9 +426,9 @@ def metfrag_postproc(input_dir, input_table, slistcsv ,sl = True):
                             slist = pd.read_csv(slistcsv)
                             
                             # Add columns 
-                            file1.loc['KG_Top_can_SL'] = np.nan # top candidate among the top 5 candidates, according to similarity with a compound in suspect list
-                            file1.loc['KG_tanimotoSLvsCAN'] = np.nan # tanimoto score
-                            file1.loc['KG_SL_comp'] = np.nan # Smiles of the suspect listr compund with  high similairity with the one of the top 5 candidates
+                            file1['KG_Top_can_SL'] = np.nan # top candidate among the top 5 candidates, according to similarity with a compound in suspect list
+                            file1['KG_tanimotoSLvsCAN'] = np.nan # tanimoto score
+                            file1['KG_SL_comp'] = np.nan # Smiles of the suspect listr compund with  high similairity with the one of the top 5 candidates
                             
                             # for each smiles in suspect list
                             for k, row in slist.iterrows():
@@ -429,9 +437,9 @@ def metfrag_postproc(input_dir, input_table, slistcsv ,sl = True):
                                 SSfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in SSms]
                                 SStn = DataStructs.FingerprintSimilarity(SSfps[0],SSfps[1])
                                 if SStn >= 0.8:
-                                    file1['KG_Top_can_SL'][i] = j
-                                    file1['KG_tanimotoSLvsCAN'][i] = SStn
-                                    file1['KG_SL_comp'][i] = sl['SMILES'][k]
+                                    file1.loc[i, 'KG_Top_can_SL'] = j
+                                    file1.loc[i, 'KG_tanimotoSLvsCAN'] = SStn
+                                    file1.loc[i, 'KG_SL_comp'] = slist['SMILES'][k]
                         mol2 = Chem.MolFromSmiles(mol)
                         Kegg_smiles.append(mol2)
                     # if there are more than 1 top smiles
@@ -458,6 +466,14 @@ def metfrag_postproc(input_dir, input_table, slistcsv ,sl = True):
                     # take the ones with more than 0.75 score
                     PubChem_file = PubChem_file.drop(PubChem_file[PubChem_file.Score < 0.75].index)
                     
+                    # add the relavnt information to the original MS1DATA csv
+                    file1.loc[i, 'PC_ID'] = PubChem_file.loc[0, 'Identifier']
+                    file1.loc[i, 'PC_Name'] = PubChem_file.loc[0, 'IUPACName']
+                    file1.loc[i, 'PC_Formula'] = PubChem_file.loc[0, 'MolecularFormula']
+                    file1.loc[i, 'PC_expPeaks'] = PubChem_file.loc[0, 'NoExplPeaks']
+                    file1.loc[i, 'PC_SMILES'] = PubChem_file["SMILES"][0]
+                    file1.loc[i, 'PC_file'] = PubChem
+                    
                     # empty object
                     Pubchem_smiles = []
                     
@@ -471,9 +487,9 @@ def metfrag_postproc(input_dir, input_table, slistcsv ,sl = True):
                             slist = pd.read_csv(slistcsv)
                             
                             # Add columns 
-                            file1.loc['PC_Top_can_SL'] = np.nan # top candidate among the top 5 candidates, according to similarity with a compound in suspect list
-                            file1.loc['PC_tanimotoSLvsCAN'] = np.nan # tanimoto score
-                            file1.loc['PC_SL_comp'] = np.nan # Smiles of the suspect listr compund with  high similairity with the one of the top 5 candidates
+                            file1['PC_Top_can_SL'] = np.nan # top candidate among the top 5 candidates, according to similarity with a compound in suspect list
+                            file1['PC_tanimotoSLvsCAN'] = np.nan # tanimoto score
+                            file1['PC_SL_comp'] = np.nan # Smiles of the suspect listr compund with  high similairity with the one of the top 5 candidates
                             # calculate tanimoto
                             for n, row in slist.iterrows():
                                 
@@ -482,9 +498,9 @@ def metfrag_postproc(input_dir, input_table, slistcsv ,sl = True):
                                 SStn2 = DataStructs.FingerprintSimilarity(SSfps[0],SSfps[1])
                                 
                                 if SStn2 >= 0.8:
-                                    file1['PC_Top_can_SL'][i] = j
-                                    file1['PC_tanimotoSLvsCAN'][i] = SStn2
-                                    file1['PC_SL_comp'][i] = sl['SMILES'][n]
+                                    file1.loc[i, 'PC_Top_can_SL'] = j
+                                    file1.loc[i, 'PC_tanimotoSLvsCAN'] = SStn2
+                                    file1.loc[i, 'PC_SL_comp'] = slist['SMILES'][n]
                                     
                         # Concert smiles to mol
                         sm2 = Chem.MolFromSmiles(j)
@@ -503,7 +519,7 @@ def metfrag_postproc(input_dir, input_table, slistcsv ,sl = True):
         file1.to_csv(input_table['ResultFileNames'][m] + '/insilico/MetFragResults.csv')
 
 
-# In[55]:
+# In[10]:
 
 
 #print(metfrag_postproc.__doc__)
@@ -511,7 +527,7 @@ def metfrag_postproc(input_dir, input_table, slistcsv ,sl = True):
 
 # ### COMBINE IN SILICO -All files with SIRIUS results separate and with MetFragresults separate
 
-# In[56]:
+# In[11]:
 
 
 def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
@@ -555,12 +571,12 @@ def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
     if not os.path.isdir(path):
         os.mkdir(path)    
     # if Sirius results are to be combined
-    if Source is "SIRIUS":
+    if Source == "SIRIUS":
         
         # store all files paths here
         all_files = []
         for n, row in input_table.iterrows():
-            all_files.append(input_dir + input_table['ResultFileNames'][n].replace("./", "") + '/MetabolomicsResults/SiriusResults.csv')
+            all_files.append(input_dir + input_table['ResultFileNames'][n].replace("./", "") + '/insilico/SiriusResults.csv')
         
         # store all dataframes of the results here
         li = []
@@ -572,11 +588,11 @@ def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
             
         # join all resulst dataframe
         frame = pd.concat(li, axis=0, ignore_index=True)
-        frame.to_csv(input_dir, '/SIRIUS_combined.csv')
+        frame.to_csv(input_dir + '/MetabolomicsResults/SIRIUS_combined.csv')
         return(frame)
     
     # if MetFrag results are to be combined
-    elif Source is "MetFrag":
+    elif Source == "MetFrag":
         
         # store all files paths here
         all_files = []
@@ -594,7 +610,7 @@ def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
         return(frame)
 
 
-# In[57]:
+# In[12]:
 
 
 #print(combine_insilico.__doc__)
@@ -604,7 +620,7 @@ def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
 
 # ### GNPS, MassBank and HMDB Results post processing
 
-# In[58]:
+# In[13]:
 
 
 def spec_postproc(input_dir, Source = "all"):
@@ -651,7 +667,7 @@ def spec_postproc(input_dir, Source = "all"):
                         MassBankcsvfiles.append(f)
                             
     
-    if Source is "hmdb" or "all":
+    if Source == "hmdb" or "all":
         #download SDF structures
         os.system("wget https://hmdb.ca/system/downloads/current/structures.zip")
         os.system("unzip "+ input_dir + " /structures.zip")
@@ -694,7 +710,7 @@ def spec_postproc(input_dir, Source = "all"):
         
     #MassBank CSV Result file pre_processing
     
-    if Source is "mbank" or "all":
+    if Source == "mbank" or "all":
         
         #open another csv path holding empty list, which will be filled 
         #with post processed csv results
@@ -723,7 +739,7 @@ def spec_postproc(input_dir, Source = "all"):
             MassBankcsvfiles2.append(csvname)
     
     # GNPS CSV Result file pre_processing
-    if Source is "gnps" or "all":
+    if Source == "gnps" or "all":
         
         #currently only these subsets are removed from the names from GNPS
         matches = ["M+","[M", "M-", "2M", "M*" "20.0", "50.0", "30.0", "40.0", "60.0", "70.0", "eV", "Massbank"
@@ -777,7 +793,7 @@ def spec_postproc(input_dir, Source = "all"):
                     gnps_df.loc[i, "corr_names"] = chng[0]
                     
                     if isNaN(gnps_df['GNPSSMILES'][i]):
-                        if chng is '':
+                        if chng == '':
                             break
                         else:
                             s = pcp.get_compounds(chng[0], 'name')
@@ -805,26 +821,26 @@ def spec_postproc(input_dir, Source = "all"):
             GNPScsvfiles2.append(csvname)
     
 
-    if Source is "all":
+    if Source == "all":
         
         dict1 = {'GNPSr': GNPScsvfiles2, 'HMDBr': HMDBcsvfiles2, 'MBr': MassBankcsvfiles2} 
         df = pd.DataFrame(dict1)
 
         return(df)
     
-    if Source is "hmdb":
+    if Source == "hmdb":
         dict1 = {'GNPSr': GNPScsvfiles2, 'HMDBr': HMDBcsvfiles2, 'MBr': MassBankcsvfiles2} 
         df = pd.DataFrame(dict1)
 
         return(df)
     
-    if Source is "mbank":
+    if Source == "mbank":
         dict1 = {'GNPSr': GNPScsvfiles2, 'HMDBr': HMDBcsvfiles2, 'MBr': MassBankcsvfiles2} 
         df = pd.DataFrame(dict1)
 
         return(df)
     
-    if Source is "gnps":
+    if Source == "gnps":
         dict1 = {'GNPSr': GNPScsvfiles2, 'HMDBr': HMDBcsvfiles2, 'MBr': MassBankcsvfiles2} 
         df = pd.DataFrame(dict1)
 
@@ -833,7 +849,7 @@ def spec_postproc(input_dir, Source = "all"):
     
 
 
-# In[59]:
+# In[14]:
 
 
 #print(spec_postproc.__doc__)
@@ -841,7 +857,7 @@ def spec_postproc(input_dir, Source = "all"):
 
 # ### Combine_all Spectral DBs for one file
 
-# In[60]:
+# In[15]:
 
 
 def combine_specdb(df):
@@ -884,7 +900,7 @@ def combine_specdb(df):
     return(Merged_Result_df)
 
 
-# In[61]:
+# In[16]:
 
 
 #print(combine_specdb.__doc__)
@@ -892,7 +908,7 @@ def combine_specdb(df):
 
 # ### Combine all files for spectral db dereplication
 
-# In[62]:
+# In[17]:
 
 
 def combine_allspec(input_dir, comb_df):
@@ -932,7 +948,7 @@ def combine_allspec(input_dir, comb_df):
     return(combined_csv)
 
 
-# In[63]:
+# In[18]:
 
 
 #print(combine_allspec.__doc__)
@@ -946,7 +962,7 @@ def combine_allspec(input_dir, comb_df):
 
 
 
-# In[64]:
+# In[19]:
 
 
 def scoring_spec(input_dir, combined):
@@ -1100,7 +1116,7 @@ def scoring_spec(input_dir, combined):
     return(combined)
 
 
-# In[65]:
+# In[20]:
 
 
 #print(scoring_spec.__doc__)
@@ -1108,7 +1124,7 @@ def scoring_spec(input_dir, combined):
 
 # ### Suspect List Screening
 
-# In[66]:
+# In[21]:
 
 
 def suspectListScreening(input_dir, slistcsv, SpectralDB_Results):
@@ -1148,7 +1164,7 @@ def suspectListScreening(input_dir, slistcsv, SpectralDB_Results):
     Suspect_list = pd.read_csv(slistcsv)
     
     for i, row in SpectralDB_Results.iterrows():
-        if not isNaN(SpectralDB_Results['HMDBSMILES'][i]) and SpectralDB_Results['HMDBSMILES'][i] is not " ":
+        if not isNaN(SpectralDB_Results['HMDBSMILES'][i]) and SpectralDB_Results['HMDBSMILES'][i] != " ":
             for j, row in Suspect_list.iterrows():
                 LHms2 = [Chem.MolFromSmiles(SpectralDB_Results['HMDBSMILES'][i]), Chem.MolFromSmiles(Suspect_list['SMILES'][j])]
                 LHfps2 = [AllChem.GetMorganFingerprintAsBitVect(x2,2, nBits=2048) for x2 in LHms2]
@@ -1158,7 +1174,7 @@ def suspectListScreening(input_dir, slistcsv, SpectralDB_Results):
                     SpectralDB_Results.loc[i, 'HLname'] = Suspect_list['Name'][j]
                     
                     
-        if not isNaN(SpectralDB_Results['GNPSSMILES'][i]) and SpectralDB_Results['GNPSSMILES'][i] is not " ":
+        if not isNaN(SpectralDB_Results['GNPSSMILES'][i]) and SpectralDB_Results['GNPSSMILES'][i] != " ":
             for k, row in Suspect_list.iterrows():
                 LGms2 = [Chem.MolFromSmiles(SpectralDB_Results['GNPSSMILES'][i]), Chem.MolFromSmiles(Suspect_list['SMILES'][k])]
                 LGfps2 = [AllChem.GetMorganFingerprintAsBitVect(x2,2, nBits=2048) for x2 in LGms2]
@@ -1168,7 +1184,7 @@ def suspectListScreening(input_dir, slistcsv, SpectralDB_Results):
                     SpectralDB_Results.loc[i, 'GLname'] = Suspect_list['Name'][k]
                     
                     
-        if not isNaN(SpectralDB_Results['MBSMILES'][i]) and SpectralDB_Results['MBSMILES'][i] is not " ":
+        if not isNaN(SpectralDB_Results['MBSMILES'][i]) and SpectralDB_Results['MBSMILES'][i] != " ":
             for l, row in Suspect_list.iterrows():
                 LMms2 = [Chem.MolFromSmiles(SpectralDB_Results['MBSMILES'][i]), Chem.MolFromSmiles(Suspect_list['SMILES'][l])]
                 LMfps2 = [AllChem.GetMorganFingerprintAsBitVect(x2,2, nBits=2048) for x2 in LMms2]
@@ -1187,7 +1203,7 @@ def suspectListScreening(input_dir, slistcsv, SpectralDB_Results):
     return(SpectralDB_Results)
 
 
-# In[67]:
+# In[22]:
 
 
 #print(suspectListScreening.__doc__)
@@ -1209,7 +1225,7 @@ def suspectListScreening(input_dir, slistcsv, SpectralDB_Results):
 
 
 
-# In[87]:
+# In[23]:
 
 
 def metfrag_curation(input_dir, metfragcsv, sl = True):
@@ -1286,7 +1302,7 @@ def metfrag_curation(input_dir, metfragcsv, sl = True):
     
 
 
-# In[88]:
+# In[24]:
 
 
 #print(metfrag_curation.__doc__)
@@ -1294,7 +1310,7 @@ def metfrag_curation(input_dir, metfragcsv, sl = True):
 
 # ## SIRIUS Results Curation
 
-# In[90]:
+# In[25]:
 
 
 def sirius_curation(input_dir, siriuscsv, sl = True):
@@ -1343,7 +1359,7 @@ def sirius_curation(input_dir, siriuscsv, sl = True):
     return(sirius)
 
 
-# In[91]:
+# In[26]:
 
 
 #print(sirius_curation.__doc__)
@@ -1351,7 +1367,7 @@ def sirius_curation(input_dir, siriuscsv, sl = True):
 
 # ## combine curated S and M results
 
-# In[92]:
+# In[27]:
 
 
 def combineSM(input_dir, metfrag, sirius):
@@ -1394,7 +1410,7 @@ def combineSM(input_dir, metfrag, sirius):
                         PSfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in PSms]
                         PStn = DataStructs.FingerprintSimilarity(PSfps[0],PSfps[1])
                         # if similar strcutres, then add Pubchme and sirius
-                        if PStn is 1:
+                        if PStn == 1:
                             print(i)
                             S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i] + ', PubChem'
                             #S_M_CSV.loc[i, 'SMILES_final'] = S_M_CSV['SMILES'][i]
@@ -1412,7 +1428,7 @@ def combineSM(input_dir, metfrag, sirius):
                         SKms = [Chem.MolFromSmiles(S_M_CSV['SMILES'][i]), Chem.MolFromSmiles(S_M_CSV['KG_SMILES'][i])]
                         SKfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in SKms]
                         SKtn = DataStructs.FingerprintSimilarity(SKfps[0],SKfps[1])
-                        if SKtn is 1:
+                        if SKtn == 1:
                             print(i)
                             S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i] +', KEGG'
 
@@ -1436,7 +1452,7 @@ def combineSM(input_dir, metfrag, sirius):
     return(S_M_CSV)
 
 
-# In[93]:
+# In[28]:
 
 
 #print(combineSM.__doc__)
@@ -1444,7 +1460,7 @@ def combineSM(input_dir, metfrag, sirius):
 
 # ## Spec DB Curation
 
-# In[104]:
+# In[29]:
 
 
 def specDB_Curation(input_dir, combined, sl = True):
@@ -1706,7 +1722,7 @@ def specDB_Curation(input_dir, combined, sl = True):
     
 
 
-# In[105]:
+# In[30]:
 
 
 #print(specDB_Curation.__doc__)
@@ -1720,7 +1736,7 @@ def specDB_Curation(input_dir, combined, sl = True):
 
 
 
-# In[106]:
+# In[31]:
 
 
 def combine_CuratedR(input_dir, curatedSDB, combinedSM):
@@ -1811,7 +1827,7 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
                     SKms = [Chem.MolFromSmiles(mega['GNPSSMILES'][i]), Chem.MolFromSmiles(mega['SMILES'][i])]
                     SKfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in SKms]
                     SKtn = DataStructs.FingerprintSimilarity(SKfps[0],SKfps[1])
-                    if SKtn is 1:
+                    if SKtn == 1:
                         print(SKtn)
                         mega.loc[i, "Annotation_Source"] = mega['Annotation'][i] + ', ' + mega['Annotation_C'][i]
                     else:
@@ -1938,7 +1954,7 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
                 bef_mega['KG_MCSS_SMILES'][i] = np.nan
                 bef_mega['Formula'][i] = np.nan
 
-            elif 'KEGG' is bef_mega['Annotation_Source'][i]:
+            elif 'KEGG' in bef_mega['Annotation_Source'][i]:
                 bef_mega.loc[i, 'SMILES_final'] = bef_mega['KG_SMILES'][i]
                 bef_mega['most_specific_class'][i] = np.nan
                 bef_mega['level _5'][i] = np.nan
@@ -1981,13 +1997,13 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
     
 
 
-# In[107]:
+# In[32]:
 
 
 #print(combine_CuratedR.__doc__)
 
 
-# In[110]:
+# In[33]:
 
 
 def checkSMILES_validity(input_dir, results):
@@ -2026,13 +2042,13 @@ def checkSMILES_validity(input_dir, results):
     return(results)
 
 
-# In[111]:
+# In[34]:
 
 
 #print(checkSMILES_validity.__doc__)
 
 
-# In[114]:
+# In[35]:
 
 
 def classification(input_dir, frame):
@@ -2128,7 +2144,7 @@ def classification(input_dir, frame):
     frame.to_csv(input_dir + "MetabolomicsResults/final_curationList.csv")
 
 
-# In[115]:
+# In[36]:
 
 
 #print(classification.__doc__)
@@ -2136,7 +2152,7 @@ def classification(input_dir, frame):
 
 # # Comparison with a list of SMILES from any Source
 
-# In[116]:
+# In[37]:
 
 
 def SMILESscreening(input_dir, results, listname):
@@ -2174,10 +2190,22 @@ def SMILESscreening(input_dir, results, listname):
     frame.to_csv(input_dir + "MetabolomicsResults/final_curationListVS"+listname+".csv")
 
 
-# In[117]:
+# In[38]:
 
 
 #print(SMILESscreening.__doc__)
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
