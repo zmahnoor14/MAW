@@ -4,26 +4,38 @@
 #'
 #' @description
 #'
-#' for QC files, which have both polarities in one file or the polarities 
-#' are unknown, use Spectra to divide them based on + and - polarities 
-#' and CAMERA to annotate the isotopic peaks
-#' 
-#' @param path e.g: “/users/name/project/QC”
-#' @param pattern (define this so that the function only catches the file 
+#' This function is used to extract the modes of the spectra in the
+#' QC files and separate them into pos and neg mode QC mzml files which
+#' are then read by CAMERA and used for isotope annotations. The results 
+#' from annotation are stored in csv file. When more files, use merge_qc 
+#' after this function to merge the results of all QC in one csv to be 
+#' used with all MS2 spectra files
+
+#'
+#' @param path where QC files are stored; store in a folder named QC
+#'
+#' @param pattern define this so that the function only catches the file 
 #' with a certain pattern e.g: “common”, if no pattern, by default 
-#' function takes “.mzML” as the pattern which is all the .mzML files, 
-#' so make sure only the QC files are in this directory and not the MS2.mzML files)
-#' 
-#' 
+#' function takes “.mzML” as the pattern which is all the .mzML files
+#'
+
 #' @return
+#' If single mode files:
+#' CAMERA results in csv
+#' If double modes:
+#' Modes separated into different 
+#' CAMERA results in csv
+
 #' 
-#' Modes separated into different .mzML files and CAMERA results in csv
+#' 
+
 #'
 #' @author Mahnoor Zulfiqar
 #' 
 #' @examples
 #' 
-#' cam_funcMode("/usr/project/QC”, pattern = "OrbitrapMS2")
+#' cam_funcMode("/usr/project/QC/", ".mzmL")
+#' 
 
 # ---------- Preparations ----------
 # Load libraries
@@ -32,12 +44,19 @@ library("stringr")
 
 # ---------- Arguments and user variables ----------
 args <- commandArgs(trailingOnly=TRUE)
-#print(args)
 
 path <- as.character(args[1])
 pattern <- as.character(args[2])
 
-# ---------- cam_funcMode ----------
+# ---------- ms2_peaks ----------
+
+# for QC files, which have both polarities in one file or the polarities are unknown
+# inputs:
+#path e.g: “/users/name/project/QC”
+#pattern (define this so that the function only catches the file 
+#with a certain pattern e.g: “common”, if no pattern, by default 
+#function takes “.mzML” as the pattern which is all the .mzML files, 
+#so make sure only the QC files are in this directory and not the MS2.mzML files)
 
 cam_funcMode <- function(path, pattern = ".mzML"){
     library("CAMERA")

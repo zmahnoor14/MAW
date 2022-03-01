@@ -1,38 +1,38 @@
 #! /usr/bin/Rscript
 
-#' @title Result Directories 
+#' @title Result Directories
 #'
 #' @description
 #'
-#' This function creates a dataframe of all the input files and their result 
-#' directories (which are also created with this function). The function gives 
-#' each input file a file id.
-#' 
+#' It lists all files with .mzML extension.
+#' These files are without the full path, so the input_dir is added to 
+#' the path to these files. For each .mzML file, the extension is removed 
+#' and stored as a name for the results directory for each input .mzML 
+#' file For each input .mzML file an id is generated like file_1
+#' A table is generated at the end
 
 
-#' @param input_dir 
+#' @param input_dir is full directory where all MZML input files
+#'
+
 
 
 #' @return
 #' 
-#' A dataframe of mzml_files, ResultFileNames, File_id columns. 
+#' A table of mzml_files, ResultFileNames, File_id columns. 
 #' Result files for each input .mzML is generated.
 #' 
-#'
+
 #' @author Mahnoor Zulfiqar
 #' 
 #' @examples
 #' 
-#' ms2_rfilename("usr/project/")
-
-
+#' ms2_rfilename(input_dir = "/usr/project/")
 
 
 # ---------- Preparations ----------
 # Load libraries
 library("stringr")
-
-
 
 # ---------- Arguments and user variables ----------
 args <- commandArgs(trailingOnly=TRUE)
@@ -41,8 +41,8 @@ args <- commandArgs(trailingOnly=TRUE)
 input_dir <- as.character(args[1])
 
 
-# ---------- ms2_rfilename ----------
 
+# ---------- ms2_rfilename ----------
 ## Specifying a function for creating result directories for each input mzml
 # input for the function:
 # input directory
@@ -76,5 +76,6 @@ ms2_rfilename<- function(input_dir){
     write.csv(input_table, paste(input_dir, "input_table.csv", sep = ""))
     return(data.frame(input_table))
 }
-
 ms2_rfilename(input_dir)
+
+

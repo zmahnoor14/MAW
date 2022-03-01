@@ -16,8 +16,12 @@
 #'
 
 #'
-#' @param x output from spec_Processing function
+#' @param pre_tbl txt file of list of precursor m/z (from func spec_Processing)
 #'
+#' @param proc_mzml processed mzML spectra file (from func spec_Processing)
+#'
+#' @param input_dir is input directory with all input files
+#' 
 #' @param result_dir result_dir is the result directory for an input file
 
 
@@ -31,17 +35,21 @@
 #' 
 #' @examples
 #' 
-#' ms2_peaks(spec_pr, 'usr/project/file_09/')
+#' ms2_peaks("/usr/project/file1/premz_list.txt", "/usr/project/file1/processedSpectra.mzmL",
+#' "usr/project/", 'usr/project/file_09/')
 
 # ---------- Preparations ----------
 # Load libraries
 library("Spectra")
 library("stringr")
+
 # ---------- Arguments and user variables ----------
 args <- commandArgs(trailingOnly=TRUE)
 
-x <- as.character(args[1])
-result_dir <- as.character(args[2])
+pre_tbl <- as.character(args[1])
+proc_mzml <- as.character(args[2])
+input_dir <- as.character(args[3])
+result_dir <- as.character(args[4])
 
 # ---------- ms2_peaks ----------
 
@@ -50,8 +58,14 @@ result_dir <- as.character(args[2])
 # This functon returns a dataframe and stores a csv file 
     # the directory for csv file is input_dir + /insilico/MS2DATA.csv
 # input is from spec_Processing and result directory for each mzML input file
-
-ms2_peaks <- function(x, result_dir){
+ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir){
+    
+    
+    sps_all <- Spectra(proc_mzml, backend = MsBackendMzR())
+        
+    tbl <- read.table(pre_tbl)
+    pre_mz <- tbl[[1]]
+    
     
     ## Define variables
     premz <- c() # stores mz
@@ -68,13 +82,13 @@ ms2_peaks <- function(x, result_dir){
     nx <- 0 # stores number for the ID 
     indeX <- 0 # stores number to name the peaklist files 
     
-    # x[[2]] is a list of precursor m/z
-    for (i in x[[2]]){
+    # pre_mz is a list of precursor m/z
+    for (i in pre_mz){
         #mz
         premz <- c(premz, i)
         
-        #filter based on pre mz; x[[1]] is preprocessed spectra
-        sps <- filterPrecursorMz(x[[1]], i)
+        #filter based on pre mz; sps_all is preprocessed spectra
+        sps <- filterPrecursorMz(sps_all, i)
         
         #rtmin
         rn <- min(sps$rtime)
@@ -114,8 +128,10 @@ ms2_peaks <- function(x, result_dir){
         
         #ids
         nx <- nx+1
-        fileR <- paste("M", as.character(round(i, digits = 0)),"R",as.character(round(rtm, digits = 0)), "ID", as.character(nx), sep = '')
-        id_X <- c(id_X, fileR)
+        id_Xx <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
+                          "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
+                          "ID", as.character(nx), sep = '')
+        id_X <- c(id_X, id_Xx)
         
         #peak lists
         # variable for name
@@ -147,7 +163,9 @@ ms2_peaks <- function(x, result_dir){
         }
     }
     first_list <- data.frame(cbind(id_X, premz, rtmed, rtmean, int ,col_eng, pol, ms2Peaks))
+    write.csv(first_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS2DATA.csv', sep = ""), "./"), sep =""))
     return(first_list)
 }
-ms2_peaks(x, result_dir)
+
+ms2_peaks(pre_tbl, proc_mzml, input_dir, result_dir)
 

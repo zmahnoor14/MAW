@@ -25,7 +25,7 @@
 #' 
 #' @examples
 #' 
-#' spec_Processing("usr/project/MS2specfile1.mzML")
+#' spec_Processing("/usr/project/MS2specfile1.mzML", "/usr/project/MS2specfile1")
 
 
 # ---------- Preparations ----------
@@ -37,13 +37,13 @@ args <- commandArgs(trailingOnly=TRUE)
 #print(args)
 
 x <- as.character(args[1])
-
+result_dir <- as.character(args[2])
 
 # ---------- spec_Processing ----------
 
 #' All spectra in mzML files preprocessing, return two outputs, pre-processed MS2 spectra and all precursor masses
 # x is one mzML file
-spec_Processing <- function(x){
+spec_Processing <- function(x, result_dir){
     # read the spectra
     sps_all <- Spectra(x, backend = MsBackendMzR())
     #' Change backend to a MsBackendDataFrame: load data into memory
@@ -54,7 +54,9 @@ spec_Processing <- function(x){
     pre_mz <- unique(precursorMz(sps_all))
     #' Remove any NAs
     pre_mz <- na.omit(pre_mz)
+    export(sps_all, backend = MsBackendMzR(), file = paste(result_dir, "/processedSpectra.mzML", sep = ""))
+    write.table(pre_mz, file = paste(result_dir, "/premz_list.txt", sep = ""), sep = "/t",row.names = FALSE, col.names = FALSE)
     spsall_pmz <- list(sps_all, pre_mz)
     return(spsall_pmz)
 }
-spec_Processing(x)
+spec_Processing(x, result_dir)
