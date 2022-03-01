@@ -2674,13 +2674,13 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
     }
     if (SL){
         
-        write.csv(paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA_SiriusPandSL.csv', sep = ""), "./"), sep =""))
+        write.csv(data.frame(cbind(sirius_param_file, outputNames, outputNamesSL, isotopes)), paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA_SiriusPandSL.csv', sep = ""), "./"), sep =""))
         return(data.frame(cbind(sirius_param_file, outputNames, outputNamesSL, isotopes)))
         
     }
     else{
         
-        write.csv(paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA_SiriusP.csv', sep = ""), "./"), sep =""))
+        write.csv(data.frame(cbind(sirius_param_file, outputNames, isotopes)), paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA_SiriusP.csv', sep = ""), "./"), sep =""))
         return(data.frame(cbind(sirius_param_file, outputNames, isotopes)))
         
     }
@@ -3222,7 +3222,7 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
         }
     }
     
-    write.table(metfrag_param_file, file = paste(result_dir, "insilico/metparam_list.txt", sep = ""), sep = "/t", row.names = FALSE, col.names = FALSE)
+    write.table(metfrag_param_file, file = paste(result_dir, "/insilico/metparam_list.txt", sep = ""), sep = "/t", row.names = FALSE, col.names = FALSE)
     return(metfrag_param_file)
 }
 
@@ -3234,9 +3234,8 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
 run_metfrag<- function(met_param, input_dir){
     
     filesmet_param <- read.table(met_param)
-    met_param <- met_param[[1]]
     
-    for (files in met_param){
+    for (files in filesmet_param[[1]]){
         system(paste("java -jar",  paste(input_dir, "MetFrag2.4.5-CL.jar", sep = ''), files))
     }
 }
