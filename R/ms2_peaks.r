@@ -50,6 +50,7 @@ pre_tbl <- as.character(args[1])
 proc_mzml <- as.character(args[2])
 input_dir <- as.character(args[3])
 result_dir <- as.character(args[4])
+file_id <- as.character(args[5])
 
 # ---------- ms2_peaks ----------
 
@@ -58,7 +59,7 @@ result_dir <- as.character(args[4])
 # This functon returns a dataframe and stores a csv file 
     # the directory for csv file is input_dir + /insilico/MS2DATA.csv
 # input is from spec_Processing and result directory for each mzML input file
-ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir){
+ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
     
     
     sps_all <- Spectra(proc_mzml, backend = MsBackendMzR())
@@ -128,7 +129,7 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir){
         
         #ids
         nx <- nx+1
-        id_Xx <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
+        id_Xx <- paste(file_id,  "M",  as.character(round(i, digits = 0)), 
                           "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
                           "ID", as.character(nx), sep = '')
         id_X <- c(id_X, id_Xx)
