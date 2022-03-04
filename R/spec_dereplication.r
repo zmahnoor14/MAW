@@ -263,6 +263,7 @@ peakdf <- function(a, b, ppmx){
 # x is txt list of pre_mz, db is GNPS, HMDB, MassBank
 spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input_dir, ppmx, error = TRUE){
     
+    
     ####-------------------------------------------------------------
     #### Dereplication with all or GNPS ----
     ####-------------------------------------------------------------
@@ -275,6 +276,8 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     pre_mz <- tbl[[1]]
     
     if (db == "all" || db =="gnps"){
+
+        load(file = paste(input_dir,"gnps.rda", sep = ""))
         
         # common
 
@@ -838,7 +841,7 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     #### Dereplication with all or HMDB ----
     ####-------------------------------------------------------------
     if (db == "all" || db =="hmdb"){
-        
+        load(file = paste(input_dir,"hmdb.rda", sep = ""))
         # common
 
         id_X <- c()
@@ -1325,7 +1328,8 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     #### Dereplication with all or MassBank ----
      ####-------------------------------------------------------------
     if (db == "all" || db =="mbank"){
-
+        
+        load(file = paste(input_dir,"mbank.rda", sep = ""))
         
         # common
 
