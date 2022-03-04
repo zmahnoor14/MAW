@@ -71,6 +71,8 @@ download_specDB <- function(input_dir, db = "all", error = TRUE){
     # gnps
     if (db == "all" || db =="gnps"){
         
+        print("GNPS WORKS")
+        
         # Download file
         system(paste("wget -P", 
                      input_dir,
@@ -87,49 +89,11 @@ download_specDB <- function(input_dir, db = "all", error = TRUE){
         writeLines(paste("GNPS saved at", Sys.time(), sep=" "),con=file.conn)
         
     }
-    # hmdb
-    if (db == "all" || db =="hmdb"){
-        
-        # extract HMDB Current version
-        html <- read_html("https://hmdb.ca/downloads")
-        strings <- html%>% html_elements("a") %>% html_text2()
-        ls <- unique(strings)
-        hmdb_curr_ver <- c()
-        for (i in ls){
-            if (grepl("Current", i)){
-            hmdb_curr_ver<- c(i, hmdb_curr_ver)
-            }
-        }
-        
-        #Download file predicted MSMS spectra
-        system(paste("wget - P", input_dir,
-                     "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_predicted_msms_spectra.zip",
-                     sep = " "))
-        # unzip
-        system(paste("unzip", input_dir, paste(input_dir, "hmdb_predicted_msms_spectra.zip", sep = ""), "-d",  paste(input_dir, "hmdb_predicted_msms_spectra", sep = ""), sep = " "))
-        # load the spectra into MsBackendHMDB
-        hmdb_pred <- Spectra(paste(input_dir, "hmdb_predicted_msms_spectra", sep = ''), source = MsBackendHmdb())
-        
-        #Download file experimental MSMS spectra
-        system(paste("wget - P", input_dir,
-                     "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_experimental_msms_spectra.zip",
-                     sep = " "))
-        # unzip
-        system(paste("unzip", input_dir, paste(input_dir, "hmdb_experimental_msms_spectra.zip", sep = ""), "-d", paste(input_dir, "hmdb_experimental_msms_spectra", sep = ""), sep = " "))
-        # load the spectra into MsBackendHMDB
-        hmdb_exp <- Spectra(paste(input_dir, "hmdb_experimental_msms_spectra", sep = ''), source = MsBackendHmdb())
-        hmdb <- hmdb_pred + hmdb_exp
-        save(hmdb, file = paste(input_dir,"hmdb.rda", sep = ""))
-        
-        # delete the database in its format to free up space
-        system(paste("rm -r", (paste(input_dir, "hmdb_predicted_msms_spectra", sep = '')), sep = " "))
-        system(paste("rm -r", (paste(input_dir, "hmdb_experimental_msms_spectra", sep = '')), sep = " "))
-        
-        
-        writeLines(paste("HMDB saved at", Sys.time(), "with release version", hmdb_curr_ver, sep=" "),con=file.conn)
-    }
+    
     #mbank
     if (db == "all" || db =="mbank"){
+        
+        print("MassBank WORKS")
         
         page <- read_html("https://github.com/MassBank/MassBank-data/releases")
         page %>%
@@ -138,9 +102,9 @@ download_specDB <- function(input_dir, db = "all", error = TRUE){
             str_subset("MassBank_NIST.msp") -> tmp # find those that have the name MassBank_NIST.msp
         
         #download file
-        system(paste("wget -P", input_dir,
-                     "https://github.com/", tmp[1], 
-                     sep =  " "))
+        system(paste("wget ",
+                     "https://github.com", tmp[1], 
+                     sep =  ""))
         
         mbank <- Spectra(paste(input_dir, "MassBank_NIST.msp", sep = ''), source = MsBackendMsp())
         save(mbank, file = paste(input_dir,"mbankNIST.rda", sep = ""))
@@ -154,12 +118,93 @@ download_specDB <- function(input_dir, db = "all", error = TRUE){
         writeLines(paste("MassBank saved at", Sys.time(), "with release version", res[,2], sep=" "),con=file.conn)
     }
     
+    # hmdb
+    if (db == "all" || db =="hmdb"){
+        
+        print("HMDB WORKS")
+        
+        
+        
+        ####### Version Control ######
+        
+        # extract HMDB Current version
+        html <- read_html("https://hmdb.ca/downloads")
+        strings <- html%>% html_elements("a") %>% html_text2()
+        ls <- unique(strings)
+        hmdb_curr_ver <- c()
+        for (i in ls){
+            if (grepl("Current", i)){
+            hmdb_curr_ver<- c(i, hmdb_curr_ver)
+            }
+        }
+        
+        
+        
+        
+        ####### Download and unzip ######
+        
+        #Download file predicted MSMS spectra
+        system(paste("wget",
+                     "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_predicted_msms_spectra.zip",
+                     sep = " "))
+        # unzip
+        system(paste("unzip", "hmdb_predicted_msms_spectra.zip", "-d",  paste(input_dir, "hmdb_predicted_msms_spectra", sep = ""), sep = " "))
+    
+        
+        #Download file experimental MSMS spectra
+        system(paste("wget",
+                     "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_experimental_msms_spectra.zip",
+                     sep = " "))
+        # unzip
+        system(paste("unzip", "hmdb_experimental_msms_spectra.zip", "-d", paste(input_dir, "hmdb_experimental_msms_spectra", sep = ""), sep = " "))
+        
+        
+        
+        
+        ####### Load spectra in MsBackend #######
+        
+        hmdb_predfiles <- list.files(path = paste(input_dir, "hmdb_predicted_msms_spectra", sep = ''), full.names = TRUE)
+        
+        hmdb_predicted <- c()
+        for (i in hmdb_predfiles){
+            # load the spectra into MsBackendHMDB
+            hmdb_pred <- Spectra(i, source = MsBackendHmdbXml())
+            hmdb_predicted <- c(hmdb_predicted, hmdb_pred)
+        }
+        
+        hmdb_expfiles <- list.files(path = paste(input_dir, "hmdb_experimental_msms_spectra", sep = ''), full.names = TRUE)
+        
+        hmdb_experimental <- c()
+        
+        for (j in hmdb_expfiles){
+            # load the spectra into MsBackendHMDB
+            hmdb_exp <- Spectra(j, source = MsBackendHmdb())
+            hmdb_experimental <- c(hmdb_experimental, hmdb_exp)
+        }
+        
+        
+        hmdb <- hmdb_predicted + hmdb_experimental
+        save(hmdb, file = paste(input_dir,"hmdb.rda", sep = ""))
+        
+        
+        
+        
+        
+        ####### Remove the XML files #######
+        
+        # delete the database in its format to free up space
+        system(paste("rm -r", (paste(input_dir, "hmdb_predicted_msms_spectra", sep = '')), sep = " "))
+        system(paste("rm -r", (paste(input_dir, "hmdb_experimental_msms_spectra", sep = '')), sep = " "))
+        
+        
+        writeLines(paste("HMDB saved at", Sys.time(), "with release version", hmdb_curr_ver, sep=" "),con=file.conn)
+    }
+    
     #wrong input error message
     else if (!grepl(db, databases, fixed = TRUE)){
         stop("Wrong db input. Following inputs apply: gnps, hmdb, mbank or all")
     }
     close(file.conn)
-    #download_specDB(input_dir, db)
     end_time <- Sys.time()
     print(end_time - start_time)
 }
