@@ -440,6 +440,9 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     
     if (db == "all" || db =="gnps"){
         
+        
+        load(file = paste(input_dir,"gnps.rda", sep = ""))
+        
         # common
 
         id_X <- c()
@@ -1003,6 +1006,8 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     ####-------------------------------------------------------------
     if (db == "all" || db =="hmdb"){
         
+        load(file = paste(input_dir,"hmdb.rda", sep = ""))
+        
         # common
 
         id_X <- c()
@@ -1490,6 +1495,7 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
      ####-------------------------------------------------------------
     if (db == "all" || db =="mbank"){
 
+        load(file = paste(input_dir,"mbank.rda", sep = ""))
         
         # common
 
@@ -2020,7 +2026,7 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     # the directory for csv file is input_dir + /insilico/MS2DATA.csv
 # input is from spec_Processing and result directory for each mzML input file
 
-ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir){
+ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
     
     
     sps_all <- Spectra(proc_mzml, backend = MsBackendMzR())
@@ -2375,6 +2381,14 @@ cam_func <- function(path, f, mode = "pos"){
 }
 # Usage: cam_func(f, mode = "pos")
 
+
+
+#addQC_input_table <- function(path, pattern){
+#    
+#}
+
+
+
 # Extract isotopic peaks for each pre_mz
 # The input is x = first_list (from ms2peaks function) and y = camera results 
 
@@ -2493,7 +2507,7 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile = TRUE){
 
 
 
-# input x is result from either ms1_peaks and ms2_peaks
+# input x is result from either ms1_peaks
 # SL is if a suspect list is present
 
 sirius_param <- function(x, result_dir, input_dir, SL = TRUE){

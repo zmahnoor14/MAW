@@ -1,5 +1,3 @@
-#!/usr/bin/env Rscript
-
 # ---------- Preparations ----------
 # Load Libraries
 library(Spectra)
@@ -13,6 +11,7 @@ library(dplyr)
 library(rvest)
 library(stringr)
 library(xml2)
+options(warn=-1)
 
 # Track Time 
 start_time <- Sys.time()
@@ -22,10 +21,14 @@ start_time <- Sys.time()
 input_dir <- paste(getwd(), "/", sep = '')
 input_dir
 
-input_dir
+#input_dir <- "/Users/mahnoorzulfiqar/OneDriveUNI/MZML/"
+#input_dir
 
 # load the functions file
 source(file = paste(input_dir, "Workflow_R_Functions.r", sep = ''))
+
+# load the functions file
+# source(file = '/Users/mahnoorzulfiqar/OneDriveUNI/MAW/Workflow_R_Functions.r')
 
 # downloading spectral libraries; do NOT run
 # load db spectra objects [gnps, hmdb, mbank]
@@ -53,6 +56,8 @@ input_table
 #cam_func(path = "QC/", f = "DS200212_Scost_QC_280k_pos.mzML", mode = "pos")
 #cam_func(path = "QC/", f = "DS200212_Scost_QC_280k_neg.mzML", mode = "neg")
 
+## Here added are the QC files, run the function as it is
+
 # add QC files to respective pos and neg file
 for (i in 1:nrow(input_table)){
     # if a certain phrase is present in the data files e.g: pos, then take the pos CAMERA
@@ -61,6 +66,12 @@ for (i in 1:nrow(input_table)){
     }
     if (grepl("SC_full_PRM_neg", input_table[i, "mzml_files"], fixed=TRUE)){
         input_table[i, "qcCAM_csv"] <- "./QC/Combined_Camera_neg.csv"
+    }
+    if (grepl("DS200309_Scost_QC_70k_pos_PRM", input_table[i, "mzml_files"], fixed=TRUE)){
+        input_table[i, "qcCAM_csv"] <- "./QC/posCAMERAResults_DS200212_Scost_QC_280k_pos.csv"
+    }
+    if (grepl("DS200309_Scost_QC_70k_neg_PRM", input_table[i, "mzml_files"], fixed=TRUE)){
+        input_table[i, "qcCAM_csv"] <- "./QC/negCAMERAResults_DS200212_Scost_QC_280k_neg.csv"
     }
 }
 
@@ -73,9 +84,8 @@ input_table
 for (i in 1:nrow(input_table)){
     
     
-
     # Preprocess and Read the mzMLfiles
-    spec_pr <- spec_Processing(as.character(input_table[i, "mzml_files"]))
+    spec_pr <- spec_Processing(as.character(input_table[i, "mzml_files"]), input_table[i, "ResultFileNames"])
     
     
     # Extract spectra
@@ -83,32 +93,38 @@ for (i in 1:nrow(input_table)){
     # Extract precursor m/z
     pre_mz<- spec_pr[[2]]
 
-    
-    # for each precursor m/z in pre_mz, run the dereplication using gnps.rda. mbank.rda and hmdb.rda
-    for (a in pre_mz){
-        #perform dereplication with all dbs
-        df_derep <- spec_dereplication(a, 
-                                       db = "all", 
-                                       result_dir = input_table[i, "ResultFileNames"],
-                                       file_id = input_table[i, "File_id"], 
-                                       input_dir, 
-                                       ppmx = 15)
-    }
+    #perform dereplication with all dbs
+    df_derep <- spec_dereplication(pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "./"), sep =""), 
+                                   proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "./"), sep =""),
+                                   db = "all", 
+                                   result_dir = input_table[i, "ResultFileNames"],
+                                   file_id = input_table[i, "File_id"], 
+                                   input_dir, 
+                                   ppmx = 15)
     
     
     # Extract MS2 peak lists
-    spec_pr2 <- ms2_peaks(spec_pr, input_table[i, "ResultFileNames"])
+    spec_pr2 <- ms2_peaks(pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "./"), sep =""), 
+                          proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "./"), sep =""),
+                          input_dir,
+                          input_table[i, "ResultFileNames"],
+                         file_id = input_table[i, "File_id"]) 
     
     # Extract MS1 peaks or isotopic peaks
-    ms1p <- ms1_peaks(spec_pr2, input_table[i, "qcCAM_csv"], input_table[i, "ResultFileNames"], QC = TRUE)
+    ms1p <- ms1_peaks(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS2DATA.csv', sep = ""), "./"), sep =""), 
+                      y = input_table[i, "qcCAM_csv"], 
+                      input_table[i, "ResultFileNames"], 
+                      input_dir, 
+                      QC = TRUE)
     
     #prepare sirius parameter files
-    sirius_param_files <- sirius_param(ms1p, 
+    sirius_param_files <- sirius_param(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA.csv', sep = ""), "./"), sep =""), 
                                        result_dir = input_table[i, 'ResultFileNames'], 
+                                       input_dir,
                                        SL = TRUE)
     
     # Run sirius
-    run_sirius(files=sirius_param_files , 
+    run_sirius(files = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA_SiriusPandSL.csv', sep = ""), "./"), sep =""), 
                ppm_max = 5, 
                ppm_max_ms2 = 15, 
                QC = TRUE, 
@@ -124,23 +140,22 @@ for (i in 1:nrow(input_table)){
     
     
     # prepare Metfrag parameter files
-    met_param <- metfrag_param(sirius_pproc, 
+    met_param <- metfrag_param(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/insilico/MS1DATAsirius.csv", sep = ""), "./"), sep =""), 
                                result_dir = input_table[i, "ResultFileNames"],
-                               input_dir, 
+                               input_dir,
                                adducts = paste(input_dir, "MetFrag_AdductTypes.csv", sep = ""), 
                                sl_mtfrag = paste(input_dir, "sl_metfrag.txt", sep = ""), 
-                               SL = TRUE)
+                               SL = TRUE,
+                               ppm_max = 5, 
+                               ppm_max_ms2= 15)
     
     
     # run metfrag
-    for (files in met_param){
-        system(paste("java -jar",  paste(input_dir, "MetFrag2.4.5-CL.jar", sep = ''), files))
-    }
+    run_metfrag(met_param = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/insilico/metparam_list.txt", sep = ""), "./"), sep =""),
+                input_dir)
     
     
 }
-
-
 
 end_time <- Sys.time()
 print(end_time - start_time)

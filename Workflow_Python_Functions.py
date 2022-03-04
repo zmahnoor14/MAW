@@ -20,11 +20,11 @@ import csv
 import time
 import json
 from pandas import json_normalize
-#import pandas.io.formats.style######### (not used)
 
 
 import openpyxl
 import statistics
+import sys
 
 
 # In[2]:
@@ -588,6 +588,23 @@ def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
             
         # join all resulst dataframe
         frame = pd.concat(li, axis=0, ignore_index=True)
+        
+
+        for i, row in frame.iterrows():
+            if frame["FormulaRank"][i] == 1.0:
+                sep = 'json/'
+                strpd = frame["dir"][i].split(sep, 1)[0] +"json/canopus_summary.tsv"
+                if os.path.isfile(strpd):
+
+                    canopus = pd.read_csv(strpd, sep='\t')
+                    if len(canopus) > 0:
+                        frame.loc[i, 'most_specific_class'] = canopus["most specific class"][0]
+                        frame.loc[i, 'level _5'] = canopus["level 5"][0]
+                        frame.loc[i, 'subclass'] = canopus["subclass"][0]
+                        frame.loc[i, 'class'] = canopus["class"][0]
+                        frame.loc[i, 'superclass'] = canopus["superclass"][0]
+                        frame.loc[i, 'all_classifications'] = canopus["all classifications"][0]
+                        frame.loc[i, 'Classification_Source'] = 'CANOPUS'
         frame.to_csv(input_dir + '/MetabolomicsResults/SIRIUS_combined.csv')
         return(frame)
     
@@ -620,7 +637,7 @@ def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
 
 # ### GNPS, MassBank and HMDB Results post processing
 
-# In[13]:
+# In[3]:
 
 
 def spec_postproc(input_dir, Source = "all"):
@@ -669,8 +686,8 @@ def spec_postproc(input_dir, Source = "all"):
     
     if Source == "hmdb" or "all":
         #download SDF structures
-        os.system("wget https://hmdb.ca/system/downloads/current/structures.zip")
-        os.system("unzip "+ input_dir + " /structures.zip")
+        #os.system("wget https://hmdb.ca/system/downloads/current/structures.zip")
+        #os.system("unzip "+ input_dir + "structures.zip")
             
         # Load the sdf
         dframe = PandasTools.LoadSDF((input_dir+"structures.sdf"),
@@ -792,10 +809,10 @@ def spec_postproc(input_dir, Source = "all"):
                     #save this as the correct name
                     gnps_df.loc[i, "corr_names"] = chng[0]
                     
-                    if isNaN(gnps_df['GNPSSMILES'][i]):
+                    if not isNaN(gnps_df['GNPSSMILES'][i]):
                         if chng == '':
                             break
-                        else:
+                        elif gnps_df['GNPSSMILES'][i].isalpha():
                             s = pcp.get_compounds(chng[0], 'name')
                             if s:
                                 for comp in s:
@@ -828,25 +845,6 @@ def spec_postproc(input_dir, Source = "all"):
 
         return(df)
     
-    if Source == "hmdb":
-        dict1 = {'GNPSr': GNPScsvfiles2, 'HMDBr': HMDBcsvfiles2, 'MBr': MassBankcsvfiles2} 
-        df = pd.DataFrame(dict1)
-
-        return(df)
-    
-    if Source == "mbank":
-        dict1 = {'GNPSr': GNPScsvfiles2, 'HMDBr': HMDBcsvfiles2, 'MBr': MassBankcsvfiles2} 
-        df = pd.DataFrame(dict1)
-
-        return(df)
-    
-    if Source == "gnps":
-        dict1 = {'GNPSr': GNPScsvfiles2, 'HMDBr': HMDBcsvfiles2, 'MBr': MassBankcsvfiles2} 
-        df = pd.DataFrame(dict1)
-
-        return(df)
-    
-    
 
 
 # In[14]:
@@ -857,10 +855,10 @@ def spec_postproc(input_dir, Source = "all"):
 
 # ### Combine_all Spectral DBs for one file
 
-# In[15]:
+# In[4]:
 
 
-def combine_specdb(df):
+def combine_specdb(input_dir):
     
     """combine_specdb function combines all results from different
     spectral dbs. Can only be used if more than one db is used 
@@ -868,16 +866,40 @@ def combine_specdb(df):
     Parameters:
     input_dir (str): This is the input directory where all the .mzML 
     files and their respective result directories are stored.
-    df (dataframe): dataframe from spec_postproc
 
     Returns:
     dataframe: of the paths of the merged results
     
     
     Usage:
-    combine_specdb(spec_ppR)
+    combine_specdb(input_dir)
 
     """
+    
+    # empty lists of csv files paths for each database
+    GNPScsvfiles2 = []
+    HMDBcsvfiles2 = []
+    MassBankcsvfiles2 = []
+    
+    #list all files and directories
+    for entry in os.listdir(input_dir):
+        if os.path.isdir(os.path.join(input_dir, entry)):
+            
+            # enter the directory with /spectral_dereplication/ results
+            sub_dir = input_dir + entry + '/spectral_dereplication'
+            if os.path.exists(sub_dir):
+                files = (glob.glob(sub_dir+'/*.csv'))
+
+                for f in files:
+                    if 'gnps_with_' in f: 
+                        GNPScsvfiles2.append(f)
+                    if 'hmdbproc.' in f: 
+                        HMDBcsvfiles2.append(f)
+                    if 'mbankproc.' in f: 
+                        MassBankcsvfiles2.append(f)
+    
+    dict1 = {'GNPSr': GNPScsvfiles2, 'HMDBr': HMDBcsvfiles2, 'MBr': MassBankcsvfiles2} 
+    df = pd.DataFrame(dict1)
     
     Merged_Result_df = []
     
@@ -892,8 +914,7 @@ def combine_specdb(df):
         # merge on the basis of Idx
         MergedRE = CSVfileG.merge(CSVfileH,on='id_X').merge(CSVfileM,on='id_X')
 
-        #
-        csvname = (os.path.splitext(df["GNPSr"][i])[0]).replace("gnps_csv_with_cor_names", "mergedR.csv")
+        csvname = (df["GNPSr"][i]).replace("gnps_with_cor_names", "mergedR")
         MergedRE.to_csv(csvname)
         Merged_Result_df.append(csvname)
         
@@ -911,7 +932,7 @@ def combine_specdb(df):
 # In[17]:
 
 
-def combine_allspec(input_dir, comb_df):
+def combine_allspec(input_dir):
     
     """combine_allspec function combines all results from different
     spectral dbs. Can only be used if more than one db is used 
@@ -929,7 +950,22 @@ def combine_allspec(input_dir, comb_df):
 
     """
     
-    combined_csv = pd.concat([pd.read_csv(f) for f in comb_df], ignore_index=True)
+    Mergedcsvfiles = []
+    
+    #list all files and directories
+    for entry in os.listdir(input_dir):
+        if os.path.isdir(os.path.join(input_dir, entry)):
+            
+            # enter the directory with /spectral_dereplication/ results
+            sub_dir = input_dir + entry + '/spectral_dereplication'
+            if os.path.exists(sub_dir):
+                files = (glob.glob(sub_dir+'/*.csv'))
+
+                for f in files:
+                    if 'mergedR.csv' in f: 
+                        Mergedcsvfiles.append(f)
+    
+    combined_csv = pd.concat([pd.read_csv(l) for l in Mergedcsvfiles], ignore_index=True)
     
     for i, row in combined_csv.iterrows():
         if combined_csv['GNPSSMILES'][i] == ' ' or isNaN(combined_csv['GNPSSMILES'][i]):
@@ -991,8 +1027,10 @@ def scoring_spec(input_dir, combined):
     # mzScore >= 0.50
     # ratio of the matchingpeaks by the totalpeaks in the query >= 0.50
     
+    combined = pd.read_csv(combined)
+    
     def HMDB_Scoring(db, i):
-        if db['HMDBmax_similarity'][i] >= 0.75 and db['HMDBintScore'][i] >= 0.50 and db['HMDBmzScore'][i] >= 0.50 and db['HMDBQMatchingPeaks'][i]/db['hmdbQueryTotalPeaks'][i] >= 0.50:
+        if db['HMDBmax_similarity'][i] >= 0.75 and db['HMDBintScore'][i] >= 0.50 and db['HMDBmzScore'][i] >= 0.50 and db['HQMatchingPeaks'][i]/db['hQueryTotalPeaks'][i] >= 0.50:
             return True
         else:
             return False
@@ -1152,6 +1190,8 @@ def suspectListScreening(input_dir, slistcsv, SpectralDB_Results):
 
     """
     
+    SpectralDB_Results = pd.read_csv(SpectralDB_Results)
+    
     # add columns to the resulst from scoring_spec
     # these columns are for high similiarity canidtes between the databases and suspect list
     SpectralDB_Results['HLsmiles'] = np.nan
@@ -1199,7 +1239,7 @@ def suspectListScreening(input_dir, slistcsv, SpectralDB_Results):
             SpectralDB_Results['occurence'][i] = SpectralDB_Results['occurence'][i] + 1
             SpectralDB_Results['annotation'][i] = SpectralDB_Results['annotation'][i] + ', Suspect_List'
             
-    combined.to_csv(input_dir + "MetabolomicsResults/SpecDBvsSL.csv")
+    SpectralDB_Results.to_csv(input_dir + "MetabolomicsResults/SpecDBvsSL.csv")
     return(SpectralDB_Results)
 
 
@@ -1463,7 +1503,7 @@ def combineSM(input_dir, metfrag, sirius):
 # In[29]:
 
 
-def specDB_Curation(input_dir, combined, sl = True):
+def specDB_Curation(input_dir, combinedx, sl = True):
     
     """specDB_Curation prioritizes in the following manner: gnps>
     mbank>suspectlist>hmdb
@@ -1480,13 +1520,13 @@ def specDB_Curation(input_dir, combined, sl = True):
     csv: "MetabolomicsResults/curatedSDB.csv"
     
     Usage:
-    specDB_Curation(input_dir = "usr/project/",combined, sl = True)
+    specDB_Curation(input_dir = "usr/project/",combinedx, sl = True)
 
     """
 
     # define scores again to remove the entries with lower scores
     def HMDB_Scoring(db, i):
-        if db['HMDBmax_similarity'][i] >= 0.75 and db['HMDBintScore'][i] >= 0.50 and db['HMDBmzScore'][i] >= 0.50 and db['HMDBQMatchingPeaks'][i]/db['hmdbQueryTotalPeaks'][i] >= 0.50:
+        if db['HMDBmax_similarity'][i] >= 0.75 and db['HMDBintScore'][i] >= 0.50 and db['HMDBmzScore'][i] >= 0.50 and db['HQMatchingPeaks'][i]/db['hQueryTotalPeaks'][i] >= 0.50:
             return True
         else:
             return False
@@ -1496,10 +1536,14 @@ def specDB_Curation(input_dir, combined, sl = True):
         else:
             return False
     def MB_Scoring(db, i):
-        if db['MBmax_similarity'][i] >= 0.75 and db['MBintScore'][i] >= 0.50 and db['MBmzScore'][i] >= 0.50 and db['MBQMatchingPeaks'][i]/db['mbQueryTotalPeaks'][i] >= 0.50:
+        if db['MBmax_similarity'][i] >= 0.75 and db['MBintScore'][i] >= 0.50 and db['MBmzScore'][i] >= 0.50 and db['MQMatchingPeaks'][i]/db['mQueryTotalPeaks'][i] >= 0.50:
             return True
         else:
             return False
+    
+    
+    combined = pd.read_csv(combinedx)
+    
     
     # remove the similarity scores from low scoring candidates
     for i, row in combined.iterrows():
@@ -1508,7 +1552,7 @@ def specDB_Curation(input_dir, combined, sl = True):
         else:
             combined['GNPSspectrumID'][i] = np.nan
             combined['MBspectrumID'][i] = np.nan
-            combined['HMDBcompound_id'][i] = np.nan
+            combined['HMDBcompoundID'][i] = np.nan
     
     # if sl = True
     if sl:
@@ -1518,7 +1562,7 @@ def specDB_Curation(input_dir, combined, sl = True):
         ##### When there is an annotaion from all DBs #####
     
         #all entries with a high scoring annotation in all DBs,
-            if not isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompound_id'][i]):
+            if not isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompoundID'][i]):
         
                 # entries with same candidate from all Spectral DBs
                 if combined['tanimotoHG'][i] == 1.0 and combined['tanimotoGM'][i] == 1.0 and combined['tanimotoHM'][i] == 1.0:
@@ -1579,7 +1623,7 @@ def specDB_Curation(input_dir, combined, sl = True):
     
     
             # only GNPS and HMDB
-            if not isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompound_id'][i]):
+            if not isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompoundID'][i]):
 
                 if not isNaN(combined['GLname'][i]):
                     combined.loc[i, 'Annotation'] = 'GNPS, SuspectList'
@@ -1592,7 +1636,7 @@ def specDB_Curation(input_dir, combined, sl = True):
         
     
             # only GNPS and MassBank
-            if not isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompound_id'][i]):
+            if not isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompoundID'][i]):
 
                 if not isNaN(combined['GLname'][i]):
                     combined.loc[i, 'Annotation'] = 'GNPS, SuspectList'
@@ -1605,7 +1649,7 @@ def specDB_Curation(input_dir, combined, sl = True):
     
             # only MassBank and HMDB
     
-            if isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompound_id'][i]):
+            if isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompoundID'][i]):
 
                 if not isNaN(combined['MLname'][i]):
                     combined.loc[i, 'Annotation'] = 'MassBank, SuspectList'
@@ -1620,7 +1664,7 @@ def specDB_Curation(input_dir, combined, sl = True):
     
     
             # only GNPS
-            if not isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompound_id'][i]):
+            if not isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompoundID'][i]):
         
                 #If also SuspectList
                 if not isNaN(combined['GLname'][i]):
@@ -1629,14 +1673,14 @@ def specDB_Curation(input_dir, combined, sl = True):
                     combined.loc[i, 'Annotation'] = 'GNPS'
         
             # only MassBank
-            if isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompound_id'][i]):
+            if isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompoundID'][i]):
                 combined.loc[i, 'Annotation'] = 'MassBank'
                 #If also SuspectList
                 if not isNaN(combined['MLname'][i]):
                     combined.loc[i, 'Annotation'] = 'MassBank, SuspectList'
     
             # only HMDB
-            if isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompound_id'][i]):
+            if isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompoundID'][i]):
                 combined.loc[i, 'Annotation'] = 'HMDB'
                 #If also SuspectList
                 if not isNaN(combined['HLname'][i]):
@@ -1648,7 +1692,7 @@ def specDB_Curation(input_dir, combined, sl = True):
         ##### When there is an annotaion from all DBs #####
     
         #all entries with a high scoring annotation in all DBs,
-            if not isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompound_id'][i]):
+            if not isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompoundID'][i]):
         
                 # entries with same candidate from all Spectral DBs
                 if combined['tanimotoHG'][i] == 1.0 and combined['tanimotoGM'][i] == 1.0 and combined['tanimotoHM'][i] == 1.0:
@@ -1679,7 +1723,7 @@ def specDB_Curation(input_dir, combined, sl = True):
     
     
             # only GNPS and HMDB
-            if not isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompound_id'][i]):
+            if not isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompoundID'][i]):
 
                 if not isNaN(combined['GNPSSMILES'][i]):
                     combined.loc[i, 'Annotation'] = 'GNPS'
@@ -1688,7 +1732,7 @@ def specDB_Curation(input_dir, combined, sl = True):
         
     
             # only GNPS and MassBank
-            if not isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompound_id'][i]):
+            if not isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompoundID'][i]):
 
                 if not isNaN(combined['GNPSSMILES'][i]):
                     combined.loc[i, 'Annotation'] = 'GNPS'
@@ -1696,7 +1740,7 @@ def specDB_Curation(input_dir, combined, sl = True):
                     combined.loc[i, 'Annotation'] = 'MassBank'
     
             # only MassBank and HMDB
-            if isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompound_id'][i]):
+            if isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompoundID'][i]):
                 combined.loc[i, 'Annotation'] = 'MassBank'
     
     
@@ -1705,16 +1749,16 @@ def specDB_Curation(input_dir, combined, sl = True):
     
     
             # only GNPS
-            if not isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompound_id'][i]):
+            if not isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompoundID'][i]):
                 if not isNaN(combined['GNPSSMILES'][i]):
                     combined.loc[i, 'Annotation'] = 'GNPS'
         
             # only MassBank
-            if isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompound_id'][i]):
+            if isNaN(combined['GNPSspectrumID'][i]) and not isNaN(combined['MBspectrumID'][i]) and isNaN(combined['HMDBcompoundID'][i]):
                 combined.loc[i, 'Annotation'] = 'MassBank'
     
             # only HMDB
-            if isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompound_id'][i]):
+            if isNaN(combined['GNPSspectrumID'][i]) and isNaN(combined['MBspectrumID'][i]) and not isNaN(combined['HMDBcompoundID'][i]):
                 combined.loc[i, 'Annotation'] = 'HMDB'
                 
     combined.to_csv(input_dir + "MetabolomicsResults/curatedSDB.csv")
@@ -1739,7 +1783,7 @@ def specDB_Curation(input_dir, combined, sl = True):
 # In[31]:
 
 
-def combine_CuratedR(input_dir, curatedSDB, combinedSM):
+def combine_CuratedR(input_dir, combinedSDBs, combinedSMs):
     
     """combine_CuratedR prioritizes in the following manner: gnps>
     mbank>suspectlist>sirius>hmdb>metfrag
@@ -1760,8 +1804,10 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
 
     """
 
+    combinedSDB = pd.read_csv(combinedSDBs)
+    combinedSM = pd.read_csv(combinedSMs)
     
-    mega = pd.concat([combinedSM, curatedSDB], axis = 1, levels = ["id_X"])
+    mega = pd.concat([combinedSM, combinedSDB], axis = 1, levels = ["id_X"])
     
     for i, row in mega.iterrows():
     
@@ -1874,19 +1920,21 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
     
     
     
-    bef_mega = mega.loc[:,~megaA.columns.duplicated()]
+    bef_mega = mega.loc[:,~mega.columns.duplicated()]
     
     for i, row in bef_mega.iterrows():
         if not isNaN(bef_mega['Annotation_Source'][i]):
         
             if 'SIRIUS' in bef_mega['Annotation_Source'][i] and 'SIRIUS_Formula' not in bef_mega['Annotation_Source'][i]:
                 bef_mega.loc[i, 'SMILES_final'] = bef_mega['SMILES'][i]
+                bef_mega.loc[i,"CompoundNames"] = bef_mega['name'][i]
                 bef_mega['PC_MCSS_SMILES'][i] = np.nan
                 bef_mega['KG_MCSS_SMILES'][i] = np.nan
             
             
             elif 'MassBank' in bef_mega['Annotation_Source'][i]:
                 bef_mega.loc[i, 'SMILES_final'] = bef_mega['MBSMILES'][i]
+                bef_mega.loc[i, 'CompoundNames'] = bef_mega['MBcompound_name'][i]
                 bef_mega['most_specific_class'][i] = np.nan
                 bef_mega['level _5'][i] = np.nan
                 bef_mega['subclass'][i] = np.nan
@@ -1901,6 +1949,7 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
             
             elif 'HMDB' in bef_mega['Annotation_Source'][i]:
                 bef_mega.loc[i, 'SMILES_final'] = bef_mega['HMDBSMILES'][i]
+                bef_mega.loc[i, 'CompoundNames'] = bef_mega['HMDBcompound_name'][i]
                 bef_mega['most_specific_class'][i] = np.nan
                 bef_mega['level _5'][i] = np.nan
                 bef_mega['subclass'][i] = np.nan
@@ -1915,6 +1964,8 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
             
             elif 'GNPS, SuspectList' in bef_mega['Annotation_Source'][i]:
                 bef_mega.loc[i,'SMILES_final'] = bef_mega['GLsmiles'][i]
+                bef_mega.loc[i, 'CompoundNames'] = bef_mega['GLname'][i]
+                bef_mega.loc[i, 'CompoundNames']
                 bef_mega['most_specific_class'][i] = np.nan
                 bef_mega['level _5'][i] = np.nan
                 bef_mega['subclass'][i] = np.nan
@@ -1929,6 +1980,7 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
         
             elif 'GNPS' in bef_mega['Annotation_Source'][i]:
                 bef_mega.loc[i,'SMILES_final'] = bef_mega['GNPSSMILES'][i]
+                bef_mega.loc[i, 'CompoundNames'] = bef_mega['GNPScompound_name'][i]
                 bef_mega['most_specific_class'][i] = np.nan
                 bef_mega['level _5'][i] = np.nan
                 bef_mega['subclass'][i] = np.nan
@@ -1943,6 +1995,7 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
             
             elif 'PubChem' in bef_mega['Annotation_Source'][i]:
                 bef_mega.loc[i, 'SMILES_final'] = bef_mega['PC_SMILES'][i]
+                bef_mega.loc[i, 'CompoundNames'] = bef_mega['PC_Name'][i]
                 bef_mega['most_specific_class'][i] = np.nan
                 bef_mega['level _5'][i] = np.nan
                 bef_mega['subclass'][i] = np.nan
@@ -1956,6 +2009,7 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
 
             elif 'KEGG' in bef_mega['Annotation_Source'][i]:
                 bef_mega.loc[i, 'SMILES_final'] = bef_mega['KG_SMILES'][i]
+                bef_mega.loc[i, 'CompoundNames'] = bef_mega['KG_Name'][i]
                 bef_mega['most_specific_class'][i] = np.nan
                 bef_mega['level _5'][i] = np.nan
                 bef_mega['subclass'][i] = np.nan
@@ -1971,7 +2025,9 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
                 bef_mega['PC_MCSS_SMILES'][i] = np.nan
                 bef_mega['KG_MCSS_SMILES'][i] = np.nan
                 
-        
+    
+    
+    
     bef_megaA = bef_mega[['id_X', 
                           'premz', 
                           'rtmed', 
@@ -1980,9 +2036,7 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
                           'col_eng', 
                           'pol', 
                           'SMILES_final', 
-                          'Formula', 
-                          'Name',
-                          'Molecular_mass', 
+                          'CompoundNames', 
                           'MCSS_SMILES', 
                           'PC_MCSS_SMILES', 
                           'KG_MCSS_SMILES', 
@@ -2006,7 +2060,7 @@ def combine_CuratedR(input_dir, curatedSDB, combinedSM):
 # In[33]:
 
 
-def checkSMILES_validity(input_dir, results):
+def checkSMILES_validity(input_dir, resultcsv):
     
     """checkSMILES_validity does exactly as the name says, using
     RDKit, whether the SMILES are invalid or have invalid 
@@ -2026,7 +2080,7 @@ def checkSMILES_validity(input_dir, results):
     checkSMILES_validity(input_dir = "usr/project/", results)
 
     """
-    
+    results = pd.read_csv(resultcsv)
     # check validity of SMILES
     for i, row in results.iterrows():
         if not isNaN(results['SMILES_final'][i]):
@@ -2051,7 +2105,7 @@ def checkSMILES_validity(input_dir, results):
 # In[35]:
 
 
-def classification(input_dir, frame):
+def classification(input_dir, resultcsv):
     
     """classification function uses ClassyFire ChemONT
 
@@ -2059,7 +2113,7 @@ def classification(input_dir, frame):
     input_dir (str): This is the input directory where all the .mzML 
     files and their respective result directories are stored.
     
-    frame: df from combine_CuratedR or checkSMILES_validity
+    resultcsv: csv of df from combine_CuratedR or checkSMILES_validity
     
     Returns:
     dataframe: with classification
@@ -2069,7 +2123,7 @@ def classification(input_dir, frame):
     checkSMILES_validity(input_dir = "usr/project/", frame)
 
     """
-    
+    frame = pd.read_csv(resultcsv)
     inchis = []
     for i, row in frame.iterrows():
         if not isNaN(frame['SMILES_final'][i]) and isNaN(frame['Classification_Source'][i]):
