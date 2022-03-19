@@ -80,8 +80,8 @@ download_specDB <- function(input_dir, db = "all", error = TRUE){
                      sep =  " "))
         
         # load the spectra into MsBackendMgf
-        gnps <- Spectra(paste(input_dir, "ALL_GNPS.mgf", sep = ''), source = MsBackendMgf())
-        save(gnps, file = paste(input_dir,"gnps.rda", sep = ""))
+        gnpsdb <- Spectra(paste(input_dir, "ALL_GNPS.mgf", sep = ''), source = MsBackendMgf())
+        save(gnpsdb, file = paste(input_dir,"gnps.rda", sep = ""))
         
         # delete the database in its format to free up space
         system(paste("rm", (paste(input_dir, "ALL_GNPS.mgf", sep = '')), sep = " "))

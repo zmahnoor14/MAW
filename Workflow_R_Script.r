@@ -21,9 +21,12 @@ start_time <- Sys.time()
 input_dir <- paste(getwd(), "/", sep = '')
 input_dir
 
+<<<<<<< HEAD
 #input_dir <- "/Users/mahnoorzulfiqar/OneDriveUNI/MZML/"
 #input_dir
 
+=======
+>>>>>>> 9afee6f (modified)
 # load the functions file
 source(file = paste(input_dir, "Workflow_R_Functions.r", sep = ''))
 
@@ -107,8 +110,12 @@ for (i in 1:nrow(input_table)){
     spec_pr2 <- ms2_peaks(pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "./"), sep =""), 
                           proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "./"), sep =""),
                           input_dir,
+<<<<<<< HEAD
                           input_table[i, "ResultFileNames"],
                          file_id = input_table[i, "File_id"]) 
+=======
+                          input_table[i, "ResultFileNames"]) 
+>>>>>>> 9afee6f (modified)
     
     # Extract MS1 peaks or isotopic peaks
     ms1p <- ms1_peaks(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS2DATA.csv', sep = ""), "./"), sep =""), 
