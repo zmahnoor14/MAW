@@ -1,0 +1,23 @@
+name: mawRpy
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - r-base
+  - bioconductor-spectra
+  - bioconductor-camera
+  - bioconductor-msbackendmgf
+  - r-readr
+  - r-dplyr
+  - r-xml2
+  - r-remotes
+  - pandas
+  - statistics
+  - openpyxl
+  - pubchempy
+  - jinja2
+  - joblib
+  - ipykernel
+  - networkx
+  - requests_cache
+prefix: /Users/mahnoorzulfiqar/opt/anaconda3/envs/mawRpy
