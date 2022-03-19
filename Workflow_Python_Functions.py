@@ -22,7 +22,7 @@ import json
 from pandas import json_normalize
 
 
-import openpyxl
+#import openpyxl
 import statistics
 import sys
 
@@ -72,10 +72,10 @@ def slist_metfrag(input_dir, slist_csv):
         mols = Chem.MolFromSmiles(sl['SMILES'][i])
         sl.loc[i, 'InChIKey'] = Chem.inchi.MolToInchiKey(mols)
         sl_mtfrag.append(sl['InChIKey'][i])
-    return(sl_mtfrag)
-    with open((input_dir + 'SL_metfrag.txt'), 'w') as filehandle:
+    with open((input_dir + 'SLS_metfrag.txt'), 'w') as filehandle:
         for listitem in sl_mtfrag:
             filehandle.write('%s\n' % listitem)
+    return(sl_mtfrag)
 
 
 # In[4]:
@@ -179,7 +179,7 @@ def slist_sirius(input_dir, slist_csv, substring = None):
                 if charge > 1:
                     sl = sl.drop(labels = i, axis = 0) 
                     
-    slsirius = pd.DataFrame({'smiles':smiles})
+    slsirius = pd.DataFrame({'smiles':sl["SMILES"]})
     slsirius.to_csv(input_dir+ "SL_Sirius.tsv", sep = "\t", header = False, index = False)
     os.system("sirius --input " + input_dir + "SL_Sirius.tsv custom-db --name=SL_Frag --output "+ input_dir)
 # Usage:
@@ -2156,9 +2156,9 @@ def classification(input_dir, resultcsv):
 
     while True:
     
-        start_time = time.time()
+        #start_time = time.time()
     
-        print('%s inchikey to resolve' % total_inchikey_number )
+        #print('%s inchikey to resolve' % total_inchikey_number )
         get_classifications_cf_mod(all_inchi_keys, par_level = 6)
     
         cleanse('all_json.json', 'all_json.json')
@@ -2170,8 +2170,8 @@ def classification(input_dir, resultcsv):
         df = df.drop_duplicates( 'inchikey' )
         resolved_ik_number = len( df.drop_duplicates('inchikey').inchikey )
         resolved_ik_number_list.append( resolved_ik_number )
-        print('%s resolved inchikeys' % resolved_ik_number )
-        print("done in --- %s seconds ---" % (time.time() - start_time))
+        #print('%s resolved inchikeys' % resolved_ik_number )
+        #print("done in --- %s seconds ---" % (time.time() - start_time))
     
         if resolved_ik_number_list[-1] < resolved_ik_number_list[-2] or resolved_ik_number_list[-1] == resolved_ik_number_list[-3]:
             break
@@ -2193,9 +2193,11 @@ def classification(input_dir, resultcsv):
                 frame.loc[q, 'superclass'] = df_merged["superclass.name"][p]
                 frame.loc[q, 'Classification_Source'] = "ClassyFire"
     #frame.to_csv(input_dir, '/SIRIUS_combined.csv')
-    return(frame)
+    
+
 
     frame.to_csv(input_dir + "MetabolomicsResults/final_curationList.csv")
+    return(frame)
 
 
 # In[36]:
