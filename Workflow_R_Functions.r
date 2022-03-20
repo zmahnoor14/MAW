@@ -23,8 +23,8 @@ download_specDB <- function(input_dir, db = "all", error = TRUE){
                      sep =  " "))
         
         # load the spectra into MsBackendMgf
-        gnps <- Spectra(paste(input_dir, "ALL_GNPS.mgf", sep = ''), source = MsBackendMgf())
-        save(gnps, file = paste(input_dir,"gnps.rda", sep = ""))
+        gnpsdb <- Spectra(paste(input_dir, "ALL_GNPS.mgf", sep = ''), source = MsBackendMgf())
+        save(gnpsdb, file = paste(input_dir,"gnps.rda", sep = ""))
         
         # delete the database in its format to free up space
         system(paste("rm", (paste(input_dir, "ALL_GNPS.mgf", sep = '')), sep = " "))
@@ -262,24 +262,24 @@ spec_Processing <- function(x, result_dir){
 # x is precursor mass, 
 # spec is the spectra file (sps_all is mzML input processed spectra, gnps, hmdb or mbank), 
 # ppmx is ppm value
-spec2_Processing <- function(z, spec = "sps_all", ppmx = 15){
-    if (spec == "sps_all"){
+spec2_Processing <- function(z, obj, spec = "spec_all", ppmx = 15){
+    if (spec == "spec_all"){
         #' Subset the dataset to MS2 spectra matching the m/z
-        sps <- filterPrecursorMz(sps_all, mz = z + ppm(c(-z, z), 10))
+        sps <- filterPrecursorMz(obj, mz = z + ppm(c(-z, z), 10))
     } else if (spec == "gnps"){
         #gnps spectra that contains precursor mass
-        has_mz <- containsMz(gnps, mz = z, ppm = ppmx)
+        has_mz <- containsMz(obj, mz = z, ppm = ppmx)
         #' Subset the GNPS Spectra
-        sps <- gnps[has_mz]
+        sps <- obj[has_mz]
     } else if (spec == "hmdb"){
         #hmdb spectra that contains precursor mass
-        has_mz <- containsMz(hmdb, mz = z, ppm = ppmx)
+        has_mz <- containsMz(obj, mz = z, ppm = ppmx)
         #' Subset the HMDB Spectra
-        sps <- hmdb[has_mz]
+        sps <- obj[has_mz]
     } else if (spec == "mbank"){
-        has_mz <- containsMz(mbank,mz = z, ppm = ppmx)
+        has_mz <- containsMz(obj, mz = z, ppm = ppmx)
         #' Subset the HMDB Spectra
-        sps <- mbank[has_mz]
+        sps <- obj[has_mz]
     }
     
     #wrong input error message
@@ -469,9 +469,9 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
         
         nx <- 0
         
-        
+
         for (x in pre_mz){
-        
+
             
             nx <- nx+1
             
@@ -500,10 +500,10 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             rtmean <- c(rtmean, rtmn)
        
             #### input spec with pre_mz
-            sps <- spec2_Processing(x, spec = "sps_all", ppmx)
+            sps <- spec2_Processing(x, sps_all, spec = "spec_all")
         
             #### GNPS spec with pre_mz
-            gnps_with_mz <- spec2_Processing(x, spec = "gnps", ppmx)
+            gnps_with_mz <- spec2_Processing(x, gnpsdb, spec = "gnps", ppmx) # change here later
 
         
             dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/GNPS/", sep = ""), "./"), sep ="")
@@ -517,6 +517,12 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             
                 #' obtain GNPS spectra that matches the most with m/z MS2 spectra
                 idx <- which(res == max(res), arr.ind = TRUE)
+                
+                if (nrow(idx)>1){
+                    idx <- idx[1,]
+                }
+        
+                
                 gnps_best_match <- gnps_with_mz[idx[2]]
                 df_peaklists <- peakdf(gnps_best_match, sps[idx[1]], ppmx)
             
@@ -1059,10 +1065,10 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             rtmean <- c(rtmean, rtmn)
 
             #### input spec with pre_mz
-            sps <- spec2_Processing(x, spec = "sps_all", ppmx = NULL)
+            sps <- spec2_Processing(x, sps_all, spec = "spec_all", ppmx = NULL)
 
             #### HMDB spec with pre_mz
-            hmdb_with_mz <- spec2_Processing(x, spec = "hmdb", ppmx = 15)
+            hmdb_with_mz <- spec2_Processing(x, hmdb, spec = "hmdb", ppmx = 15)
 
 
             dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/HMDB/", sep = ""), "./"), sep ="")
@@ -1075,6 +1081,11 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
 
                 #' obtain HMDB spectra that matches the most with m/z MS2 spectra
                 idx <- which(res == max(res), arr.ind = TRUE)
+                
+                if (nrow(idx)>1){
+                    idx <- idx[1,]
+                }
+                
                 hmdb_best_match <- hmdb_with_mz[idx[2]]
                 df_peaklists <- peakdf(hmdb_best_match, sps[idx[1]], ppmx)
 
@@ -1495,7 +1506,11 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
      ####-------------------------------------------------------------
     if (db == "all" || db =="mbank"){
 
+<<<<<<< HEAD
         load(file = paste(input_dir,"mbank.rda", sep = ""))
+=======
+        load(file = paste(input_dir,"mbankNIST.rda", sep = ""))
+>>>>>>> 25c6491 (cleaned directory)
         
         # common
 
@@ -1553,10 +1568,10 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             rtmean <- c(rtmean, rtmn)
 
             #### input spec with pre_mz
-            sps <- spec2_Processing(x, spec = "sps_all", ppmx = NULL)
+            sps <- spec2_Processing(x, sps_all, spec = "spec_all")
 
             #### GNPS spec with pre_mz
-            mbank_with_mz <- spec2_Processing(x, spec = "mbank", ppmx = 15)
+            mbank_with_mz <- spec2_Processing(x, mbank, spec = "mbank", ppmx = 15)
             
             
 
@@ -1571,6 +1586,12 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
 
                 #' obtain GNPS spectra that matches the most with m/z MS2 spectra
                 idx <- which(res == max(res), arr.ind = TRUE)
+                
+                if (nrow(idx)>1){
+                    idx <- idx[1,]
+                }
+                
+                
                 mbank_best_match <- mbank_with_mz[idx[2]]
                 df_peaklists <- peakdf(mbank_best_match, sps[idx[1]], ppmx)
 
@@ -2052,84 +2073,91 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
     
     # pre_mz is a list of precursor m/z
     for (i in pre_mz){
-        #mz
-        premz <- c(premz, i)
+        
         
         #filter based on pre mz; sps_all is preprocessed spectra
         sps <- filterPrecursorMz(sps_all, i)
         
-        #rtmin
-        rn <- min(sps$rtime)
-        rtmin <- c(rtmin, rn)
-        
-        #rtmax
-        rx <- max(sps$rtime)
-        rtmax <- c(rtmax, rx)
-        
-        #rtmedian
-        rtm <- median(sps$rtime, na.rm = TRUE)
-        rtmed <- c(rtmed, rtm)
-        
-        #rtmean
-        rtme <- mean(sps$rtime, na.rm = TRUE)
-        rtmean <- c(rtmean, rtme)
-        
-        
-        #collision energy
-        ce <- max(sps$collisionEnergy)
-        col_eng <- c(col_eng, ce)
-            
-        #polarity
-        pl <- max(sps$polarity)
-        if (pl == 1){
-            px <- 'pos'
-            pol <- c(pol, px)
-        }
-        else {
-            px <- 'neg'
-            pol <- c(pol, px)
-        }
-        
-        #int 
-        ints <- max(sps$precursorIntensity)
-        int <- c(int, ints) 
-        
-        #ids
-        nx <- nx+1
-        id_Xx <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
-                          "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
-                          "ID", as.character(nx), sep = '')
-        id_X <- c(id_X, id_Xx)
-        
-        #peak lists
-        # variable for name
-        names <- c()
-        
-        # create a new directory to store all the peak list txt files
-        dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/peakfiles_ms2", sep =""), "./"), sep = "")
-        if (!file.exists(dir_name)){
-            dir.create(dir_name, recursive = TRUE)
-        }
-        
-        for (j in 1:length(sps)){
-            nam <- paste('pk', j, sep = '') ## name of variable
-            assign(nam, cbind(mz = unlist(mz(sps[j])),intensity = unlist(intensity(sps[j])))) ## assign name to peaklist
-            names <- c(names, nam) ## save names in another variable
-        
-            ## at the end of each list, extract the peak list via combinePeaks function
-            if (j == length(sps)){
-                n <- paste(names, collapse = ', ') #paste names at the end
-                func <- eval(parse(text = paste('combinePeaks(list(',n,'))', sep = ''))) #write the function and then run it
-                indeX <- indeX+1
-                Y <- as.character(indeX)# numbering for naming peak lists
-                #create separate folder for peaklists files
-                fileN <- paste(dir_name, '/Peaks_0', Y, '.txt', sep = '')
-                write.table(func, fileN, row.names = FALSE, col.names = FALSE)
-                fileN1 <- str_replace(fileN, input_dir, "./")
-                ms2Peaks <- c(ms2Peaks, fileN1)
+        if (length(sps)>0){
+            #mz
+            premz <- c(premz, i)
+
+            #rtmin
+            rn <- min(sps$rtime)
+            rtmin <- c(rtmin, rn)
+
+            #rtmax
+            rx <- max(sps$rtime)
+            rtmax <- c(rtmax, rx)
+
+            #rtmedian
+            rtm <- median(sps$rtime, na.rm = TRUE)
+            rtmed <- c(rtmed, rtm)
+
+            #rtmean
+            rtme <- mean(sps$rtime, na.rm = TRUE)
+            rtmean <- c(rtmean, rtme)
+
+
+            #collision energy
+            ce <- max(sps$collisionEnergy)
+            col_eng <- c(col_eng, ce)
+
+            #polarity
+            pl <- max(sps$polarity)
+            if (pl == 1){
+                px <- 'pos'
+                pol <- c(pol, px)
+            }
+            else {
+                px <- 'neg'
+                pol <- c(pol, px)
+            }
+
+            #int 
+            ints <- max(sps$precursorIntensity)
+            int <- c(int, ints) 
+
+            #ids
+            nx <- nx+1
+            id_Xx <- paste(file_id,  "M",  as.character(round(i, digits = 0)), 
+                              "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
+                              "ID", as.character(nx), sep = '')
+            id_X <- c(id_X, id_Xx)
+
+            #peak lists
+            # variable for name
+            names <- c()
+
+            # create a new directory to store all the peak list txt files
+            dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/peakfiles_ms2", sep =""), "./"), sep = "")
+            if (!file.exists(dir_name)){
+                dir.create(dir_name, recursive = TRUE)
+            }
+
+            for (j in 1:length(sps)){
+                nam <- paste('pk', j, sep = '') ## name of variable
+                assign(nam, cbind(mz = unlist(mz(sps[j])),intensity = unlist(intensity(sps[j])))) ## assign name to peaklist
+                names <- c(names, nam) ## save names in another variable
+
+                ## at the end of each list, extract the peak list via combinePeaks function
+                if (j == length(sps)){
+                    n <- paste(names, collapse = ', ') #paste names at the end
+                    func <- eval(parse(text = paste('combinePeaks(list(',n,'))', sep = ''))) #write the function and then run it
+                    indeX <- indeX+1
+                    Y <- as.character(indeX)# numbering for naming peak lists
+                    #create separate folder for peaklists files
+                    fileN <- paste(dir_name, '/Peaks_0', Y, '.txt', sep = '')
+                    write.table(func, fileN, row.names = FALSE, col.names = FALSE)
+                    fileN1 <- str_replace(fileN, input_dir, "./")
+                    ms2Peaks <- c(ms2Peaks, fileN1)
+                }
             }
         }
     }
+        
+        
+        
     first_list <- data.frame(cbind(id_X, premz, rtmed, rtmean, int ,col_eng, pol, ms2Peaks))
     write.csv(first_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS2DATA.csv', sep = ""), "./"), sep =""))
     return(first_list)
@@ -2395,6 +2423,7 @@ cam_func <- function(path, f, mode = "pos"){
 ms1_peaks <- function(x, y, result_dir, input_dir, QCfile = TRUE){
     # store the ms1_peak list path here
     ms1Peaks <- c()
+    x = read.csv(x)
     
     if (QCfile){
         
@@ -2406,7 +2435,7 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile = TRUE){
         
         # read the CAMERA results
         y = read.csv(y)
-        x = read.csv(x)
+        
         
         # for all indices in the ms2 features table
         for (i in 1:nrow(x)){
@@ -2491,6 +2520,7 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile = TRUE){
         return(second_list)
     }
     else{
+        
         ms1Peaks <- c(ms1Peaks, 'no ms1 peaks in QC')
         second_list <- data.frame(cbind(x, ms1Peaks))
         write.csv(second_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA.csv', sep = ""), "./"), sep =""))

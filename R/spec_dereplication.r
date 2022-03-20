@@ -117,24 +117,24 @@ label_fun <- function(x) {
 # x is precursor mass, 
 # spec is the spectra file (sps_all is mzML input processed spectra, gnps, hmdb or mbank), 
 # ppmx is ppm value
-spec2_Processing <- function(z, spec = "sps_all", ppmx = 15){
-    if (spec == "sps_all"){
+spec2_Processing <- function(z, obj, spec = "spec_all", ppmx = 15){
+    if (spec == "spec_all"){
         #' Subset the dataset to MS2 spectra matching the m/z
-        sps <- filterPrecursorMz(sps_all, mz = z + ppm(c(-z, z), 10))
+        sps <- filterPrecursorMz(obj, mz = z + ppm(c(-z, z), 10))
     } else if (spec == "gnps"){
         #gnps spectra that contains precursor mass
-        has_mz <- containsMz(gnps, mz = z, ppm = ppmx)
+        has_mz <- containsMz(obj, mz = z, ppm = ppmx)
         #' Subset the GNPS Spectra
-        sps <- gnps[has_mz]
+        sps <- obj[has_mz]
     } else if (spec == "hmdb"){
         #hmdb spectra that contains precursor mass
-        has_mz <- containsMz(hmdb, mz = z, ppm = ppmx)
+        has_mz <- containsMz(obj, mz = z, ppm = ppmx)
         #' Subset the HMDB Spectra
-        sps <- hmdb[has_mz]
+        sps <- obj[has_mz]
     } else if (spec == "mbank"){
-        has_mz <- containsMz(mbank,mz = z, ppm = ppmx)
+        has_mz <- containsMz(obj, mz = z, ppm = ppmx)
         #' Subset the HMDB Spectra
-        sps <- mbank[has_mz]
+        sps <- obj[has_mz]
     }
     
     #wrong input error message
@@ -186,6 +186,8 @@ spec2_Processing <- function(z, spec = "sps_all", ppmx = 15){
         return(sps)
     }
 }
+# Usage:
+# spec2_Processing(x = 231.15, spec = "sps_all", ppmx = 15)
 
 
 ##-----------------------------------------------------------------
@@ -260,15 +262,12 @@ peakdf <- function(a, b, ppmx){
 
 # ---------- spec_dereplication ----------
 
-# x is txt list of pre_mz, db is GNPS, HMDB, MassBank
 spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input_dir, ppmx, error = TRUE){
-    
     
     ####-------------------------------------------------------------
     #### Dereplication with all or GNPS ----
     ####-------------------------------------------------------------
-    
-    databases <- 'gnps, hmdb, mbank, all'
+
     
     sps_all <- Spectra(proc_mzml, backend = MsBackendMzR())
         
@@ -276,7 +275,8 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     pre_mz <- tbl[[1]]
     
     if (db == "all" || db =="gnps"){
-
+        
+        
         load(file = paste(input_dir,"gnps.rda", sep = ""))
         
         # common
@@ -305,13 +305,13 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
         
         nx <- 0
         
-        
+
         for (x in pre_mz){
-        
+
             
             nx <- nx+1
             
-            spsrt <- filterPrecursorMz(sps_all, x)
+            spsrt <- filterPrecursorMzRange(sps_all, x)
         
             
             id_Xx <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
@@ -336,10 +336,10 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             rtmean <- c(rtmean, rtmn)
        
             #### input spec with pre_mz
-            sps <- spec2_Processing(x, spec = "sps_all", ppmx)
+            sps <- spec2_Processing(x, sps_all, spec = "spec_all")
         
             #### GNPS spec with pre_mz
-            gnps_with_mz <- spec2_Processing(x, spec = "gnps", ppmx)
+            gnps_with_mz <- spec2_Processing(x, gnpsdb, spec = "gnps", ppmx) # change here later
 
         
             dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/GNPS/", sep = ""), "./"), sep ="")
@@ -353,6 +353,12 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             
                 #' obtain GNPS spectra that matches the most with m/z MS2 spectra
                 idx <- which(res == max(res), arr.ind = TRUE)
+                
+                if (nrow(idx)>1){
+                    idx <- idx[1,]
+                }
+        
+                
                 gnps_best_match <- gnps_with_mz[idx[2]]
                 df_peaklists <- peakdf(gnps_best_match, sps[idx[1]], ppmx)
             
@@ -841,7 +847,9 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     #### Dereplication with all or HMDB ----
     ####-------------------------------------------------------------
     if (db == "all" || db =="hmdb"){
+        
         load(file = paste(input_dir,"hmdb.rda", sep = ""))
+        
         # common
 
         id_X <- c()
@@ -868,7 +876,7 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             
             nx <- nx+1
             
-            spsrt <- filterPrecursorMz(sps_all, x)
+            spsrt <- filterPrecursorMzRange(sps_all, x)
         
             
             id_Xx <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
@@ -893,10 +901,10 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             rtmean <- c(rtmean, rtmn)
 
             #### input spec with pre_mz
-            sps <- spec2_Processing(x, spec = "sps_all", ppmx = NULL)
+            sps <- spec2_Processing(x, sps_all, spec = "spec_all", ppmx = NULL)
 
             #### HMDB spec with pre_mz
-            hmdb_with_mz <- spec2_Processing(x, spec = "hmdb", ppmx = 15)
+            hmdb_with_mz <- spec2_Processing(x, hmdb, spec = "hmdb", ppmx = 15)
 
 
             dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/HMDB/", sep = ""), "./"), sep ="")
@@ -909,6 +917,11 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
 
                 #' obtain HMDB spectra that matches the most with m/z MS2 spectra
                 idx <- which(res == max(res), arr.ind = TRUE)
+                
+                if (nrow(idx)>1){
+                    idx <- idx[1,]
+                }
+                
                 hmdb_best_match <- hmdb_with_mz[idx[2]]
                 df_peaklists <- peakdf(hmdb_best_match, sps[idx[1]], ppmx)
 
@@ -1328,8 +1341,8 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     #### Dereplication with all or MassBank ----
      ####-------------------------------------------------------------
     if (db == "all" || db =="mbank"){
-        
-        load(file = paste(input_dir,"mbank.rda", sep = ""))
+
+        load(file = paste(input_dir,"mbankNIST.rda", sep = ""))
         
         # common
 
@@ -1362,7 +1375,7 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             nx <- nx+1
             
             
-            spsrt <- filterPrecursorMz(sps_all, x)
+            spsrt <- filterPrecursorMzRange(sps_all, x)
         
             
             id_Xx <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
@@ -1387,10 +1400,10 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             rtmean <- c(rtmean, rtmn)
 
             #### input spec with pre_mz
-            sps <- spec2_Processing(x, spec = "sps_all", ppmx = NULL)
+            sps <- spec2_Processing(x, sps_all, spec = "spec_all")
 
             #### GNPS spec with pre_mz
-            mbank_with_mz <- spec2_Processing(x, spec = "mbank", ppmx = 15)
+            mbank_with_mz <- spec2_Processing(x, mbank, spec = "mbank", ppmx = 15)
             
             
 
@@ -1405,6 +1418,12 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
 
                 #' obtain GNPS spectra that matches the most with m/z MS2 spectra
                 idx <- which(res == max(res), arr.ind = TRUE)
+                
+                if (nrow(idx)>1){
+                    idx <- idx[1,]
+                }
+                
+                
                 mbank_best_match <- mbank_with_mz[idx[2]]
                 df_peaklists <- peakdf(mbank_best_match, sps[idx[1]], ppmx)
 
@@ -1843,14 +1862,6 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
 
     }
     
-    #wrong input error message
-    else if (!grepl(db, databases, fixed = TRUE)){
-        stop("Wrong db input. Following inputs apply: gnps, hmdb, mbank or all")
-    }
-
 }
-
 spec_dereplication(pre_tbl, proc_mzml, db, result_dir, file_id, input_dir, ppmx)
-
-
 

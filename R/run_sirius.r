@@ -70,7 +70,7 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
         if (QC){
             if (is.na(files[b, "isotopes"])){
                 system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                             "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates,", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                             "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
                              sep = " "))
                 if(SL){
                     system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
@@ -102,5 +102,6 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
         }
     }
 }
+
 run_sirius(files, ppm_max, ppm_max_ms2, QC, SL, SL_path, candidates)
 

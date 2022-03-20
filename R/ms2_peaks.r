@@ -59,6 +59,7 @@ file_id <- as.character(args[5])
 # This functon returns a dataframe and stores a csv file 
     # the directory for csv file is input_dir + /insilico/MS2DATA.csv
 # input is from spec_Processing and result directory for each mzML input file
+
 ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
     
     
@@ -85,88 +86,99 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
     
     # pre_mz is a list of precursor m/z
     for (i in pre_mz){
-        #mz
-        premz <- c(premz, i)
+        
         
         #filter based on pre mz; sps_all is preprocessed spectra
         sps <- filterPrecursorMz(sps_all, i)
         
-        #rtmin
-        rn <- min(sps$rtime)
-        rtmin <- c(rtmin, rn)
-        
-        #rtmax
-        rx <- max(sps$rtime)
-        rtmax <- c(rtmax, rx)
-        
-        #rtmedian
-        rtm <- median(sps$rtime, na.rm = TRUE)
-        rtmed <- c(rtmed, rtm)
-        
-        #rtmean
-        rtme <- mean(sps$rtime, na.rm = TRUE)
-        rtmean <- c(rtmean, rtme)
-        
-        
-        #collision energy
-        ce <- max(sps$collisionEnergy)
-        col_eng <- c(col_eng, ce)
+        if (length(sps)>0){
             
-        #polarity
-        pl <- max(sps$polarity)
-        if (pl == 1){
-            px <- 'pos'
-            pol <- c(pol, px)
-        }
-        else {
-            px <- 'neg'
-            pol <- c(pol, px)
-        }
-        
-        #int 
-        ints <- max(sps$precursorIntensity)
-        int <- c(int, ints) 
-        
-        #ids
-        nx <- nx+1
-        id_Xx <- paste(file_id,  "M",  as.character(round(i, digits = 0)), 
-                          "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
-                          "ID", as.character(nx), sep = '')
-        id_X <- c(id_X, id_Xx)
-        
-        #peak lists
-        # variable for name
-        names <- c()
-        
-        # create a new directory to store all the peak list txt files
-        dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/peakfiles_ms2", sep =""), "./"), sep = "")
-        if (!file.exists(dir_name)){
-            dir.create(dir_name, recursive = TRUE)
-        }
-        
-        for (j in 1:length(sps)){
-            nam <- paste('pk', j, sep = '') ## name of variable
-            assign(nam, cbind(mz = unlist(mz(sps[j])),intensity = unlist(intensity(sps[j])))) ## assign name to peaklist
-            names <- c(names, nam) ## save names in another variable
-        
-            ## at the end of each list, extract the peak list via combinePeaks function
-            if (j == length(sps)){
-                n <- paste(names, collapse = ', ') #paste names at the end
-                func <- eval(parse(text = paste('combinePeaks(list(',n,'))', sep = ''))) #write the function and then run it
-                indeX <- indeX+1
-                Y <- as.character(indeX)# numbering for naming peak lists
-                #create separate folder for peaklists files
-                fileN <- paste(dir_name, '/Peaks_0', Y, '.txt', sep = '')
-                write.table(func, fileN, row.names = FALSE, col.names = FALSE)
-                fileN1 <- str_replace(fileN, input_dir, "./")
-                ms2Peaks <- c(ms2Peaks, fileN1)
+            #ids
+            nx <- nx+1
+            id_Xx <- paste(file_id,  "M",  as.character(round(i, digits = 0)), 
+                              "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
+                              "ID", as.character(nx), sep = '')
+            id_X <- c(id_X, id_Xx)
+
+            
+            #mz
+            premz <- c(premz, i)
+
+            #rtmin
+            rn <- min(sps$rtime)
+            rtmin <- c(rtmin, rn)
+
+            #rtmax
+            rx <- max(sps$rtime)
+            rtmax <- c(rtmax, rx)
+
+            #rtmedian
+            rtm <- median(sps$rtime, na.rm = TRUE)
+            rtmed <- c(rtmed, rtm)
+
+            #rtmean
+            rtme <- mean(sps$rtime, na.rm = TRUE)
+            rtmean <- c(rtmean, rtme)
+
+
+            #collision energy
+            ce <- max(sps$collisionEnergy)
+            col_eng <- c(col_eng, ce)
+
+            #polarity
+            pl <- max(sps$polarity)
+            if (pl == 1){
+                px <- 'pos'
+                pol <- c(pol, px)
+            }
+            else {
+                px <- 'neg'
+                pol <- c(pol, px)
+            }
+
+            #int 
+            ints <- max(sps$precursorIntensity)
+            int <- c(int, ints) 
+
+            
+            #peak lists
+            # variable for name
+            names <- c()
+
+            # create a new directory to store all the peak list txt files
+            dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/peakfiles_ms2", sep =""), "./"), sep = "")
+            if (!file.exists(dir_name)){
+                dir.create(dir_name, recursive = TRUE)
+            }
+
+            for (j in 1:length(sps)){
+                nam <- paste('pk', j, sep = '') ## name of variable
+                assign(nam, cbind(mz = unlist(mz(sps[j])),intensity = unlist(intensity(sps[j])))) ## assign name to peaklist
+                names <- c(names, nam) ## save names in another variable
+
+                ## at the end of each list, extract the peak list via combinePeaks function
+                if (j == length(sps)){
+                    n <- paste(names, collapse = ', ') #paste names at the end
+                    func <- eval(parse(text = paste('combinePeaks(list(',n,'))', sep = ''))) #write the function and then run it
+                    indeX <- indeX+1
+                    Y <- as.character(indeX)# numbering for naming peak lists
+                    #create separate folder for peaklists files
+                    fileN <- paste(dir_name, '/Peaks_0', Y, '.txt', sep = '')
+                    write.table(func, fileN, row.names = FALSE, col.names = FALSE)
+                    fileN1 <- str_replace(fileN, input_dir, "./")
+                    ms2Peaks <- c(ms2Peaks, fileN1)
+                }
             }
         }
     }
+        
+        
+        
     first_list <- data.frame(cbind(id_X, premz, rtmed, rtmean, int ,col_eng, pol, ms2Peaks))
     write.csv(first_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS2DATA.csv', sep = ""), "./"), sep =""))
     return(first_list)
 }
 
-ms2_peaks(pre_tbl, proc_mzml, input_dir, result_dir)
+
+ms2_peaks(pre_tbl, proc_mzml, input_dir, result_dir, file_id)
 

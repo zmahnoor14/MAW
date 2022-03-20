@@ -22,11 +22,17 @@ input_dir <- paste(getwd(), "/", sep = '')
 input_dir
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #input_dir <- "/Users/mahnoorzulfiqar/OneDriveUNI/MZML/"
 #input_dir
 
 =======
 >>>>>>> 9afee6f (modified)
+=======
+#input_dir <- "/Users/mahnoorzulfiqar/OneDriveUNI/MZML/"
+#input_dir
+
+>>>>>>> 25c6491 (cleaned directory)
 # load the functions file
 source(file = paste(input_dir, "Workflow_R_Functions.r", sep = ''))
 
@@ -36,17 +42,6 @@ source(file = paste(input_dir, "Workflow_R_Functions.r", sep = ''))
 # downloading spectral libraries; do NOT run
 # load db spectra objects [gnps, hmdb, mbank]
 # download_specDB(input_dir, db = "all")
-
-# OR load the database rda objects 
-load(file = paste(input_dir,"gnps.rda", sep = ""))
-load(file = paste(input_dir,"hmdb.rda", sep = ""))
-load(file = paste(input_dir,"mbank.rda", sep = ""))
-
-#gnps
-
-#mbank
-
-#hmdb
 
 # Run the first function; this creates a dataframe of your input files, their result directories 
 # and gives an id to each input file; stores the table in directory as a csv filr
@@ -80,10 +75,6 @@ for (i in 1:nrow(input_table)){
 
 input_table
 
-#Run a loop for the two files
-
-
-
 for (i in 1:nrow(input_table)){
     
     
@@ -111,11 +102,16 @@ for (i in 1:nrow(input_table)){
                           proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "./"), sep =""),
                           input_dir,
 <<<<<<< HEAD
+<<<<<<< HEAD
                           input_table[i, "ResultFileNames"],
                          file_id = input_table[i, "File_id"]) 
 =======
                           input_table[i, "ResultFileNames"]) 
 >>>>>>> 9afee6f (modified)
+=======
+                          input_table[i, "ResultFileNames"],
+                         file_id = input_table[i, "File_id"]) 
+>>>>>>> 25c6491 (cleaned directory)
     
     # Extract MS1 peaks or isotopic peaks
     ms1p <- ms1_peaks(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS2DATA.csv', sep = ""), "./"), sep =""), 
@@ -151,7 +147,7 @@ for (i in 1:nrow(input_table)){
                                result_dir = input_table[i, "ResultFileNames"],
                                input_dir,
                                adducts = paste(input_dir, "MetFrag_AdductTypes.csv", sep = ""), 
-                               sl_mtfrag = paste(input_dir, "sl_metfrag.txt", sep = ""), 
+                               sl_mtfrag = paste(input_dir, "SLS_metfrag.txt", sep = ""), 
                                SL = TRUE,
                                ppm_max = 5, 
                                ppm_max_ms2= 15)

@@ -123,7 +123,9 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
             #ms2
             writeLines(paste(">collision", paste(x[i,"col_eng"],"eV", sep =''),sep=" "),con=file.conn)
             
-            peak<- read.table(x[i,"ms2Peaks"])
+            ms2pk <- paste(input_dir, str_remove(x[i,"ms2Peaks"], "./"), sep ="")
+            
+            peak<- read.table(ms2pk)
             for (k in 1:length(peak[,1])){
                 writeLines(paste(as.character(peak[k,1]),as.character(peak[k,2]), sep =" "), con=file.conn) 
             }
@@ -165,7 +167,10 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
             
             #ms1
             writeLines(">ms1",con=file.conn)
-            peakms1<- read.table(x[i,"ms1Peaks"])
+            
+            ms1pk <- paste(input_dir, str_remove(x[i,"ms1Peaks"], "./"), sep ="")
+            peakms1<- read.table(ms1pk)
+            
             for (l in 1:length(peakms1[,1])){
                 writeLines(paste(as.character(peakms1[l,1]),as.character(peakms1[l,2]), sep =" "), con=file.conn) 
             }
@@ -173,7 +178,10 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
             #ms2
             writeLines(paste(">collision", paste(x[i,"col_eng"],"eV", sep =''),sep=" "),con=file.conn)
             
-            peakms2<- read.table(x[i,"ms2Peaks"])
+            ms2pk <- paste(input_dir, str_remove(x[i,"ms2Peaks"], "./"), sep ="")
+            
+            peakms2<- read.table(ms2pk)
+
             for (k in 1:length(peakms2[,1])){
                 writeLines(paste(as.character(peakms2[k,1]),as.character(peakms2[k,2]), sep =" "), con=file.conn) 
             }
@@ -217,7 +225,10 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
             
             #ms1
             writeLines(">ms1",con=file.conn)
-            peakms1<- read.table(x[i,"ms1Peaks"])
+            
+            ms1pk <- paste(input_dir, str_remove(x[i,"ms1Peaks"], "./"), sep ="")
+            peakms1<- read.table(ms1pk)
+            
             for (l in 1:length(peakms1[,1])){
                 writeLines(paste(as.character(peakms1[l,1]),as.character(peakms1[l,2]), sep =" "), con=file.conn) 
             }
@@ -225,7 +236,10 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
             #ms2
             writeLines(paste(">collision", paste(x[i,"col_eng"],"eV", sep =''),sep=" "),con=file.conn)
             
-            peakms2<- read.table(x[i,"ms2Peaks"])
+            ms2pk <- paste(input_dir, str_remove(x[i,"ms2Peaks"], "./"), sep ="")
+            
+            peakms2<- read.table(ms2pk)
+
             for (k in 1:length(peakms2[,1])){
                 writeLines(paste(as.character(peakms2[k,1]),as.character(peakms2[k,2]), sep =" "), con=file.conn) 
             }
@@ -249,6 +263,7 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
     }
     
 }
+
 
 sirius_param(x, result_dir, input_dir, SL)
 

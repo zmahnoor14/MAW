@@ -56,9 +56,10 @@ QCfile <- as.logical(args[5])
 # Extract isotopic peaks for each pre_mz
 # The input is x = first_list (from ms2peaks function) and y = camera results 
 
-ms1_peaks <- function(x, y, result_dir, input_dir, QCfile = TRUE){
+ms1_peaks <- function(x, y, result_dir, input_dir, QCfile){
     # store the ms1_peak list path here
     ms1Peaks <- c()
+    x = read.csv(x)
     
     if (QCfile){
         
@@ -70,7 +71,7 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile = TRUE){
         
         # read the CAMERA results
         y = read.csv(y)
-        x = read.csv(x)
+        
         
         # for all indices in the ms2 features table
         for (i in 1:nrow(x)){
@@ -151,10 +152,11 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile = TRUE){
             }
         }
         second_list <- data.frame(cbind(x, ms1Peaks))
-        write.csv(second_list, file = paste(result_dir,'/insilico/MS1DATA.csv', sep = ""))
+        write.csv(second_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA.csv', sep = ""), "./"), sep =""))
         return(second_list)
     }
     else{
+        
         ms1Peaks <- c(ms1Peaks, 'no ms1 peaks in QC')
         second_list <- data.frame(cbind(x, ms1Peaks))
         write.csv(second_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA.csv', sep = ""), "./"), sep =""))

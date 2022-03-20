@@ -75,7 +75,7 @@ cam_func <- function(path, f, mode = "pos", input_dir){
             peaklist[i,'istops'] = y[1]
         }
         name <- str_remove(f, ".mzML")
-        write.csv(peaklist, file = paste(input_dir, "/QC/posCAMERAResults_", name,".csv", sep = ""))
+        write.csv(peaklist, file = paste(input_dir, "QC/posCAMERAResults_", name,".csv", sep = ""))
     }
     else if(mode == "neg"){
         xs <- xcmsSet(file = fl,profmethod = "bin", 

@@ -65,11 +65,11 @@ ms2_rfilename<- function(input_dir){
         # remove .mzML to extract just the names
         mzml_filex <- str_replace(mzml_file[i], input_dir, "./")
         name_mzmls <- str_remove(as.character(mzml_filex), ".mzML")
+        name_mzmlsd <- str_remove(mzml_file[i], ".mzML")
         #name_mzml <- str_replace(name_mzmls, input_dir, "./")
         #' for each file a subdirectory is created to store all results in that, add working directory
-        if (!file.exists(name_mzmls)){
-            dir.create(name_mzmls) ##create folder
-            print("why isn't it working")
+        if (!file.exists(name_mzmlsd)){
+            dir.create(name_mzmlsd) ##create folder
         }
         ResultFileNames<- c(ResultFileNames, name_mzmls)
         mzml_files <- c(mzml_files, mzml_filex)
@@ -78,7 +78,6 @@ ms2_rfilename<- function(input_dir){
     input_table <- cbind(mzml_files, ResultFileNames, File_id)
     
     write.csv(input_table, paste(input_dir, "input_table.csv", sep = ""))
-    print(input_dir)
     return(data.frame(input_table))
 }
 ms2_rfilename(input_dir)

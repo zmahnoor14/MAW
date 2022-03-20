@@ -28,6 +28,7 @@
 library("Spectra")
 library("stringr")
 library("dplyr")
+library("readr")
 
 # ---------- Arguments and user variables ----------
 args <- commandArgs(trailingOnly=TRUE)
