@@ -65,6 +65,12 @@ ppm_max_ms2 <- as.numeric(args[8])
 
 # ---------- metfrag_param ----------
 
+#x is the dataframe result from sirius_postprocess
+#result_dir 
+#input_dir 
+#adducts 
+#sl_mtfrag 
+#SL = TRUE if suspect list present
 
 metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE, ppm_max = 5, ppm_max_ms2= 15){
     
@@ -150,8 +156,11 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
         }
     }
     
-    write.table(metfrag_param_file, file = paste(result_dir, "/insilico/metparam_list.txt", sep = ""), sep = "/t", row.names = FALSE, col.names = FALSE)
+    write.table(metfrag_param_file, file = paste(input_dir, str_remove(paste(result_dir, "/insilico/metparam_list.txt", sep =""), "./"), sep = ""), sep = "/t", row.names = FALSE, col.names = FALSE)
     return(metfrag_param_file)
 }
+
+# Usage:
+# metfrag_param(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE)
 
 metfrag_param(x, result_dir, input_dir, adducts, sl_mtfrag, SL, ppm_max, ppm_max_ms2)

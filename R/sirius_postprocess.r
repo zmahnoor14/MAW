@@ -36,11 +36,10 @@ library(dplyr)
 args <- commandArgs(trailingOnly=TRUE)
 #print(args)
 
-files <- as.character(args[1])
+x <- as.character(args[1])
 SL <- as.logical(args[2])
 
 # ---------- sirius_postprocess ----------
-
 
 sirius_postprocess <- function(x, SL = TRUE){
     feat_scale <- function(p) {
@@ -432,6 +431,7 @@ sirius_postprocess <- function(x, SL = TRUE){
     write.csv(msdata, paste(x, "/insilico/MS1DATAsirius.csv", sep = ''))
     return(msdata)
 }
+
 
 sirius_postprocess(x, SL)
 
