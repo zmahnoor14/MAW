@@ -52,7 +52,7 @@ input_table
 
 
 
-for (i in 8:nrow(input_table)){
+for (i in 1:nrow(input_table)){
     
     
     # Preprocess and Read the mzMLfiles
