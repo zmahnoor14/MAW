@@ -1506,11 +1506,7 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
      ####-------------------------------------------------------------
     if (db == "all" || db =="mbank"){
 
-<<<<<<< HEAD
-        load(file = paste(input_dir,"mbank.rda", sep = ""))
-=======
         load(file = paste(input_dir,"mbankNIST.rda", sep = ""))
->>>>>>> 25c6491 (cleaned directory)
         
         # common
 
