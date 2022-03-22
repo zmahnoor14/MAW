@@ -17,10 +17,13 @@ import sys
 import pandas as pd
 import numpy as np
 
+import pubchempy as pcp
+
 import os
 import glob
 import re
 from pandas import json_normalize
+from rdkit.Chem import PandasTools
 
 
 
@@ -72,8 +75,8 @@ def spec_postproc(input_dir, Source = "all"):
     
     if Source == "hmdb" or "all":
         #download SDF structures
-        #os.system("wget https://hmdb.ca/system/downloads/current/structures.zip")
-        #os.system("unzip "+ input_dir + "structures.zip")
+        os.system("wget -P " + input_dir + " https://hmdb.ca/system/downloads/current/structures.zip")
+        os.system("unzip "+ input_dir + "structures.zip" + " -d " + input_dir)
             
         # Load the sdf
         dframe = PandasTools.LoadSDF((input_dir+"structures.sdf"),

@@ -16,6 +16,7 @@ from rdkit.Chem import PandasTools
 import sys
 import pandas as pd
 import numpy as np
+import os
 
 def slist_sirius(input_dir, slist_csv, substring = None):
     
@@ -103,16 +104,17 @@ def slist_sirius(input_dir, slist_csv, substring = None):
                 if charge > 1:
                     sl = sl.drop(labels = i, axis = 0) 
                     
-    slsirius = pd.DataFrame({'smiles':smiles})
+    slsirius = pd.DataFrame({'smiles':sl["SMILES"]})
     slsirius.to_csv(input_dir+ "SL_Sirius.tsv", sep = "\t", header = False, index = False)
     os.system("sirius --input " + input_dir + "SL_Sirius.tsv custom-db --name=SL_Frag --output "+ input_dir)
-
     
     
-slist_sirius(sys.argv[1],sys.argv[2], sys.argv[3]) 
+sys.argv[1]
+sys.argv[2]
+list1 = sys.argv[3].split(',')
 
+slist_sirius(sys.argv[1],sys.argv[2], list1) 
 
-# In[ ]:
 
 
 

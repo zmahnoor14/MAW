@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
-
-
-#!/usr/bin/env python
-# coding: utf-8
-
 #!/usr/bin/env python
 #make executable in bash chmod +x PyRun
 
@@ -30,7 +24,7 @@ import os
 import glob
 import re
 
-def sirius_postProc2(input_dir, input_table, slistcsv ,sl = True):
+def sirius_postProc2(input_dir, input_tablecsv, slistcsv ,sl = True):
     
     def isNaN(string):
         return string != string
@@ -47,7 +41,7 @@ def sirius_postProc2(input_dir, input_table, slistcsv ,sl = True):
     function this directory must contain a csv file that has a column 
     named "SMILES".
     
-    input_table (str): This is the table in csv format (defined in R), 
+    input_tablecsv (str): This is the table in csv format (defined in R), 
     which stores a csv table containing columns "mzml_files", which 
     contains liat of all input files with their relative paths, second
     column is "ResultFileName" which is a list of the corresponding
@@ -78,6 +72,7 @@ def sirius_postProc2(input_dir, input_table, slistcsv ,sl = True):
     # Describe the heavy atoms to be considered for MCSS
     heavy_atoms = ['C', 'N', 'P', 'O', 'S']
     
+    input_table = pd.read_csv(input_tablecsv)
     
     for m, row in input_table.iterrows():
         
@@ -140,7 +135,8 @@ def sirius_postProc2(input_dir, input_table, slistcsv ,sl = True):
                     if elem and len(sm_res)>=3:
                         file1.loc[i, 'MCSSstring'] = res.smartsString
                         file1.loc[i, 'MCSS_SMILES'] = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
-        file1.to_csv(input_table['ResultFileNames'][m] + '/insilico/SiriusResults.csv')
+
+        file1.to_csv(input_dir + (input_table['ResultFileNames'][m] + '/insilico/SiriusResults.csv').replace("./", ""))
         
         
         

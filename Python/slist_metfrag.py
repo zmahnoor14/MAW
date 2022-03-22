@@ -43,23 +43,19 @@ def slist_metfrag(input_dir, slist_csv):
     "suspectlist.csv")
     
     """
-    print("its working")
     sl = pd.read_csv(slist_csv)
     sl_mtfrag= []
     for i, rows in sl.iterrows():
         mols = Chem.MolFromSmiles(sl['SMILES'][i])
         sl.loc[i, 'InChIKey'] = Chem.inchi.MolToInchiKey(mols)
         sl_mtfrag.append(sl['InChIKey'][i])
-    return(sl_mtfrag)
-    with open((input_dir + 'SL_metfrag.txt'), 'w') as filehandle:
+    
+    with open((input_dir + 'SLS_metfrag.txt'), 'w') as filehandle:
         for listitem in sl_mtfrag:
             filehandle.write('%s\n' % listitem)
-            
+    return(sl_mtfrag)
+
+
 slist_metfrag(sys.argv[1],sys.argv[2])
-
-
-# In[ ]:
-
-
 
 
