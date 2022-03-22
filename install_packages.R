@@ -1,0 +1,5 @@
+install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest'), repos="https://cloud.r-project.org")
+install.packages('IRkernel', repos="https://cloud.r-project.org")
+IRkernel::installspec()
+remotes::install_github("rformassspectrometry/MsBackendHmdb")
+remotes::install_github("rformassspectrometry/MsBackendMsp")
