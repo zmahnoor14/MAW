@@ -36,11 +36,19 @@ library(dplyr)
 args <- commandArgs(trailingOnly=TRUE)
 #print(args)
 
+<<<<<<< HEAD
 x <- as.character(args[1])
+=======
+files <- as.character(args[1])
+>>>>>>> 682856d (added functions)
 SL <- as.logical(args[2])
 
 # ---------- sirius_postprocess ----------
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 682856d (added functions)
 sirius_postprocess <- function(x, SL = TRUE){
     feat_scale <- function(p) {
     (p - min(p)) / (max(p) - min(p))
@@ -432,6 +440,9 @@ sirius_postprocess <- function(x, SL = TRUE){
     return(msdata)
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 682856d (added functions)
 sirius_postprocess(x, SL)
 
