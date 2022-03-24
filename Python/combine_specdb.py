@@ -19,6 +19,10 @@ import csv
 import time
 import json
 
+import sys
+
+import pandas as pd
+
 import pubchempy as pcp
 import numpy as np
 

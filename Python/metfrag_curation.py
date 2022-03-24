@@ -14,12 +14,13 @@
 import os
 import glob
 import re
+import sys
 
 import csv 
 import time
 import json
 import sys
-import pubchempy as pcp
+import pandas as pd
 import numpy as np
 
 from rdkit import Chem

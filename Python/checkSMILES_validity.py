@@ -15,12 +15,19 @@ import os
 import glob
 import re
 
+import sys
 import csv 
 import time
 import json
 
-import pubchempy as pcp
 import numpy as np
+import pandas as pd
+
+from rdkit import Chem
+from rdkit import DataStructs
+from rdkit.Chem import AllChem
+from rdkit.Chem import rdFMCS
+from rdkit.Chem import PandasTools
 
 
 def checkSMILES_validity(input_dir, resultcsv):

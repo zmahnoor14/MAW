@@ -14,6 +14,7 @@
 import os
 import glob
 import re
+import sys
 
 import csv 
 import time
@@ -21,6 +22,7 @@ import json
 import sys
 import pubchempy as pcp
 import numpy as np
+import pandas as pd
 
 from rdkit import Chem
 from rdkit import DataStructs

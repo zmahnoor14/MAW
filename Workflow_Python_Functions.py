@@ -72,10 +72,10 @@ def slist_metfrag(input_dir, slist_csv):
         mols = Chem.MolFromSmiles(sl['SMILES'][i])
         sl.loc[i, 'InChIKey'] = Chem.inchi.MolToInchiKey(mols)
         sl_mtfrag.append(sl['InChIKey'][i])
-    with open((input_dir + 'SLS_metfrag.txt'), 'w') as filehandle:
+    return(sl_mtfrag)
+    with open((input_dir + 'SL_metfrag.txt'), 'w') as filehandle:
         for listitem in sl_mtfrag:
             filehandle.write('%s\n' % listitem)
-    return(sl_mtfrag)
 
 
 # In[4]:
@@ -407,7 +407,7 @@ def metfrag_postproc(input_dir, input_table, slistcsv ,sl = True):
                     KEGG_file = KEGG_file.drop(KEGG_file[KEGG_file.Score < 0.75].index)
                 
                     # add the relavnt information to the original MS1DATA csv
-                    file1.loc[i, 'KG_ID'] = KEGG_file.loc[0, 'Identifier']
+                    #file1.loc[i, 'KG_ID'] = KEGG_file.loc[0, 'Identifier']
                     file1.loc[i, 'KG_Name'] = KEGG_file.loc[0, 'CompoundName']
                     file1.loc[i, 'KG_Formula'] = KEGG_file.loc[0, 'MolecularFormula']
                     file1.loc[i, 'KG_expPeaks'] = KEGG_file.loc[0, 'NoExplPeaks']
@@ -516,7 +516,7 @@ def metfrag_postproc(input_dir, input_table, slistcsv ,sl = True):
                         if elem and len(sm_res)>=3:
                             file1.loc[i, 'PC_MCSSstring']= res2.smartsString
                             file1.loc[i, 'PC_MCSS_SMILES'] = Chem.MolToSmiles(Chem.MolFromSmarts(res2.smartsString))
-        file1.to_csv(input_table['ResultFileNames'][m] + '/insilico/MetFragResults.csv')
+        file1.to_csv(input_dir + (input_table['ResultFileNames'][m] + '/insilico/MetFragResults.csv').replace("./", ""))
 
 
 # In[10]:

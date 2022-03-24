@@ -22,6 +22,10 @@ import json
 import pubchempy as pcp
 import numpy as np
 
+import pandas as pd
+
+import sys
+
 
 
 def combine_allspec(input_dir):
@@ -45,7 +49,10 @@ def combine_allspec(input_dir):
     def isNaN(string):
         return string != string
 
-    
+    # create a new directory to store all results /MetabolomicsResults/
+    path = os.path.join(input_dir, "MetabolomicsResults")
+    if not os.path.isdir(path):
+        os.mkdir(path)
     Mergedcsvfiles = []
     
     #list all files and directories
@@ -67,6 +74,7 @@ def combine_allspec(input_dir):
         if combined_csv['GNPSSMILES'][i] == ' ' or isNaN(combined_csv['GNPSSMILES'][i]):
             combined_csv['GNPSSMILES'][i] = ''
             
+    
     combined_csv.to_csv(input_dir + 'MetabolomicsResults/SD_post_processed_combined_results.csv')
     return(combined_csv)
 

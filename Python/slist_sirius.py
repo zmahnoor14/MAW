@@ -43,7 +43,7 @@ def slist_sirius(input_dir, slist_csv, substring = None):
     
     substring (list): provide a list of strings of SMILES that 
     shouldn't be considered, provide a list even if there is one string
-    that shouldnt be considered. e.g: "[Fe+2]". 
+    that shouldn't be considered. e.g: "Fe+2" or Fe+2, C*. 
 
     Returns:
     tsv: a tsv file of list of SMILES, named as SL_Sirius.tsv, is stored 

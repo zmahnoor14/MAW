@@ -26,8 +26,7 @@ import re
 
 def sirius_postProc2(input_dir, input_tablecsv, slistcsv ,sl = True):
     
-    def isNaN(string):
-        return string != string
+    
     """sirius_postProc2 is the second part of the function 
     sirius_postProc defined in R part of the workflow. This function
     re-checks the Suspect list, if present or given as a parameter, 
@@ -43,22 +42,23 @@ def sirius_postProc2(input_dir, input_tablecsv, slistcsv ,sl = True):
     
     input_tablecsv (str): This is the table in csv format (defined in R), 
     which stores a csv table containing columns "mzml_files", which 
-    contains liat of all input files with their relative paths, second
+    contains list of all input files with their relative paths, second
     column is "ResultFileName" which is a list of the corresponding
     result relative directories to each mzml files. Lastly, "file_id", 
     contains a file directory. This table will be used to read the 
     SIRIUS json files
     
-    sl (bool): True if a suspct list is to be used
     
     slistcsv (list): This is the csv file that contains a column of 
     "SMILES". Additionally this file can contain other information 
     about the compounds, but for this function, column of "SMILES", 
     named as "SMILES" is necessary.
+    sl (bool): True if a suspct list is to be used
+    
 
     Returns:
     csv: a result file with additional columns such as those for suspect
-    list if one is used. It also adds columns on MCSS., named as 
+    list if one is used. It also adds columns on MCSS, and is named as 
     "input_dir/ResultFileName/insilico/SiriusResults.csv"
     
     
@@ -68,6 +68,9 @@ def sirius_postProc2(input_dir, input_tablecsv, slistcsv ,sl = True):
 
 
     """
+    
+    def isNaN(string):
+        return string != string
     
     # Describe the heavy atoms to be considered for MCSS
     heavy_atoms = ['C', 'N', 'P', 'O', 'S']
@@ -135,6 +138,8 @@ def sirius_postProc2(input_dir, input_tablecsv, slistcsv ,sl = True):
                     if elem and len(sm_res)>=3:
                         file1.loc[i, 'MCSSstring'] = res.smartsString
                         file1.loc[i, 'MCSS_SMILES'] = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+                        
+                    
 
         file1.to_csv(input_dir + (input_table['ResultFileNames'][m] + '/insilico/SiriusResults.csv').replace("./", ""))
         

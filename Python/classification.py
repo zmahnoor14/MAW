@@ -23,10 +23,16 @@ import json
 
 import pubchempy as pcp
 import numpy as np
+import pandas as pd
 from pandas import json_normalize
 
-from pybatchclassyfire import *
+from rdkit import Chem
+from rdkit import DataStructs
+from rdkit.Chem import AllChem
+from rdkit.Chem import rdFMCS
+from rdkit.Chem import PandasTools
 
+from pybatchclassyfire import *
 
 
 
@@ -121,9 +127,9 @@ def classification(input_dir, resultcsv):
                 frame.loc[q, 'superclass'] = df_merged["superclass.name"][p]
                 frame.loc[q, 'Classification_Source'] = "ClassyFire"
     #frame.to_csv(input_dir, '/SIRIUS_combined.csv')
-    return(frame)
+    
 
     frame.to_csv(input_dir + "MetabolomicsResults/final_curationList.csv")
-    
+    return(frame)
 classification(sys.argv[1], sys.argv[2])
 

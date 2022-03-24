@@ -14,6 +14,7 @@
 import os
 import glob
 import re
+import sys
 
 import csv 
 import time
@@ -27,7 +28,7 @@ from rdkit import DataStructs
 from rdkit.Chem import AllChem
 from rdkit.Chem import rdFMCS
 from rdkit.Chem import PandasTools
-import pubchempy as pcp
+import pandas as pd
 
 def suspectListScreening(input_dir, slistcsv, SpectralDB_Results):
     
@@ -53,6 +54,9 @@ def suspectListScreening(input_dir, slistcsv, SpectralDB_Results):
     SpectralDB_Results)
 
     """
+    
+    def isNaN(string):
+        return string != string
     
     SpectralDB_Results = pd.read_csv(SpectralDB_Results)
     
