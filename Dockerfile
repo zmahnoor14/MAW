@@ -6,6 +6,7 @@ FROM continuumio/anaconda3
 RUN apt-get update && apt-get -y install unzip wget default-jre && apt-get clean
 RUN wget https://github.com/boecker-lab/sirius/releases/download/v4.9.12/sirius-4.9.12-linux64-headless.zip && cd /usr/local/ && unzip /sirius-4.9.12-linux64-headless.zip && rm /sirius-4.9.12-linux64-headless.zip
 RUN echo "export PATH=$PATH:/usr/local/sirius/bin" >> /etc/bash.bashrc
+ENV PATH="/usr/local/sirius/bin:${PATH}"
 COPY maw.yml .
 RUN conda env create --file maw.yml && rm maw.yml
 SHELL ["conda", "run", "-n", "mawRpy", "/bin/bash", "-c"]
