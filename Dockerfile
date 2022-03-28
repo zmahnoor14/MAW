@@ -10,7 +10,6 @@ COPY maw.yml .
 RUN conda env create --file maw.yml && rm maw.yml
 SHELL ["conda", "run", "-n", "mawRpy", "/bin/bash", "-c"]
 RUN pip install pybatchclassyfire
-RUN R -e "BiocManager::install(\"MsBackendMsp\")"
 COPY install_packages.R .
 RUN Rscript install_packages.R
 #COPY MetFrag2.4.5-CL.jar /opt/maw
