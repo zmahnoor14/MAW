@@ -22,7 +22,11 @@ import glob
 import re
 
 
+<<<<<<< HEAD
 def combine_insilico(input_dir, input_tablecsv, Source = "SIRIUS"):
+=======
+def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
+>>>>>>> 25c6491 (cleaned directory)
     
     """combine_insilico function combines the Sirius results from all
     result directories for each input mzml file. It does same for 
@@ -58,8 +62,11 @@ def combine_insilico(input_dir, input_tablecsv, Source = "SIRIUS"):
 
 
     """
+<<<<<<< HEAD
     
     input_table = pd.read_csv(input_tablecsv)
+=======
+>>>>>>> 25c6491 (cleaned directory)
     # create a new directory to store all results /MetabolomicsResults/
     path = os.path.join(input_dir, "MetabolomicsResults")
     if not os.path.isdir(path):
@@ -82,6 +89,7 @@ def combine_insilico(input_dir, input_tablecsv, Source = "SIRIUS"):
             
         # join all resulst dataframe
         frame = pd.concat(li, axis=0, ignore_index=True)
+<<<<<<< HEAD
         
         
         frame['most_specific_class'] = np.nan
@@ -91,6 +99,9 @@ def combine_insilico(input_dir, input_tablecsv, Source = "SIRIUS"):
         frame['superclass'] = np.nan
         frame['all_classifications'] = np.nan
         frame['Classification_Source'] = np.nan
+=======
+        frame.to_csv(input_dir + '/MetabolomicsResults/SIRIUS_combined.csv')
+>>>>>>> 25c6491 (cleaned directory)
         
         for i, row in frame.iterrows():
             if frame["FormulaRank"][i] == 1.0:
@@ -107,8 +118,12 @@ def combine_insilico(input_dir, input_tablecsv, Source = "SIRIUS"):
                         frame.loc[i, 'superclass'] = canopus["superclass"][0]
                         frame.loc[i, 'all_classifications'] = canopus["all classifications"][0]
                         frame.loc[i, 'Classification_Source'] = 'CANOPUS'
+<<<<<<< HEAD
                         
         frame.to_csv(input_dir + '/MetabolomicsResults/SIRIUS_combined.csv')
+=======
+        
+>>>>>>> 25c6491 (cleaned directory)
         return(frame)
     
     # if MetFrag results are to be combined

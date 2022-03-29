@@ -19,7 +19,11 @@ import csv
 import time
 import json
 import sys
+<<<<<<< HEAD
 import pandas as pd
+=======
+import pubchempy as pcp
+>>>>>>> 25c6491 (cleaned directory)
 import numpy as np
 
 from rdkit import Chem

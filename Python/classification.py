@@ -23,6 +23,7 @@ import json
 
 import pubchempy as pcp
 import numpy as np
+<<<<<<< HEAD
 import pandas as pd
 from pandas import json_normalize
 
@@ -32,10 +33,18 @@ from rdkit.Chem import AllChem
 from rdkit.Chem import rdFMCS
 from rdkit.Chem import PandasTools
 
+=======
+from pandas import json_normalize
+
+>>>>>>> 25c6491 (cleaned directory)
 from pybatchclassyfire import *
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 25c6491 (cleaned directory)
 def classification(input_dir, resultcsv):
     
     """classification function uses ClassyFire ChemONT
@@ -127,9 +136,16 @@ def classification(input_dir, resultcsv):
                 frame.loc[q, 'superclass'] = df_merged["superclass.name"][p]
                 frame.loc[q, 'Classification_Source'] = "ClassyFire"
     #frame.to_csv(input_dir, '/SIRIUS_combined.csv')
+<<<<<<< HEAD
     
 
     frame.to_csv(input_dir + "MetabolomicsResults/final_curationList.csv")
     return(frame)
+=======
+    return(frame)
+
+    frame.to_csv(input_dir + "MetabolomicsResults/final_curationList.csv")
+    
+>>>>>>> 25c6491 (cleaned directory)
 classification(sys.argv[1], sys.argv[2])
 

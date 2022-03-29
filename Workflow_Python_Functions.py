@@ -72,10 +72,10 @@ def slist_metfrag(input_dir, slist_csv):
         mols = Chem.MolFromSmiles(sl['SMILES'][i])
         sl.loc[i, 'InChIKey'] = Chem.inchi.MolToInchiKey(mols)
         sl_mtfrag.append(sl['InChIKey'][i])
-    return(sl_mtfrag)
-    with open((input_dir + 'SL_metfrag.txt'), 'w') as filehandle:
+    with open((input_dir + 'SLS_metfrag.txt'), 'w') as filehandle:
         for listitem in sl_mtfrag:
             filehandle.write('%s\n' % listitem)
+    return(sl_mtfrag)
 
 
 # In[4]:

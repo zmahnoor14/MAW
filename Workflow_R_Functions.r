@@ -9,6 +9,7 @@ packageVersion("rvest")
 packageVersion("stringr")
 packageVersion("xml2")
 
+<<<<<<< HEAD
 download_specDB <- function(input_dir, db = "all"){
 
     if (dir.exists(input_dir) && substring(input_dir, nchar(input_dir)) == "/"){
@@ -92,6 +93,55 @@ download_specDB <- function(input_dir, db = "all"){
                 if (grepl("Current", i)){
                 hmdb_curr_ver<- c(i, hmdb_curr_ver)
                 }
+=======
+    # only input available as of now
+    databases <- 'gnps, hmdb, mbank, all'
+    
+    # creat a summary file, open and store timings of download and version if possible
+    summaryFile <- paste(input_dir, "summaryFile.txt", sep = "")
+    file.create(summaryFile, recursive = TRUE)
+    file.conn <- file(summaryFile)
+    open(file.conn, open = "at")
+            
+    # gnps
+    if (db == "all" || db =="gnps"){
+        
+        print("GNPS WORKS")
+        
+        # Download file
+        system(paste("wget -P", 
+                     input_dir,
+                     "https://gnps-external.ucsd.edu/gnpslibrary/ALL_GNPS.mgf",
+                     sep =  " "))
+        
+        # load the spectra into MsBackendMgf
+        gnpsdb <- Spectra(paste(input_dir, "ALL_GNPS.mgf", sep = ''), source = MsBackendMgf())
+        save(gnpsdb, file = paste(input_dir,"gnps.rda", sep = ""))
+        
+        # delete the database in its format to free up space
+        system(paste("rm", (paste(input_dir, "ALL_GNPS.mgf", sep = '')), sep = " "))
+        
+        writeLines(paste("GNPS saved at", Sys.time(), sep=" "),con=file.conn)
+        
+    }
+    # hmdb
+    if (db == "all" || db =="hmdb"){
+        
+        print("HMDB WORKS")
+        
+        
+        
+        ####### Version Control ######
+        
+        # extract HMDB Current version
+        html <- read_html("https://hmdb.ca/downloads")
+        strings <- html%>% html_elements("a") %>% html_text2()
+        ls <- unique(strings)
+        hmdb_curr_ver <- c()
+        for (i in ls){
+            if (grepl("Current", i)){
+            hmdb_curr_ver<- c(i, hmdb_curr_ver)
+>>>>>>> 25c6491 (cleaned directory)
             }
 
 
@@ -273,10 +323,26 @@ spec_Processing <- function(x, result_dir){
     
 }
 
+<<<<<<< HEAD
 spec2_Processing <- function(z, obj, spec = "spec_all", ppmx = 15){
     if (spec == "spec_all"){
         #' Subset the dataset to MS2 spectra matching the m/z
         sps <- filterPrecursorMzValues(obj, mz = z + ppm(c(-z, z), 10))
+=======
+##-----------------------------------------------------------------
+## Pre-process MS2 spectra
+##-----------------------------------------------------------------
+
+#' processing on spectra with one precursor mass
+# inputs: 
+# x is precursor mass, 
+# spec is the spectra file (sps_all is mzML input processed spectra, gnps, hmdb or mbank), 
+# ppmx is ppm value
+spec2_Processing <- function(z, obj, spec = "spec_all", ppmx = 15){
+    if (spec == "spec_all"){
+        #' Subset the dataset to MS2 spectra matching the m/z
+        sps <- filterPrecursorMz(obj, mz = z + ppm(c(-z, z), 10))
+>>>>>>> 25c6491 (cleaned directory)
     } else if (spec == "gnps"){
         #gnps spectra that contains precursor mass
         has_mz <- containsMz(obj, mz = z, ppm = ppmx)
@@ -442,6 +508,9 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     
     if (db == "all" || db =="gnps"){
 
+        load(file = paste(input_dir,"gnps.rda", sep = ""))
+        
+        
         load(file = paste(input_dir,"gnps.rda", sep = ""))
         
         # common
@@ -2069,6 +2138,7 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
         #sps <- filterIntensity(sps, intensity = low_int)
         
         if (length(sps)>0){
+<<<<<<< HEAD
             
             #ids
             nx <- nx+1
@@ -2078,6 +2148,8 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
             id_X <- c(id_X, id_Xx)
 
             
+=======
+>>>>>>> 25c6491 (cleaned directory)
             #mz
             premz <- c(premz, i)
 
@@ -2117,7 +2189,17 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
             ints <- max(sps$precursorIntensity)
             int <- c(int, ints) 
 
+<<<<<<< HEAD
             
+=======
+            #ids
+            nx <- nx+1
+            id_Xx <- paste(file_id,  "M",  as.character(round(i, digits = 0)), 
+                              "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
+                              "ID", as.character(nx), sep = '')
+            id_X <- c(id_X, id_Xx)
+
+>>>>>>> 25c6491 (cleaned directory)
             #peak lists
             # variable for name
             names <- c()
@@ -2389,6 +2471,14 @@ cam_func <- function(path, f, mode = "pos", input_dir){
     detach("package:CAMERA", unload=TRUE)
     
 }
+
+
+
+
+
+#addQC_input_table <- function(path, pattern){
+#    
+#}
 
 
 

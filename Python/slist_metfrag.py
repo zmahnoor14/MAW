@@ -18,7 +18,11 @@ from rdkit.Chem import rdFMCS
 from rdkit.Chem import PandasTools
 
 # make sure your Smiles entries in the suspect list csv are in a column named "SMILES"
+<<<<<<< HEAD
 def slist_metfrag(input_dir, slist_csv, name):
+=======
+def slist_metfrag(input_dir, slist_csv):
+>>>>>>> 25c6491 (cleaned directory)
     """slist_metfrag is used to create a txt file that contains a list of 
     InChIKeys. This list is later used by MetFrag to use these compounds 
     as a Suspect List.
@@ -43,12 +47,17 @@ def slist_metfrag(input_dir, slist_csv, name):
     "suspectlist.csv")
     
     """
+<<<<<<< HEAD
+=======
+    print("its working")
+>>>>>>> 25c6491 (cleaned directory)
     sl = pd.read_csv(slist_csv)
     sl_mtfrag= []
     for i, rows in sl.iterrows():
         mols = Chem.MolFromSmiles(sl['SMILES'][i])
         sl.loc[i, 'InChIKey'] = Chem.inchi.MolToInchiKey(mols)
         sl_mtfrag.append(sl['InChIKey'][i])
+<<<<<<< HEAD
     
     with open((input_dir + "/SL_"+ name + '.txt'), 'w') as filehandle:
         for listitem in sl_mtfrag:
@@ -57,5 +66,18 @@ def slist_metfrag(input_dir, slist_csv, name):
 
 
 slist_metfrag(sys.argv[1], sys.argv[2], sys.argv[3])
+=======
+    return(sl_mtfrag)
+    with open((input_dir + 'SL_metfrag.txt'), 'w') as filehandle:
+        for listitem in sl_mtfrag:
+            filehandle.write('%s\n' % listitem)
+            
+slist_metfrag(sys.argv[1],sys.argv[2])
+
+
+# In[ ]:
+
+
+>>>>>>> 25c6491 (cleaned directory)
 
 

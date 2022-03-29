@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+<<<<<<< HEAD
+=======
+# In[ ]:
+
+
+#!/usr/bin/env python
+# coding: utf-8
+
+>>>>>>> 25c6491 (cleaned directory)
 #!/usr/bin/env python
 #make executable in bash chmod +x PyRun
 
@@ -24,9 +33,16 @@ import os
 import glob
 import re
 
+<<<<<<< HEAD
 def sirius_postProc2(input_dir, input_tablecsv, slistcsv ,sl = True):
     
     
+=======
+def sirius_postProc2(input_dir, input_table, slistcsv ,sl = True):
+    
+    def isNaN(string):
+        return string != string
+>>>>>>> 25c6491 (cleaned directory)
     """sirius_postProc2 is the second part of the function 
     sirius_postProc defined in R part of the workflow. This function
     re-checks the Suspect list, if present or given as a parameter, 
@@ -40,25 +56,42 @@ def sirius_postProc2(input_dir, input_tablecsv, slistcsv ,sl = True):
     function this directory must contain a csv file that has a column 
     named "SMILES".
     
+<<<<<<< HEAD
     input_tablecsv (str): This is the table in csv format (defined in R), 
     which stores a csv table containing columns "mzml_files", which 
     contains list of all input files with their relative paths, second
+=======
+    input_table (str): This is the table in csv format (defined in R), 
+    which stores a csv table containing columns "mzml_files", which 
+    contains liat of all input files with their relative paths, second
+>>>>>>> 25c6491 (cleaned directory)
     column is "ResultFileName" which is a list of the corresponding
     result relative directories to each mzml files. Lastly, "file_id", 
     contains a file directory. This table will be used to read the 
     SIRIUS json files
     
+<<<<<<< HEAD
+=======
+    sl (bool): True if a suspct list is to be used
+>>>>>>> 25c6491 (cleaned directory)
     
     slistcsv (list): This is the csv file that contains a column of 
     "SMILES". Additionally this file can contain other information 
     about the compounds, but for this function, column of "SMILES", 
     named as "SMILES" is necessary.
+<<<<<<< HEAD
     sl (bool): True if a suspct list is to be used
     
 
     Returns:
     csv: a result file with additional columns such as those for suspect
     list if one is used. It also adds columns on MCSS, and is named as 
+=======
+
+    Returns:
+    csv: a result file with additional columns such as those for suspect
+    list if one is used. It also adds columns on MCSS., named as 
+>>>>>>> 25c6491 (cleaned directory)
     "input_dir/ResultFileName/insilico/SiriusResults.csv"
     
     
@@ -69,6 +102,7 @@ def sirius_postProc2(input_dir, input_tablecsv, slistcsv ,sl = True):
 
     """
     
+<<<<<<< HEAD
     def isNaN(string):
         return string != string
     
@@ -76,6 +110,11 @@ def sirius_postProc2(input_dir, input_tablecsv, slistcsv ,sl = True):
     heavy_atoms = ['C', 'N', 'P', 'O', 'S']
     
     input_table = pd.read_csv(input_tablecsv)
+=======
+    # Describe the heavy atoms to be considered for MCSS
+    heavy_atoms = ['C', 'N', 'P', 'O', 'S']
+    
+>>>>>>> 25c6491 (cleaned directory)
     
     for m, row in input_table.iterrows():
         
@@ -138,10 +177,14 @@ def sirius_postProc2(input_dir, input_tablecsv, slistcsv ,sl = True):
                     if elem and len(sm_res)>=3:
                         file1.loc[i, 'MCSSstring'] = res.smartsString
                         file1.loc[i, 'MCSS_SMILES'] = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+<<<<<<< HEAD
                         
                     
 
         file1.to_csv(input_dir + (input_table['ResultFileNames'][m] + '/insilico/SiriusResults.csv').replace("./", ""))
+=======
+        file1.to_csv(input_table['ResultFileNames'][m] + '/insilico/SiriusResults.csv')
+>>>>>>> 25c6491 (cleaned directory)
         
         
         

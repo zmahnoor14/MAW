@@ -15,11 +15,15 @@ import os
 import glob
 import re
 
+<<<<<<< HEAD
 import sys
+=======
+>>>>>>> 25c6491 (cleaned directory)
 import csv 
 import time
 import json
 
+<<<<<<< HEAD
 import numpy as np
 import pandas as pd
 
@@ -28,6 +32,10 @@ from rdkit import DataStructs
 from rdkit.Chem import AllChem
 from rdkit.Chem import rdFMCS
 from rdkit.Chem import PandasTools
+=======
+import pubchempy as pcp
+import numpy as np
+>>>>>>> 25c6491 (cleaned directory)
 
 
 def checkSMILES_validity(input_dir, resultcsv):

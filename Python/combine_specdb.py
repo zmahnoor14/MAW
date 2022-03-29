@@ -19,10 +19,13 @@ import csv
 import time
 import json
 
+<<<<<<< HEAD
 import sys
 
 import pandas as pd
 
+=======
+>>>>>>> 25c6491 (cleaned directory)
 import pubchempy as pcp
 import numpy as np
 

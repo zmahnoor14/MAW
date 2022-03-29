@@ -14,7 +14,10 @@
 import os
 import glob
 import re
+<<<<<<< HEAD
 import sys
+=======
+>>>>>>> 25c6491 (cleaned directory)
 
 import csv 
 import time
@@ -22,7 +25,10 @@ import json
 import sys
 import pubchempy as pcp
 import numpy as np
+<<<<<<< HEAD
 import pandas as pd
+=======
+>>>>>>> 25c6491 (cleaned directory)
 
 from rdkit import Chem
 from rdkit import DataStructs
