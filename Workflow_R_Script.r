@@ -54,21 +54,33 @@ for (i in 1:nrow(input_table)){
                                    file_id = input_table[i, "File_id"], 
                                    input_dir, 
                                    ppmx = 15)
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 9afee6f (modified)
     
     # Extract MS2 peak lists
     spec_pr2 <- ms2_peaks(pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "./"), sep =""), 
                           proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "./"), sep =""),
                           input_dir,
+<<<<<<< HEAD
                           input_table[i, "ResultFileNames"],
                          file_id = input_table[i, "File_id"])
+=======
+                          input_table[i, "ResultFileNames"]) 
+>>>>>>> 9afee6f (modified)
     
     # Extract MS1 peaks or isotopic peaks
     ms1p <- ms1_peaks(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS2DATA.csv', sep = ""), "./"), sep =""), 
                       y = input_table[i, "qcCAM_csv"], 
                       input_table[i, "ResultFileNames"], 
                       input_dir, 
+<<<<<<< HEAD
                       QC = FALSE)
+=======
+                      QC = TRUE)
+>>>>>>> 9afee6f (modified)
     
     #prepare sirius parameter files
     sirius_param_files <- sirius_param(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA.csv', sep = ""), "./"), sep =""), 
@@ -95,15 +107,23 @@ for (i in 1:nrow(input_table)){
                                result_dir = input_table[i, "ResultFileNames"],
                                input_dir,
                                adducts = paste(input_dir, "MetFrag_AdductTypes.csv", sep = ""), 
+<<<<<<< HEAD
                                sl_mtfrag = paste(input_dir, "SL_metfrag.txt", sep = ""), 
                                SL = TRUE,
                                ppm_max = 5, 
                                ppm_max_ms2= 15)
     
+=======
+                               sl_mtfrag = paste(input_dir, "sl_metfrag.txt", sep = ""), 
+                               SL = TRUE,
+                               ppm_max = 5, 
+                               ppm_max_ms2= 15)
+>>>>>>> 9afee6f (modified)
     
     
     # run metfrag
     run_metfrag(met_param = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/insilico/metparam_list.txt", sep = ""), "./"), sep =""),
+<<<<<<< HEAD
                MetFragjarFile = paste(input_dir, "MetFragCommandLine-2.4.8.jar", sep =""))
 
     
@@ -113,6 +133,13 @@ for (i in 1:nrow(input_table)){
 
 
 
+=======
+                input_dir)
+    
+    
+}
+
+>>>>>>> 9afee6f (modified)
 end_time <- Sys.time()
 print(end_time - start_time)
 
