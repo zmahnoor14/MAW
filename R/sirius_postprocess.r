@@ -36,19 +36,12 @@ library(dplyr)
 args <- commandArgs(trailingOnly=TRUE)
 #print(args)
 
-<<<<<<< HEAD
 x <- as.character(args[1])
-=======
-files <- as.character(args[1])
->>>>>>> 682856d (added functions)
+
 SL <- as.logical(args[2])
 
 # ---------- sirius_postprocess ----------
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 682856d (added functions)
 sirius_postprocess <- function(x, SL = TRUE){
     feat_scale <- function(p) {
     (p - min(p)) / (max(p) - min(p))
@@ -82,53 +75,54 @@ sirius_postprocess <- function(x, SL = TRUE){
         
         # find the number of the row corresponding to the row in msdata that has the same precursor m/z as json result files
         rowMS <- msdata[grepl(str_match(as.character(parameter_json[i, 'Param']), "MS1p_\\s*(.*?)\\s*_SIRIUS")[2] ,msdata$premz), ]
+        
         if (SL){
         
             # file path for strcuture candidate from Suspect List json folder
             str_canS <- paste(list.dirs(parameter_json[i,'SL_Param'])[2], '/structure_candidates.tsv', sep = '')
-            # file path for formula candidate from Suspect List json folder
+            # file path for formula candidate from Param json folder
             for_canS <- paste(list.dirs(parameter_json[i,'SL_Param'])[2], '/formula_candidates.tsv', sep = '')
+            # file path for strcuture candidate from Suspect List json folder
+            str_can <- paste(list.dirs(parameter_json[i,'Param'])[2], '/structure_candidates.tsv', sep = '')
+            # file path for formula candidate from Param json folder
+            for_can <- paste(list.dirs(parameter_json[i,'Param'])[2], '/formula_candidates.tsv', sep = '')
+            
             # if the strcuture candidate file exists
-            if (file.exists(str_canS)){
+            if (file.exists(str_canS) && file.exists(str_can)){
             
                 # read the corresponding structure and formula candidate files
                 str_canSL <- as.data.frame(read_tsv(str_canS))
                 for_canSL <- as.data.frame(read_tsv(for_canS))
+                
+                # read the corresponding structure and formula candidate files
+                str_canP <- as.data.frame(read_tsv(str_can))
+                for_canP <- as.data.frame(read_tsv(for_can))
             
                 # if the strcuture candidate file contains 1 or more rows, it has detected a candidate from suspect list, add relevant info
+                
                 if (nrow(str_canSL) >= 1){
+                     
+                    if (str_canSL[1, 'CSI:FingerIDScore'] > str_canP[1, 'CSI:FingerIDScore']){
+                        # information from structure candidate file
+                        msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canSL[1, 'adduct']
+                        msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canSL[1, 'name']
+                        msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canSL[1, 'pubchemids']
+                        msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canSL[1, 'smiles']
+                        msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canSL[1, 'molecularFormula']
+                        msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canSL[1, 'formulaRank']
+                        msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canSL[1, 'CSI:FingerIDScore']
                 
-                    # information from structure candidate file
-                    msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canSL[1, 'adduct']
-                    msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canSL[1, 'name']
-                    msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canSL[1, 'pubchemids']
-                    msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canSL[1, 'smiles']
-                    msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canSL[1, 'molecularFormula']
-                    msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canSL[1, 'formulaRank']
-                    msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canSL[1, 'CSI:FingerIDScore']
+                        # information from formula candidate file
+                        formulaRow <- which(for_canSL[,'rank'] == str_canSL[1, 'formulaRank'])
+                        msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canSL[formulaRow, 'SiriusScore']
+                        msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canSL[formulaRow, 'explainedIntensity']
                 
-                    # information from formula candidate file
-                    formulaRow <- which(for_canSL[,'rank'] == str_canSL[1, 'formulaRank'])
-                    msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canSL[formulaRow, 'SiriusScore']
-                    msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canSL[formulaRow, 'explainedIntensity']
-                
-                    # other info
-                    msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_SL'
-                    msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_canS
-                }
-                # if it's empty, move onto the All DB result folder called PARAM here
-                else{
-                    # file path for structure and formula candidate from PARAM (ALL DB) json folder
-                    str_can <- paste(list.dirs(parameter_json[i,'Param'])[2], '/structure_candidates.tsv', sep = '')
-                    for_can <- paste(list.dirs(parameter_json[i,'Param'])[2], '/formula_candidates.tsv', sep = '')
-                
-                    # if the strcuture candidate file exists
-                    if (file.exists(str_can)){
-                    
-                        # read the corresponding structure and formula candidate files
-                        str_canP <- as.data.frame(read_tsv(str_can))
-                        for_canP <- as.data.frame(read_tsv(for_can))
-                    
+                        # other info
+                        msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_SL'
+                        msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_canS
+                    }
+                    else{
+                        
                         # if the structure candidate file contains 1 row, it has detected a candidate from all DBs, add relevant info
                         if (nrow(str_canP) == 1){
                         
@@ -199,7 +193,107 @@ sirius_postprocess <- function(x, SL = TRUE){
                                 # other info
                                 msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
                                 msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can
+                            
                             }
+                        }
+                
+                        # if the structure candidate from all DBs does not exist
+                        else{
+                            # check if the formula candidate file exists
+                            if (file.exists(for_can)){
+                                for_canF1 <- as.data.frame(read_tsv(for_can))
+                        
+                                # if formula candidate file is not empty
+                                if (nrow(for_canF1)>= 1){
+                            
+                                    # information from formula candidate file
+                                    msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canF1[1, 'adduct']
+                                    msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canF1[1, 'molecularFormula']
+                                    msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canF1[1, 'rank']
+                                    msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canF1[1, 'explainedIntensity']
+                                    msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canF1[1, 'SiriusScore']
+                                    # other info
+                                    msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
+                                    msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can
+                                }
+                            }
+                        }
+                    }
+                }
+                # if it's empty, move onto the All DB result folder called PARAM here
+                else{
+                    
+                    # if the structure candidate file contains 1 row, it has detected a candidate from all DBs, add relevant info
+                    if (nrow(str_canP) == 1){
+                        
+                        # information from structure candidate file
+                        msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP[1, 'adduct']
+                        msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP[1, 'name']
+                        msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP[1, 'pubchemids']
+                        msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP[1, 'smiles']
+                        msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP[1, 'molecularFormula']
+                        msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP[1, 'formulaRank']
+                        msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP[1, 'CSI:FingerIDScore']
+                        
+                        # information from formula candidate file
+                        formulaRow1 <- which(for_canP[,'rank'] == str_canP[1, 'formulaRank'])
+                        msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[formulaRow1, 'SiriusScore']
+                        msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[formulaRow1, 'explainedIntensity']
+                        
+                        # other info
+                        msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
+                        msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can
+                    }
+                    # if the structure candidate file contains more rows, extract SMILES of top candidates and check their similarity later
+                    else if (nrow(str_canP) > 1){
+                        
+                        # information from structure candidate file
+                        msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP[1, 'adduct']
+                        msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP[1, 'name']
+                        msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP[1, 'pubchemids']
+                        msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP[1, 'smiles']
+                        msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP[1, 'molecularFormula']
+                        msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP[1, 'formulaRank']
+                        msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP[1, 'CSI:FingerIDScore']
+                        
+                        # information from formula candidate file, take info from the formula rank that corresponds to the formula rank with the top strcuture candidate
+                        formulaRow2 <- which(for_canP[,'rank'] == str_canP[1, 'formulaRank'])
+                        msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[formulaRow2, 'SiriusScore']
+                        msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[formulaRow2, 'explainedIntensity']
+                        
+                        # other info
+                        msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
+                        msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can
+                        
+                        # normalize the CSI:FingerIDScores
+                        norm_score <- feat_scale(str_canP[,"CSI:FingerIDScore"]) 
+                        # store the upper quartile
+                        upper_quartile <- str_canP[which(norm_score > as.numeric(quantile(norm_score)[4])), "smiles"]
+                        
+                        # if the upper quartile has more than 5 candidates, then just take the top 5 candidates
+                        if (length(upper_quartile) > 5){
+                            upper_quartile <- upper_quartile[1:5]
+                        }
+                        # save the top candidates SMILES, to check similarity later with rdkit in Python
+                        msdata[as.numeric(rownames(rowMS)), 'SMILESforMCSS'] <- paste(upper_quartile, collapse = '|')
+                        
+                    }
+                    # if the structure candidate file is empty, take information from just the formula candidate file
+                    else if (nrow(str_canP) == 0){
+                        
+                        # if formula candidate file is not empty
+                        if (nrow(for_canP) >= 1){
+                            
+                            # information from formula candidate file
+                            msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canP[1, 'adduct']
+                            msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canP[1, 'molecularFormula']
+                            msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canP[1, 'rank']
+                            msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[1, 'explainedIntensity']
+                            msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[1, 'SiriusScore']
+                            # other info
+                            msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
+                            msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can
+                            
                         }
                     }
                 
@@ -439,10 +533,10 @@ sirius_postprocess <- function(x, SL = TRUE){
     write.csv(msdata, paste(x, "/insilico/MS1DATAsirius.csv", sep = ''))
     return(msdata)
 }
+# Usage: 
+# sirius_postprocess(x, SL = TRUE)
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 682856d (added functions)
+
 sirius_postprocess(x, SL)
 
