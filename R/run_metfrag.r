@@ -41,7 +41,7 @@ run_metfrag <- function(met_param, input_dir){
     filesmet_param <- read.table(met_param)
     
     for (files in filesmet_param[[1]]){
-        system(paste("java -jar",  paste(input_dir, "MetFrag2.4.5-CL.jar", sep = ''), files))
+        system(paste("java -Xmx2048m -jar",  paste(input_dir, "MetFrag2.4.5-CL.jar", sep = ''), files))
     }
 }
 run_metfrag(met_param, input_dir)

@@ -1,155 +1,173 @@
-download_specDB <- function(input_dir, db = "all", error = TRUE){
-    # Track Time 
-    start_time <- Sys.time()
+packageVersion("Spectra")
+packageVersion("MsBackendMgf")
+packageVersion("MsBackendHmdb")
+packageVersion("MsBackendMsp")
+packageVersion("MsCoreUtils")
+packageVersion("readr")
+packageVersion("dplyr")
+packageVersion("rvest")
+packageVersion("stringr")
+packageVersion("xml2")
 
-    # only input available as of now
-    databases <- 'gnps, hmdb, mbank, all'
-    
-    # creat a summary file, open and store timings of download and version if possible
-    summaryFile <- paste(input_dir, "summaryFile.txt", sep = "")
-    file.create(summaryFile, recursive = TRUE)
-    file.conn <- file(summaryFile)
-    open(file.conn, open = "at")
-            
-    # gnps
-    if (db == "all" || db =="gnps"){
-        
-        print("GNPS WORKS")
-        
-        # Download file
-        system(paste("wget -P", 
-                     input_dir,
-                     "https://gnps-external.ucsd.edu/gnpslibrary/ALL_GNPS.mgf",
-                     sep =  " "))
-        
-        # load the spectra into MsBackendMgf
-        gnpsdb <- Spectra(paste(input_dir, "ALL_GNPS.mgf", sep = ''), source = MsBackendMgf())
-        save(gnpsdb, file = paste(input_dir,"gnps.rda", sep = ""))
-        
-        # delete the database in its format to free up space
-        system(paste("rm", (paste(input_dir, "ALL_GNPS.mgf", sep = '')), sep = " "))
-        
-        writeLines(paste("GNPS saved at", Sys.time(), sep=" "),con=file.conn)
-        
-    }
-    # hmdb
-    if (db == "all" || db =="hmdb"){
-        
-        print("HMDB WORKS")
-        
-        
-        
-        ####### Version Control ######
-        
-        # extract HMDB Current version
-        html <- read_html("https://hmdb.ca/downloads")
-        strings <- html%>% html_elements("a") %>% html_text2()
-        ls <- unique(strings)
-        hmdb_curr_ver <- c()
-        for (i in ls){
-            if (grepl("Current", i)){
-            hmdb_curr_ver<- c(i, hmdb_curr_ver)
+download_specDB <- function(input_dir, db = "all"){
+
+    if (dir.exists(input_dir) && substring(input_dir, nchar(input_dir)) == "/"){
+        # Track Time 
+        start_time <- Sys.time()
+
+        # only input available as of now
+        databases <- 'gnps, hmdb, mbank, all'
+
+        # creat a summary file, open and store timings of download and version if possible
+        summaryFile <- paste(input_dir, "summaryFile.txt", sep = "")
+        file.create(summaryFile, recursive = TRUE)
+        file.conn <- file(summaryFile)
+        open(file.conn, open = "at")
+
+        # gnps
+        if (db == "all" || db =="gnps"){
+
+            print("GNPS WORKS")
+
+            # Download file
+            system(paste("wget -P", 
+                         input_dir,
+                         "https://gnps-external.ucsd.edu/gnpslibrary/ALL_GNPS.mgf",
+                         sep =  " "))
+
+            # load the spectra into MsBackendMgf
+            gnpsdb <- Spectra(paste(input_dir, "ALL_GNPS.mgf", sep = ''), source = MsBackendMgf())
+            save(gnpsdb, file = paste(input_dir,"gnps.rda", sep = ""))
+
+            # delete the database in its format to free up space
+            system(paste("rm", (paste(input_dir, "ALL_GNPS.mgf", sep = '')), sep = " "))
+
+            writeLines(paste("GNPS saved at", Sys.time(), sep=" "),con=file.conn)
+
+        }
+
+        #mbank
+        if (db == "all" || db =="mbank"){
+
+            print("MassBank WORKS")
+
+            page <- read_html("https://github.com/MassBank/MassBank-data/releases")
+            page %>%
+                html_nodes("a") %>%       # find all links
+                html_attr("href") %>%     # get the url
+                str_subset("MassBank_NIST.msp") -> tmp # find those that have the name MassBank_NIST.msp
+
+            #download file
+            system(paste("wget ",
+                         "https://github.com", tmp[1], 
+                         sep =  ""))
+
+            mbank <- Spectra(paste(input_dir, "MassBank_NIST.msp", sep = ''), source = MsBackendMsp())
+            save(mbank, file = paste(input_dir,"mbankNIST.rda", sep = ""))
+
+            # delete the database in its format to free up space
+            system(paste("rm", (paste(input_dir, "MassBank_NIST.msp", sep = '')), sep = " "))
+
+            # obtain the month and year for the database release to add to summary
+            res <- str_match(tmp[1], "download/\\s*(.*?)\\s*/MassBank_NIST")
+
+            writeLines(paste("MassBank saved at", Sys.time(), "with release version", res[,2], sep=" "),con=file.conn)
+        }
+
+        # hmdb
+        if (db == "all" || db =="hmdb"){
+
+            print("HMDB WORKS")
+
+
+
+            ####### Version Control ######
+
+            # extract HMDB Current version
+            html <- read_html("https://hmdb.ca/downloads")
+            strings <- html%>% html_elements("a") %>% html_text2()
+            ls <- unique(strings)
+            hmdb_curr_ver <- c()
+            for (i in ls){
+                if (grepl("Current", i)){
+                hmdb_curr_ver<- c(i, hmdb_curr_ver)
+                }
             }
+
+
+
+
+            ####### Download and unzip ######
+
+            #Download file predicted MSMS spectra
+            system(paste("wget",
+                         "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_predicted_msms_spectra.zip",
+                         sep = " "))
+            # unzip
+            system(paste("unzip", "hmdb_predicted_msms_spectra.zip", "-d",  paste(input_dir, "hmdb_predicted_msms_spectra", sep = ""), sep = " "))
+
+
+            #Download file experimental MSMS spectra
+            system(paste("wget",
+                         "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_experimental_msms_spectra.zip",
+                         sep = " "))
+            # unzip
+            system(paste("unzip", "hmdb_experimental_msms_spectra.zip", "-d", paste(input_dir, "hmdb_experimental_msms_spectra", sep = ""), sep = " "))
+
+
+
+
+            ####### Load spectra in MsBackend #######
+
+            hmdb_predfiles <- list.files(path = paste(input_dir, "hmdb_predicted_msms_spectra", sep = ''), full.names = TRUE)
+
+            hmdb_predicted <- c()
+            for (i in hmdb_predfiles){
+                # load the spectra into MsBackendHMDB
+                hmdb_pred <- Spectra(i, source = MsBackendHmdbXml())
+                hmdb_predicted <- c(hmdb_predicted, hmdb_pred)
+            }
+
+            hmdb_expfiles <- list.files(path = paste(input_dir, "hmdb_experimental_msms_spectra", sep = ''), full.names = TRUE)
+
+            hmdb_experimental <- c()
+
+            for (j in hmdb_expfiles){
+                # load the spectra into MsBackendHMDB
+                hmdb_exp <- Spectra(j, source = MsBackendHmdb())
+                hmdb_experimental <- c(hmdb_experimental, hmdb_exp)
+            }
+
+
+            hmdb <- hmdb_predicted + hmdb_experimental
+            save(hmdb, file = paste(input_dir,"hmdb.rda", sep = ""))
+
+
+
+
+
+            ####### Remove the XML files #######
+
+            # delete the database in its format to free up space
+            system(paste("rm -r", (paste(input_dir, "hmdb_predicted_msms_spectra", sep = '')), sep = " "))
+            system(paste("rm -r", (paste(input_dir, "hmdb_experimental_msms_spectra", sep = '')), sep = " "))
+
+
+            writeLines(paste("HMDB saved at", Sys.time(), "with release version", hmdb_curr_ver, sep=" "),con=file.conn)
         }
-        
-        
-        
-        
-        ####### Download and unzip ######
-        
-        #Download file predicted MSMS spectra
-        system(paste("wget",
-                     "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_predicted_msms_spectra.zip",
-                     sep = " "))
-        # unzip
-        system(paste("unzip", "hmdb_predicted_msms_spectra.zip", "-d",  paste(input_dir, "hmdb_predicted_msms_spectra", sep = ""), sep = " "))
-    
-        
-        #Download file experimental MSMS spectra
-        system(paste("wget",
-                     "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_experimental_msms_spectra.zip",
-                     sep = " "))
-        # unzip
-        system(paste("unzip", "hmdb_experimental_msms_spectra.zip", "-d", paste(input_dir, "hmdb_experimental_msms_spectra", sep = ""), sep = " "))
-        
-        
-        
-        
-        ####### Load spectra in MsBackend #######
-        
-        hmdb_predfiles <- list.files(path = paste(input_dir, "hmdb_predicted_msms_spectra", sep = ''), full.names = TRUE)
-        
-        hmdb_predicted <- c()
-        for (i in hmdb_predfiles){
-            # load the spectra into MsBackendHMDB
-            hmdb_pred <- Spectra(i, source = MsBackendHmdbXml())
-            hmdb_predicted <- c(hmdb_predicted, hmdb_pred)
+
+        #wrong input error message
+        else if (!grepl(db, databases, fixed = TRUE)){
+            stop("Wrong db input. Following inputs apply: gnps, hmdb, mbank or all")
         }
-        
-        hmdb_expfiles <- list.files(path = paste(input_dir, "hmdb_experimental_msms_spectra", sep = ''), full.names = TRUE)
-        
-        hmdb_experimental <- c()
-        
-        for (j in hmdb_expfiles){
-            # load the spectra into MsBackendHMDB
-            hmdb_exp <- Spectra(j, source = MsBackendHmdb())
-            hmdb_experimental <- c(hmdb_experimental, hmdb_exp)
-        }
-        
-        
-        hmdb <- hmdb_predicted + hmdb_experimental
-        save(hmdb, file = paste(input_dir,"hmdb.rda", sep = ""))
-        
-        
-        
-        
-        
-        ####### Remove the XML files #######
-        
-        # delete the database in its format to free up space
-        system(paste("rm -r", (paste(input_dir, "hmdb_predicted_msms_spectra", sep = '')), sep = " "))
-        system(paste("rm -r", (paste(input_dir, "hmdb_experimental_msms_spectra", sep = '')), sep = " "))
-        
-        
-        writeLines(paste("HMDB saved at", Sys.time(), "with release version", hmdb_curr_ver, sep=" "),con=file.conn)
+        close(file.conn)
+        end_time <- Sys.time()
+        print(end_time - start_time)
+    }
+    else{
+        stop("Your input_dir is incorrect. Please provide the directory where all your input files are stored. An example would be: '/Users/my_name/input_dir/'. don't forget the '/' at the end : ) Good Luck")
     }
     
-    #mbank
-    if (db == "all" || db =="mbank"){
-        
-        print("MassBank WORKS")
-        
-        page <- read_html("https://github.com/MassBank/MassBank-data/releases")
-        page %>%
-            html_nodes("a") %>%       # find all links
-            html_attr("href") %>%     # get the url
-            str_subset("MassBank_NIST.msp") -> tmp # find those that have the name MassBank_NIST.msp
-        
-        #download file
-        system(paste("wget ",
-                     "https://github.com", tmp[1], 
-                     sep =  ""))
-        
-        mbank <- Spectra(paste(input_dir, "MassBank_NIST.msp", sep = ''), source = MsBackendMsp())
-        save(mbank, file = paste(input_dir,"mbankNIST.rda", sep = ""))
-        
-        # delete the database in its format to free up space
-        system(paste("rm", (paste(input_dir, "MassBank_NIST.msp", sep = '')), sep = " "))
-        
-        # obtain the month and year for the database release to add to summary
-        res <- str_match(tmp[1], "download/\\s*(.*?)\\s*/MassBank_NIST")
-        
-        writeLines(paste("MassBank saved at", Sys.time(), "with release version", res[,2], sep=" "),con=file.conn)
-    }
-    
-    #wrong input error message
-    else if (!grepl(db, databases, fixed = TRUE)){
-        stop("Wrong db input. Following inputs apply: gnps, hmdb, mbank or all")
-    }
-    close(file.conn)
-    #download_specDB(input_dir, db)
-    end_time <- Sys.time()
-    print(end_time - start_time)
 }
 
 
@@ -167,7 +185,6 @@ low_int <- function(c, ...) {
 # Usage:
 # filterIntensity(spectra_object, intensity = low_int)
 
-#' filterIntensity is a predefined function in Spectra package
 
 ##-----------------------------------------------------------------
 ## normalize intensity 
@@ -180,92 +197,86 @@ norm_int <- function(y, ...) {
     y
 }
 
-# Usage:
-# addProcessing(sps, norm_int)
 
-#' addProcessing is a predefined function in Spectra package
 
-##-----------------------------------------------------------------
-## Result Directories 
-##-----------------------------------------------------------------
 
 ## Specifying a function for creating result directories for each input mzml
 # input for the function:
 # input directory
 ms2_rfilename<- function(input_dir){
-    #list_ms2_files <- intersect(list.files(input_dir, pattern = "_PRM_"), list.files(input_dir, pattern = ".mzML"))
-    list_ms2_files <- list.files(input_dir, pattern = ".mzML")
-    mzml_file <- paste(input_dir, list_ms2_files, sep = "")
-    
-    #store the result file names to return to this function as output
-    mzml_files <- c()
-    ResultFileNames <- c()
-    File_id <- c()
-    nx <- 0
-    # x is mzML files
-    for (i in 1:length(mzml_file)){
-        nx <- nx+1
-        # remove .mzML to extract just the names
-        mzml_filex <- str_replace(mzml_file[i], input_dir, "./")
-        name_mzmls <- str_remove(as.character(mzml_filex), ".mzML")
-        #name_mzml <- str_replace(name_mzmls, input_dir, "./")
-        #' for each file a subdirectory is created to store all results in that, add working directory
-        if (!file.exists(name_mzmls)){
-            dir.create(name_mzmls) ##create folder
+    if (dir.exists(input_dir) && substring(input_dir, nchar(input_dir)) == "/"){
+        #list_ms2_files <- intersect(list.files(input_dir, pattern = "_PRM_"), list.files(input_dir, pattern = ".mzML"))
+        list_ms2_files <- list.files(input_dir, pattern = ".mzML")
+        mzml_file <- paste(input_dir, list_ms2_files, sep = "")
+
+        #store the result file names to return to this function as output
+        mzml_files <- c()
+        ResultFileNames <- c()
+        File_id <- c()
+        nx <- 0
+        # x is mzML files
+        for (i in 1:length(mzml_file)){
+            nx <- nx+1
+            # remove .mzML to extract just the names
+            mzml_filex <- str_replace(mzml_file[i], input_dir, "./")
+            name_mzmls <- str_remove(as.character(mzml_filex), ".mzML")
+            name_mzmlsd <- str_remove(mzml_file[i], ".mzML")
+            #name_mzml <- str_replace(name_mzmls, input_dir, "./")
+            #' for each file a subdirectory is created to store all results in that, add working directory
+            if (!file.exists(name_mzmlsd)){
+                dir.create(name_mzmlsd) ##create folder
+            }
+            ResultFileNames<- c(ResultFileNames, name_mzmls)
+            mzml_files <- c(mzml_files, mzml_filex)
+            File_id <- c(File_id, paste("file_", nx, sep = ""))
         }
-        ResultFileNames<- c(ResultFileNames, name_mzmls)
-        mzml_files <- c(mzml_files, mzml_filex)
-        File_id <- c(File_id, paste("file_", nx, sep = ""))
+        input_table <- cbind(mzml_files, ResultFileNames, File_id)
+
+        write.csv(input_table, paste(input_dir, "input_table.csv", sep = ""))
+        return(data.frame(input_table))
     }
-    input_table <- cbind(mzml_files, ResultFileNames, File_id)
-    
-    write.csv(input_table, paste(input_dir, "input_table.csv", sep = ""))
-    return(data.frame(input_table))
+    else{
+        stop("Your input_dir is incorrect. Please provide the directory where all your input files are stored. An example would be: '/Users/my_name/input_dir/'. don't forget the '/' at the end : ) Good Luck")
+    }
 }
 
-# usage:
-## input directory ##
-#input_dir <- paste(getwd(), "/", sep = '')
-#ms2_rfilename(input_dir)
 
-
-
-##-----------------------------------------------------------------
-## Read mzML files and extract precursor m/z(s)
-##-----------------------------------------------------------------
 
 #' All spectra in mzML files preprocessing, return two outputs, pre-processed MS2 spectra and all precursor masses
 # x is one mzML file
 spec_Processing <- function(x, result_dir){
-    # read the spectra
-    sps_all <- Spectra(x, backend = MsBackendMzR())
-    #' Change backend to a MsBackendDataFrame: load data into memory
-    #sps_all <- setBackend(sps_all, MsBackendDataFrame())
-    #' Filter Empty Spectra
-    sps_all <- filterEmptySpectra(sps_all)
-    #' Extract Precursor m/z(s) in each file
-    pre_mz <- unique(precursorMz(sps_all))
-    #' Remove any NAs
-    pre_mz <- na.omit(pre_mz)
-    export(sps_all, backend = MsBackendMzR(), file = paste(result_dir, "/processedSpectra.mzML", sep = ""))
-    write.table(pre_mz, file = paste(result_dir, "/premz_list.txt", sep = ""), sep = "/t",row.names = FALSE, col.names = FALSE)
-    spsall_pmz <- list(sps_all, pre_mz)
-    return(spsall_pmz)
+    
+    if (file.exists(x) && substring(x, nchar(x)) == "L"){
+        if (dir.exists(result_dir)){
+            # read the spectra
+            sps_all <- Spectra(x, backend = MsBackendMzR())
+            #' Change backend to a MsBackendDataFrame: load data into memory
+            #sps_all <- setBackend(sps_all, MsBackendDataFrame())
+            #' Filter Empty Spectra
+            sps_all <- filterEmptySpectra(sps_all)
+            #' Extract Precursor m/z(s) in each file
+            pre_mz <- unique(precursorMz(sps_all))
+            #' Remove any NAs
+            pre_mz <- na.omit(pre_mz)
+            export(sps_all, backend = MsBackendMzR(), file = paste(result_dir, "/processedSpectra.mzML", sep = ""))
+            write.table(pre_mz, file = paste(result_dir, "/premz_list.txt", sep = ""), sep = "/t",row.names = FALSE, col.names = FALSE)
+            spsall_pmz <- list(sps_all, pre_mz)
+            return(spsall_pmz)
+        }
+        else{
+            stop("Seems like it is not the result directory of the input .mzML file which is provided as x. Please use the function ms2_rfilename to generate a result directory or create one yourself with the same name as the .mzML input file.")
+        }
+    }
+    else{
+        stop("Are you sure x is an mzML input file?")
+    }
+    
 }
 
-##-----------------------------------------------------------------
-## Pre-process MS2 spectra
-##-----------------------------------------------------------------
-
-#' processing on spectra with one precursor mass
-# inputs: 
-# x is precursor mass, 
-# spec is the spectra file (sps_all is mzML input processed spectra, gnps, hmdb or mbank), 
-# ppmx is ppm value
 spec2_Processing <- function(z, obj, spec = "spec_all", ppmx = 15){
     if (spec == "spec_all"){
         #' Subset the dataset to MS2 spectra matching the m/z
-        sps <- filterPrecursorMz(obj, mz = z + ppm(c(-z, z), 10))
+        sps <- filterPrecursorMzValues(obj, mz = z + ppm(c(-z, z), 10))
     } else if (spec == "gnps"){
         #gnps spectra that contains precursor mass
         has_mz <- containsMz(obj, mz = z, ppm = ppmx)
@@ -331,8 +342,8 @@ spec2_Processing <- function(z, obj, spec = "spec_all", ppmx = 15){
         return(sps)
     }
 }
-# Usage:
-# spec2_Processing(x = 231.15, spec = "sps_all", ppmx = 15)
+
+
 
 
 ##-----------------------------------------------------------------
@@ -404,8 +415,6 @@ peakdf <- function(a, b, ppmx){
     }
     #output is a dataframe with mz and intensity from db spectra and query spectra and their difference
 }
-# Usage:
-# peakdf(sps[[1]], gnps_best_match, ppmx = 15)
 
 ##-----------------------------------------------------------------
 ## Plotting Mirror Spectra 
@@ -418,20 +427,13 @@ label_fun <- function(x) {
     mzs[ints < 5] <- ""
     mzs
 }
-# Usage: 
-# plotSpectraMirror(sps[idx[1]], gnps_with_mz[idx[2]], tolerance = 0.2,
-# labels = label_fun, labelPos = 2, labelOffset = 0.2, labelSrt = -30)
 
-#' plotSpectraMirror is a predefined function in Spectra package
-
-# x is one pre_mz, db is GNPS, HMDB, MassBank
 spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input_dir, ppmx, error = TRUE){
     
     ####-------------------------------------------------------------
     #### Dereplication with all or GNPS ----
     ####-------------------------------------------------------------
-    
-    databases <- 'gnps, hmdb, mbank, all'
+
     
     sps_all <- Spectra(proc_mzml, backend = MsBackendMzR())
         
@@ -439,8 +441,7 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     pre_mz <- tbl[[1]]
     
     if (db == "all" || db =="gnps"){
-        
-        
+
         load(file = paste(input_dir,"gnps.rda", sep = ""))
         
         # common
@@ -475,7 +476,7 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             
             nx <- nx+1
             
-            spsrt <- filterPrecursorMz(sps_all, x)
+            spsrt <- filterPrecursorMzRange(sps_all, x)
         
             
             id_Xx <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
@@ -1040,7 +1041,7 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             
             nx <- nx+1
             
-            spsrt <- filterPrecursorMz(sps_all, x)
+            spsrt <- filterPrecursorMzRange(sps_all, x)
         
             
             id_Xx <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
@@ -1539,7 +1540,7 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
             nx <- nx+1
             
             
-            spsrt <- filterPrecursorMz(sps_all, x)
+            spsrt <- filterPrecursorMzRange(sps_all, x)
         
             
             id_Xx <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
@@ -2026,15 +2027,7 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
 
     }
     
-    #wrong input error message
-    else if (!grepl(db, databases, fixed = TRUE)){
-        stop("Wrong db input. Following inputs apply: gnps, hmdb, mbank or all")
-    }
-
 }
-# Usage
-# spec_dereplication<- function(x, db, result_dir, file_id, input_dir, ppmx)
-
 
 #save.image(file = "R_Functions.RData")
 
@@ -2073,8 +2066,18 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
         
         #filter based on pre mz; sps_all is preprocessed spectra
         sps <- filterPrecursorMz(sps_all, i)
+        #sps <- filterIntensity(sps, intensity = low_int)
         
         if (length(sps)>0){
+            
+            #ids
+            nx <- nx+1
+            id_Xx <- paste(file_id,  "M",  as.character(round(i, digits = 0)), 
+                              "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
+                              "ID", as.character(nx), sep = '')
+            id_X <- c(id_X, id_Xx)
+
+            
             #mz
             premz <- c(premz, i)
 
@@ -2114,13 +2117,7 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
             ints <- max(sps$precursorIntensity)
             int <- c(int, ints) 
 
-            #ids
-            nx <- nx+1
-            id_Xx <- paste(file_id,  "M",  as.character(round(i, digits = 0)), 
-                              "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)), 
-                              "ID", as.character(nx), sep = '')
-            id_X <- c(id_X, id_Xx)
-
+            
             #peak lists
             # variable for name
             names <- c()
@@ -2158,17 +2155,7 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
     write.csv(first_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS2DATA.csv', sep = ""), "./"), sep =""))
     return(first_list)
 }
-# Usage
-#spec_pr2 <- ms2_peaks(spec_pr, './MZML/DS_201124_SC_full_PRM_neg_09/')
-#spec_pr2
 
-# for QC files, which have both polarities in one file or the polarities are unknown
-# inputs:
-#path e.g: “/users/name/project/QC”
-#pattern (define this so that the function only catches the file 
-#with a certain pattern e.g: “common”, if no pattern, by default 
-#function takes “.mzML” as the pattern which is all the .mzML files, 
-#so make sure only the QC files are in this directory and not the MS2.mzML files)
 
 cam_funcMode <- function(path, pattern = ".mzML"){
     library("CAMERA")
@@ -2295,7 +2282,7 @@ cam_funcMode <- function(path, pattern = ".mzML"){
     detach("package:CAMERA", unload=TRUE)
 }
 
-#Usage: cam_funcMode(path, pattern)
+# ---------- merge_qc ----------
 
 merge_qc<- function(path){
     # combine all QC which are in positive mode
@@ -2337,9 +2324,8 @@ merge_qc<- function(path){
     # write csv for the combined_camera_neg results
     write.csv(df_neg, paste(path, "/Combined_Camera_neg.csv", sep = ""))
 }
-# Usage: merge_qc(path)
 
-cam_func <- function(path, f, mode = "pos"){
+cam_func <- function(path, f, mode = "pos", input_dir){
     library("CAMERA")
     fl <- paste(path, f, sep ="")
     if(mode == "pos"){
@@ -2369,7 +2355,7 @@ cam_func <- function(path, f, mode = "pos"){
             peaklist[i,'istops'] = y[1]
         }
         name <- str_remove(f, ".mzML")
-        write.csv(peaklist, file = paste(input_dir, "/QC/posCAMERAResults_", name,".csv", sep = ""))
+        write.csv(peaklist, file = paste(input_dir, "QC/posCAMERAResults_", name,".csv", sep = ""))
     }
     else if(mode == "neg"){
         xs <- xcmsSet(file = fl,profmethod = "bin", 
@@ -2403,20 +2389,13 @@ cam_func <- function(path, f, mode = "pos"){
     detach("package:CAMERA", unload=TRUE)
     
 }
-# Usage: cam_func(f, mode = "pos")
-
-
-
-#addQC_input_table <- function(path, pattern){
-#    
-#}
 
 
 
 # Extract isotopic peaks for each pre_mz
 # The input is x = first_list (from ms2peaks function) and y = camera results 
 
-ms1_peaks <- function(x, y, result_dir, input_dir, QCfile = TRUE){
+ms1_peaks <- function(x, y, result_dir, input_dir, QCfile){
     # store the ms1_peak list path here
     ms1Peaks <- c()
     x = read.csv(x)
@@ -2512,7 +2491,7 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile = TRUE){
             }
         }
         second_list <- data.frame(cbind(x, ms1Peaks))
-        write.csv(second_list, file = paste(result_dir,'/insilico/MS1DATA.csv', sep = ""))
+        write.csv(second_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA.csv', sep = ""), "./"), sep =""))
         return(second_list)
     }
     else{
@@ -2525,9 +2504,6 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile = TRUE){
     
 }
 
-# Usage
-#ms1p <- ms1_peaks(x = spec_pr2, y = './MZML/QC/NEW/Combined_Camera_neg.csv', result_dir = './MZML/DS_201124_SC_full_PRM_neg_09', QC = TRUE)
-#ms1p
 
 
 
@@ -2600,7 +2576,9 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
             #ms2
             writeLines(paste(">collision", paste(x[i,"col_eng"],"eV", sep =''),sep=" "),con=file.conn)
             
-            peak<- read.table(x[i,"ms2Peaks"])
+            ms2pk <- paste(input_dir, str_remove(x[i,"ms2Peaks"], "./"), sep ="")
+            
+            peak<- read.table(ms2pk)
             for (k in 1:length(peak[,1])){
                 writeLines(paste(as.character(peak[k,1]),as.character(peak[k,2]), sep =" "), con=file.conn) 
             }
@@ -2642,7 +2620,10 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
             
             #ms1
             writeLines(">ms1",con=file.conn)
-            peakms1<- read.table(x[i,"ms1Peaks"])
+            
+            ms1pk <- paste(input_dir, str_remove(x[i,"ms1Peaks"], "./"), sep ="")
+            peakms1<- read.table(ms1pk)
+            
             for (l in 1:length(peakms1[,1])){
                 writeLines(paste(as.character(peakms1[l,1]),as.character(peakms1[l,2]), sep =" "), con=file.conn) 
             }
@@ -2650,7 +2631,10 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
             #ms2
             writeLines(paste(">collision", paste(x[i,"col_eng"],"eV", sep =''),sep=" "),con=file.conn)
             
-            peakms2<- read.table(x[i,"ms2Peaks"])
+            ms2pk <- paste(input_dir, str_remove(x[i,"ms2Peaks"], "./"), sep ="")
+            
+            peakms2<- read.table(ms2pk)
+
             for (k in 1:length(peakms2[,1])){
                 writeLines(paste(as.character(peakms2[k,1]),as.character(peakms2[k,2]), sep =" "), con=file.conn) 
             }
@@ -2694,7 +2678,10 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
             
             #ms1
             writeLines(">ms1",con=file.conn)
-            peakms1<- read.table(x[i,"ms1Peaks"])
+            
+            ms1pk <- paste(input_dir, str_remove(x[i,"ms1Peaks"], "./"), sep ="")
+            peakms1<- read.table(ms1pk)
+            
             for (l in 1:length(peakms1[,1])){
                 writeLines(paste(as.character(peakms1[l,1]),as.character(peakms1[l,2]), sep =" "), con=file.conn) 
             }
@@ -2702,7 +2689,10 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
             #ms2
             writeLines(paste(">collision", paste(x[i,"col_eng"],"eV", sep =''),sep=" "),con=file.conn)
             
-            peakms2<- read.table(x[i,"ms2Peaks"])
+            ms2pk <- paste(input_dir, str_remove(x[i,"ms2Peaks"], "./"), sep ="")
+            
+            peakms2<- read.table(ms2pk)
+
             for (k in 1:length(peakms2[,1])){
                 writeLines(paste(as.character(peakms2[k,1]),as.character(peakms2[k,2]), sep =" "), con=file.conn) 
             }
@@ -2727,9 +2717,6 @@ sirius_param <- function(x, result_dir, input_dir, SL = TRUE){
     
 }
 
-# Usage 
-# sirius_param_files <- sirius_param(ms1p, result_dir = './MZML/DS_201124_SC_full_PRM_neg_09')
-
 
 run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, SL_path, candidates = 30){
     
@@ -2739,8 +2726,13 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
         if (QC){
             if (is.na(files[b, "isotopes"])){
                 system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                             "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates,", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                             "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
                              sep = " "))
+                if(!file.exists(files[b, "outputNames"])){
+                    system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                                 "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                                 sep = " "))
+                }
                 if(SL){
                     system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
                              "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
@@ -2752,6 +2744,11 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
                 system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
                              "formula --profile orbitrap --candidates", candidates, "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure --database ALL canopus",
                              sep = " "))
+                if(!file.exists(files[b, "outputNames"])){
+                     system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                                 "formula --profile orbitrap --candidates", candidates, "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure --database ALL canopus",
+                                 sep = " "))
+                }
                 if(SL){
                     system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
                              "formula --profile orbitrap --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
@@ -2761,16 +2758,24 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
         }
         else{
             system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                        "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                        sep = " "))
+            if(!file.exists(files[b, "outputNames"])){
+                system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
                              "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
                              sep = " "))
+            }
             if(SL){
                 system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
                             "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
                             sep = " "))
             }
         }
+        Sys.sleep(5)
+        
     }
 }
+
 
 
 
@@ -2807,53 +2812,54 @@ sirius_postprocess <- function(x, SL = TRUE){
         
         # find the number of the row corresponding to the row in msdata that has the same precursor m/z as json result files
         rowMS <- msdata[grepl(str_match(as.character(parameter_json[i, 'Param']), "MS1p_\\s*(.*?)\\s*_SIRIUS")[2] ,msdata$premz), ]
+        
         if (SL){
         
             # file path for strcuture candidate from Suspect List json folder
             str_canS <- paste(list.dirs(parameter_json[i,'SL_Param'])[2], '/structure_candidates.tsv', sep = '')
-            # file path for formula candidate from Suspect List json folder
+            # file path for formula candidate from Param json folder
             for_canS <- paste(list.dirs(parameter_json[i,'SL_Param'])[2], '/formula_candidates.tsv', sep = '')
+            # file path for strcuture candidate from Suspect List json folder
+            str_can <- paste(list.dirs(parameter_json[i,'Param'])[2], '/structure_candidates.tsv', sep = '')
+            # file path for formula candidate from Param json folder
+            for_can <- paste(list.dirs(parameter_json[i,'Param'])[2], '/formula_candidates.tsv', sep = '')
+            
             # if the strcuture candidate file exists
-            if (file.exists(str_canS)){
+            if (file.exists(str_canS) && file.exists(str_can)){
             
                 # read the corresponding structure and formula candidate files
                 str_canSL <- as.data.frame(read_tsv(str_canS))
                 for_canSL <- as.data.frame(read_tsv(for_canS))
+                
+                # read the corresponding structure and formula candidate files
+                str_canP <- as.data.frame(read_tsv(str_can))
+                for_canP <- as.data.frame(read_tsv(for_can))
             
                 # if the strcuture candidate file contains 1 or more rows, it has detected a candidate from suspect list, add relevant info
+                
                 if (nrow(str_canSL) >= 1){
+                     
+                    if (str_canSL[1, 'CSI:FingerIDScore'] > str_canP[1, 'CSI:FingerIDScore']){
+                        # information from structure candidate file
+                        msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canSL[1, 'adduct']
+                        msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canSL[1, 'name']
+                        msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canSL[1, 'pubchemids']
+                        msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canSL[1, 'smiles']
+                        msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canSL[1, 'molecularFormula']
+                        msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canSL[1, 'formulaRank']
+                        msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canSL[1, 'CSI:FingerIDScore']
                 
-                    # information from structure candidate file
-                    msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canSL[1, 'adduct']
-                    msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canSL[1, 'name']
-                    msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canSL[1, 'pubchemids']
-                    msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canSL[1, 'smiles']
-                    msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canSL[1, 'molecularFormula']
-                    msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canSL[1, 'formulaRank']
-                    msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canSL[1, 'CSI:FingerIDScore']
+                        # information from formula candidate file
+                        formulaRow <- which(for_canSL[,'rank'] == str_canSL[1, 'formulaRank'])
+                        msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canSL[formulaRow, 'SiriusScore']
+                        msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canSL[formulaRow, 'explainedIntensity']
                 
-                    # information from formula candidate file
-                    formulaRow <- which(for_canSL[,'rank'] == str_canSL[1, 'formulaRank'])
-                    msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canSL[formulaRow, 'SiriusScore']
-                    msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canSL[formulaRow, 'explainedIntensity']
-                
-                    # other info
-                    msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_SL'
-                    msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_canS
-                }
-                # if it's empty, move onto the All DB result folder called PARAM here
-                else{
-                    # file path for structure and formula candidate from PARAM (ALL DB) json folder
-                    str_can <- paste(list.dirs(parameter_json[i,'Param'])[2], '/structure_candidates.tsv', sep = '')
-                    for_can <- paste(list.dirs(parameter_json[i,'Param'])[2], '/formula_candidates.tsv', sep = '')
-                
-                    # if the strcuture candidate file exists
-                    if (file.exists(str_can)){
-                    
-                        # read the corresponding structure and formula candidate files
-                        str_canP <- as.data.frame(read_tsv(str_can))
-                        for_canP <- as.data.frame(read_tsv(for_can))
-                    
+                        # other info
+                        msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_SL'
+                        msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_canS
+                    }
+                    else{
+                        
                         # if the structure candidate file contains 1 row, it has detected a candidate from all DBs, add relevant info
                         if (nrow(str_canP) == 1){
                         
@@ -2924,7 +2930,107 @@ sirius_postprocess <- function(x, SL = TRUE){
                                 # other info
                                 msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
                                 msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can
+                            
                             }
+                        }
+                
+                        # if the structure candidate from all DBs does not exist
+                        else{
+                            # check if the formula candidate file exists
+                            if (file.exists(for_can)){
+                                for_canF1 <- as.data.frame(read_tsv(for_can))
+                        
+                                # if formula candidate file is not empty
+                                if (nrow(for_canF1)>= 1){
+                            
+                                    # information from formula candidate file
+                                    msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canF1[1, 'adduct']
+                                    msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canF1[1, 'molecularFormula']
+                                    msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canF1[1, 'rank']
+                                    msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canF1[1, 'explainedIntensity']
+                                    msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canF1[1, 'SiriusScore']
+                                    # other info
+                                    msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
+                                    msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can
+                                }
+                            }
+                        }
+                    }
+                }
+                # if it's empty, move onto the All DB result folder called PARAM here
+                else{
+                    
+                    # if the structure candidate file contains 1 row, it has detected a candidate from all DBs, add relevant info
+                    if (nrow(str_canP) == 1){
+                        
+                        # information from structure candidate file
+                        msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP[1, 'adduct']
+                        msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP[1, 'name']
+                        msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP[1, 'pubchemids']
+                        msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP[1, 'smiles']
+                        msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP[1, 'molecularFormula']
+                        msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP[1, 'formulaRank']
+                        msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP[1, 'CSI:FingerIDScore']
+                        
+                        # information from formula candidate file
+                        formulaRow1 <- which(for_canP[,'rank'] == str_canP[1, 'formulaRank'])
+                        msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[formulaRow1, 'SiriusScore']
+                        msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[formulaRow1, 'explainedIntensity']
+                        
+                        # other info
+                        msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
+                        msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can
+                    }
+                    # if the structure candidate file contains more rows, extract SMILES of top candidates and check their similarity later
+                    else if (nrow(str_canP) > 1){
+                        
+                        # information from structure candidate file
+                        msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP[1, 'adduct']
+                        msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP[1, 'name']
+                        msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP[1, 'pubchemids']
+                        msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP[1, 'smiles']
+                        msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP[1, 'molecularFormula']
+                        msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP[1, 'formulaRank']
+                        msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP[1, 'CSI:FingerIDScore']
+                        
+                        # information from formula candidate file, take info from the formula rank that corresponds to the formula rank with the top strcuture candidate
+                        formulaRow2 <- which(for_canP[,'rank'] == str_canP[1, 'formulaRank'])
+                        msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[formulaRow2, 'SiriusScore']
+                        msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[formulaRow2, 'explainedIntensity']
+                        
+                        # other info
+                        msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
+                        msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can
+                        
+                        # normalize the CSI:FingerIDScores
+                        norm_score <- feat_scale(str_canP[,"CSI:FingerIDScore"]) 
+                        # store the upper quartile
+                        upper_quartile <- str_canP[which(norm_score > as.numeric(quantile(norm_score)[4])), "smiles"]
+                        
+                        # if the upper quartile has more than 5 candidates, then just take the top 5 candidates
+                        if (length(upper_quartile) > 5){
+                            upper_quartile <- upper_quartile[1:5]
+                        }
+                        # save the top candidates SMILES, to check similarity later with rdkit in Python
+                        msdata[as.numeric(rownames(rowMS)), 'SMILESforMCSS'] <- paste(upper_quartile, collapse = '|')
+                        
+                    }
+                    # if the structure candidate file is empty, take information from just the formula candidate file
+                    else if (nrow(str_canP) == 0){
+                        
+                        # if formula candidate file is not empty
+                        if (nrow(for_canP) >= 1){
+                            
+                            # information from formula candidate file
+                            msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canP[1, 'adduct']
+                            msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canP[1, 'molecularFormula']
+                            msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canP[1, 'rank']
+                            msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[1, 'explainedIntensity']
+                            msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[1, 'SiriusScore']
+                            # other info
+                            msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
+                            msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can
+                            
                         }
                     }
                 
@@ -3262,20 +3368,22 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
         }
     }
     
-    write.table(metfrag_param_file, file = paste(result_dir, "/insilico/metparam_list.txt", sep = ""), sep = "/t", row.names = FALSE, col.names = FALSE)
+    write.table(metfrag_param_file, file = paste(input_dir, str_remove(paste(result_dir, "/insilico/metparam_list.txt", sep =""), "./"), sep = ""), sep = "/t", row.names = FALSE, col.names = FALSE)
     return(metfrag_param_file)
 }
 
-# Usage:
-# metfrag_param(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE)
 
 
 
-run_metfrag<- function(met_param, input_dir){
+
+run_metfrag <- function(met_param, MetFragjarFile){
     
     filesmet_param <- read.table(met_param)
     
     for (files in filesmet_param[[1]]){
-        system(paste("java -jar",  paste(input_dir, "MetFrag2.4.5-CL.jar", sep = ''), files))
+        system(paste("java -jar",  MetFragjarFile , files))
+        Sys.sleep(5)
     }
 }
+
+

@@ -120,7 +120,7 @@ label_fun <- function(x) {
 spec2_Processing <- function(z, obj, spec = "spec_all", ppmx = 15){
     if (spec == "spec_all"){
         #' Subset the dataset to MS2 spectra matching the m/z
-        sps <- filterPrecursorMz(obj, mz = z + ppm(c(-z, z), 10))
+        sps <- filterPrecursorMzRange(obj, mz = z + ppm(c(-z, z), 10))
     } else if (spec == "gnps"){
         #gnps spectra that contains precursor mass
         has_mz <- containsMz(obj, mz = z, ppm = ppmx)
@@ -276,7 +276,8 @@ spec_dereplication<- function(pre_tbl, proc_mzml, db, result_dir, file_id, input
     
     if (db == "all" || db =="gnps"){
         
-        
+        print(R.version)
+        print(packageVersion("Spectra"))
         load(file = paste(input_dir,"gnps.rda", sep = ""))
         
         # common

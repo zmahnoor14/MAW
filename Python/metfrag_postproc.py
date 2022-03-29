@@ -42,7 +42,7 @@ def metfrag_postproc(input_dir, input_tablecsv, slistcsv ,sl = True):
     
     input_tablecsv (str): This is the table in csv format (defined in R), 
     which stores a csv table containing columns "mzml_files", which 
-    contains liat of all input files with their relative paths, second
+    contains list of all input files with their relative paths, second
     column is "ResultFileName" which is a list of the corresponding
     result relative directories to each mzml files. Lastly, "file_id", 
     contains a file directory. This table will be used to read the 

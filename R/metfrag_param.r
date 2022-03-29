@@ -160,7 +160,5 @@ metfrag_param <- function(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRU
     return(metfrag_param_file)
 }
 
-# Usage:
-# metfrag_param(x, result_dir, input_dir, adducts, sl_mtfrag, SL = TRUE)
 
 metfrag_param(x, result_dir, input_dir, adducts, sl_mtfrag, SL, ppm_max, ppm_max_ms2)
