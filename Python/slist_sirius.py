@@ -19,7 +19,8 @@ import numpy as np
 import os
 
 def slist_sirius(input_dir, slist_csv, substring = None):
-    
+    def isNaN(string):
+        return string != string
     """slist_sirius is used to create a tsv file that contains a list of 
     SMILES. The function also runs the sirius command custom db to create
     fingerprints for each SMILES in a folder that we by default name as
@@ -43,7 +44,7 @@ def slist_sirius(input_dir, slist_csv, substring = None):
     
     substring (list): provide a list of strings of SMILES that 
     shouldn't be considered, provide a list even if there is one string
-    that shouldn't be considered. e.g: "Fe+2" or Fe+2, C*. 
+    that shouldnt be considered. e.g: "[Fe+2]". 
 
     Returns:
     tsv: a tsv file of list of SMILES, named as SL_Sirius.tsv, is stored 
@@ -107,7 +108,7 @@ def slist_sirius(input_dir, slist_csv, substring = None):
     slsirius = pd.DataFrame({'smiles':sl["SMILES"]})
     slsirius.to_csv(input_dir+ "SL_Sirius.tsv", sep = "\t", header = False, index = False)
     os.system("sirius --input " + input_dir + "SL_Sirius.tsv custom-db --name=SL_Frag --output "+ input_dir)
-    
+
     
 sys.argv[1]
 sys.argv[2]

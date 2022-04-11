@@ -31,7 +31,8 @@ from rdkit.Chem import PandasTools
 import pubchempy as pcp
 
 def metfrag_curation(input_dir, metfragcsv, sl = True):
-    
+    def isNaN(string):
+        return string != string
     
     """metfrag_curation checks which database produced results. If both 
     did, it checks whether it was the same compound as candidate, if not,
@@ -54,24 +55,31 @@ def metfrag_curation(input_dir, metfragcsv, sl = True):
 
     """
     
-    def isNaN(string):
-        return string != string
-    
     metfrag = pd.read_csv(metfragcsv)
     for i, row in metfrag.iterrows():
+        
+        
+        # If only KEGG
+        if not isNaN(metfrag['KG_SMILES'][i]) and isNaN(metfrag['PC_SMILES'][i]):
+            metfrag.loc[i, 'Annotation_M'] = 'KEGG'
+            if sl:
+                if metfrag['KGSL_Score'][i]>=0.9:
+                    metfrag.loc[i, 'Annotation_M'] = 'KEGG, SuspectList'
+                else:
+                    metfrag.loc[i, 'Annotation_M'] = 'KEGG'
     
         # If only Pubchem
         if not isNaN(metfrag['PC_SMILES'][i]) and isNaN(metfrag['KG_SMILES'][i]):
             metfrag.loc[i, 'Annotation_M'] = 'PubChem'
-            #metfrag.loc[i, 'SMILES_final'] = metfrag['PC_SMILES'][i]
-    
-        # If only KEGG
-        elif not isNaN(metfrag['KG_SMILES'][i]) and isNaN(metfrag['PC_SMILES'][i]):
-            metfrag.loc[i, 'Annotation_M'] = 'KEGG'
-            #metfrag.loc[i, 'SMILES_final'] = metfrag['KG_SMILES'][i]
+            if sl:
+                if metfrag['PCSL_Score'][i]>=0.9:
+                    metfrag.loc[i, 'Annotation_M'] = 'PubChem, SuspectList'
+                else:
+                    metfrag.loc[i, 'Annotation_M'] = 'PubChem'           
+        
     
         # If both, calculate the similarity
-        elif not isNaN(metfrag['PC_SMILES'][i]) and not isNaN(metfrag['KG_SMILES'][i]):
+        if not isNaN(metfrag['PC_SMILES'][i]) and not isNaN(metfrag['KG_SMILES'][i]):
         
             PKms = [Chem.MolFromSmiles(metfrag['KG_SMILES'][i]), Chem.MolFromSmiles(metfrag['PC_SMILES'][i])]
             PKfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in PKms]
@@ -80,26 +88,18 @@ def metfrag_curation(input_dir, metfragcsv, sl = True):
             # if both are similar, add both
             if PKtn == 1:
                 metfrag.loc[i, 'Annotation_M'] = 'KEGG, PubChem'
-                #metfrag.loc[i, 'SMILES_final'] = metfrag['PC_SMILES'][i]
+                if sl:
+                    if metfrag['KGSL_Score'][i]>=0.9 and metfrag['PCSL_Score'][i]>=0.9:
+                        metfrag.loc[i, 'Annotation_M'] = metfrag['Annotation_M'][i] + ", SuspectList"
         
-            #if not similar:
+            # if not similar:
+            # check Suspect list score and Fragmenter Score
+            
             else:
-                # if there is NO entry from suspect list, then add PuBchem
-                if isNaN(metfrag['KG_SL_comp'][i]) and isNaN(metfrag['PC_SL_comp'][i]):
-                    metfrag.loc[i, 'Annotation_M'] = 'PubChem'
-                    #metfrag.loc[i, 'SMILES_final'] = metfrag['PC_SMILES'][i]
+                if not isNaN(metfrag["KG_Score"][i]):
+                    metfrag.loc[i, 'Annotation_M'] = 'KEGG'
                 else:
-                    if sl:
-                        
-                        #if there is an entry from suspect list WITH kegg
-                        if not isNaN(metfrag['KG_SL_comp'][i]) and isNaN(metfrag['PC_SL_comp'][i]):
-                            metfrag.loc[i, 'Annotation_M'] = 'KEGG, SuspectList'
-                            #metfrag.loc[i, 'SMILES_final'] = metfrag['KG_SMILES'][i]
-                
-                        #if there is an entry from suspect list WITH kegg
-                        elif not isNaN(metfrag['PC_SL_comp'][i]) and isNaN(metfrag['KG_SL_comp'][i]):
-                            metfrag.loc[i, 'Annotation_M'] = 'PubChem, SuspectList'
-                            #metfrag.loc[i, 'SMILES_final'] = metfrag['PC_SMILES'][i]
+                    metfrag.loc[i, 'Annotation_M'] = 'PubChem'
                     
                                 
     metfrag.to_csv(input_dir + "MetabolomicsResults/metfrag_curated.csv")  

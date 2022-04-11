@@ -63,63 +63,53 @@ def combineSM(input_dir, metfragcsv, siriuscsv):
     metfrag = pd.read_csv(metfragcsv)
     sirius = pd.read_csv(siriuscsv)
     S_M_CSV = pd.concat([sirius, metfrag], axis = 1, levels = ["id_X"])
-    for i, rows in S_M_CSV.iterrows():
     
+    for i, rows in S_M_CSV.iterrows():
         # if results has Sirius Structure annotation, and the explained inetnsity is >= 0.70, keep the annotation as is.
         if S_M_CSV["Result"][i] == "SIRIUS_STR" and S_M_CSV['exp_int'][i] >= 0.70:
             S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i]
-        
+            
             # to add to that annotation
             if not isNaN(S_M_CSV["Annotation_M"][i]):
-            
                 # if annotation has PubChem, by default add SIRIUS
-                if "PubChem" in S_M_CSV["Annotation_M"][i]:
-                    S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i]
-    
-                    # And calculate the similarity between pubchem and SIrius results
-                    try:
-                        PSms = [Chem.MolFromSmiles(S_M_CSV['SMILES'][i]), Chem.MolFromSmiles(S_M_CSV['PC_SMILES'][i])]
-                        PSfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in PSms]
-                        PStn = DataStructs.FingerprintSimilarity(PSfps[0],PSfps[1])
-                        # if similar strcutres, then add Pubchme and sirius
-                        if PStn == 1:
-                            print(i)
-                            S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i] + ', PubChem'
-                            #S_M_CSV.loc[i, 'SMILES_final'] = S_M_CSV['SMILES'][i]
-                        # if not then just keep sirius
-                        else:
-                            S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i]
-                            #S_M_CSV.loc[i, 'SMILES_final'] = S_M_CSV['SMILES'][i]
-                    except:
-                        pass
-                #apply similar approach to KEGG, and by default add SIRIUS
-                elif not isNaN(S_M_CSV["KG_SMILES"][i]):
-                    S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i]
+                if S_M_CSV["Annotation_M"][i] == "KEGG":
+                    SKms = [Chem.MolFromSmiles(S_M_CSV['SMILES'][i]), Chem.MolFromSmiles(S_M_CSV['KG_SMILES'][i])]
+                    SKfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in SKms]
+                    SKtn = DataStructs.FingerprintSimilarity(SKfps[0],SKfps[1])
 
-                    try:
-                        SKms = [Chem.MolFromSmiles(S_M_CSV['SMILES'][i]), Chem.MolFromSmiles(S_M_CSV['KG_SMILES'][i])]
-                        SKfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in SKms]
-                        SKtn = DataStructs.FingerprintSimilarity(SKfps[0],SKfps[1])
-                        if SKtn == 1:
-                            print(i)
-                            S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i] +', KEGG'
+                    if SKtn >= 0.75:
 
-                        else:
-                            S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i]
+                        S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i] +', KEGG'
 
-                    except:
-                        pass
-    
-        # if there is no annotation from SIRIUS, then use Metfrag results
-        elif S_M_CSV["Result"][i] != "SIRIUS_STR" and S_M_CSV['exp_int'][i] < 0.70:
-            if not isNaN(S_M_CSV['Annotation_M'][i]):
-                if 'PubChem' in S_M_CSV['Annotation_M'][i]:
-                    S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_M'][i]
-                    #S_M_CSV.loc[i, 'SMILES'] = S_M_CSV['PC_SMILES'][i]
-                else:
-                    S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_M'][i]
-                    #S_M_CSV.loc[i, 'SMILES'] = S_M_CSV['KG_SMILES'][i]
-                    
+                    else:
+                        S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i]
+                        
+                # if annotation has PubChem, by default add SIRIUS
+                if S_M_CSV["Annotation_M"][i] == "PubChem":
+                    PSms = [Chem.MolFromSmiles(S_M_CSV['SMILES'][i]), Chem.MolFromSmiles(S_M_CSV['PC_SMILES'][i])]
+                    PSfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in PSms]
+                    PStn = DataStructs.FingerprintSimilarity(PSfps[0],PSfps[1])
+
+                    # if similar strcutres, then add Pubchme and sirius
+                    if PStn >= 0.7:
+
+                        S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i] + ', PubChem'
+
+                    # if not then just keep sirius
+                    else:
+                        S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i]
+                        
+                        
+                if S_M_CSV["Annotation_M"][i] == "KEGG, PubChem":
+                    SKms = [Chem.MolFromSmiles(S_M_CSV['SMILES'][i]), Chem.MolFromSmiles(S_M_CSV['KG_SMILES'][i])]
+                    SKfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=2048) for x in SKms]
+                    SKtn = DataStructs.FingerprintSimilarity(SKfps[0],SKfps[1])
+                    if SKtn >= 0.7:
+
+                        S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i] +', KEGG, PubChem'
+
+                    else:
+                        S_M_CSV.loc[i, 'Annotation_C'] = S_M_CSV['Annotation_S'][i]
     S_M_CSV.to_csv(input_dir + "MetabolomicsResults/combinedSM.csv")
     return(S_M_CSV)
 

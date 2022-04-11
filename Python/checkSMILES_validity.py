@@ -31,7 +31,8 @@ from rdkit.Chem import PandasTools
 
 
 def checkSMILES_validity(input_dir, resultcsv):
-    
+    def isNaN(string):
+        return string != string
     """checkSMILES_validity does exactly as the name says, using
     RDKit, whether the SMILES are invalid or have invalid 
     chemistry
@@ -50,13 +51,11 @@ def checkSMILES_validity(input_dir, resultcsv):
     checkSMILES_validity(input_dir = "usr/project/", results)
 
     """
-    def isNaN(string):
-        return string != string
     results = pd.read_csv(resultcsv)
     # check validity of SMILES
     for i, row in results.iterrows():
-        if not isNaN(results['SMILES_final'][i]):
-            m = Chem.MolFromSmiles(results['SMILES_final'][i] ,sanitize=False)
+        if not isNaN(results['SMILES'][i]):
+            m = Chem.MolFromSmiles(results['SMILES'][i] ,sanitize=False)
             if m is None:
                 results['SMILES_final'][i] = 'invalid_SMILES'
             else:
@@ -66,11 +65,8 @@ def checkSMILES_validity(input_dir, resultcsv):
                     results['SMILES_final'][i] = 'invalid_chemistry'
     results.to_csv(input_dir + "MetabolomicsResults/final_curation_with_validSMILES.csv")
     return(results)
-
 checkSMILES_validity(sys.argv[1], sys.argv[2])
 
-
-# In[ ]:
 
 
 

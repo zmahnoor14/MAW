@@ -19,6 +19,8 @@ from rdkit.Chem import PandasTools
 
 # make sure your Smiles entries in the suspect list csv are in a column named "SMILES"
 def slist_metfrag(input_dir, slist_csv, name):
+    def isNaN(string):
+        return string != string
     """slist_metfrag is used to create a txt file that contains a list of 
     InChIKeys. This list is later used by MetFrag to use these compounds 
     as a Suspect List.
@@ -46,15 +48,19 @@ def slist_metfrag(input_dir, slist_csv, name):
     sl = pd.read_csv(slist_csv)
     sl_mtfrag= []
     for i, rows in sl.iterrows():
-        mols = Chem.MolFromSmiles(sl['SMILES'][i])
-        sl.loc[i, 'InChIKey'] = Chem.inchi.MolToInchiKey(mols)
-        sl_mtfrag.append(sl['InChIKey'][i])
+        if i is not None:
+            mols = Chem.MolFromSmiles(sl['SMILES'][i])
+            try:
+                sl.loc[i, 'InChIKey'] = Chem.inchi.MolToInchiKey(mols)
+                sl_mtfrag.append(sl['InChIKey'][i])
+            except Exception as e:
+                print(e)
     
     with open((input_dir + "/SL_"+ name + '.txt'), 'w') as filehandle:
         for listitem in sl_mtfrag:
             filehandle.write('%s\n' % listitem)
-    return(sl_mtfrag)
 
+    return(sl_mtfrag)
 
 slist_metfrag(sys.argv[1], sys.argv[2], sys.argv[3])
 

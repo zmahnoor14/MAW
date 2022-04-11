@@ -37,7 +37,8 @@ from pybatchclassyfire import *
 
 
 def classification(input_dir, resultcsv):
-    
+    def isNaN(string):
+        return string != string
     """classification function uses ClassyFire ChemONT
 
     Parameters:
@@ -54,82 +55,81 @@ def classification(input_dir, resultcsv):
     checkSMILES_validity(input_dir = "usr/project/", frame)
 
     """
-    
-    def isNaN(string):
-        return string != string
     frame = pd.read_csv(resultcsv)
     inchis = []
     for i, row in frame.iterrows():
-        if not isNaN(frame['SMILES_final'][i]) and isNaN(frame['Classification_Source'][i]):
+        if not isNaN(frame['SMILES'][i]) and isNaN(frame['Classification_Source'][i]):
             try:
-                InChI = Chem.MolToInchi(Chem.MolFromSmiles(frame["SMILES_final"][i]))
+                InChI = Chem.MolToInchi(Chem.MolFromSmiles(frame["SMILES"][i]))
                 InChIKey = Chem.inchi.InchiToInchiKey(InChI)
                 inchis.append({
                     'index': i,
-                    'smiles':frame["SMILES_final"][i],
+                    'smiles':frame["SMILES"][i],
                     'inchi': InChI,
                     'inchikey': InChIKey
                 })
             except:
                 pass
     inchis = pd.DataFrame(inchis)
-    inchis = inchis.loc[-isNaN(inchis['inchikey'])]
-    ## Retrieve ClassyFire classifications ##
-    
-    # This first step is done using inchikey and interrogation of the gnps classified structures
-    gnps_proxy = True 
-    url = "http://classyfire.wishartlab.com"
-    proxy_url =  "https://gnps-classyfire.ucsd.edu"
-    chunk_size = 1000
-    sleep_interval = 12
-    
-    all_inchi_keys = list(inchis['inchikey'].drop_duplicates())
+    if len(inchis):
+        inchis = inchis.loc[-isNaN(inchis['inchikey'])]
+        ## Retrieve ClassyFire classifications ##
 
-    resolved_ik_number_list = [0, 0]
-    total_inchikey_number = len(all_inchi_keys)
+        # This first step is done using inchikey and interrogation of the gnps classified structures
+        gnps_proxy = True 
+        url = "http://classyfire.wishartlab.com"
+        proxy_url =  "https://gnps-classyfire.ucsd.edu"
+        chunk_size = 1000
+        sleep_interval = 12
 
-    while True:
-    
-        start_time = time.time()
-    
-        print('%s inchikey to resolve' % total_inchikey_number )
-        get_classifications_cf_mod(all_inchi_keys, par_level = 6)
-    
-        cleanse('all_json.json', 'all_json.json')
-    
-        with open("all_json.json") as tweetfile:
-            jsondic = json.loads(tweetfile.read())
+        all_inchi_keys = list(inchis['inchikey'].drop_duplicates())
 
-        df = json_normalize(jsondic)
-        df = df.drop_duplicates( 'inchikey' )
-        resolved_ik_number = len( df.drop_duplicates('inchikey').inchikey )
-        resolved_ik_number_list.append( resolved_ik_number )
-        print('%s resolved inchikeys' % resolved_ik_number )
-        print("done in --- %s seconds ---" % (time.time() - start_time))
-    
-        if resolved_ik_number_list[-1] < resolved_ik_number_list[-2] or resolved_ik_number_list[-1] == resolved_ik_number_list[-3]:
-            break
-        cleanse('all_json.json', 'all_json_cleaned.json')
-        
-        with open("all_json_cleaned.json") as tweetfile:
-            jsondic = json.loads(tweetfile.read())
-            
-    flattened_classified_json = json_normalize(jsondic)
-    flattened_df = flattened_classified_json.drop_duplicates('inchikey')
-    flattened_df['inchikey'] = flattened_df['inchikey'].str.replace(r'InChIKey=', '')
-    df_merged = pd.merge(inchis, flattened_df, left_on='inchikey', right_on='inchikey', how='left')
-    
-    for p, rowp in df_merged.iterrows():
-        for q, rowq in frame.iterrows():
-            if df_merged["smiles_x"][p] is frame["SMILES_final"][q]:
-                frame.loc[q, 'subclass'] = df_merged["subclass.name"][p]
-                frame.loc[q, 'class'] = df_merged["class.name"][p]
-                frame.loc[q, 'superclass'] = df_merged["superclass.name"][p]
-                frame.loc[q, 'Classification_Source'] = "ClassyFire"
-    #frame.to_csv(input_dir, '/SIRIUS_combined.csv')
-    
+        resolved_ik_number_list = [0, 0]
+        total_inchikey_number = len(all_inchi_keys)
 
-    frame.to_csv(input_dir + "MetabolomicsResults/final_curationList.csv")
-    return(frame)
+        while True:
+
+            #start_time = time.time()
+
+            #print('%s inchikey to resolve' % total_inchikey_number )
+            get_classifications_cf_mod(all_inchi_keys, par_level = 6)
+
+            cleanse('all_json.json', 'all_json.json')
+
+            with open("all_json.json") as tweetfile:
+                jsondic = json.loads(tweetfile.read())
+
+            df = json_normalize(jsondic)
+            df = df.drop_duplicates( 'inchikey' )
+            resolved_ik_number = len( df.drop_duplicates('inchikey').inchikey )
+            resolved_ik_number_list.append( resolved_ik_number )
+            #print('%s resolved inchikeys' % resolved_ik_number )
+            #print("done in --- %s seconds ---" % (time.time() - start_time))
+
+            if resolved_ik_number_list[-1] < resolved_ik_number_list[-2] or resolved_ik_number_list[-1] == resolved_ik_number_list[-3]:
+                break
+            cleanse('all_json.json', 'all_json_cleaned.json')
+
+            with open("all_json_cleaned.json") as tweetfile:
+                jsondic = json.loads(tweetfile.read())
+
+        flattened_classified_json = json_normalize(jsondic)
+        flattened_df = flattened_classified_json.drop_duplicates('inchikey')
+        flattened_df['inchikey'] = flattened_df['inchikey'].str.replace(r'InChIKey=', '')
+        df_merged = pd.merge(inchis, flattened_df, left_on='inchikey', right_on='inchikey', how='left')
+
+        for p, rowp in df_merged.iterrows():
+            for q, rowq in frame.iterrows():
+                if df_merged["smiles_x"][p] is frame["SMILES"][q]:
+                    frame.loc[q, 'subclass'] = df_merged["subclass.name"][p]
+                    frame.loc[q, 'class'] = df_merged["class.name"][p]
+                    frame.loc[q, 'superclass'] = df_merged["superclass.name"][p]
+                    frame.loc[q, 'Classification_Source'] = "ClassyFire"
+
+
+
+        frame.to_csv(input_dir + "MetabolomicsResults/final_curationList.csv")
+        return(frame)
+    
 classification(sys.argv[1], sys.argv[2])
 
