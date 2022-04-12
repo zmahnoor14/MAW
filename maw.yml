@@ -3,7 +3,6 @@ channels:
   - anaconda
   - bioconda
   - conda-forge
-  - rdkit
   - defaults
 dependencies:
   - bioconductor-spectra
@@ -14,11 +13,11 @@ dependencies:
   - numpy
   - statistics
   - openpyxl
-  - pubchempy
   - r-remotes
   - r-readr
   - r-stringr
   - r-dplyr
   - r-xml2
   - r-rvest
-  - rdkit
+  - joblib
+  - networkx
