@@ -10,7 +10,7 @@ ENV PATH="/usr/local/sirius/bin:${PATH}"
 COPY maw.yml .
 RUN conda env create --file maw.yml && rm maw.yml
 SHELL ["conda", "run", "-n", "mawRpy", "/bin/bash", "-c"]
-RUN pip install pybatchclassyfire
+RUN pip3 install rdkit-pypi pubchempy requests_cache pybatchclassyfire
 COPY install_packages.R .
 RUN Rscript install_packages.R
 #COPY MetFrag2.4.5-CL.jar /opt/maw
