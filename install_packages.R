@@ -1,7 +1,7 @@
 install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'uuid', 'digest'), repos="https://cloud.r-project.org")
 install.packages('IRkernel', repos="https://cloud.r-project.org")
 IRkernel::installspec()
-remotes::install_github("rformassspectrometry/MsBackendHmdb")
+#remotes::install_github("rformassspectrometry/MsBackendHmdb")
 remotes::install_github("rformassspectrometry/MsBackendMsp")
 Sys.setenv(DOWNLOAD_STATIC_LIBV8 = 1)
 install.packages("V8", repos="https://cloud.r-project.org")
