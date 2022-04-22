@@ -13,6 +13,7 @@ dependencies:
   - numpy
   - statistics
   - openpyxl
+  - r-devtools
   - r-remotes
   - r-readr
   - r-stringr
