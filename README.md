@@ -1,4 +1,8 @@
-# Metabolome Profile of _Skeletonema costatum_ (tested on Linux and MAC OS)
+[![License](https://img.shields.io/badge/License-MIT%202.0-blue.svg)](https://opensource.org/licenses/MIt)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-blue.svg)](https://GitHub.com/zmahnoor14/MAW/graphs/commit-activity)
+
+# Metabolome Profiling of _Skeletonema costatum_ 
+ - (tested on Linux and MAC OS)
 
 This repository hosts Metabolome Annotation Workflow from LCMS-2 spectra in mzML format. The workflow has been developed using the LCMS-2 dataset from a marine diatom _Skeletonema costatum_.
 
@@ -187,4 +191,7 @@ for (files in met_param){
     system(paste("java -jar",  paste(input_dir, "MetFrag2.4.5-CL.jar", sep = ''), files))
 }
 ```
+## More information about our research group
+
+[![GitHub Logo](https://github.com/Kohulan/DECIMER-Image-to-SMILES/blob/master/assets/CheminfGit.png?raw=true)](https://cheminf.uni-jena.de)
 
