@@ -78,7 +78,7 @@ The path may be different, so check your Sirius installation folder to get the c
 
 ## Input files and Directories
 
-An input directory (input_dir) should have the following files for the Workflow to run.
+An input directory (/input_dir) should have the following files.
 1. All LCMS-2 spectra .mzML files
 2. SIRIUS installation zip folder
 3. MetFrag jar file which can be downloaded from <https://github.com/ipb-halle/MetFragRelaunched/releases>. You can also download the MetFrag version shared in this repository (tested with the dataset).
