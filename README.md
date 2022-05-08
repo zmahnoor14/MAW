@@ -85,14 +85,14 @@ An input directory (/input_dir) should have the following files.
 6. (optional) Suspect List in .csv format (important column - "SMILES")
 
 
-## Functions to store online Spectral Databases to your R environment
+## Functions to store online Spectral Databases to your R environment [R]
 In order to download spectral databases, use the following function:
 ```
 download_specDB(input_dir, db = "all")
 ```
 This function will take a lot of computational resources. However, to skip this function, you can download the current versions of these databases from <https://zenodo.org/deposit/6528931> (linked embargoed). The databases are stored in the same input directory and in .rda format, as an R object.
 
-## Functions to use a Suspect List(in-house library)
+## Functions to use a Suspect List(in-house library) [Python]
 A suspect list of compounds can be used within the workflow to provide confidence to the predictions. This library is matched against results from Spectral and Compound Databases. MAW provides two functions to generate the input suspect list compounds for SIRIUS and MetFrag. The only important information in the SuspectList.csv file should be a column with SMILES. 
 1. SIRIUS requires a folder with many .tpt files which contain fragmentation tree for each SMILES. To generate suspect list input for SIRIUS, use the function ```slist_sirius```. This function generates a result folder /input_dir/SL_Frag. 
 ```
