@@ -288,7 +288,7 @@ metfrag_curation(input_dir,
 9. combineSM(input_dir, 
           metfragcsv = input_dir + 'MetabolomicsResults/metfrag_curated.csv', 
           siriuscsv = input_dir + 'MetabolomicsResults/sirius_curated.csv')
-10. # check each mzml file and each database csv result file; perform post processing
+10. check each mzml file and each database csv result file; perform post processing
 spec_postproc(input_dir, 
              Source = "all")
 
@@ -302,22 +302,27 @@ combine_allspec(input_dir)
 scoring_spec(input_dir, 
              spec_file = input_dir + 'MetabolomicsResults/SD_post_processed_combined_results.csv')
 
-14. # suspect list VS spectal databases
-# db(str): can be all, gnps, mbank, hmdb, gm(gnps, mbank), hg(hmdb and gnps), hm(hmdb and mbank) 
+14. This function performs suspect list screening against spectal databases. The inputs can be db(str): all, gnps, mbank, hmdb, gm(gnps, mbank), hg(hmdb and gnps), hm(hmdb and mbank). It runs tanoimoto similarity score to between compounds from the results from spectral DBs and suspect list.
+```python
 suspectListScreening(input_dir, 
                      slistcsv, 
                      SpectralDB_Results = input_dir + 'MetabolomicsResults/scoredSpecDB.csv', 
                      db = "all")
-
-15. specDB_Curation(input_dir, 
+```
+15. combine_CuratedR prioritizes in the following manner: sirius>metfrag(kegg)>gnps>mbank>metfrag(pubchem)>hmdb + Suspectlist
+```python
+specDB_Curation(input_dir, 
                 combinedx = input_dir + 'MetabolomicsResults/SpecDBvsSL.csv', 
                 sl = True, 
                 db = "all")
 
-16. combine_CuratedR(input_dir, 
+16. 
+```python
+combine_CuratedR(input_dir, 
                  combinedSDBs = input_dir + 'MetabolomicsResults/curatedSDB.csv', 
                  combinedSMs = input_dir + 'MetabolomicsResults/combinedSM.csv', 
                  data_type = "standards")
+```
 17. This function is to check the vailidity of SMILES of the tentative candidate.
 ```python
 checkSMILES_validity(input_dir, 
