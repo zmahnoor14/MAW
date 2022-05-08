@@ -102,7 +102,9 @@ slist_sirius(input_dir, slist_csv, substring = ["NA+", "Zn+"])
 ```
 slist_metfrag(input_dir, slist_csv, name)
 ```
-### Tutorial of Workflow
+## Tutorial of Workflow
+
+### R
 Follow the jupyter notebook: Workflow_R_Script.ipynb
 1. Load Dependencies:
 ```R
@@ -242,6 +244,19 @@ met_param <- metfrag_param(x = paste(input_dir, str_remove(paste(input_table[i, 
 run_metfrag(met_param = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/insilico/metparam_list.txt", sep = ""), "./"), sep =""),
                MetFragjarFile = paste(input_dir, "MetFragCommandLine-2.4.8.jar", sep =""))
 ```
+
+### Python
+Once R workflow has been run for each file and there are results generated, python is used to preprocess that data. Follow the jupyter notebook Workflow_Python_Script.ipynb.
+1. Import the function file
+```python
+from Workflow_Python_Functions import *
+```
+2. Define input directory, keep all files in same directory and scripts so getwd works
+```python
+input_dir = os.getcwd()+'/'
+input_dir
+```
+
 ## More information about our research group
 
 [![GitHub Logo](https://github.com/Kohulan/DECIMER-Image-to-SMILES/blob/master/assets/CheminfGit.png?raw=true)](https://cheminf.uni-jena.de)
