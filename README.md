@@ -247,16 +247,87 @@ run_metfrag(met_param = paste(input_dir, str_remove(paste(input_table[i, "Result
 
 ### Python
 Once R workflow has been run for each file and there are results generated, python is used to preprocess that data. Follow the jupyter notebook Workflow_Python_Script.ipynb.
-1. Import the function file
+1. Import the python function file
 ```python
 from Workflow_Python_Functions import *
 ```
-2. Define input directory, keep all files in same directory and scripts so getwd works
+2. Define input directory, keep all files in same directory and scripts so getwd works.
 ```python
 input_dir = os.getcwd()+'/'
 input_dir
 ```
+3. Store suspect list in a variable to be used in the functions later.
+```python
+slistcsv = input_dir + "SkeletonemaSuspectListV1.csv"
+```
+4. This function states SIRIUS Post processing part 2. Here additionally maximum common substructures (MCSS) from the top scoring candidates are calculated by RDKit.
+```python
+sirius_postProc2(input_dir, 
+                 input_tablecsv = input_dir + "input_table.csv")
+```                 
+5. This function performs metfrag post processing; from selecting the best candidate from KEGG and PubChem results, and also calcultaing MCSS for each feature.
+```python
+metfrag_postproc(input_dir, 
+                 input_tablecsv = input_dir + "input_table.csv")
+```
+6. Combine results from different files. Note that source can be either all_insilico, SIRIUS, or MetFrag. The result will be combined from different files either with SIRIUS or MetFrag or both.
+```python
+combine_insilico(input_dir, 
+                 input_tablecsv = input_dir + "input_table.csv",
+                Source = "all_insilico")
+```
+7. Curation of results from SIRIUS
+sirius_curation(input_dir, 
+                 siriuscsv = input_dir + "MetabolomicsResults/SIRIUS_combined.csv", 
+                 sl = True)
+8. Curation of results from MetFrag
+metfrag_curation(input_dir, 
+                 metfragcsv = input_dir + "MetabolomicsResults/MetFrag_combined.csv", 
+                 sl = True)
 
+9. combineSM(input_dir, 
+          metfragcsv = input_dir + 'MetabolomicsResults/metfrag_curated.csv', 
+          siriuscsv = input_dir + 'MetabolomicsResults/sirius_curated.csv')
+10. # check each mzml file and each database csv result file; perform post processing
+spec_postproc(input_dir, 
+             Source = "all")
+
+11. # combine all spectral databases for each mzml file
+combine_specdb(input_dir)
+
+12. # combine all spectral databases for all mzml file
+combine_allspec(input_dir)
+
+13. # only keep good scoring spectral database results
+scoring_spec(input_dir, 
+             spec_file = input_dir + 'MetabolomicsResults/SD_post_processed_combined_results.csv')
+
+14. # suspect list VS spectal databases
+# db(str): can be all, gnps, mbank, hmdb, gm(gnps, mbank), hg(hmdb and gnps), hm(hmdb and mbank) 
+suspectListScreening(input_dir, 
+                     slistcsv, 
+                     SpectralDB_Results = input_dir + 'MetabolomicsResults/scoredSpecDB.csv', 
+                     db = "all")
+
+15. specDB_Curation(input_dir, 
+                combinedx = input_dir + 'MetabolomicsResults/SpecDBvsSL.csv', 
+                sl = True, 
+                db = "all")
+
+16. combine_CuratedR(input_dir, 
+                 combinedSDBs = input_dir + 'MetabolomicsResults/curatedSDB.csv', 
+                 combinedSMs = input_dir + 'MetabolomicsResults/combinedSM.csv', 
+                 data_type = "standards")
+17. This function is to check the vailidity of SMILES of the tentative candidate.
+```python
+checkSMILES_validity(input_dir, 
+                     resultcsv = input_dir + 'MetabolomicsResults/final_curation_without_classes.csv')
+```
+18. Classification function is performed for any feature which is not predicted by SIRIUS/CANOPUS. Such features have classifcation based on their SMILES, which are taken as input by ClassyFire to generate chemixl classes. Since both CANOPUS and ClassyFire use ChemONT, so the results are comparable.
+```python
+classification(input_dir, 
+               resultcsv = input_dir + 'MetabolomicsResults/final_curation_with_validSMILES.csv')
+```
 ## More information about our research group
 
 [![GitHub Logo](https://github.com/Kohulan/DECIMER-Image-to-SMILES/blob/master/assets/CheminfGit.png?raw=true)](https://cheminf.uni-jena.de)
