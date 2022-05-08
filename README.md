@@ -276,32 +276,42 @@ combine_insilico(input_dir,
                  input_tablecsv = input_dir + "input_table.csv",
                 Source = "all_insilico")
 ```
-7. Curation of results from SIRIUS
+7. This function performs curation of results from SIRIUS. It checks if candidate selected has a good score for explained intensity. It also checks if there was any similarity to a compound from Suspect list.
+```python
 sirius_curation(input_dir, 
                  siriuscsv = input_dir + "MetabolomicsResults/SIRIUS_combined.csv", 
                  sl = True)
-8. Curation of results from MetFrag
+```
+8. Curation of results from MetFrag.
+```python
 metfrag_curation(input_dir, 
                  metfragcsv = input_dir + "MetabolomicsResults/MetFrag_combined.csv", 
                  sl = True)
-
-9. combineSM(input_dir, 
+```
+9. Combine results from SIRIUS and MetFrag.
+```python
+combineSM(input_dir, 
           metfragcsv = input_dir + 'MetabolomicsResults/metfrag_curated.csv', 
           siriuscsv = input_dir + 'MetabolomicsResults/sirius_curated.csv')
-10. check each mzml file and each database csv result file; perform post processing
+```
+10. Check each mzml file and each database csv result file; perform post processing
+```python
 spec_postproc(input_dir, 
              Source = "all")
-
-11. # combine all spectral databases for each mzml file
+```
+11. combine all spectral databases for each mzml file
+```python
 combine_specdb(input_dir)
-
-12. # combine all spectral databases for all mzml file
+```
+12. combine all spectral databases for all mzml file
+```python
 combine_allspec(input_dir)
-
-13. # only keep good scoring spectral database results
+```
+13. only keep good scoring spectral database results
+```python
 scoring_spec(input_dir, 
              spec_file = input_dir + 'MetabolomicsResults/SD_post_processed_combined_results.csv')
-
+```
 14. This function performs suspect list screening against spectal databases. The inputs can be db(str): all, gnps, mbank, hmdb, gm(gnps, mbank), hg(hmdb and gnps), hm(hmdb and mbank). It runs tanoimoto similarity score to between compounds from the results from spectral DBs and suspect list.
 ```python
 suspectListScreening(input_dir, 
