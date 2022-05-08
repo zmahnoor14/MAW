@@ -86,16 +86,21 @@ An input directory (/input_dir) should have the following files.
 
 
 ## Functions to store online Spectral Databases to your R environment
+In order to download spectral databases, use the following function:
+```
+download_specDB(input_dir, db = "all")
+```
+This function will take a lot of computational resources. However, to skip this function, you can download the current versions of these databases from <https://zenodo.org/deposit/6528931> (linked embargoed). The databases are stored in the same input directory and in .rda format, as an R object.
 
 ## Functions to use a Suspect List(in-house library)
 A suspect list of compounds can be used within the workflow to provide confidence to the predictions. This library is matched against results from Spectral and Compound Databases. MAW provides two functions to generate the input suspect list compounds for SIRIUS and MetFrag. The only important information in the SuspectList.csv file should be a column with SMILES. 
-1. SIRIUS requires a folder with many .tpt files which contain fragmentation tree for each SMILES. To generate suspect list input for SIRIUS, use the function ```slist_sirius```. This function generates a result folder /input_dir/SL_Frag.
+1. SIRIUS requires a folder with many .tpt files which contain fragmentation tree for each SMILES. To generate suspect list input for SIRIUS, use the function ```slist_sirius```. This function generates a result folder /input_dir/SL_Frag. 
 ```
-hello
+slist_sirius(input_dir, slist_csv, substring = ["NA+", "Zn+"])
 ```
-2. MetFrag requires a txt file with InChIKeys. This can be obtained with the function ```sl_metfrag```. 
+2. MetFrag requires a txt file with InChIKeys. This can be obtained with the function ```slist_metfrag```. 
 ```
-hello
+slist_metfrag(input_dir, slist_csv, name)
 ```
 ### Tutorial of Workflow
 
@@ -118,7 +123,7 @@ library(xml2)
 input_dir <- "usr/s_cost/"
 ```
              
-3. Load the open spectral libraries. This function will take a lot of computational resources. However, to skip this function, you can download the current versions of these databases from <write the link here and ask where can you provide datasets>. The databases are stored in the same input directory and in .rda format, as an R object.
+3. Load the open spectral libraries. 
 ```R
 # db argument can take "all", "gnps", "mbank" and "hmdb". Default (and recommended) is "all".
 download_specDB(input_dir, db = "all")
