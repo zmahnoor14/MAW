@@ -11,8 +11,15 @@ Install Docker on your MAC OS with (https://www.docker.com/get-started/) and for
 To create a docker image, following files are required:
 1. Dockerfile
 2. maw.yml
-3. install_packages.R
-These files will create a docker image on your local system
+3. install_packages.R <br>
+These files will create a docker image on your local system with the following command:
+```shell
+# build the image
+docker build -t maw .
+# run in a jupyter notebook
+docker run -v /Users/mahnoorzulfiqar/Downloads/MAW-main:/Users/mahnoorzulfiqar/Downloads/MAW-main -i -t -p 8888:8888 maw /bin/bash -c "jupyter notebook --notebook-dir=/Users/mahnoorzulfiqar/Downloads/MAW-main --ip='*' --port=8888 --no-browser --allow-root"
+
+```
 ## Usage of R-Workflow
 ### Installations via Conda
 
