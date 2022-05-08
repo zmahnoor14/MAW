@@ -18,29 +18,38 @@ These files will create a docker image on your local system with the following c
 docker build -t maw .
 # run MAW in a jupyter notebook; change /workdir to your working directory
 docker run -v /workdir:/workdir -i -t -p 8888:8888 maw /bin/bash -c "jupyter notebook --notebook-dir=/workdir --ip='*' --port=8888 --no-browser --allow-root"
-
 ```
-## Usage of R-Workflow
-### Installations via Conda
-
-Create a conda env and install the following libraries. Note: R 4.1 can also be installed in the same conda env. 
+If you want to run the workflow in a docker container, then use the following command
 ```shell
-conda update conda
-conda create --name myenv python=3.10.0 R=4.1.2
-conda activate myenv
-conda install -c bioconda bioconductor-camera
-conda install -c bioconda bioconductor-spectra
-conda install -c bioconda bioconductor-msbackendmgf
-conda install -c bioconda bioconductor-mscoreutils
-conda install -c r r-readr
-conda install -c r r-dplyr
-conda install -c r r-stringr
-conda install -c r r-xml2
-conda install -c r r-remotes
-R
-> remotes::install_github("rformassspectrometry/MsBackendHmdb")
-> remotes::install_github("rformassspectrometry/MsBackendMsp")
+docker run -i -t maw /bin/bash
+#either run R or python3 within the container shell
+```
+If you want to use the working directory on your system rather than the docker container, then follow this command:
+```shell
+#create a directory named within the docker container
+mkdir /mnt
+#quit the session and type this command in your system shell
+#check if you docker directory is your pwd and then run:
+docker run -v $(pwd):/mnt -i -t maw /bin/bash
+#either run R or python3 within the container shell
+```
+You are ready to use the workflow on a docker container on your system
 
+## Install MAW with Conda Environment
+To create a conda environment, install conda from (https://www.anaconda.com/products/distribution). Once installed, type:
+```shell
+conda init # add to bashrc
+conda 
+```
+To install the packages for MAW, using the maw.yml environment file which is created using conda, follow the command:
+```
+conda env create -f maw.yml
+activate mawRpy # which is the name of the environment in the maw.yml file
+```
+
+There are some packages that are not available via any channel on conda OR there are errors downloading these packags with conda. To install such R packages, run the install_packages.R file within the mawRpy environment. For Python, install following packages using ```pip3 install``` command.
+```
+pip3 install rdkit-pypi pubchempy requests_cache pybatchclassyfire
 ```
 
 Currently, MsBackendMsp requires R 4.2, but to avoid the need to install the R development version (currently available for WINDOWS), download the MsBackendMsp folder via the following link <provide a link here>. Follow the following instructions on the terminal to make the package available in your current R installation.
