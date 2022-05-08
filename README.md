@@ -325,8 +325,8 @@ specDB_Curation(input_dir,
                 combinedx = input_dir + 'MetabolomicsResults/SpecDBvsSL.csv', 
                 sl = True, 
                 db = "all")
-
-16. 
+```
+16. Combine curated results from SIRIUS, MetFrag and Spectral Databases
 ```python
 combine_CuratedR(input_dir, 
                  combinedSDBs = input_dir + 'MetabolomicsResults/curatedSDB.csv', 
