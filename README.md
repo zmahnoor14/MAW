@@ -7,7 +7,12 @@
 This repository hosts Metabolome Annotation Workflow (MAW). The workflow has been developed using the LCMS-2 dataset from a marine diatom _Skeletonema marinoi_. The workflow takes .mzML format data files as an input in R and performs spectral database dereplication using R Package [Spectra](https://rformassspectrometry.github.io/Spectra/) and compound database dereplication using [SIRIUS](https://bio.informatik.uni-jena.de/software/sirius/) and [MetFrag](https://ipb-halle.github.io/MetFrag/projects/metfragcl/) (with KEGG and PubChem). The results are savd as .csv files and are post processed in Python using [RDKit](https://www.rdkit.org/) and [PubChemPy](https://pubchempy.readthedocs.io/en/latest/).The classification of the tentative candidates from the input data are classified using [CANOPUS]() and [ClassyFire](http://classyfire.wishartlab.com/), with a python client [pybatchclassyfire](https://gitlab.unige.ch/Pierre-Marie.Allard/pybatchclassyfire/-/tree/master) for ClassyFire.
 
 ## Install MAW with Docker container
-
+Install Docker on your MAC OS with (https://www.docker.com/get-started/) and for Linux with (https://docs.docker.com/engine/install/ubuntu/). <br>
+To create a docker image, following files are required:
+1. Dockerfile
+2. maw.yml
+3. install_packages.R
+These files will create a docker image on your local system
 ## Usage of R-Workflow
 ### Installations via Conda
 
