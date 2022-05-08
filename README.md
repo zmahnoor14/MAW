@@ -103,7 +103,7 @@ slist_sirius(input_dir, slist_csv, substring = ["NA+", "Zn+"])
 slist_metfrag(input_dir, slist_csv, name)
 ```
 ### Tutorial of Workflow
-
+Follow the jupyter notebook: Workflow_Script.py
 1. Load Dependencies:
 ```R
 library(Spectra)
@@ -120,7 +120,7 @@ library(xml2)
 
 2. Define the input directory. Make sure that you have input LCMS-2 spectra files in .mzML format in the input directory.
 ```R
-input_dir <- "usr/s_cost/"
+input_dir <- "/usr/input_dir"
 ```
              
 3. Load the open spectral libraries. 
