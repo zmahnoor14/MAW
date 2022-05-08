@@ -59,8 +59,8 @@ echo $CONDA_PREFIX
 # you will receive a path, where you can keep the MsBackendMsp folder
 ```
   
-### Installation for SIRIUS
-Install the latest SIRIUS version with <https://bio.informatik.uni-jena.de/software/sirius/> for Linux or MAC OS.
+### Install SIRIUS 
+If the conda environment installation method is used, please install the latest SIRIUS version with <https://bio.informatik.uni-jena.de/software/sirius/> for Linux or MAC OS.
 1. Installation with Linux
   ```shell
   echo $PATH # check which is already added to PATH variable
@@ -74,9 +74,9 @@ Install the latest SIRIUS version with <https://bio.informatik.uni-jena.de/softw
   PATH="/usr/s_cost/sirius.app/Contents/MacOS/:${PATH}"
   export PATH
   ```
-The path may be different so check your Sirius installation folder to get the correct path name.
+The path may be different, so check your Sirius installation folder to get the correct path name.
 
-### Input files and Directories
+## Input files and Directories
 
 An input directory (input_dir) should have the following files for the Workflow to run.
 1. All LCMS-2 spectra .mzML files
