@@ -103,7 +103,7 @@ slist_sirius(input_dir, slist_csv, substring = ["NA+", "Zn+"])
 slist_metfrag(input_dir, slist_csv, name)
 ```
 ### Tutorial of Workflow
-Follow the jupyter notebook: Workflow_Script.py
+Follow the jupyter notebook: Workflow_R_Script.ipynb
 1. Load Dependencies:
 ```R
 library(Spectra)
@@ -120,33 +120,30 @@ library(xml2)
 
 2. Define the input directory. Make sure that you have input LCMS-2 spectra files in .mzML format in the input directory.
 ```R
-input_dir <- "/usr/input_dir"
-```
-             
-3. Load the open spectral libraries. 
-```R
-# db argument can take "all", "gnps", "mbank" and "hmdb". Default (and recommended) is "all".
-download_specDB(input_dir, db = "all")
+input_dir <- "/usr/input_dir/"
 ```
 
-4. Load the database .rda objects to the current R session.
+3. Load the database .rda objects to the current R session.
 ```R
 load(file = paste(input_dir,"gnps.rda", sep = ""))
 load(file = paste(input_dir,"hmdb.rda", sep = ""))
-load(file = paste(input_dir,"mbank.rda", sep = ""))
+load(file = paste(input_dir,"mbank_NIST.rda", sep = ""))
 ```
-
-5. Create a table that lists all the input .mzML files and the result directories with the same name as the input file. The function ```ms2_rfilename``` gives an id to the file as well. 
+4. Load the functions file
+```R
+source(file = paste(input_dir, "Workflow_R_Functions.r", sep = ''))
+```
+5. Create a table that lists all the input .mzML files and the result directories (created with the same function) with the same name as the input file. The function ```ms2_rfilename``` gives an id to the file as well. 
 ```R
 input_table <- data.frame(ms2_rfilename(input_dir))
 ```
 
 6. (optional) If you are using QC files, follow these steps as well. QC samples are used to normalize the signals across all samples. So, generally, QC files contain all the signals from MS1 files with higher m/z resolution. These files also contain the isotopic peaks and can be used for formula identification in SIRIUS. 
-    1. If you have files with positive and negative modes in one file, follow the first section of the code. It takes all files in the QC folder with a certain pattern (choose a pattern from your file names, could be even .mzML as this is the format of all files in the QC folder) and divides the pos and neg modes from each file and generate different mode .mzML files (01pos.mzmL and 01neg.mzML). These files are read by "CAMERA", which is loaded within the function. the outputs are several CSV files with CAMERA results, which are merged into one CSV file for each model.
+    1. If you have files with positive and negative modes in one file, follow the first section of the code. It takes all files in the QC folder with a certain pattern (choose a pattern from your file names, could be even .mzML as this is the format of all files in the QC folder) and divides the pos and neg modes from each file and generates different mode .mzML files (01pos.mzmL and 01neg.mzML). These files are read by [CAMERA](https://www.bioconductor.org/packages/release/bioc/html/CAMERA.html), which is loaded within the function. The outputs are several .csv files with CAMERA results, which are merged into one .csv file for each model.
     2. If you have files with positive and negative modes in separate files, follow the second section of code. It takes one file in the QC folder with either pos or neg mode. These files are read by "CAMERA", which is loaded within the function.          
 ```R
 # first section
-cam_funcMode(path = paste(input_dir, "QC", sep =""), pattern = "common")
+cam_funcMode(path = paste(input_dir, "QC", sep =""), pattern = ".mzML")
 merge_qc(path = paste(input_dir, "QC", sep =""))
 ```
 
@@ -156,7 +153,7 @@ cam_func(path = "QC/", f = "01pos.mzML", mode = "pos")
 cam_func(path = "QC/", f = "02neg.mzML", mode = "neg")
 ```
 
-7. (optional, follow if followed 6.) add the QC files to your input files. This can be done simply by adding one more column to the input_table and adding the pos files against pos mode LCMS2 data and neg files against neg mode LCMS2 files. An example is given below:             
+7. (optional, if followed 6.) Add the QC files to input_table. This can be done simply by adding one more column to the input_table and adding the pos files against pos mode LCMS-2 data and neg files against neg mode LCMS-2 files. An example is given below:             
 ```R
 for (i in 1:nrow(input_table)){
     if (grepl("pos", input_table[i, "mzml_files"], fixed=TRUE)){
@@ -168,65 +165,82 @@ for (i in 1:nrow(input_table)){
 }
 ```
   
-8. After the previous steps, we have all the inputs, their directories and optionally the QC csv files. Next is to initiate the workflow, (assuming we want to process only one LCMS2 .mzML file). Use the spec_Processing function to read and pre-process the MS2 spectra. The output is processed spectra and a list of precursor m/z(s) present in the .mzML file. Give the file path as an argument.                                     
+8. After the previous steps, we have all the inputs, their directories and optionally the QC .csv files. Next is to initiate the workflow, (assuming we want to process only one LCMS-2 .mzML file). Use the spec_Processing function to read and pre-process the MS2 spectra. The output is processed spectra and a list of precursor m/z(s) present in the .mzML file.                                     
 ```R
-spec_pr <- spec_Processing(as.character(input_table[1, "mzml_files"]))
-# Extract spectra
-sps_all <- spec_pr[[1]]
-# Extract precursor m/z
-pre_mz<- spec_pr[[2]]
+spec_pr <- spec_Processing(as.character(input_table[i, "mzml_files"]), input_table[i, "ResultFileNames"])
 ```
   
-9. Using the above-processed spectra, the workflow is ready to perform spectral database deprelication. In this workflow, "GNPS", "HMDB" and "MassBank" or all of these databases can be used. This function can be performed for all precursor m/z(s) in a loop. The function ```spec_dereplication``` takes one precursor m/z at a time, the result directory path, either from the input_table or as a whole written path e.g: "usr/s_cost/file_pos_01". The file_id is also taken from the input_table, as was generated by the ms2_rfilename function, but is customizable as any other id given as a string e.g: "IDfile_pos_01". ppmx is the ppm value used by the function to match the two spectra which have their m/z values at most 15 ppm apart to be considered a match. This results in a directory called spectral_dereplication and contains results in CSV files for each database.
+9. Using the above-processed spectra, the workflow is ready to perform spectral database deprelication. In this workflow, "GNPS", "HMDB" and "MassBank" or all of these databases can be used. This function can be performed for all precursor m/z(s) in a loop. The function ```spec_dereplication``` takes one precursor m/z at a time, the result directory path, either from the input_table or as a whole written path e.g: "usr/s_cost/file_pos_01". The file_id is also taken from the input_table, but is customizable as any other id given as a string e.g: "IDfile_pos_01". ppmx is the ppm value used by the function to match the two spectra which have their m/z values at most 15 ppm apart to be considered a match. This results in a directory called spectral_dereplication and contains results in .csv files for each database.
 ```R
-for (i in pre_mz){
-    df_derep <- spec_dereplication(i, db = "all", result_dir = input_table[1, "ResultFileNames"],
-                file_id = input_table[1, "File_id"], input_dir, ppmx = 15)
-}
+df_derep <- spec_dereplication(pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "./"), sep =""), 
+                                   proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "./"), sep =""),
+                                   db = "all", 
+                                   result_dir = input_table[i, "ResultFileNames"],
+                                   file_id = input_table[i, "File_id"], 
+                                   input_dir, 
+                                   ppmx = 15)
 ```
                 
-10. In order to perform dereplication using compound databases, the Workflow uses SIRIUS and MetFrag. For these tools, we need MS2 fragmentation peak lists. The next function ```ms2_peaks``` extracts MS2 fragmentation spectra and stores the peaks for each precursor m/z in "/insilico/peakfiles_ms2/Peaks_01.txt". It takes the processed spectra from ```spec_Processing``` and results in a directory path.              
+10. In order to perform dereplication using compound databases, the Workflow uses SIRIUS and MetFrag. For these tools, we need MS-2 fragmentation peak lists. The next function ```ms2_peaks``` extracts MS-2 fragmentation spectra and stores the peaks for each precursor m/z in "/insilico/peakfiles_ms2/Peaks_01.txt".             
 ```R
-spec_pr2 <- ms2_peaks(spec_pr, input_table[i, "ResultFileNames"])
+spec_pr2 <- ms2_peaks(pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "./"), sep =""), 
+                          proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "./"), sep =""),
+                          input_dir,
+                          input_table[i, "ResultFileNames"],
+                         file_id = input_table[i, "File_id"])
 ```
   
-11. For Formula identification in SIRIUS, a fragmentation tree generates a tree score and isotopic peaks generate an isotopic score, both of which form the Sirius score. In order to utilize the isotopic score, isotopic peak annotation is required. For this purpose, the CAMERA results generated using CAMERA, are utilized here to extract the isotopic peaks for each precursor m/z and store them in "/insilico/peakfiles_ms2/Peaks_01.txt". The function ```ms1_peaks``` takes results from ms2_peaks, the associated QC CSV file, the result directory and whether the QC file is being used or not. If there is not QC CSV file, enter NA and QC = FALSE.
+11. For Formula identification in SIRIUS, a fragmentation tree generates a tree score and isotopic peaks generate an isotopic score, both of which form the Sirius score. In order to utilize the isotopic score, isotopic peak annotation is required. For this purpose, the CAMERA results, are utilized here to extract the isotopic peaks for each precursor m/z and store them in "/insilico/peakfiles_ms2/Peaks_01.txt". The function ```ms1_peaks``` takes results from ms2_peaks, the associated QC CSV file, the result directory and whether the QC file is being used or not. If there is not QC .csv file, enter NA and QC = FALSE.
   
 ```R
-ms1p <- ms1_peaks(spec_pr2, input_table[i, "qcCAM_csv"], input_table[i, "ResultFileNames"], QC = TRUE)
+ms1p <- ms1_peaks(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS2DATA.csv', sep = ""), "./"), sep =""), 
+                      y = input_table[i, "qcCAM_csv"], 
+                      input_table[i, "ResultFileNames"], 
+                      input_dir, 
+                      QC = FALSE)
 ```
         
         
-11. To create SIRIUS input files, use ```sirius_param``` function, which takes the output table from ```ms1_peaks``` and the result directory. If a suspect list is used, then SL = TRUE. 
-        
+11. To create SIRIUS input files, use ```sirius_param_files``` function, which takes the output table from ```ms1_peaks``` and the result directory. If a suspect list is used, then SL = TRUE. 
 ```R
-sirius_param_files <- sirius_param(ms1p, result_dir = input_table[1, 'ResultFileNames'], SL = TRUE)
+sirius_param_files <- sirius_param(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA.csv', sep = ""), "./"), sep =""), 
+                                       result_dir = input_table[i, 'ResultFileNames'], 
+                                       input_dir,
+                                       SL = TRUE)
 ```
   
-  
-12. Run SIRIUS. Give the output of sirius_param as an argument to this function, which contains a table of all the input and output paths for SIRIUS. Keep QC = TRUE, if QC files were used. If a suspect list is used, then SL = TRUE. Give path to the fragmentation tree directory. The suspect list fragmentation trees are calculated with a python defined function ```slist_SIRIUS``` and are stored in a directory named ScostSLS/ within the input directory. Candidates are the number of molecular formulas considered for further SIRIUS calculations. If SL = FALSE, keep the SL_path = NA
+12. Run SIRIUS. Give the output of sirius_param_files as an argument to this function, which contains a table of all the input and output paths for SIRIUS. Keep QC = TRUE, if QC files were used. If a suspect list is used, then SL = TRUE. Give path to the fragmentation tree directory. Candidates are the number of molecular formulas considered for further SIRIUS calculations. If SL = FALSE, keep the SL_path = NA
 ```R
-run_sirius(files=sirius_param_files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, 
-  SL_path = paste(input_dir, 'ScostSLS/', sep = ""), candidates = 30)
+run_sirius(files = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA_SiriusPandSL.csv', sep = ""), "./"), sep =""), 
+               ppm_max = 5, 
+               ppm_max_ms2 = 15, 
+               QC = FALSE, 
+               SL = TRUE, 
+               SL_path = paste(input_dir, 'SL_Frag/', sep = ""),
+               candidates = 30)
 ```
   
-12. To run MetFrag, SIRIUS results are preprocessed to extract the best score Molecular formula and its adduct. The Adduct annotation is important to run Metfrag. In this function, give the result directory and whether a suspect list was used or not.
+12. To run MetFrag, SIRIUS results are preprocessed to extract the best scored Molecular formula and its adduct. The Adduct annotation is important to run Metfrag. In this function, give the result directory and whether a suspect list was used or not.
 ```R
 sirius_pproc <- sirius_postprocess(input_table[i, "ResultFileNames"], SL = TRUE)
 ```
                 
-13. Generate MetFrag parameter files. Give the Sirius processed results as input. add the path of the MetFrag_AdductTypes.csv. Add the path of the suspect list InChIKeys generated by python function ```slist_metfrag``` for Metfrag.
+13. Generate MetFrag parameter files. Give the SIRIUS processed results as input. Add the path of the MetFrag_AdductTypes.csv. Add the path of the suspect list InChIKeys generated by python function ```slist_metfrag``` for Metfrag.
 ```R
-met_param <- metfrag_param(sirius_pproc, result_dir = input_table[1, "ResultFileNames"],input_dir, 
-  adducts = paste(input_dir, "MetFrag_AdductTypes.csv", sep = ""), 
-  sl_mtfrag = paste(input_dir, "sl_metfrag.txt", sep = ""), SL = TRUE)
+met_param <- metfrag_param(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/insilico/MS1DATAsirius.csv", sep = ""), "./"), sep =""), 
+                               result_dir = input_table[i, "ResultFileNames"],
+                               input_dir,
+                               adducts = paste(input_dir, "MetFrag_AdductTypes.csv", sep = ""), 
+                               sl_mtfrag = paste(input_dir, "SL_metfrag.txt", sep = ""), 
+                               SL = TRUE,
+                               ppm_max = 5, 
+                               ppm_max_ms2= 15)
 ```
   
 14. Run MetFrag.
 ```R
-for (files in met_param){
-    system(paste("java -jar",  paste(input_dir, "MetFrag2.4.5-CL.jar", sep = ''), files))
-}
+run_metfrag(met_param = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/insilico/metparam_list.txt", sep = ""), "./"), sep =""),
+               MetFragjarFile = paste(input_dir, "MetFragCommandLine-2.4.8.jar", sep =""))
 ```
 ## More information about our research group
 
