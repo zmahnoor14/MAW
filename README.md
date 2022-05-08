@@ -16,8 +16,8 @@ These files will create a docker image on your local system with the following c
 ```shell
 # build the image
 docker build -t maw .
-# run in a jupyter notebook
-docker run -v /Users/mahnoorzulfiqar/Downloads/MAW-main:/Users/mahnoorzulfiqar/Downloads/MAW-main -i -t -p 8888:8888 maw /bin/bash -c "jupyter notebook --notebook-dir=/Users/mahnoorzulfiqar/Downloads/MAW-main --ip='*' --port=8888 --no-browser --allow-root"
+# run MAW in a jupyter notebook; change /workdir to your working directory
+docker run -v /workdir:/workdir -i -t -p 8888:8888 maw /bin/bash -c "jupyter notebook --notebook-dir=/workdir --ip='*' --port=8888 --no-browser --allow-root"
 
 ```
 ## Usage of R-Workflow
