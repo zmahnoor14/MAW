@@ -4,7 +4,10 @@
 # Metabolome Annotation Workflow
  - (tested on Linux and MAC OS)
 
-This repository hosts Metabolome Annotation Workflow from LCMS-2 spectra in mzML format. The workflow has been developed using the LCMS-2 dataset from a marine diatom _Skeletonema marinoi_. The workflow takes .mzML format data files as an input in R and performs spectral database dereplication using R Package [Spectra](https://rformassspectrometry.github.io/Spectra/) and compound database dereplication using SIRIUS and [MetFrag](https://ipb-halle.github.io/MetFrag/projects/metfragcl/) (with KEGG and PubChem).The workflow is implemented in both R and Python.
+This repository hosts Metabolome Annotation Workflow (MAW). The workflow has been developed using the LCMS-2 dataset from a marine diatom _Skeletonema marinoi_. The workflow takes .mzML format data files as an input in R and performs spectral database dereplication using R Package [Spectra](https://rformassspectrometry.github.io/Spectra/) and compound database dereplication using [SIRIUS](https://bio.informatik.uni-jena.de/software/sirius/) and [MetFrag](https://ipb-halle.github.io/MetFrag/projects/metfragcl/) (with KEGG and PubChem). The results are savd as .csv files and are post processed in Python using [RDKit](https://www.rdkit.org/) and [PubChemPy](https://pubchempy.readthedocs.io/en/latest/).The classification of the tentative candidates from the input data are classified using [CANOPUS]() and [ClassyFire](http://classyfire.wishartlab.com/), with a python client [pybatchclassyfire](https://gitlab.unige.ch/Pierre-Marie.Allard/pybatchclassyfire/-/tree/master) for ClassyFire.
+
+## Install MAW with Docker container
+
 ## Usage of R-Workflow
 ### Installations via Conda
 
