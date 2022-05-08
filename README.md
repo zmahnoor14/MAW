@@ -4,8 +4,7 @@
 # Metabolome Profiling of _Skeletonema costatum_ 
  - (tested on Linux and MAC OS)
 
-This repository hosts Metabolome Annotation Workflow from LCMS-2 spectra in mzML format. The workflow has been developed using the LCMS-2 dataset from a marine diatom _Skeletonema costatum_.
-
+This repository hosts Metabolome Annotation Workflow from LCMS-2 spectra in mzML format. The workflow has been developed using the LCMS-2 dataset from a marine diatom _Skeletonema marinoi_. The workflow takes .mzML format data files as an input in R and performs spectral database dereplication using R Package Spectra[()] and compound database dereplication using SIRIUS and MetFrag[(https://ipb-halle.github.io/MetFrag/projects/metfragcl/)] (with KEGG and PubChem).The workflow is implemented in both R and Python.
 ## Usage of R-Workflow
 ### Installations via Conda
 
