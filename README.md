@@ -1,14 +1,18 @@
 [![License](https://img.shields.io/badge/License-MIT%202.0-blue.svg)](https://opensource.org/licenses/MIt)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-blue.svg)](https://GitHub.com/zmahnoor14/MAW/graphs/commit-activity)
+[![GitHub contributors](https://img.shields.io/github/contributors/zmahnoor14/MAW.svg)](https://GitHub.com/zmahnoor14/MAW/graphs/contributors/)
+[![GitHub issues](https://img.shields.io/github/issues/zmahnoor14/MAW.svg)](https://GitHub.com/zmahnoor14/MAW/issues/)
+
+<p align="center"><img width="528" alt="MAW" src="https://user-images.githubusercontent.com/30716951/168855653-ae2efaa1-cbaf-4215-a04e-13bcd88ac46f.png"></p>
 
 # Metabolome Annotation Workflow
  - (tested on Linux and MAC OS)
 
-This repository hosts Metabolome Annotation Workflow (MAW). The workflow has been developed using the LCMS-2 dataset from a marine diatom _Skeletonema marinoi_. The workflow takes .mzML format data files as an input in R and performs spectral database dereplication using R Package [Spectra](https://rformassspectrometry.github.io/Spectra/) and compound database dereplication using [SIRIUS](https://bio.informatik.uni-jena.de/software/sirius/) and [MetFrag](https://ipb-halle.github.io/MetFrag/projects/metfragcl/) (with KEGG and PubChem). The results are savd as .csv files and are post processed in Python using [RDKit](https://www.rdkit.org/) and [PubChemPy](https://pubchempy.readthedocs.io/en/latest/).The classification of the tentative candidates from the input data are classified using [CANOPUS]() and [ClassyFire](http://classyfire.wishartlab.com/), with a python client [pybatchclassyfire](https://gitlab.unige.ch/Pierre-Marie.Allard/pybatchclassyfire/-/tree/master) for ClassyFire.
+This repository hosts Metabolome Annotation Workflow (MAW). The workflow has been developed using the LCMS-2 dataset from a marine diatom _Skeletonema marinoi_. The workflow takes .mzML format data files as an input in R and performs spectral database dereplication using R Package [Spectra](https://rformassspectrometry.github.io/Spectra/) and compound database dereplication using [SIRIUS](https://bio.informatik.uni-jena.de/software/sirius/) and [MetFrag](https://ipb-halle.github.io/MetFrag/projects/metfragcl/) (with KEGG and PubChem). The results are saved as .csv files and are post processed in Python using [RDKit](https://www.rdkit.org/) and [PubChemPy](https://pubchempy.readthedocs.io/en/latest/).The classification of the tentative candidates from the input data are classified using [CANOPUS]() and [ClassyFire](http://classyfire.wishartlab.com/), with a python client [pybatchclassyfire](https://gitlab.unige.ch/Pierre-Marie.Allard/pybatchclassyfire/-/tree/master) for ClassyFire.
 
 ## Install MAW with Docker container
 Install Docker on your MAC OS with (https://www.docker.com/get-started/) and for Linux with (https://docs.docker.com/engine/install/ubuntu/). <br>
-To create a docker image, following files are required:
+To create a docker image, the following files are required:
 1. Dockerfile
 2. maw.yml
 3. install_packages.R <br>
@@ -46,13 +50,13 @@ To install the packages for MAW, using the maw.yml environment file which is cre
 conda env create -f maw.yml
 activate mawRpy # which is the name of the environment in the maw.yml file
 ```
-Currently, MsBackendMsp requires R 4.2, but to avoid the need to install R 4.2 which is unavailable on conda currently), use Docker image. The following code is only possible if you have an installation folder for MsBackednMsp saved (as it was previously available to doenaload with 4.1.2). Follow the following instructions on the terminal to make the package available in your current R installation if you have a folder installed.
+Currently, MsBackendMsp requires R 4.2, but to avoid the need to install R 4.2 which is unavailable on conda currently), use Docker image. The following code is only possible if you have an installation folder for MsBackednMsp saved (as it was previously available to download with 4.1.2). Follow the following instructions on the terminal to make the package available in your current R installation if you have a folder installed.
 ```shell
 conda activate myenv
 echo $CONDA_PREFIX
 # you will receive a path, where you can keep the MsBackendMsp folder
 ```
-There are some packages that are not available via any channel on conda OR there are errors downloading these packags with conda. To install such R packages, run the install_packages.R file within the mawRpy environment. For Python, install following packages using ```pip3 install``` command.
+There are some packages that are not available via any channel on conda OR there are errors downloading these packages with conda. To install such R packages, run the install_packages.R file within the mawRpy environment. For Python, install the following packages using ```pip3 install``` command.
 ```
 pip3 install rdkit-pypi pubchempy requests_cache pybatchclassyfire
 ```
@@ -72,7 +76,7 @@ If the conda environment installation method is used, please install the latest 
   PATH="/usr/s_cost/sirius.app/Contents/MacOS/:${PATH}"
   export PATH
   ```
-The path may be different, so check your Sirius installation folder to get the correct path name.
+The path may differ, so check your Sirius installation folder to get the correct path name.
 
 ## Input files and Directories
 
@@ -93,12 +97,12 @@ download_specDB(input_dir, db = "all")
 This function will take a lot of computational resources. However, to skip this function, you can download the current versions of these databases from <https://zenodo.org/deposit/6528931> (linked embargoed). The databases are stored in the same input directory and in .rda format, as an R object.
 
 ## Functions to use a Suspect List(in-house library) [Python]
-A suspect list of compounds can be used within the workflow to provide confidence to the predictions. This library is matched against results from Spectral and Compound Databases. MAW provides two functions to generate the input suspect list compounds for SIRIUS and MetFrag. The only important information in the SuspectList.csv file should be a column with SMILES. 
-1. SIRIUS requires a folder with many .tpt files which contain fragmentation tree for each SMILES. To generate suspect list input for SIRIUS, use the function ```slist_sirius```. This function generates a result folder /input_dir/SL_Frag. 
+A suspect list of compounds can be used within the workflow to provide confidence in the predictions. This library is matched against results from Spectral and Compound Databases. MAW provides two functions to generate the input suspect list compounds for SIRIUS and MetFrag. The only important information in the SuspectList.csv file should be a column with SMILES. 
+1. SIRIUS requires a folder with many .tpt files which contain a fragmentation tree for each SMILES. To generate suspect list input for SIRIUS, use the function ```slist_sirius```. This function generates a result folder /input_dir/SL_Frag. 
 ```
 slist_sirius(input_dir, slist_csv, substring = ["NA+", "Zn+"])
 ```
-2. MetFrag requires a txt file with InChIKeys. This can be obtained with the function ```slist_metfrag```. 
+2. MetFrag requires a text file with InChIKeys. This can be obtained with the function ```slist_metfrag```. 
 ```
 slist_metfrag(input_dir, slist_csv, name)
 ```
@@ -167,7 +171,7 @@ for (i in 1:nrow(input_table)){
 }
 ```
   
-8. After the previous steps, we have all the inputs, their directories and optionally the QC .csv files. Next is to initiate the workflow, (assuming we want to process only one LCMS-2 .mzML file). Use the spec_Processing function to read and pre-process the MS2 spectra. The output is processed spectra and a list of precursor m/z(s) present in the .mzML file.                                     
+8. After the previous steps, we have all the inputs, directories, and the QC .csv files optionally. Next is to initiate the workflow, (assuming we want to process only one LCMS-2 .mzML file). Use the spec_Processing function to read and pre-process the MS2 spectra. The output is processed spectra and a list of precursor m/z(s) present in the .mzML file.                                     
 ```R
 spec_pr <- spec_Processing(as.character(input_table[i, "mzml_files"]), input_table[i, "ResultFileNames"])
 ```
@@ -256,7 +260,7 @@ from Workflow_Python_Functions import *
 input_dir = os.getcwd()+'/'
 input_dir
 ```
-3. Store suspect list in a variable to be used in the functions later.
+3. Store the suspect list in a variable to be used in the functions later.
 ```python
 slistcsv = input_dir + "SkeletonemaSuspectListV1.csv"
 ```
@@ -276,7 +280,7 @@ combine_insilico(input_dir,
                  input_tablecsv = input_dir + "input_table.csv",
                 Source = "all_insilico")
 ```
-7. This function performs curation of results from SIRIUS. It checks if candidate selected has a good score for explained intensity. It also checks if there was any similarity to a compound from Suspect list.
+7. This function performs curation of results from SIRIUS. It checks if the candidate selected has a good score for explained intensity. It also checks if there was any similarity to a compound from the suspect list.
 ```python
 sirius_curation(input_dir, 
                  siriuscsv = input_dir + "MetabolomicsResults/SIRIUS_combined.csv", 
@@ -338,7 +342,7 @@ combine_CuratedR(input_dir,
 checkSMILES_validity(input_dir, 
                      resultcsv = input_dir + 'MetabolomicsResults/final_curation_without_classes.csv')
 ```
-18. Classification function is performed for any feature which is not predicted by SIRIUS/CANOPUS. Such features have classifcation based on their SMILES, which are taken as input by ClassyFire to generate chemixl classes. Since both CANOPUS and ClassyFire use ChemONT, so the results are comparable.
+18. Classification function is performed for any feature which is not predicted by SIRIUS/CANOPUS. Such features have classification based on their SMILES, which are taken as input by ClassyFire to generate chemical classes. Since both CANOPUS and ClassyFire use ChemONT, so the results are comparable.
 ```python
 classification(input_dir, 
                resultcsv = input_dir + 'MetabolomicsResults/final_curation_with_validSMILES.csv')
@@ -346,4 +350,3 @@ classification(input_dir,
 ## More information about our research group
 
 [![GitHub Logo](https://github.com/Kohulan/DECIMER-Image-to-SMILES/blob/master/assets/CheminfGit.png?raw=true)](https://cheminf.uni-jena.de)
-
