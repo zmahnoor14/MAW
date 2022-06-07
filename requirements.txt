@@ -1,0 +1,12 @@
+numpy
+pandas
+jupyter
+rdkit-pypi 
+pubchempy 
+requests_cache 
+pybatchclassyfire
+joblib
+networkx
+openpyxl
+statistics
+wget
