@@ -218,7 +218,7 @@ ms2_rfilename<- function(input_dir){
         for (i in 1:length(mzml_file)){
             nx <- nx+1
             # remove .mzML to extract just the names
-            mzml_filex <- str_replace(mzml_file[i], input_dir, "./")
+            mzml_filex <- str_replace(mzml_file[i], input_dir, ".")
             name_mzmls <- str_remove(as.character(mzml_filex), ".mzML")
             name_mzmlsd <- str_remove(mzml_file[i], ".mzML")
             #name_mzml <- str_replace(name_mzmls, input_dir, "./")
@@ -2050,13 +2050,22 @@ spec_dereplication <- function(mzml_file, pre_tbl, proc_mzml, db, result_dir, fi
     
     
     end_time <- Sys.time()
+<<<<<<< HEAD
     if (file.exists(paste(input_dir, "/summaryFile.txt", sep = ""))){
         line= paste("Spectral Dereplication with R package Spectra took", as.character((end_time - start_time), "seconds of time. The database used: ", db, sep = " "))
+=======
+    if file.exists(paste(input_dir, "/summaryFile.txt", sep = "")){
+        line= paste("Spectral Dereplication with R package Spectra took", as.character((end_time - start_time), "time. The database used: ", db, sep = " "))
+>>>>>>> refs/remotes/origin/main
         write(line,file=paste(input_dir, "/summaryFile.txt", sep = ""),append=TRUE)
     }
     else{
         fileConn<-file(paste(input_dir, "/summaryFile.txt", sep = ""))
+<<<<<<< HEAD
         writeLines(paste("Spectral Dereplication with R package Spectra took", as.character((end_time - start_time), "seconds of time. The database used: ", db, sep = " ")), fileConn)
+=======
+        writeLines(paste("Spectral Dereplication with R package Spectra took", as.character((end_time - start_time), "time. The database used: ", db, sep = " ")), fileConn)
+>>>>>>> refs/remotes/origin/main
         close(fileConn)
     }
 }
@@ -2358,6 +2367,7 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
     #write.csv(df_neg, paste(path, "/Combined_Camera_neg.csv", sep = ""))
 #}
 
+<<<<<<< HEAD
 cam_func <- function(input_dir, f, ms2features){
     
     modes_file <- read_csv(ms2features)
@@ -2365,6 +2375,11 @@ cam_func <- function(input_dir, f, ms2features){
     
     library("CAMERA")
     fl <- paste(input_dir, str_remove(f, "."), sep ="")
+=======
+cam_func <- function(input_dir, f, mode = "pos"){
+    library("CAMERA")
+    fl <- paste(input_dir, "/", f, sep ="")
+>>>>>>> refs/remotes/origin/main
     if(mode == "pos"){
         xs <- xcmsSet(file = fl,profmethod = "bin", 
               profparam = list(), lockMassFreq=FALSE,
@@ -2818,13 +2833,22 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
     
     
     end_time <- Sys.time()
+<<<<<<< HEAD
     if (file.exists(paste(input_dir, "/summaryFile.txt", sep = ""))){
         line= paste("Compound Database Dereplication with SIRIUS took", as.character((end_time - start_time), "time.", sep = " "))
+=======
+    if file.exists(paste(input_dir, "/summaryFile.txt", sep = "")){
+        line= paste("Compound Database Dereplication with SIRIUS took", as.character((end_time - start_time), "time.", db, sep = " "))
+>>>>>>> refs/remotes/origin/main
         write(line,file=paste(input_dir, "/summaryFile.txt", sep = ""),append=TRUE)
     }
     else{
         fileConn<-file(paste(input_dir, "/summaryFile.txt", sep = ""))
+<<<<<<< HEAD
         writeLines(paste("Compound Database Dereplication with SIRIUS took", as.character((end_time - start_time), "seconds of time.", sep = " ")), fileConn)
+=======
+        writeLines(paste("Compound Database Dereplication with SIRIUS took", as.character((end_time - start_time), "time.", db, sep = " ")), fileConn)
+>>>>>>> refs/remotes/origin/main
         close(fileConn)
     }
 }
@@ -3479,6 +3503,7 @@ metfrag_param <- function(x, result_dir, input_dir, sl_mtfrag, SL = TRUE, ppm_ma
 
 
 
+<<<<<<< HEAD
 run_metfrag <- function(met_param){
     
     if (file.exists(paste(input_dir, "/MetFragCommandLine-2.4.8.jar", sep = ""))){
@@ -3495,6 +3520,11 @@ run_metfrag <- function(met_param){
     start_time <- Sys.time()
     
     
+=======
+run_metfrag <- function(met_param, MetFragjarFile){
+>>>>>>> refs/remotes/origin/main
+    
+    start_time <- Sys.time()
     
     filesmet_param <- read.table(met_param)
     
@@ -3504,13 +3534,22 @@ run_metfrag <- function(met_param){
     }
     
     end_time <- Sys.time()
+<<<<<<< HEAD
     if (file.exists(paste(input_dir, "/summaryFile.txt", sep = ""))){
         line= paste("Compound Database Dereplication with MetFrag took", as.character((end_time - start_time), "time. The database used: KEGG", sep = " "))
+=======
+    if file.exists(paste(input_dir, "/summaryFile.txt", sep = "")){
+        line= paste("Compound Database Dereplication with MetFrag took", as.character((end_time - start_time), "time. The databases used: KEGG, PubChem", db, sep = " "))
+>>>>>>> refs/remotes/origin/main
         write(line,file=paste(input_dir, "/summaryFile.txt", sep = ""),append=TRUE)
     }
     else{
         fileConn<-file(paste(input_dir, "/summaryFile.txt", sep = ""))
+<<<<<<< HEAD
         writeLines(paste("Spectral Dereplication with R package Spectra took", as.character((end_time - start_time), "time. The database used: KEGG", sep = " ")), fileConn)
+=======
+        writeLines(paste("Spectral Dereplication with R package Spectra took", as.character((end_time - start_time), "time. The database used: KEGG, PubChem", db, sep = " ")), fileConn)
+>>>>>>> refs/remotes/origin/main
         close(fileConn)
     }
 }

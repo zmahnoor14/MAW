@@ -77,7 +77,11 @@ ms2_rfilename<- function(input_dir){
         return(data.frame(input_table))
     }
     else{
+<<<<<<< HEAD
         stop("Your input_dir is incorrect. Please provide the directory where all your input files are stored. An example would be: '/Users/my_name/input_dir'. Good Luck")
+=======
+        stop("Your input_dir is incorrect. Please provide the directory where all your input files are stored. An example would be: '/Users/my_name/input_dir/'. don't forget the '/' at the end : ) Good Luck")
+>>>>>>> refs/remotes/origin/main
     }
 }
 
