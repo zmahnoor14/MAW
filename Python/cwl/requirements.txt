@@ -10,3 +10,8 @@ networkx
 openpyxl
 statistics
 wget
+plotly
+kaleido
+matplotlib
+matplotlib_venn
+

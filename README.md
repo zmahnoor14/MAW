@@ -347,9 +347,6 @@ checkSMILES_validity(input_dir,
 classification(input_dir,
                resultcsv = input_dir + 'MetabolomicsResults/final_curation_with_validSMILES.csv')
 ```
-## Integrate Results from GNPS Classical Molecular Networking
-
-To analyze or compare results from GNPS Classical MN, download the Direct Cytoscape Preview/Download from Advanced Views - External Visualization. Download Cytoscape from (https://cytoscape.org/download-platforms.html). Open the downloaded .cys file in Cytoscape and download the Node Table and Edge Table in .csv format. These will be taken as input CSV files for MN Results analysis.
 
 ## More information about our research group
 

@@ -6,7 +6,12 @@ RUN apt-get update && apt-get -y install libnode-dev librdf0 librdf0-dev unzip w
 
 RUN apt-get install -y libnetcdf-dev
 
-RUN wget https://github.com/boecker-lab/sirius/releases/download/v5.5.5/sirius-5.5.5-linux64-headless.zip && cd /usr/local/ && unzip /sirius-5.5.5-linux64-headless.zip && rm /sirius-5.5.5-linux64-headless.zip
+
+RUN apt-get install -y \
+  build-essential \
+  libglpk40
+
+RUN wget https://github.com/boecker-lab/sirius/releases/download/v4.9.12/sirius-4.9.12-linux64-headless.zip && cd /usr/local/ && unzip /sirius-4.9.12-linux64-headless.zip && rm /sirius-4.9.12-linux64-headless.zip
 
 ENV PATH="/usr/local/sirius/bin:${PATH}"
 
