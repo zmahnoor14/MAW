@@ -21,6 +21,7 @@ import csv
 import time
 import json
 
+import pandas as pd
 import pubchempy as pcp
 import numpy as np
 
