@@ -523,7 +523,9 @@ def specDB_Curation(input_dir, combinedx, sl = True, db = "all"):
                     #combined.loc[i, 'Annotation'] = 'HMDB'
     combined.to_csv(input_dir + "MetabolomicsResults/curatedSDB.csv")
     return(combined)
-                
-    
-specDB_Curation(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
 
+def main():
+    if len(sys.argv) != 4:
+        print("Usage: python specDB_Curation.py input_dir, combinedx, sl = True, db = "all"")
+    else:
+        specDB_Curation(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

@@ -250,5 +250,12 @@ def spec_postproc(input_dir, Source = "all"):
         df = pd.DataFrame(dict1)
 
         return(df)
-spec_postproc(sys.argv[1], sys.argv[2])
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python spec_postproc.py input_dir, Source = "all"")
+    else:
+        spec_postproc(sys.argv[1], sys.argv[2])
+
+
 
