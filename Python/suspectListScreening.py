@@ -144,6 +144,10 @@ def suspectListScreening(input_dir, slistcsv, SpectralDB_Results, db = "all"):
     SpectralDB_Results.to_csv(input_dir + "MetabolomicsResults/SpecDBvsSL.csv")
     return(SpectralDB_Results)
 
+def main():
+    if len(sys.argv) != 4:
+        print("Usage: python suspectListScreening.py input_dir resultcsv complist listname")
+    else:
+        suspectListScreening(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
 
-suspectListScreening(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
 
