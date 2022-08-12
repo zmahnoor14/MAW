@@ -12,9 +12,9 @@ This repository hosts Metabolome Annotation Workflow (MAW). The workflow has bee
 
 ## Install MAW with Docker container
 Install Docker on your MAC OS with (https://www.docker.com/get-started/) and for Linux with (https://docs.docker.com/engine/install/ubuntu/). <br>
-To create a docker image, the following files are required:
+Since MAW is implemented in R and Python so we have two separate Docker images.To create a R-docker image, the following files are required:
 1. Dockerfile
-2. maw.yml
+2. Workflow_R_Functions.r
 3. install_packages.R <br>
 These files will create a docker image on your local system with the following command:
 ```shell
