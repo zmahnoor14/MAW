@@ -18,6 +18,9 @@ Since MAW is implemented in R and Python so we have two separate Docker images.T
 3. install_packages.R <br>
 These files can be accessed via the folder R/cwl/.  A docker image will be created on your local system with these files using following command:
 ```shell
+# clone the reporistory
+# go to the directory
+cd MAW/R/cwl
 # build the image
 docker build -t mawr .
 # run MAW in a jupyter notebook; change /workdir to your working directory
