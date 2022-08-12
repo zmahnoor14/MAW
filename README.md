@@ -16,7 +16,7 @@ Since MAW is implemented in R and Python so we have two separate Docker images.T
 1. Dockerfile
 2. Workflow_R_Functions.r
 3. install_packages.R <br>
-These files will create a docker image on your local system with the following command:
+These files can be accessed via the folder R/cwl/.  A docker image will be created on your local system with these files using following command:
 ```shell
 # build the image
 docker build -t maw .
