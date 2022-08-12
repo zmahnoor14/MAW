@@ -18,4 +18,6 @@ ENV PATH="/usr/local/sirius/bin:${PATH}"
 COPY install_packages.R .
 RUN Rscript install_packages.R
 
+COPY Workflow_R_Functions.r .
+
 WORKDIR /opt/workdir

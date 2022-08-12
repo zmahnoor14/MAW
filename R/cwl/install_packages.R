@@ -6,7 +6,7 @@ install.packages(c("rvest", "xml2", "dplyr", "stringr", "readr", "remotes", "dev
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install(version = "3.15")
-BiocManager::install(c("Spectra", "MsCoreUtils", "mzR"))
+BiocManager::install(c("Spectra", "MsCoreUtils", "mzR", "CompoundDb"))
 BiocManager::install("CAMERA")
 remotes::install_github("rformassspectrometry/MsBackendHmdb")
 remotes::install_github("rformassspectrometry/MsBackendMsp")
