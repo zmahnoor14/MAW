@@ -13,6 +13,7 @@ library(stringr)
 library(xml2)
 options(warn=-1)
 library("mzR")
+<<<<<<< HEAD
 #' Download the CompDb database using curl
 #library(curl)
 #library(CompoundDb)
@@ -20,11 +21,18 @@ library("mzR")
 download_specDB_new <- function(input_dir, db = "all"){
 
     if (dir.exists(input_dir)){
+=======
+
+download_specDB <- function(input_dir, db = "all"){
+
+    if (dir.exists(input_dir) && substring(input_dir, nchar(input_dir)) == "/"){
+>>>>>>> refs/remotes/origin/main
         # Track Time 
         start_time <- Sys.time()
 
         # only input available as of now
         databases <- 'gnps, hmdb, mbank, all'
+<<<<<<< HEAD
         # creat a summary file, open and store timings of download and version if possible
         if (!(file.exists(paste(input_dir, "/summaryFile.txt", sep = "")))){
             summaryFile <- paste(input_dir, "/summaryFile.txt", sep = "")
@@ -37,6 +45,20 @@ download_specDB_new <- function(input_dir, db = "all"){
         open(file.conn, open = "at")
         # gnps
         if (db == "all" || db =="gnps"){
+=======
+
+        # creat a summary file, open and store timings of download and version if possible
+        summaryFile <- paste(input_dir, "/summaryFile.txt", sep = "")
+        file.create(summaryFile, recursive = TRUE)
+        file.conn <- file(summaryFile)
+        open(file.conn, open = "at")
+
+        # gnps
+        if (db == "all" || db =="gnps"){
+
+            print("GNPS WORKS")
+
+>>>>>>> refs/remotes/origin/main
             # Download file
             system(paste("wget -P", 
                          input_dir,
@@ -51,11 +73,21 @@ download_specDB_new <- function(input_dir, db = "all"){
             system(paste("rm", (paste(input_dir, "/ALL_GNPS.mgf", sep = '')), sep = " "))
 
             writeLines(paste("GNPS saved at", Sys.time(), sep=" "),con=file.conn)
+<<<<<<< HEAD
         }
         #mbank
         if (db == "all" || db =="mbank"){
 
             #print("MassBank WORKS")
+=======
+
+        }
+
+        #mbank
+        if (db == "all" || db =="mbank"){
+
+            print("MassBank WORKS")
+>>>>>>> refs/remotes/origin/main
 
             page <- read_html("https://github.com/MassBank/MassBank-data/releases")
             page %>%
@@ -78,6 +110,7 @@ download_specDB_new <- function(input_dir, db = "all"){
             res <- str_match(tmp[1], "download/\\s*(.*?)\\s*/MassBank_NIST")
 
             writeLines(paste("MassBank saved at", Sys.time(), "with release version", res[,2], sep=" "),con=file.conn)
+<<<<<<< HEAD
         }
         
         #mbank
@@ -274,6 +307,106 @@ download_specDB <- function(input_dir, db = "all"){
 
 
 
+=======
+        }
+
+        # hmdb
+        if (db == "all" || db =="hmdb"){
+
+            print("HMDB WORKS")
+
+
+
+            ####### Version Control ######
+
+            # extract HMDB Current version
+            html <- read_html("https://hmdb.ca/downloads")
+            strings <- html%>% html_elements("a") %>% html_text2()
+            ls <- unique(strings)
+            hmdb_curr_ver <- c()
+            for (i in ls){
+                if (grepl("Current", i)){
+                hmdb_curr_ver<- c(i, hmdb_curr_ver)
+                }
+            }
+
+
+
+
+            ####### Download and unzip ######
+
+            #Download file predicted MSMS spectra
+            system(paste("wget",
+                         "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_predicted_msms_spectra.zip",
+                         sep = " "))
+            # unzip
+            system(paste("unzip", "hmdb_predicted_msms_spectra.zip", "-d",  paste(input_dir, "/hmdb_predicted_msms_spectra", sep = ""), sep = " "))
+
+
+            #Download file experimental MSMS spectra
+            system(paste("wget",
+                         "https://hmdb.ca/system/downloads/current/spectral_data/spectra_xml/hmdb_experimental_msms_spectra.zip",
+                         sep = " "))
+            # unzip
+            system(paste("unzip", "hmdb_experimental_msms_spectra.zip", "-d", paste(input_dir, "/hmdb_experimental_msms_spectra", sep = ""), sep = " "))
+
+
+
+
+            ####### Load spectra in MsBackend #######
+
+            hmdb_predfiles <- list.files(path = paste(input_dir, "/hmdb_predicted_msms_spectra", sep = ''), full.names = TRUE)
+
+            hmdb_predicted <- c()
+            for (i in hmdb_predfiles){
+                # load the spectra into MsBackendHMDB
+                hmdb_pred <- Spectra(i, source = MsBackendHmdbXml())
+                hmdb_predicted <- c(hmdb_predicted, hmdb_pred)
+            }
+
+            hmdb_expfiles <- list.files(path = paste(input_dir, "/hmdb_experimental_msms_spectra", sep = ''), full.names = TRUE)
+
+            hmdb_experimental <- c()
+
+            for (j in hmdb_expfiles){
+                # load the spectra into MsBackendHMDB
+                hmdb_exp <- Spectra(j, source = MsBackendHmdb())
+                hmdb_experimental <- c(hmdb_experimental, hmdb_exp)
+            }
+
+
+            hmdb <- hmdb_predicted + hmdb_experimental
+            save(hmdb, file = paste(input_dir,"/hmdb.rda", sep = ""))
+
+
+
+
+
+            ####### Remove the XML files #######
+
+            # delete the database in its format to free up space
+            system(paste("rm -r", (paste(input_dir, "/hmdb_predicted_msms_spectra", sep = '')), sep = " "))
+            system(paste("rm -r", (paste(input_dir, "/hmdb_experimental_msms_spectra", sep = '')), sep = " "))
+
+
+            writeLines(paste("HMDB saved at", Sys.time(), "with release version", hmdb_curr_ver, sep=" "),con=file.conn)
+        }
+
+        #wrong input error message
+        else if (!grepl(db, databases, fixed = TRUE)){
+            stop("Wrong db input. Following inputs apply: gnps, hmdb, mbank or all")
+        }
+        close(file.conn)
+        end_time <- Sys.time()
+        print(end_time - start_time)
+    }
+    else{
+        stop("Your input_dir is incorrect. Please provide the directory where all your input files are stored. An example would be: '/Users/my_name/input_dir/'. don't forget the '/' at the end : ) Good Luck")
+    }
+    
+}
+
+>>>>>>> refs/remotes/origin/main
 ##-----------------------------------------------------------------
 ## filter intensity 
 ##-----------------------------------------------------------------
@@ -302,8 +435,11 @@ norm_int <- function(y, ...) {
 
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> refs/remotes/origin/main
 
 ## Specifying a function for creating result directories for each input mzml
 # input for the function:
@@ -348,8 +484,11 @@ ms2_rfilename<- function(input_dir){
 
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> refs/remotes/origin/main
 
 #' All spectra in mzML files preprocessing, return two outputs, pre-processed MS2 spectra and all precursor masses
 # x is one mzML file
@@ -370,6 +509,7 @@ spec_Processing <- function(input_dir, x, result_dir){
             pre_mz <- unique(precursorMz(sps_all))
             #' Remove any NAs
             pre_mz <- na.omit(pre_mz)
+<<<<<<< HEAD
             if (!file.exists(paste(result_dir, "/processedSpectra.mzML", sep = ""))){
                 export(sps_all, backend = MsBackendMzR(), file = paste(result_dir, "/processedSpectra.mzML", sep = ""))
             }
@@ -377,6 +517,10 @@ spec_Processing <- function(input_dir, x, result_dir){
                 write.table(pre_mz, file = paste(result_dir, "/premz_list.txt", sep = ""), sep = "/t",row.names = FALSE, col.names = FALSE)
             }
             
+=======
+            export(sps_all, backend = MsBackendMzR(), file = paste(result_dir, "/processedSpectra.mzML", sep = ""))
+            write.table(pre_mz, file = paste(result_dir, "/premz_list.txt", sep = ""), sep = "/t",row.names = FALSE, col.names = FALSE)
+>>>>>>> refs/remotes/origin/main
             spsall_pmz <- list(sps_all, pre_mz)
             return(spsall_pmz)
         }
@@ -552,6 +696,7 @@ peakdf <- function(a, b, ppmx){
 ##-----------------------------------------------------------------
 
 #' Specifying a function to draw peak labels
+<<<<<<< HEAD
 #label_fun <- function(x) {
     #ints <- unlist(intensity(x))
     #mzs <- format(unlist(mz(x)), digits = 4)
@@ -1992,6 +2137,1223 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                             df_peaklists <- peakdf(mbank_with_mz[idv[[2]]], sps[idv[[1]]], ppmx)
                             if (!(is.null(df_peaklists))){
 
+=======
+label_fun <- function(x) {
+    ints <- unlist(intensity(x))
+    mzs <- format(unlist(mz(x)), digits = 4)
+    mzs[ints < 5] <- ""
+    mzs
+}
+
+spec_dereplication <- function(mzml_file, pre_tbl, proc_mzml, db, result_dir, file_id, input_dir, ppmx, error = TRUE){
+    
+    line <- system.time({
+    
+        # if the database selected is GNPS or all
+        if (db == "all" || db =="gnps"){
+
+            # load the gnps spectral database
+            load(file = paste(input_dir,"/gnps.rda", sep = ""))
+        }
+        # if the database selected is HMDB or all
+        if (db == "all" || db =="hmdb"){
+
+            # load the hmdb spectral database
+            load(file = paste(input_dir,"/hmdb.rda", sep = ""))
+        }
+        # if the database selected is HMDB or all
+        if (db == "all" || db == "mbank"){
+            load(file = paste(input_dir,"/mbankNIST.rda", sep = ""))
+        }
+
+        # read spectra object
+        sps_all <- Spectra(proc_mzml, backend = MsBackendMzR())
+
+        # extract precursor m/z
+        tbl <- read.table(pre_tbl)
+        pre_mz <- tbl[[1]]
+
+        # common feature information
+
+        id_X <- c() # id
+        premz <- c() # precursor mz
+        rtmin <- c() # stores rtmin
+        rtmax <- c() # stores rtmax
+        rtmed <- c() # stores calculated median of rtmin and rtmax
+        rtmean <- c() # stores calculated mean of rtmin and rtmax
+        col_eng <- c() # stores collision energy
+        pol <- c() # stores polarity
+        int <- c() # store intensity
+        source_file <- c() # source file
+        nx <- c() # numbering the ids
+
+
+        # for each pre mass
+        for (x in pre_mz){
+            
+            print(x)
+
+            # to name the file
+            nx <- nx+1
+
+            # filter spectra based on precusror m/z
+            # this is done to extract all common information for id_X
+            spsrt <- filterPrecursorMzRange(sps_all, x)
+
+            # id based on file id, 
+            id_Xx <- paste(file_id,  "M",  as.character(round(x, digits = 0)), 
+                            "R", as.character(round(median(spsrt$rtime, na.rm = TRUE), digits = 0)), 
+                            "ID", as.character(nx), sep = '')
+            id_X <- c(id_X, id_Xx)
+
+            # pre_mas
+            pre <- x
+            premz <- c(premz, pre)
+
+            # rt min
+            rti <- min(spsrt$rtime)
+            rtmin <- c(rtmin, rti)
+
+            #rt max
+            rtx <- max(spsrt$rtime)
+            rtmax <- c(rtmax, rtx)
+
+            #rt median
+            rtmd <- median(spsrt$rtime, na.rm = TRUE)
+            rtmed <- c(rtmed, rtmd)
+
+            #rt mean
+            rtmn <- mean(spsrt$rtime, na.rm = TRUE)
+            rtmean <- c(rtmean, rtmn)
+
+            #collision energy
+            ce <- max(spsrt$collisionEnergy)
+            col_eng <- c(col_eng, ce)
+
+            #polarity
+            pl <- max(spsrt$polarity)
+            if (pl == 1){
+                px <- 'pos'
+                pol <- c(pol, px)
+            }
+            else {
+                px <- 'neg'
+                pol <- c(pol, px)
+            }
+
+            #int 
+            ints <- max(spsrt$precursorIntensity)
+            int <- c(int, ints)
+
+            #mzml file
+            source_file <- c(source_file, mzml_file)
+
+            # after all the common infromation is stored, 
+            # move to extracting matching candidates with input spectra
+
+            #### input spec with pre_mz
+            sps <- spec2_Processing(x, sps_all, spec = "spec_all")
+
+            ####-------------------------------------------------------------
+            #### Dereplication with all or GNPS ----
+            ####-------------------------------------------------------------
+            # define variables for result dataframe
+
+            # if the database selected is GNPS or all
+            if (db == "all" || db =="gnps"){
+
+                GNPSmax_similarity <- c() # dot product score
+                GNPSmzScore <- c() # similar m/z score
+                GNPSintScore <- c() # similar int score
+                GQMatchingPeaks <- c() # matching peaks between gnps candidate and input spectra
+                GNPSTotalPeaks <- c() # total peaks in gnps candidate
+                gQueryTotalPeaks<- c() # total peaks in input spectra
+                GNPSSMILES <- c() # smiles of gnps candidate
+                GNPSspectrumID <- c() # spectrum id of gnps candidate
+                GNPScompound_name <- c() # compound name of gnps candidate
+                #GNPSmirrorSpec <- c() # path for mirror spectra between gnps candidate and input of gnps candidate
+                Source <- c() # GNPS as source of result
+
+                # define a directory for each pre_mz
+                #dir_premz <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/GNPS/", sep = ""), "."),as.character(id_Xx), sep ="")
+                #if (!file.exists(dir_premz)){
+                    #dir.create(dir_premz, recursive = TRUE)
+                #}
+
+                #### GNPS spec with pre_mz
+                gnps_with_mz <- spec2_Processing(x, gnpsdb, spec = "gnps", ppmx) # change here later
+
+                # define the directoyr name to store all GNPS results
+                dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/GNPS/", sep = ""), "."), sep ="")
+                if (!file.exists(dir_name)){
+                    dir.create(dir_name, recursive = TRUE)
+                }
+
+                #' Compare experimental spectra against GNPS
+                res <- compareSpectra(sps, gnps_with_mz, ppm = 15, FUN = MsCoreUtils::gnps, MAPFUN = joinPeaksGnps)
+
+                # first condition for GNPS
+                # if more input spectra and more candidates have been extracted from GNPS
+                if (length(sps) > 1 && length(gnps_with_mz) >1){
+
+                    # given threshold of 0.70 for GNPS, extract top candidates
+                    res_top <- which(res > res[res>0.89], arr.ind = TRUE)
+
+                    # if there are some compounds from GNPS detected
+                    if (length(res_top) > 0){
+
+
+                        res_topdf <- data.frame(res_top)
+
+                        # to store the scores to add to res_topdf
+                        gnps_scores <- c()
+
+                        # for all rows and columns in res_topdf
+                        for (i in 1:nrow(res_topdf)){
+
+                            # store the scores
+                            gnps_scores <- c(gnps_scores, res[(res_topdf[i, "row"]), (res_topdf[i, "col"])])
+                        }
+
+                        # add the score column to res_top
+                        gnps_res <- cbind(res_top, gnps_scores)
+                        gnps_res <- data.frame(gnps_res)
+
+                        # sort in descending order
+                        ordered_gnps_res <- gnps_res[order(-gnps_res[,"gnps_scores"]),]
+                        df_ord_gnps_res <- data.frame(ordered_gnps_res)
+
+                        #for each candidate from GNPS
+                        for (k in 1:nrow(df_ord_gnps_res)){
+
+                            # take each component from df_ord_gnps_res
+                            idv <- df_ord_gnps_res[k,]
+                            df_peaklists <- peakdf(gnps_with_mz[idv[[2]]], sps[idv[[1]]], ppmx)
+
+                            # if there are any matching peaks
+                            if (!(is.null(df_peaklists))){
+
+                                GNPSscore <- idv[[3]]
+                                GNPSmax_similarity <- c(GNPSmax_similarity, GNPSscore)
+
+                                GNPSmz <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_with_mz[idv[[2]]])[[1]])+nrow(peaksData(sps[idv[[1]]])[[1]]))
+                                GNPSmzScore <- c(GNPSmzScore, GNPSmz)
+
+                                GNPSint <- mean(1-(df_peaklists[,"diff"]/100))
+                                GNPSintScore <- c(GNPSintScore, GNPSint)
+
+                                GQMatPeaks <- nrow(df_peaklists)
+                                GQMatchingPeaks <- c(GQMatchingPeaks, GQMatPeaks)
+
+                                GNPSTPeaks <- nrow(peaksData(gnps_with_mz[idv[[2]]])[[1]])
+                                GNPSTotalPeaks <- c(GNPSTotalPeaks, GNPSTPeaks)
+
+                                gQTPeaks<- nrow(peaksData(sps[idv[[1]]])[[1]])
+                                gQueryTotalPeaks <- c(gQueryTotalPeaks, gQTPeaks)
+
+                                GNPS_SMILES <- gnps_with_mz[idv[[2]]]$SMILES
+                                GNPSSMILES <- c(GNPSSMILES, GNPS_SMILES)
+
+                                GNPSID <- gnps_with_mz[idv[[2]]]$SPECTRUMID
+                                GNPSspectrumID <- c(GNPSspectrumID, GNPSID)
+
+                                GNPSname <- gnps_with_mz[idv[[2]]]$NAME
+                                GNPScompound_name <- c(GNPScompound_name, GNPSname)
+
+                                #' plotMirror
+                                #name_plotmirror <- paste(dir_premz,"_spectra_vs_", gnps_with_mz[idv[[2]]]$SPECTRUMID, "_spectra.pdf", sep ="")
+                                #pdf(name_plotmirror)
+                                #plotSpectraMirror(sps[idv[[1]]], gnps_with_mz[idv[[2]]], tolerance = 0.2,
+                                                    #labels = label_fun, labelPos = 2, labelOffset = 0.2,
+                                                    #labelSrt = -30)
+                                #grid()
+                                #dev.off()
+
+                                #GNPSSpec <- str_replace(name_plotmirror, input_dir, ".")
+                                #GNPSmirrorSpec <- c(GNPSmirrorSpec, GNPSSpec)
+
+                                Src <- "GNPS"
+                                Source <- c(Source, Src)
+
+                            }
+                            else{
+                                GNPSscore <- NA
+                                GNPSmax_similarity <- c(GNPSmax_similarity, GNPSscore)
+
+                                GNPSmz <- NA
+                                GNPSmzScore <- c(GNPSmzScore, GNPSmz)
+
+
+                                GNPSint <- NA
+                                GNPSintScore <- c(GNPSintScore, GNPSint)
+
+
+                                GQMatPeaks <- NA
+                                GQMatchingPeaks <- c(GQMatchingPeaks, GQMatPeaks)
+
+
+                                GNPSTPeaks <- NA
+                                GNPSTotalPeaks <- c(GNPSTotalPeaks, GNPSTPeaks)
+
+
+                                gQTPeaks<- NA
+                                gQueryTotalPeaks <- c(gQueryTotalPeaks, gQTPeaks)
+
+
+                                GNPS_SMILES <- NA
+                                GNPSSMILES <- c(GNPSSMILES, GNPS_SMILES)
+
+
+                                GNPSID <- NA
+                                GNPSspectrumID <- c(GNPSspectrumID, GNPSID)
+
+
+                                GNPSname <- NA
+                                GNPScompound_name <- c(GNPScompound_name, GNPSname)
+
+
+                                #GNPSSpec <- NA
+                                #GNPSmirrorSpec <- c(GNPSmirrorSpec, GNPSSpec)
+
+
+                                Src <- NA
+                                Source <- c(Source, Src)
+                            }
+                        }
+                    }
+                }
+                # if only one sepctrum from input and more candidates from GNPS
+                else if (length(sps) == 1 && length(gnps_with_mz) >1){
+
+                    # given threshold of 0.70 for GNPS, extract top candidates
+                    res_top <- which(res > res[res>0.89], arr.ind = TRUE)
+                    # if there are candidates with good score
+                    if (length(res_top) > 0){
+
+                        res_topdf <- data.frame(res_top)
+
+                        # top store the scores to add to res_topdf
+                        gnps_scores <- c()
+                        # for all rows and columns in res_topdf
+
+                        for (i in 1:nrow(res_topdf)){
+                            # store the scores
+                            gnps_scores <- c(gnps_scores, res[(res_topdf[i, "row"]), (res_topdf[i, "col"])])
+                        }
+
+                        # add the score column to res_top
+                        gnps_res <- cbind(res_top, gnps_scores)
+                        gnps_res <- data.frame(gnps_res)
+
+                        # sort in descending order
+                        ordered_gnps_res <- gnps_res[order(-gnps_res[,"gnps_scores"]),]
+
+                        df_ord_gnps_res <- data.frame(ordered_gnps_res)
+                        # for each candidate
+                        for (k in 1:nrow(df_ord_gnps_res)){
+
+                            # take each candidate
+                            idv <- df_ord_gnps_res[k,]
+                            df_peaklists <- peakdf(gnps_with_mz[idv[[2]]], sps, ppmx)
+
+                            # if there are matchingpeaks
+                            if (!(is.null(df_peaklists))){
+
+                                GNPSscore <- idv[[3]]
+                                GNPSmax_similarity <- c(GNPSmax_similarity, GNPSscore)
+
+                                GNPSmz <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_with_mz[idv[[2]]])[[1]])+nrow(peaksData(sps)[[1]]))
+                                GNPSmzScore <- c(GNPSmzScore, GNPSmz)
+
+                                GNPSint <- mean(1-(df_peaklists[,"diff"]/100))
+                                GNPSintScore <- c(GNPSintScore, GNPSint)
+
+                                GQMatPeaks <- nrow(df_peaklists)
+                                GQMatchingPeaks <- c(GQMatchingPeaks, GQMatPeaks)
+
+                                GNPSTPeaks <- nrow(peaksData(gnps_with_mz[idv[[2]]])[[1]])
+                                GNPSTotalPeaks <- c(GNPSTotalPeaks, GNPSTPeaks)
+
+                                gQTPeaks<- nrow(peaksData(sps)[[1]])
+                                gQueryTotalPeaks <- c(gQueryTotalPeaks, gQTPeaks)
+
+                                GNPS_SMILES <- gnps_with_mz[idv[[2]]]$SMILES
+                                GNPSSMILES <- c(GNPSSMILES, GNPS_SMILES)
+
+                                GNPSID <- gnps_with_mz[idv[[2]]]$SPECTRUMID
+                                GNPSspectrumID <- c(GNPSspectrumID, GNPSID)
+
+                                GNPSname <- gnps_with_mz[idv[[2]]]$NAME
+                                GNPScompound_name <- c(GNPScompound_name, GNPSname)
+
+                                #' plotMirror
+                                #name_plotmirror <- paste(dir_premz,"_spectra_vs_", gnps_with_mz[idv[[2]]]$SPECTRUMID, "_spectra.pdf", sep ="")
+                                #pdf(name_plotmirror)
+                                #plotSpectraMirror(sps, gnps_with_mz[idv[[2]]], tolerance = 0.2,
+                                                    #labels = label_fun, labelPos = 2, labelOffset = 0.2,
+                                                    #labelSrt = -30)
+                                #grid()
+                                #dev.off()
+
+                                #GNPSSpec <- str_replace(name_plotmirror, input_dir, ".")
+                                #GNPSmirrorSpec <- c(GNPSmirrorSpec, GNPSSpec)
+
+                                Src <- "GNPS"
+                                Source <- c(Source, Src)
+
+                            }
+                            else{
+                                GNPSscore <- NA
+                                GNPSmax_similarity <- c(GNPSmax_similarity, GNPSscore)
+
+                                GNPSmz <- NA
+                                GNPSmzScore <- c(GNPSmzScore, GNPSmz)
+
+
+                                GNPSint <- NA
+                                GNPSintScore <- c(GNPSintScore, GNPSint)
+
+
+                                GQMatPeaks <- NA
+                                GQMatchingPeaks <- c(GQMatchingPeaks, GQMatPeaks)
+
+
+                                GNPSTPeaks <- NA
+                                GNPSTotalPeaks <- c(GNPSTotalPeaks, GNPSTPeaks)
+
+
+                                gQTPeaks<- NA
+                                gQueryTotalPeaks <- c(gQueryTotalPeaks, gQTPeaks)
+
+
+                                GNPS_SMILES <- NA
+                                GNPSSMILES <- c(GNPSSMILES, GNPS_SMILES)
+
+
+                                GNPSID <- NA
+                                GNPSspectrumID <- c(GNPSspectrumID, GNPSID)
+
+
+                                GNPSname <- NA
+                                GNPScompound_name <- c(GNPScompound_name, GNPSname)
+
+
+                                #GNPSSpec <- NA
+                                #GNPSmirrorSpec <- c(GNPSmirrorSpec, GNPSSpec)
+
+
+                                Src <- NA
+                                Source <- c(Source, Src)
+                            }
+                        }
+
+                    }
+
+                }
+                # if there are more input spectra and one candidate from GNPS
+                else if (length(sps) > 1 && length(gnps_with_mz) == 1){
+                    # given threshold of 0.70 for GNPS, extract top candidates
+                    res_top <- which(res > res[res>0.89], arr.ind = TRUE)
+
+                    # if there are good matching candidates
+                    if (length(res_top) > 0){
+                        res_topdf <- data.frame(res_top)
+
+                        # top store the scores to add to res_topdf
+                        gnps_scores <- c()
+                        # for all rows and columns in res_topdf
+
+                        # for all candidates
+                        for (i in 1:nrow(res_topdf)){
+                            # store the scores
+                            gnps_scores <- c(gnps_scores, res[(res_topdf[i, "row"]), (res_topdf[i, "col"])])
+                        }
+
+                        # add the score column to res_top
+                        gnps_res <- cbind(res_top, gnps_scores)
+                        gnps_res <- data.frame(gnps_res)
+
+                        # sort in descending order
+                        ordered_gnps_res <- gnps_res[order(-gnps_res[,"gnps_scores"]),]
+
+                        df_ord_gnps_res <- data.frame(ordered_gnps_res)
+
+                        # for each candidate match
+                        for (k in 1:nrow(df_ord_gnps_res)){
+
+                            # take each candidate
+                            idv <- df_ord_gnps_res[k,]
+
+                            df_peaklists <- peakdf(gnps_with_mz, sps[idv[[1]]], ppmx)
+
+                            # if there are matching peaks
+                            if (!(is.null(df_peaklists))){
+
+                                GNPSscore <- idv[[3]]
+                                GNPSmax_similarity <- c(GNPSmax_similarity, GNPSscore)
+
+                                GNPSmz <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_with_mz)[[1]])+nrow(peaksData(sps[idv[[1]]])[[1]]))
+                                GNPSmzScore <- c(GNPSmzScore, GNPSmz)
+
+                                GNPSint <- mean(1-(df_peaklists[,"diff"]/100))
+                                GNPSintScore <- c(GNPSintScore, GNPSint)
+
+                                GQMatPeaks <- nrow(df_peaklists)
+                                GQMatchingPeaks <- c(GQMatchingPeaks, GQMatPeaks)
+
+                                GNPSTPeaks <- nrow(peaksData(gnps_with_mz)[[1]])
+                                GNPSTotalPeaks <- c(GNPSTotalPeaks, GNPSTPeaks)
+
+                                gQTPeaks<- nrow(peaksData(sps[idv[[1]]])[[1]])
+                                gQueryTotalPeaks <- c(gQueryTotalPeaks, gQTPeaks)
+
+                                GNPS_SMILES <- gnps_with_mz$SMILES
+                                GNPSSMILES <- c(GNPSSMILES, GNPS_SMILES)
+
+                                GNPSID <- gnps_with_mz$SPECTRUMID
+                                GNPSspectrumID <- c(GNPSspectrumID, GNPSID)
+
+                                GNPSname <- gnps_with_mz$NAME
+                                GNPScompound_name <- c(GNPScompound_name, GNPSname)
+
+                                #' plotMirror
+                                #name_plotmirror <- paste(dir_premz,"_spectra_vs_", gnps_with_mz$SPECTRUMID, "_spectra.pdf", sep ="")
+                                #pdf(name_plotmirror)
+                                #plotSpectraMirror(sps[idv[[1]]], gnps_with_mz, tolerance = 0.2,
+                                                    #labels = label_fun, labelPos = 2, labelOffset = 0.2,
+                                                    #labelSrt = -30)
+                                #grid()
+                                #dev.off()
+
+                                #GNPSSpec <- str_replace(name_plotmirror, input_dir, ".")
+                                #GNPSmirrorSpec <- c(GNPSmirrorSpec, GNPSSpec)
+
+                                Src <- "GNPS"
+                                Source <- c(Source, Src)
+
+                            }else{
+                                GNPSscore <- NA
+                                GNPSmax_similarity <- c(GNPSmax_similarity, GNPSscore)
+
+                                GNPSmz <- NA
+                                GNPSmzScore <- c(GNPSmzScore, GNPSmz)
+
+
+                                GNPSint <- NA
+                                GNPSintScore <- c(GNPSintScore, GNPSint)
+
+
+                                GQMatPeaks <- NA
+                                GQMatchingPeaks <- c(GQMatchingPeaks, GQMatPeaks)
+
+
+                                GNPSTPeaks <- NA
+                                GNPSTotalPeaks <- c(GNPSTotalPeaks, GNPSTPeaks)
+
+
+                                gQTPeaks<- NA
+                                gQueryTotalPeaks <- c(gQueryTotalPeaks, gQTPeaks)
+
+
+                                GNPS_SMILES <- NA
+                                GNPSSMILES <- c(GNPSSMILES, GNPS_SMILES)
+
+
+                                GNPSID <- NA
+                                GNPSspectrumID <- c(GNPSspectrumID, GNPSID)
+
+
+                                GNPSname <- NA
+                                GNPScompound_name <- c(GNPScompound_name, GNPSname)
+
+
+                                #GNPSSpec <- NA
+                                #GNPSmirrorSpec <- c(GNPSmirrorSpec, GNPSSpec)
+
+
+                                Src <- NA
+                                Source <- c(Source, Src)
+                            }
+                        }
+
+                    }
+
+                }
+                # if there is only one input spectrum and one GNPS candidate
+                else if (length(sps) == 1 && length(gnps_with_mz) == 1){
+
+                    #take that one candidate
+                    gnps_best_match <- gnps_with_mz
+
+                    df_peaklists <- peakdf(gnps_best_match, sps, ppmx)
+
+                    # if there are matching peaks
+                    if (!(is.null(df_peaklists))){
+
+                        #' plotMirror
+                        #name_plotmirror <- paste(dir_premz,"_spectra_vs_", gnps_best_match$SPECTRUMID, "_spectra.pdf", sep ="")
+                        #pdf(name_plotmirror)
+                        #plotSpectraMirror(sps, gnps_best_match, tolerance = 0.2,
+                                            #labels = label_fun, labelPos = 2, labelOffset = 0.2,
+                                            #labelSrt = -30)
+                        #grid()
+                        #dev.off()
+
+
+
+
+
+                        GNPSscore <- max(res)
+                        GNPSmax_similarity <- c(GNPSmax_similarity, GNPSscore)
+
+
+                        GNPSmz <- (nrow(df_peaklists)*2)/(nrow(peaksData(gnps_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
+                        GNPSmzScore <- c(GNPSmzScore, GNPSmz)
+
+                        GNPSint <- mean(1-(df_peaklists[,"diff"]/100))
+                        GNPSintScore <- c(GNPSintScore, GNPSint)
+
+                        GQMatPeaks <- NA
+                        GQMatchingPeaks <- c(GQMatchingPeaks, GQMatPeaks)
+
+
+                        GNPSTPeaks <- nrow(peaksData(gnps_best_match)[[1]])
+                        GNPSTotalPeaks <- c(GNPSTotalPeaks, GNPSTPeaks)                
+
+                        gQTPeaks<- nrow(peaksData(sps)[[1]])
+                        gQueryTotalPeaks <- c(gQueryTotalPeaks, gQTPeaks)
+
+
+                        GNPS_SMILES <- gnps_best_match$SMILES
+                        GNPSSMILES <- c(GNPSSMILES, GNPS_SMILES)
+
+                        GNPSname <- gnps_best_match$NAME
+                        GNPScompound_name <- c(GNPScompound_name, GNPSname)
+
+
+                        GNPSID <- gnps_best_match$SPECTRUMID
+                        GNPSspectrumID <- c(GNPSspectrumID, GNPSID)
+
+
+                        #GNPSSpec <- str_replace(name_plotmirror, input_dir, ".")
+                        #GNPSmirrorSpec <- c(GNPSmirrorSpec, GNPSSpec)
+
+
+                        Src <- "GNPS"
+                        Source <- c(Source, Src)
+                    }
+                    else{
+                        GNPSscore <- NA
+                        GNPSmax_similarity <- c(GNPSmax_similarity, GNPSscore)
+
+
+                        GNPSmz <- NA
+                        GNPSmzScore <- c(GNPSmzScore, GNPSmz)
+
+
+                        GNPSint <- NA
+                        GNPSintScore <- c(GNPSintScore, GNPSint)
+
+
+                        GQMatPeaks <- NA
+                        GQMatchingPeaks <- c(GQMatchingPeaks, GQMatPeaks)
+
+
+                        GNPSTPeaks <- NA
+                        GNPSTotalPeaks <- c(GNPSTotalPeaks, GNPSTPeaks)
+
+
+                        gQTPeaks<- NA
+                        gQueryTotalPeaks <- c(gQueryTotalPeaks, gQTPeaks)
+
+
+                        GNPS_SMILES <- NA
+                        GNPSSMILES <- c(GNPSSMILES, GNPS_SMILES)
+
+
+                        GNPSID <- NA
+                        GNPSspectrumID <- c(GNPSspectrumID, GNPSID)
+
+
+                        GNPSname <- NA
+                        GNPScompound_name <- c(GNPScompound_name, GNPSname)
+
+
+                        #GNPSSpec <- NA
+                        #GNPSmirrorSpec <- c(GNPSmirrorSpec, GNPSSpec)
+
+
+                        Src <- NA
+                        Source <- c(Source, Src)
+                    }
+
+                }
+                else{
+                    GNPSscore <- NA
+                    GNPSmax_similarity <- c(GNPSmax_similarity, GNPSscore)
+
+
+                    GNPSmz <- NA
+                    GNPSmzScore <- c(GNPSmzScore, GNPSmz)
+
+
+                    GNPSint <- NA
+                    GNPSintScore <- c(GNPSintScore, GNPSint)
+
+
+                    GQMatPeaks <- NA
+                    GQMatchingPeaks <- c(GQMatchingPeaks, GQMatPeaks)
+
+
+                    GNPSTPeaks <- NA
+                    GNPSTotalPeaks <- c(GNPSTotalPeaks, GNPSTPeaks)
+
+
+                    gQTPeaks<- NA
+                    gQueryTotalPeaks <- c(gQueryTotalPeaks, gQTPeaks)
+
+
+                    GNPS_SMILES <- NA
+                    GNPSSMILES <- c(GNPSSMILES, GNPS_SMILES)
+
+
+                    GNPSID <- NA
+                    GNPSspectrumID <- c(GNPSspectrumID, GNPSID)
+
+
+                    GNPSname <- NA
+                    GNPScompound_name <- c(GNPScompound_name, GNPSname)
+
+
+                    #GNPSSpec <- NA
+                    #GNPSmirrorSpec <- c(GNPSmirrorSpec, GNPSSpec)
+
+
+                    Src <- NA
+                    Source <- c(Source, Src)
+                }
+                gnps_x <- data.frame(cbind(GNPSmax_similarity, GNPSmzScore, 
+                                       GNPSintScore, GQMatchingPeaks, 
+                                       GNPSTotalPeaks, gQueryTotalPeaks, 
+                                       GNPSSMILES, GNPSspectrumID, GNPScompound_name, Source))
+                write.csv(gnps_x, file = paste(dir_name, "/gnps_results_for_", id_Xx, ".csv", sep = ""))
+            } # ends gnps
+
+
+
+            ####-------------------------------------------------------------
+            #### Dereplication with all or HMDB ----
+            ####-------------------------------------------------------------
+
+            # if the database selected is HMDB or all
+            if (db == "all" || db =="hmdb"){
+
+                # hmdb 
+                HMDBmax_similarity <- c()
+                HMDBmzScore <- c()
+                HMDBintScore <- c()
+                HQMatchingPeaks <- c()
+                HMDBTotalPeaks <- c()
+                hQueryTotalPeaks<- c()
+                HMDBcompoundID <- c()
+                #HMDBmirrorSpec <- c()
+                Source <- c()
+
+                #  directory name for pre_mz for HMDB
+                #dir_premz <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/HMDB/", sep = ""), "."),as.character(id_Xx), sep ="")
+                #if (!file.exists(dir_premz)){
+                    #dir.create(dir_premz, recursive = TRUE)
+                #}
+
+                #### HMDB spec with pre_mz
+                hmdb_with_mz <- spec2_Processing(x, hmdb, spec = "hmdb", ppmx) # change here later
+
+                # directory name for HMDB results
+                dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/HMDB/", sep = ""), "."), sep ="")
+                if (!file.exists(dir_name)){
+                    dir.create(dir_name, recursive = TRUE)
+                }
+
+                #' Compare experimental spectra against HMDB
+                res <- compareSpectra(sps, hmdb_with_mz, ppm = 15)
+
+                # if there are more input spectra and more candidates from GNPS
+                if (length(sps) > 1 && length(hmdb_with_mz) >1){
+
+                    # given threshold of 0.70 for HMDB, extract top candidates
+                    res_top <- which(res > res[res>0.70], arr.ind = TRUE)
+
+                    if (length(res_top) > 0){
+
+                        res_topdf <- data.frame(res_top)
+                        # to store the scores to add to res_topdf
+                        hmdb_scores <- c()
+                        # for all rows and columns in res_topdf
+                        for (i in 1:nrow(res_topdf)){
+
+                            # store the scores
+                            hmdb_scores <- c(hmdb_scores, res[(res_topdf[i, "row"]), (res_topdf[i, "col"])])
+                        }
+                        # add the score column to res_top
+                        hmdb_res <- cbind(res_top, hmdb_scores)
+                        hmdb_res <- data.frame(hmdb_res)
+
+                        # sort in descending order
+                        ordered_hmdb_res <- hmdb_res[order(-hmdb_res[,"hmdb_scores"]),]
+                        df_ord_hmdb_res <- data.frame(ordered_hmdb_res)
+
+                        for (k in 1:nrow(df_ord_hmdb_res)){
+                            idv <- df_ord_hmdb_res[k,]
+                            df_peaklists <- peakdf(hmdb_with_mz[idv[[2]]], sps[idv[[1]]], ppmx)
+                            if (!(is.null(df_peaklists))){
+
+                                HMDBscore <- idv[[3]]
+                                HMDBmax_similarity <- c(HMDBmax_similarity, HMDBscore)
+
+                                HMDBmz <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_with_mz[idv[[2]]])[[1]])+nrow(peaksData(sps[idv[[1]]])[[1]]))
+                                HMDBmzScore <- c(HMDBmzScore, HMDBmz)
+
+                                HMDBint <- mean(1-(df_peaklists[,"diff"]/100))
+                                HMDBintScore <- c(HMDBintScore, HMDBint)
+
+
+                                HQMatPeaks <- nrow(df_peaklists)
+                                HQMatchingPeaks <- c(HQMatchingPeaks, HQMatPeaks)
+
+
+                                HMDBTPeaks <- nrow(peaksData(hmdb_with_mz[idv[[2]]])[[1]])
+                                HMDBTotalPeaks <- c(HMDBTotalPeaks, HMDBTPeaks)
+
+                                hQTPeaks<- nrow(peaksData(sps[idv[[1]]])[[1]])
+                                hQueryTotalPeaks<- c(hQueryTotalPeaks, hQTPeaks)
+
+
+                                HMDBID <- hmdb_with_mz[idv[[2]]]$compound_id
+                                HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
+
+
+                                #' plotMirror
+                                #name_plotmirror <- paste(dir_name,"_spectra_vs_", hmdb_with_mz[idv[[2]]]$compound_id, "_spectra.pdf", sep ="")
+                                #pdf(name_plotmirror)
+                                #plotSpectraMirror(sps[idv[[1]]], hmdb_with_mz[idv[[2]]], tolerance = 0.2,
+                                                    #labels = label_fun, labelPos = 2, labelOffset = 0.2,
+                                                    #labelSrt = -30)
+                                #grid()
+                                #dev.off()
+
+
+                                #HMDBSpec <- str_replace(name_plotmirror, input_dir, ".")
+                                #HMDBmirrorSpec <- c(HMDBmirrorSpec, HMDBSpec)
+
+                                Src <- "HMDB"
+                                Source <- c(Source, Src)
+                            } # if df is not empty ends here
+                            else{
+                                HMDBscore <- NA
+                                HMDBmax_similarity <- c(HMDBmax_similarity, HMDBscore)
+
+
+                                HMDBmz <- NA
+                                HMDBmzScore <- c(HMDBmzScore, HMDBmz)
+
+
+                                HMDBint <- NA
+                                HMDBintScore <- c(HMDBintScore, HMDBint)
+
+
+                                HQMatPeaks <- NA
+                                HQMatchingPeaks <- c(HQMatchingPeaks, HQMatPeaks)
+
+
+                                HMDBTPeaks <- NA
+                                HMDBTotalPeaks <- c(HMDBTotalPeaks, HMDBTPeaks)
+
+
+                                hQTPeaks<- NA
+                                hQueryTotalPeaks<- c(hQueryTotalPeaks, hQTPeaks)
+
+
+                                HMDBID <- "none"
+                                HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
+
+
+                                #HMDBSpec <- NA
+                                #HMDBmirrorSpec <- c(HMDBmirrorSpec, HMDBSpec)
+
+
+                                Src <- NA
+                                Source <- c(Source, Src)
+                            }
+                        }# loop for each candidate ends here
+                     }# if res_top has some results ends here
+                }# first condition hmdb ends
+                else if (length(sps) == 1 && length(hmdb_with_mz) >1){
+                    # given threshold of 0.70 for HMDB, extract top candidates
+                    res_top <- which(res > res[res>0.70], arr.ind = TRUE)
+                    if (length(res_top) > 0){
+                        res_topdf <- data.frame(res_top)
+
+                        # top store the scores to add to res_topdf
+                        hmdb_scores <- c()
+                        # for all rows and columns in res_topdf
+                        for (i in 1:nrow(res_topdf)){
+                            # store the scores
+                            hmdb_scores <- c(hmdb_scores, res[(res_topdf[i, "row"]), (res_topdf[i, "col"])])
+                        }
+                        # add the score column to res_top
+                        hmdb_res <- cbind(res_top, hmdb_scores)
+                        hmdb_res <- data.frame(hmdb_res)
+
+                        # sort in descending order
+                        ordered_hmdb_res <- hmdb_res[order(-hmdb_res[,"hmdb_scores"]),]
+
+                        df_ord_hmdb_res <- data.frame(ordered_hmdb_res)
+
+                        for (k in 1:nrow(df_ord_hmdb_res)){
+                            idv <- df_ord_hmdb_res[k,]
+                            df_peaklists <- peakdf(hmdb_with_mz[idv[[2]]], sps, ppmx)
+                            if (!(is.null(df_peaklists))){
+                                HMDBscore <- idv[[3]]
+                                HMDBmax_similarity <- c(HMDBmax_similarity, HMDBscore)
+
+                                HMDBmz <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_with_mz[idv[[2]]])[[1]])+nrow(peaksData(sps)[[1]]))
+                                HMDBmzScore <- c(HMDBmzScore, HMDBmz)
+
+                                HMDBint <- mean(1-(df_peaklists[,"diff"]/100))
+                                HMDBintScore <- c(HMDBintScore, HMDBint)
+
+
+                                HQMatPeaks <- nrow(df_peaklists)
+                                HQMatchingPeaks <- c(HQMatchingPeaks, HQMatPeaks)
+
+
+                                HMDBTPeaks <- nrow(peaksData(hmdb_with_mz[idv[[2]]])[[1]])
+                                HMDBTotalPeaks <- c(HMDBTotalPeaks, HMDBTPeaks)
+
+                                hQTPeaks<- nrow(peaksData(sps)[[1]])
+                                hQueryTotalPeaks<- c(hQueryTotalPeaks, hQTPeaks)
+
+
+                                HMDBID <- hmdb_with_mz[idv[[2]]]$compound_id
+                                HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
+
+
+                                #' plotMirror
+                                #name_plotmirror <- paste(dir_name,"_spectra_vs_", hmdb_with_mz[idv[[2]]]$compound_id, "_spectra.pdf", sep ="")
+                                #pdf(name_plotmirror)
+                                #plotSpectraMirror(sps, hmdb_with_mz[idv[[2]]], tolerance = 0.2,
+                                                    #labels = label_fun, labelPos = 2, labelOffset = 0.2,
+                                                    #labelSrt = -30)
+                                #grid()
+                                #dev.off()
+
+
+                                #HMDBSpec <- str_replace(name_plotmirror, input_dir, ".")
+                                #HMDBmirrorSpec <- c(HMDBmirrorSpec, HMDBSpec)
+
+                                Src <- "HMDB"
+                                Source <- c(Source, Src)
+                            }
+                            else{
+                                HMDBscore <- NA
+                                HMDBmax_similarity <- c(HMDBmax_similarity, HMDBscore)
+
+
+                                HMDBmz <- NA
+                                HMDBmzScore <- c(HMDBmzScore, HMDBmz)
+
+
+                                HMDBint <- NA
+                                HMDBintScore <- c(HMDBintScore, HMDBint)
+
+
+                                HQMatPeaks <- NA
+                                HQMatchingPeaks <- c(HQMatchingPeaks, HQMatPeaks)
+
+
+                                HMDBTPeaks <- NA
+                                HMDBTotalPeaks <- c(HMDBTotalPeaks, HMDBTPeaks)
+
+
+                                hQTPeaks<- NA
+                                hQueryTotalPeaks<- c(hQueryTotalPeaks, hQTPeaks)
+
+
+                                HMDBID <- "none"
+                                HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
+
+
+                                #HMDBSpec <- NA
+                                #HMDBmirrorSpec <- c(HMDBmirrorSpec, HMDBSpec)
+
+
+                                Src <- NA
+                                Source <- c(Source, Src)
+                            }
+                        }# loop for each candidate ends here
+                    }# if res_top has some results ends here
+                }# second condition hmdb ends
+
+                else if (length(sps) > 1 && length(hmdb_with_mz) == 1){
+                    # given threshold of 0.70 for HMDB, extract top candidates
+                    res_top <- which(res > res[res>0.70], arr.ind = TRUE)
+                    if (length(res_top) > 0){
+                        res_topdf <- data.frame(res_top)
+
+                        # top store the scores to add to res_topdf
+                        hmdb_scores <- c()
+                        # for all rows and columns in res_topdf
+
+                        for (i in 1:nrow(res_topdf)){
+                            # store the scores
+                            hmdb_scores <- c(hmdb_scores, res[(res_topdf[i, "row"]), (res_topdf[i, "col"])])
+                        }
+                        # add the score column to res_top
+                        hmdb_res <- cbind(res_top, hmdb_scores)
+                        hmdb_res <- data.frame(hmdb_res)
+
+                        # sort in descending order
+                        ordered_hmdb_res <- hmdb_res[order(-hmdb_res[,"hmdb_scores"]),]
+
+                        df_ord_hmdb_res <- data.frame(ordered_hmdb_res)
+
+                        for (k in 1:nrow(df_ord_hmdb_res)){
+                            idv <- df_ord_hmdb_res[k,]
+                            df_peaklists <- peakdf(hmdb_with_mz, sps[idv[[1]]], ppmx)
+                            if (!(is.null(df_peaklists))){
+                                HMDBscore <- idv[[3]]
+                                HMDBmax_similarity <- c(HMDBmax_similarity, HMDBscore)
+
+                                HMDBmz <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_with_mz)[[1]])+nrow(peaksData(sps[idv[[1]]])[[1]]))
+                                HMDBmzScore <- c(HMDBmzScore, HMDBmz)
+
+                                HMDBint <- mean(1-(df_peaklists[,"diff"]/100))
+                                HMDBintScore <- c(HMDBintScore, HMDBint)
+
+
+                                HQMatPeaks <- nrow(df_peaklists)
+                                HQMatchingPeaks <- c(HQMatchingPeaks, HQMatPeaks)
+
+
+                                HMDBTPeaks <- nrow(peaksData(hmdb_with_mz)[[1]])
+                                HMDBTotalPeaks <- c(HMDBTotalPeaks, HMDBTPeaks)
+
+                                hQTPeaks<- nrow(peaksData(sps[idv[[1]]])[[1]])
+                                hQueryTotalPeaks<- c(hQueryTotalPeaks, hQTPeaks)
+
+
+                                HMDBID <- hmdb_with_mz$compound_id
+                                HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
+
+
+                                #' plotMirror
+                                #name_plotmirror <- paste(dir_name, "_spectra_vs_", hmdb_with_mz$compound_id, "_spectra.pdf", sep ="")
+                                #pdf(name_plotmirror)
+                                #plotSpectraMirror(sps[idv[[1]]], hmdb_with_mz, tolerance = 0.2,
+                                                    #labels = label_fun, labelPos = 2, labelOffset = 0.2,
+                                                    #labelSrt = -30)
+                                #grid()
+                                #dev.off()
+
+
+                                #HMDBSpec <- str_replace(name_plotmirror, input_dir, ".")
+                                #HMDBmirrorSpec <- c(HMDBmirrorSpec, HMDBSpec)
+
+                                Src <- "HMDB"
+                                Source <- c(Source, Src)
+                            }
+                            else{
+                                HMDBscore <- NA
+                                HMDBmax_similarity <- c(HMDBmax_similarity, HMDBscore)
+
+
+                                HMDBmz <- NA
+                                HMDBmzScore <- c(HMDBmzScore, HMDBmz)
+
+
+                                HMDBint <- NA
+                                HMDBintScore <- c(HMDBintScore, HMDBint)
+
+
+                                HQMatPeaks <- NA
+                                HQMatchingPeaks <- c(HQMatchingPeaks, HQMatPeaks)
+
+
+                                HMDBTPeaks <- NA
+                                HMDBTotalPeaks <- c(HMDBTotalPeaks, HMDBTPeaks)
+
+
+                                hQTPeaks<- NA
+                                hQueryTotalPeaks<- c(hQueryTotalPeaks, hQTPeaks)
+
+
+                                HMDBID <- "none"
+                                HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
+
+
+                                #HMDBSpec <- NA
+                                #HMDBmirrorSpec <- c(HMDBmirrorSpec, HMDBSpec)
+
+
+                                Src <- NA
+                                Source <- c(Source, Src)
+                            }
+                        }# loop for each candidate ends here
+                    }# if res_top has some results ends here
+                }# third condition hmdb ends
+
+                else if (length(sps) == 1 && length(hmdb_with_mz) == 1){
+
+                    hmdb_best_match <- hmdb_with_mz
+                    df_peaklists <- peakdf(hmdb_best_match, sps, ppmx)
+
+                    if (!(is.null(df_peaklists))){
+                        HMDBscore <- max(res)
+                        HMDBmax_similarity <- c(HMDBmax_similarity, HMDBscore)
+
+                        HMDBmz <- (nrow(df_peaklists)*2)/(nrow(peaksData(hmdb_best_match)[[1]])+nrow(peaksData(sps)[[1]]))
+                        HMDBmzScore <- c(HMDBmzScore, HMDBmz)
+
+                        HMDBint <- mean(1-(df_peaklists[,"diff"]/100))
+                        HMDBintScore <- c(HMDBintScore, HMDBint)
+
+
+                        HQMatPeaks <- nrow(df_peaklists)
+                        HQMatchingPeaks <- c(HQMatchingPeaks, HQMatPeaks)
+
+
+                        HMDBTPeaks <- nrow(peaksData(hmdb_best_match)[[1]])
+                        HMDBTotalPeaks <- c(HMDBTotalPeaks, HMDBTPeaks)
+
+                        hQTPeaks<- nrow(peaksData(sps)[[1]])
+                        hQueryTotalPeaks<- c(hQueryTotalPeaks, hQTPeaks)
+
+
+                        HMDBID <- hmdb_best_match$compound_id
+                        HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
+
+
+                        #' plotMirror
+                        #name_plotmirror <- paste(dir_name,"_spectra_vs_", hmdb_best_match$compound_id, "_spectra.pdf", sep ="")
+                        #pdf(name_plotmirror)
+                        #plotSpectraMirror(sps, hmdb_best_match, tolerance = 0.2,
+                                            #labels = label_fun, labelPos = 2, labelOffset = 0.2,
+                                            #labelSrt = -30)
+                        #grid()
+                        #dev.off()
+
+
+                        #HMDBSpec <- str_replace(name_plotmirror, input_dir, ".")
+                        #HMDBmirrorSpec <- c(HMDBmirrorSpec, HMDBSpec)
+
+                        Src <- "HMDB"
+                        Source <- c(Source, Src)
+                    }
+                    else{
+                        HMDBscore <- NA
+                        HMDBmax_similarity <- c(HMDBmax_similarity, HMDBscore)
+
+
+                        HMDBmz <- NA
+                        HMDBmzScore <- c(HMDBmzScore, HMDBmz)
+
+
+                        HMDBint <- NA
+                        HMDBintScore <- c(HMDBintScore, HMDBint)
+
+
+                        HQMatPeaks <- NA
+                        HQMatchingPeaks <- c(HQMatchingPeaks, HQMatPeaks)
+
+
+                        HMDBTPeaks <- NA
+                        HMDBTotalPeaks <- c(HMDBTotalPeaks, HMDBTPeaks)
+
+
+                        hQTPeaks<- NA
+                        hQueryTotalPeaks<- c(hQueryTotalPeaks, hQTPeaks)
+
+
+                        HMDBID <- "none"
+                        HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
+
+
+                        #HMDBSpec <- NA
+                        #HMDBmirrorSpec <- c(HMDBmirrorSpec, HMDBSpec)
+
+
+                        Src <- NA
+                        Source <- c(Source, Src)
+                    }
+                }# fourth condition hmdb ends
+                hmdb_x <- data.frame(cbind(HMDBmax_similarity, HMDBmzScore,
+                                       HMDBintScore, HQMatchingPeaks, 
+                                       HMDBTotalPeaks, hQueryTotalPeaks, 
+                                       HMDBcompoundID, Source))
+                write.csv(hmdb_x, file = paste(dir_name, "/hmdb_results_for_", id_Xx, ".csv", sep = ""))
+
+            }# ends hmdb
+
+
+
+            # if the database selected is MassBank or all
+            if (db == "all" || db =="mbank"){
+                # mbank
+                MBmax_similarity <- c()
+                MBmzScore <- c()
+                MBintScore <- c()
+                MQMatchingPeaks <- c()
+                MBTotalPeaks <- c()
+                mQueryTotalPeaks<- c()
+                MBformula <- c()
+                MBinchiKEY <- c()
+                MBspectrumID <- c()
+                MBcompound_name <- c()
+                #MBmirrorSpec <- c()
+                Source <- c()
+
+                #dir_premz <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/MassBank/", sep = ""), "."),as.character(id_Xx), sep ="")
+
+                #if (!file.exists(dir_premz)){
+                    #dir.create(dir_premz, recursive = TRUE)
+                #}
+
+                #### MassBank spec with pre_mz
+                mbank_with_mz <- spec2_Processing(x, mbank, spec = "mbank", ppmx) # change here later
+
+                dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/MassBank/", sep = ""), "."), sep ="")
+                if (!file.exists(dir_name)){
+                    dir.create(dir_name, recursive = TRUE)
+                }
+
+                #' Compare experimental spectra against MassBank
+                res <- compareSpectra(sps, mbank_with_mz, ppm = 15)
+
+                if (length(sps) > 1 && length(mbank_with_mz) >1){
+                    # given threshold of 0.70 for MassBank, extract top candidates
+                    res_top <- which(res > res[res>0.70], arr.ind = TRUE)
+                    if (length(res_top) > 0){
+                        res_topdf <- data.frame(res_top)
+                        # to store the scores to add to res_topdf
+                        mbank_scores <- c()
+                        # for all rows and columns in res_topdf
+                        for (i in 1:nrow(res_topdf)){
+                            # store the scores
+                            mbank_scores <- c(mbank_scores, res[(res_topdf[i, "row"]), (res_topdf[i, "col"])])
+                        }
+                        # add the score column to res_top
+                        mbank_res <- cbind(res_top, mbank_scores)
+                        mbank_res <- data.frame(mbank_res)
+                        # sort in descending order
+                        ordered_mbank_res <- mbank_res[order(-mbank_res[,"mbank_scores"]),]
+                        df_ord_mbank_res <- data.frame(ordered_mbank_res)
+
+                        for (k in 1:nrow(df_ord_mbank_res)){
+                            idv <- df_ord_mbank_res[k,]
+                            df_peaklists <- peakdf(mbank_with_mz[idv[[2]]], sps[idv[[1]]], ppmx)
+                            if (!(is.null(df_peaklists))){
+
+>>>>>>> refs/remotes/origin/main
                                 mbscore <- idv[[3]]
                                 MBmax_similarity<- c(MBmax_similarity, mbscore)
 
@@ -2079,9 +3441,12 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                     }# if res_top has some results ends here
                 }# first condition for mbank
                 else if (length(sps) == 1 && length(mbank_with_mz) >1){
+<<<<<<< HEAD
                     if (length(res)>no_of_candidates){
                         res <- res[1:no_of_candidates]
                     }
+=======
+>>>>>>> refs/remotes/origin/main
                     # given threshold of 0.70 for MassBank, extract top candidates
                     res_top <- which(res > res[res>0.70], arr.ind = TRUE)
                     if (length(res_top) > 0){
@@ -2093,7 +3458,11 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                         for (i in 1:nrow(res_topdf)){
                             # store the scores
+<<<<<<< HEAD
                             mbank_scores <- c(mbank_scores, res[(res_topdf[i, "res_top"])])
+=======
+                            mbank_scores <- c(mbank_scores, res[(res_topdf[i, "row"]), (res_topdf[i, "col"])])
+>>>>>>> refs/remotes/origin/main
                         }
 
                         # add the score column to res_top
@@ -2107,12 +3476,20 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                         for (k in 1:nrow(df_ord_mbank_res)){
                             idv <- df_ord_mbank_res[k,]
+<<<<<<< HEAD
                             df_peaklists <- peakdf(mbank_with_mz[idv[[1]]], sps, ppmx)
+=======
+                            df_peaklists <- peakdf(mbank_with_mz[idv[[2]]], sps, ppmx)
+>>>>>>> refs/remotes/origin/main
                             if (!(is.null(df_peaklists))){
                                 mbscore <- idv[[3]]
                                 MBmax_similarity<- c(MBmax_similarity, mbscore)
 
+<<<<<<< HEAD
                                 MBmz <- (nrow(df_peaklists)*2)/(nrow(peaksData(mbank_with_mz[idv[[1]]])[[1]])+nrow(peaksData(sps)[[1]]))
+=======
+                                MBmz <- (nrow(df_peaklists)*2)/(nrow(peaksData(mbank_with_mz[idv[[2]]])[[1]])+nrow(peaksData(sps)[[1]]))
+>>>>>>> refs/remotes/origin/main
                                 MBmzScore <- c(MBmzScore, MBmz)
 
                                 MBint <- mean(1-(df_peaklists[,"diff"]/100))
@@ -2121,13 +3498,18 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                                 MQMatPeaks <- nrow(df_peaklists)
                                 MQMatchingPeaks <- c(MQMatchingPeaks, MQMatPeaks) 
 
+<<<<<<< HEAD
                                 MBTPeaks <- nrow(peaksData(mbank_with_mz[idv[[1]]])[[1]])
+=======
+                                MBTPeaks <- nrow(peaksData(mbank_with_mz[idv[[2]]])[[1]])
+>>>>>>> refs/remotes/origin/main
                                 MBTotalPeaks<- c(MBTotalPeaks, MBTPeaks)
 
                                 mQTPeaks<- nrow(peaksData(sps)[[1]]) 
                                 mQueryTotalPeaks<- c(mQueryTotalPeaks, mQTPeaks)
 
 
+<<<<<<< HEAD
                                 MBfor <- mbank_with_mz[idv[[1]]]$formula
                                 MBformula<- c(MBformula, MBfor)
 
@@ -2138,6 +3520,18 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                                 MBspectrumID<- c(MBspectrumID, MBID)
 
                                 MBname <- mbank_with_mz[idv[[1]]]$name
+=======
+                                MBfor <- mbank_with_mz[idv[[2]]]$formula
+                                MBformula<- c(MBformula, MBfor)
+
+                                MBinchiK <- mbank_with_mz[idv[[2]]]$inchikey
+                                MBinchiKEY <- c(MBinchiKEY, MBinchiK)
+
+                                MBID <- mbank_with_mz[idv[[2]]]$accession
+                                MBspectrumID<- c(MBspectrumID, MBID)
+
+                                MBname <- mbank_with_mz[idv[[2]]]$name
+>>>>>>> refs/remotes/origin/main
                                 MBcompound_name <- c(MBcompound_name, MBname)
 
                                 #' plotMirror
@@ -2197,9 +3591,12 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                     }# if res_top has some results ends here
                 }# second condition for mbank
                 else if (length(sps) > 1 && length(mbank_with_mz) == 1){
+<<<<<<< HEAD
                     if (length(res)>no_of_candidates){
                         res <- res[1:no_of_candidates]
                     }
+=======
+>>>>>>> refs/remotes/origin/main
                     # given threshold of 0.70 for MassBank, extract top candidates
                     res_top <- which(res > res[res>0.70], arr.ind = TRUE)
                     if (length(res_top) > 0){
@@ -2211,7 +3608,11 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                         for (i in 1:nrow(res_topdf)){
                             # store the scores
+<<<<<<< HEAD
                             mbank_scores <- c(mbank_scores, res[(res_topdf[i, "res_top"])])
+=======
+                            mbank_scores <- c(mbank_scores, res[(res_topdf[i, "row"]), (res_topdf[i, "col"])])
+>>>>>>> refs/remotes/origin/main
                         }
 
                         # add the score column to res_top
@@ -2314,6 +3715,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                     }# if res_top has some results ends here
                 }# third condition for mbank
                 else if (length(sps) == 1 && length(mbank_with_mz) == 1){
+<<<<<<< HEAD
                     if (res>0.75){
                         mbank_best_match <- mbank_with_mz
                         df_peaklists <- peakdf(mbank_best_match, sps, ppmx)
@@ -2402,6 +3804,57 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                             Src <- NA
                             Source <- c(Source, Src)
                         }
+=======
+                    mbank_best_match <- mbank_with_mz
+                    df_peaklists <- peakdf(mbank_best_match, sps, ppmx)
+                    if (!(is.null(df_peaklists))){
+                        mbscore <- max(res)
+                        MBmax_similarity<- c(MBmax_similarity, mbscore)
+
+                        MBmz <- (nrow(df_peaklists)*2)/(nrow(peaksData(mbank_with_mz)[[1]])+nrow(peaksData(sps)[[1]]))
+                        MBmzScore <- c(MBmzScore, MBmz)
+
+                        MBint <- mean(1-(df_peaklists[,"diff"]/100))
+                        MBintScore <- c(MBintScore, MBint)
+
+                        MQMatPeaks <- nrow(df_peaklists)
+                        MQMatchingPeaks <- c(MQMatchingPeaks, MQMatPeaks) 
+
+                        MBTPeaks <- nrow(peaksData(mbank_with_mz)[[1]])
+                        MBTotalPeaks<- c(MBTotalPeaks, MBTPeaks)
+
+                        mQTPeaks<- nrow(peaksData(sps)[[1]]) 
+                        mQueryTotalPeaks<- c(mQueryTotalPeaks, mQTPeaks)
+
+
+                        MBfor <- mbank_with_mz$formula
+                        MBformula<- c(MBformula, MBfor)
+
+                        MBinchiK <- mbank_with_mz$inchikey
+                        MBinchiKEY <- c(MBinchiKEY, MBinchiK)
+
+                        MBID <- mbank_with_mz$accession
+                        MBspectrumID<- c(MBspectrumID, MBID)
+
+                        MBname <- mbank_with_mz$name
+                        MBcompound_name <- c(MBcompound_name, MBname)
+
+                        #' plotMirror
+                        #name_plotmirror <- paste(dir_premz, "_spectra_vs_", mbank_with_mz$SPECTRUMID, "_spectra.pdf", sep ="")
+                        #pdf(name_plotmirror)
+                        #plotSpectraMirror(sps, mbank_with_mz, tolerance = 0.2,
+                                            #labels = label_fun, labelPos = 2, labelOffset = 0.2,
+                                            #labelSrt = -30)
+                        #grid()
+                        #dev.off()
+
+                        #MBSpec <- str_replace(name_plotmirror, input_dir, ".")
+                        #MBmirrorSpec <- c(MBmirrorSpec, MBSpec)
+
+                        Src <- "MassBank"
+                        Source <- c(Source, Src)
+
+>>>>>>> refs/remotes/origin/main
                     }
                     else{
                         mbscore <- NA
@@ -2441,6 +3894,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                         Source <- c(Source, Src)
                     }
                 }
+<<<<<<< HEAD
                 else{
                     mbscore <- NA
                     MBmax_similarity<- c(MBmax_similarity, mbscore)
@@ -2537,6 +3991,40 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
     write.csv(spectra_input, file = paste(result_dir_spectra, "/spectral_results_for_", file_id, ".csv", sep = ""))
 
 
+=======
+                mbank_x <- data.frame(cbind(MBmax_similarity, MBmzScore, 
+                                        MBintScore, MQMatchingPeaks, 
+                                        MBTotalPeaks, mQueryTotalPeaks, 
+                                        MBformula, MBinchiKEY, MBspectrumID,
+                                        MBcompound_name, Source))
+                write.csv(mbank_x, file = paste(dir_name, "/mbank_results_for_", id_Xx, ".csv", sep = ""))
+
+            }# ends mbank
+
+
+
+        } # ends each pre mz
+        result_dir_spectra <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication", sep = ""), "."), sep = "")
+        spectra_input <- data.frame(cbind(id_X, premz, rtmin, 
+                                          rtmax, rtmed, rtmean, 
+                                          col_eng, pol, int, source_file))
+        write.csv(spectra_input, file = paste(result_dir_spectra, "/spectral_results_for_", file_id, ".csv", sep = ""))
+    })
+    
+    if (file.exists(paste(input_dir, "/summaryFile.txt", sep = ""))){
+        
+        line1 = paste("Spectral Dereplication with R package Spectra:", line[1], "of seconds.", sep = " ")
+        write(line1 ,file=paste(input_dir, "/summaryFile.txt", sep = ""),append=TRUE)
+        
+    }
+    else{
+        fileConn<-file(paste(input_dir, "/summaryFile.txt", sep = ""))
+
+        writeLines(paste("Spectral Dereplication with R package Spectra:", line[1], "of seconds.", sep = " "), fileConn)
+
+        close(fileConn)
+    }
+>>>>>>> refs/remotes/origin/main
 
 }
 
@@ -2547,6 +4035,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
 
 
+<<<<<<< HEAD
 
 
 
@@ -2555,6 +4044,8 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
 
 
+=======
+>>>>>>> refs/remotes/origin/main
 #' Extract MS2 Fragment peaks
 # This functon returns a dataframe and stores a csv file 
     # the directory for csv file is input_dir + /insilico/MS2DATA.csv
@@ -2590,7 +4081,11 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
         
         
         #filter based on pre mz; sps_all is preprocessed spectra
+<<<<<<< HEAD
         sps <- filterPrecursorMzRange(sps_all, i)
+=======
+        sps <- filterPrecursorMz(sps_all, i)
+>>>>>>> refs/remotes/origin/main
         #sps <- filterIntensity(sps, intensity = low_int)
         
         if (length(sps)>0){
@@ -2682,8 +4177,11 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
 }
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> refs/remotes/origin/main
 #cam_funcMode <- function(path, pattern = ".mzML"){
     #library("CAMERA")
     # List all files present in QC folder 
@@ -2856,9 +4354,19 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
 
 
 cam_func <- function(input_dir, f, ms2features){
+<<<<<<< HEAD
     modes_file <- read_csv(ms2features)
     mode = unique(modes_file["pol"])
     fl <- paste(input_dir, str_remove(f, "."), sep ="")
+=======
+    
+    modes_file <- read_csv(ms2features)
+    mode = unique(modes_file["pol"])
+    
+    library("CAMERA")
+    fl <- paste(input_dir, str_remove(f, "."), sep ="")
+
+>>>>>>> refs/remotes/origin/main
     if(mode == "pos"){
         library("CAMERA")
         xs <- xcmsSet(file = fl,profmethod = "bin", 
@@ -2887,6 +4395,7 @@ cam_func <- function(input_dir, f, ms2features){
         }
         name <- str_remove(f, ".mzML")
         write.csv(peaklist, file = paste(input_dir, str_remove(name, "."), "/CAMERAResults",".csv", sep = ""))
+<<<<<<< HEAD
         unloadNamespace("CAMERA")
         unloadNamespace("xcms")
         unloadNamespace("MSnBase")
@@ -2894,6 +4403,10 @@ cam_func <- function(input_dir, f, ms2features){
 
     }else{
         library("CAMERA")
+=======
+    }
+    else if(mode == "neg"){
+>>>>>>> refs/remotes/origin/main
         xs <- xcmsSet(file = fl,profmethod = "bin", 
               profparam = list(), lockMassFreq=FALSE,
               mslevel= 1, progressCallback=NULL, polarity="negative",
@@ -2920,6 +4433,7 @@ cam_func <- function(input_dir, f, ms2features){
         }
         name <- str_remove(f, ".mzML")
         write.csv(peaklist, file = paste(input_dir, str_remove(name, "."), "/CAMERAResults", ".csv", sep = ""))
+<<<<<<< HEAD
         unloadNamespace("CAMERA")
         unloadNamespace("xcms")
         unloadNamespace("MSnBase")
@@ -2928,6 +4442,16 @@ cam_func <- function(input_dir, f, ms2features){
 }
 
 
+=======
+    }
+    detach("package:CAMERA", unload=TRUE)
+    return(peaklist)
+    
+}
+
+
+
+>>>>>>> refs/remotes/origin/main
 
 # Extract isotopic peaks for each pre_mz
 # The input is x = first_list (from ms2peaks function) and y = camera results 
@@ -3737,14 +5261,22 @@ sirius_param <- function(x, result_dir, input_dir, SL = FALSE){
         
         in_out_file <- data.frame(cbind(sirius_param_file, outputNames, outputNamesSL, isotopes))
         
+<<<<<<< HEAD
         write.table(in_out_file, paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA_SiriusPandSL.tsv', sep = ""), "."), sep =""), sep = "\t")
+=======
+        write.csv(in_out_file, paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA_SiriusPandSL.csv', sep = ""), "."), sep =""))
+>>>>>>> refs/remotes/origin/main
         return(in_out_file)
         
     }
     else{
         in_out_file <- data.frame(cbind(sirius_param_file, outputNames, isotopes))
         
+<<<<<<< HEAD
         write.table(in_out_file, paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA_SiriusP.tsv', sep = ""), "."), sep =""), sep = "\t")
+=======
+        write.csv(in_out_file, paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA_SiriusP.csv', sep = ""), "."), sep =""))
+>>>>>>> refs/remotes/origin/main
         return(in_out_file)
         
     }
@@ -3753,6 +5285,7 @@ sirius_param <- function(x, result_dir, input_dir, SL = FALSE){
 
 
 
+<<<<<<< HEAD
 
 
 run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, SL_path, candidates = 30, profile){
@@ -3805,13 +5338,87 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
             if(SL){
                 system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
                             "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
-                            sep = " "))
+=======
+run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, SL_path, candidates = 30){
+    line <- system.time({
+        files <- read.csv(files)
+
+        for (b in 1:nrow(files)){
+            if (QC){
+                if (is.na(files[b, "isotopes"])){
+                    system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                                 "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                                 sep = " "))
+                    if(!file.exists(files[b, "outputNames"])){
+                        system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                                     "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                                     sep = " "))
+                    }
+                    if(SL){
+                        system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
+                                 "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
+                                 sep = " "))
+                    }
+
+                }
+                else if(files[b, "isotopes"] == "present"){
+                    system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                                 "formula --profile orbitrap --candidates", candidates, "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure --database ALL canopus",
+                                 sep = " "))
+                    if(!file.exists(files[b, "outputNames"])){
+                         system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                                     "formula --profile orbitrap --candidates", candidates, "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure --database ALL canopus",
+                                     sep = " "))
+                    }
+                    if(SL){
+                        system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
+                                 "formula --profile orbitrap --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
+                                 sep = " "))
+                    }
+                }
             }
+            else{
+                system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                            "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+>>>>>>> refs/remotes/origin/main
+                            sep = " "))
+                if(!file.exists(files[b, "outputNames"])){
+                    system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                                 "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                                 sep = " "))
+                }
+                if(SL){
+                    system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
+                                "formula --profile orbitrap --no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
+                                sep = " "))
+                }
+            }
+            Sys.sleep(5)
+
         }
+<<<<<<< HEAD
         Sys.sleep(5)
 
     }
 
+=======
+    })
+    
+    if (file.exists(paste(input_dir, "/summaryFile.txt", sep = ""))){
+        
+        line1 = paste("Compound Database Dereplication with SIRIUS took", line[1], "of seconds.", sep = " ")
+        write(line1 ,file=paste(input_dir, "/summaryFile.txt", sep = ""),append=TRUE)
+        
+    }
+    else{
+        fileConn<-file(paste(input_dir, "/summaryFile.txt", sep = ""))
+
+        writeLines(paste("Compound Database Dereplication with SIRIUS took", line[1], "of seconds.", sep = " "), fileConn)
+
+        close(fileConn)
+    }
+    
+>>>>>>> refs/remotes/origin/main
     
 }
 
@@ -3858,8 +5465,11 @@ sirius_adduct <- function(input_dir, x, SL = TRUE){
 }
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> refs/remotes/origin/main
 metfrag_param <- function(x, result_dir, input_dir, sl_mtfrag, SL = TRUE, ppm_max = 5, ppm_max_ms2= 15){
     
     
@@ -3962,8 +5572,11 @@ metfrag_param <- function(x, result_dir, input_dir, sl_mtfrag, SL = TRUE, ppm_ma
 }
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> refs/remotes/origin/main
 run_metfrag <- function(met_param){
     line <- system.time({
     

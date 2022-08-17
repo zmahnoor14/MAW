@@ -69,30 +69,48 @@ line <- system.time({
         sirius_param_files <- sirius_param(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA.csv', sep = ""), "."), sep =""), 
                                            result_dir = input_table[i, 'ResultFileNames'], 
                                            input_dir,
+<<<<<<< HEAD
                                            SL = FALSE)
+=======
+                                           SL = TRUE)
+>>>>>>> refs/remotes/origin/main
 
         # Run sirius
         run_sirius(files = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA_SiriusPandSL.csv', sep = ""), "."), sep =""), 
                    ppm_max = 5, 
                    ppm_max_ms2 = 15, 
                    QC = TRUE, 
+<<<<<<< HEAD
                    SL = FALSE, 
                    SL_path = NA,
+=======
+                   SL = TRUE, 
+                   SL_path = paste(input_dir, 'SL_Frag/', sep = ""),
+>>>>>>> refs/remotes/origin/main
                    candidates = 30)
 
 
         # Post process Sirius results and extract adducts for MetFrag
         adducts <- sirius_adduct(input_dir,
                                  x = input_table[i, "ResultFileNames"], 
+<<<<<<< HEAD
                                  SL = FALSE)
+=======
+                                 SL = TRUE)
+>>>>>>> refs/remotes/origin/main
 
 
         # prepare Metfrag parameter files
         met_param <- metfrag_param(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/insilico/MS1DATAsirius.csv", sep = ""), "."), sep =""), 
                                    result_dir = input_table[i, "ResultFileNames"],
                                    input_dir, 
+<<<<<<< HEAD
                                    sl_mtfrag = NA, 
                                    SL = FALSE,
+=======
+                                   sl_mtfrag = paste(input_dir, "/SL_metfrag.txt", sep = ""), 
+                                   SL = TRUE,
+>>>>>>> refs/remotes/origin/main
                                    ppm_max = 5, 
                                    ppm_max_ms2= 15)
 
@@ -107,6 +125,10 @@ line <- system.time({
 
 write(paste("MAW took", line[1] "of seconds.", sep = "") ,file=paste(input_dir, "/summaryFile.txt", sep = ""),append=TRUE)
 
+<<<<<<< HEAD
 save.image(file = paste(input, "/StandardsRun1.Rdata", sep ="")
+=======
+save.image(file = paste(input, "/BryophytesRun1.Rdata", sep ="")
+>>>>>>> refs/remotes/origin/main
 
 

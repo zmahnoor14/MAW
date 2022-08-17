@@ -16,12 +16,24 @@ Since MAW is implemented in R and Python so we have two separate Docker images.T
 1. Dockerfile
 2. Workflow_R_Functions.r
 3. install_packages.R <br>
+<<<<<<< HEAD
 These files will create a docker image on your local system with the following command:
 ```shell
 # build the image
 docker build -t maw .
 # run MAW in a jupyter notebook; change /workdir to your working directory
 docker run -v /workdir:/workdir -i -t -p 8888:8888 maw /bin/bash -c "jupyter notebook --notebook-dir=/workdir --ip='*' --port=8888 --no-browser --allow-root"
+=======
+These files can be accessed via the folder R/cwl/.  A docker image will be created on your local system with these files using following command:
+```shell
+# clone the reporistory
+# go to the directory
+cd MAW/R/cwl
+# build the image
+docker build -t mawr .
+# run MAW in a jupyter notebook; change /workdir to your working directory
+docker run --name container_name_of_your_choice -v $(pwd):/opt/workdir -i -t mawr /bin/bash
+>>>>>>> refs/remotes/origin/main
 ```
 If you want to run the workflow in a docker container, then use the following command
 ```shell
