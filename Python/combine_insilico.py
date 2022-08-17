@@ -22,11 +22,9 @@ import glob
 import re
 
 
-<<<<<<< HEAD
-def combine_insilico(input_dir, input_tablecsv, Source = "SIRIUS"):
-=======
-def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
->>>>>>> 25c6491 (cleaned directory)
+def combine_insilico(input_dir, input_tablecsv, Source = "all_insilico"):
+    def isNaN(string):
+        return string != string
     
     """combine_insilico function combines the Sirius results from all
     result directories for each input mzml file. It does same for 
@@ -62,17 +60,14 @@ def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
 
 
     """
-<<<<<<< HEAD
     
     input_table = pd.read_csv(input_tablecsv)
-=======
->>>>>>> 25c6491 (cleaned directory)
     # create a new directory to store all results /MetabolomicsResults/
     path = os.path.join(input_dir, "MetabolomicsResults")
     if not os.path.isdir(path):
         os.mkdir(path)    
     # if Sirius results are to be combined
-    if Source == "SIRIUS":
+    if Source == "all_insilico" or Source == "SIRIUS":
         
         # store all files paths here
         all_files = []
@@ -89,45 +84,10 @@ def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
             
         # join all resulst dataframe
         frame = pd.concat(li, axis=0, ignore_index=True)
-<<<<<<< HEAD
-        
-        
-        frame['most_specific_class'] = np.nan
-        frame['level _5'] = np.nan
-        frame['subclass'] = np.nan
-        frame['class'] = np.nan
-        frame['superclass'] = np.nan
-        frame['all_classifications'] = np.nan
-        frame['Classification_Source'] = np.nan
-=======
-        frame.to_csv(input_dir + '/MetabolomicsResults/SIRIUS_combined.csv')
->>>>>>> 25c6491 (cleaned directory)
-        
-        for i, row in frame.iterrows():
-            if frame["FormulaRank"][i] == 1.0:
-                sep = 'json/'
-                strpd = frame["dir"][i].split(sep, 1)[0] +"json/canopus_summary.tsv"
-                if os.path.isfile(strpd):
-
-                    canopus = pd.read_csv(strpd, sep='\t')
-                    if len(canopus) > 0:
-                        frame.loc[i, 'most_specific_class'] = canopus["most specific class"][0]
-                        frame.loc[i, 'level _5'] = canopus["level 5"][0]
-                        frame.loc[i, 'subclass'] = canopus["subclass"][0]
-                        frame.loc[i, 'class'] = canopus["class"][0]
-                        frame.loc[i, 'superclass'] = canopus["superclass"][0]
-                        frame.loc[i, 'all_classifications'] = canopus["all classifications"][0]
-                        frame.loc[i, 'Classification_Source'] = 'CANOPUS'
-<<<<<<< HEAD
-                        
-        frame.to_csv(input_dir + '/MetabolomicsResults/SIRIUS_combined.csv')
-=======
-        
->>>>>>> 25c6491 (cleaned directory)
-        return(frame)
+        frame.to_csv(input_dir + '/MetabolomicsResults/SIRIUS_combined.csv')       
     
     # if MetFrag results are to be combined
-    elif Source == "MetFrag":
+    if Source == "all_insilico" or Source == "MetFrag":
         
         # store all files paths here
         all_files = []
@@ -142,7 +102,7 @@ def combine_insilico(input_dir, input_table, Source = "SIRIUS"):
 
         frame = pd.concat(li, axis=0, ignore_index=True)
         frame.to_csv(input_dir+'MetabolomicsResults/MetFrag_combined.csv')
-        return(frame)
+        
 
 combine_insilico(sys.argv[1], sys.argv[2], sys.argv[3])
 

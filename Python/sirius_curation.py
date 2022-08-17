@@ -19,11 +19,7 @@ import csv
 import time
 import json
 import sys
-<<<<<<< HEAD
 import pandas as pd
-=======
-import pubchempy as pcp
->>>>>>> 25c6491 (cleaned directory)
 import numpy as np
 
 from rdkit import Chem
@@ -35,7 +31,8 @@ import pubchempy as pcp
 
 
 def sirius_curation(input_dir, siriuscsv, sl = True):
-    
+    def isNaN(string):
+        return string != string
     """sirius_curation checks if candidate selected has a good score for 
     explained intensity. It also checks if there was any similarity to
     a compound from Suspect list
@@ -56,26 +53,23 @@ def sirius_curation(input_dir, siriuscsv, sl = True):
 
     """
     
-    def isNaN(string):
-        return string != string
-    
     sirius = pd.read_csv(siriuscsv)
     for i, row in sirius.iterrows():
     
         # If the explained intensity is greater than 0.70 and there is no suspect list entry
-        if sirius['exp_int'][i] >= 0.70 and isNaN(sirius['SL_comp'][i]):
+        if sirius['exp_int'][i] >= 0.70 and "SIRIUS_SL" not in sirius['Result'][i]:
             sirius.loc[i, 'Annotation_S'] = 'SIRIUS'
             #sirius.loc[i, 'SMILES_final'] = sirius['SMILES'][i]
         else:
             if sl:
                 
                 #If the explained intensity is greater than 0.70 and there is an entry from suspect list
-                if sirius['exp_int'][i] >= 0.70 and not isNaN(sirius['SL_comp'][i]):
+                if sirius['exp_int'][i] >= 0.70 and "SIRIUS_SL" in sirius['Result'][i]:
                     sirius.loc[i, 'Annotation_S'] = 'SIRIUS, SuspectList'
                     #sirius.loc[i, 'SMILES_final'] = sirius['SMILES'][i]
     
                 # if the intensity is less thna 0.70 but it still is similar to an entry in Suspect list,
-                elif sirius['exp_int'][i] < 0.70 and not isNaN(sirius['SL_comp'][i]):
+                elif sirius['exp_int'][i] < 0.70 and "SIRIUS_SL" in sirius['Result'][i]:
                     sirius.loc[i, 'Annotation_S'] = 'SIRIUS, SuspectList'
                     #sirius.loc[i, 'SMILES_final'] = sirius['SMILES'][i]
         

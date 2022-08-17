@@ -16,13 +16,9 @@ from rdkit.Chem import PandasTools
 import sys
 import pandas as pd
 import numpy as np
-<<<<<<< HEAD
 import os
-=======
->>>>>>> 25c6491 (cleaned directory)
 
 def slist_sirius(input_dir, slist_csv, substring = None):
-    
     """slist_sirius is used to create a tsv file that contains a list of 
     SMILES. The function also runs the sirius command custom db to create
     fingerprints for each SMILES in a folder that we by default name as
@@ -46,11 +42,7 @@ def slist_sirius(input_dir, slist_csv, substring = None):
     
     substring (list): provide a list of strings of SMILES that 
     shouldn't be considered, provide a list even if there is one string
-<<<<<<< HEAD
-    that shouldn't be considered. e.g: "Fe+2" or Fe+2, C*. 
-=======
     that shouldnt be considered. e.g: "[Fe+2]". 
->>>>>>> 25c6491 (cleaned directory)
 
     Returns:
     tsv: a tsv file of list of SMILES, named as SL_Sirius.tsv, is stored 
@@ -64,6 +56,9 @@ def slist_sirius(input_dir, slist_csv, substring = None):
     substring = None)
 
     """
+    def isNaN(string):
+        return string != string
+
     
     sl = pd.read_csv(slist_csv)
     
@@ -111,32 +106,22 @@ def slist_sirius(input_dir, slist_csv, substring = None):
                 if charge > 1:
                     sl = sl.drop(labels = i, axis = 0) 
                     
-<<<<<<< HEAD
     slsirius = pd.DataFrame({'smiles':sl["SMILES"]})
     slsirius.to_csv(input_dir+ "SL_Sirius.tsv", sep = "\t", header = False, index = False)
     os.system("sirius --input " + input_dir + "SL_Sirius.tsv custom-db --name=SL_Frag --output "+ input_dir)
-    
+
     
 sys.argv[1]
 sys.argv[2]
 list1 = sys.argv[3].split(',')
-
-slist_sirius(sys.argv[1],sys.argv[2], list1) 
-
-
-=======
-    slsirius = pd.DataFrame({'smiles':smiles})
-    slsirius.to_csv(input_dir+ "SL_Sirius.tsv", sep = "\t", header = False, index = False)
-    os.system("sirius --input " + input_dir + "SL_Sirius.tsv custom-db --name=SL_Frag --output "+ input_dir)
-
-    
-    
-slist_sirius(sys.argv[1],sys.argv[2], sys.argv[3]) 
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python specDB_Curation.py input_dir, slist_csv, substring = None")
+    else:
+        slist_sirius(sys.argv[1],sys.argv[2], list1) 
 
 
-# In[ ]:
 
->>>>>>> 25c6491 (cleaned directory)
 
 
 

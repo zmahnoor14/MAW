@@ -17,19 +17,13 @@ import sys
 import pandas as pd
 import numpy as np
 
-<<<<<<< HEAD
 import pubchempy as pcp
 
-=======
->>>>>>> 25c6491 (cleaned directory)
 import os
 import glob
 import re
 from pandas import json_normalize
-<<<<<<< HEAD
 from rdkit.Chem import PandasTools
-=======
->>>>>>> 25c6491 (cleaned directory)
 
 
 
@@ -79,15 +73,12 @@ def spec_postproc(input_dir, Source = "all"):
                         MassBankcsvfiles.append(f)
                             
     
-    if Source == "hmdb" or "all":
-        #download SDF structures
-<<<<<<< HEAD
-        os.system("wget -P " + input_dir + " https://hmdb.ca/system/downloads/current/structures.zip")
-        os.system("unzip "+ input_dir + "structures.zip" + " -d " + input_dir)
-=======
-        #os.system("wget https://hmdb.ca/system/downloads/current/structures.zip")
-        #os.system("unzip "+ input_dir + "structures.zip")
->>>>>>> 25c6491 (cleaned directory)
+    if Source == "hmdb" or Source == "all":
+
+        if not os.path.exists(input_dir+"structures.sdf"):
+            #download SDF structures
+            os.system("wget -P " + input_dir + " https://hmdb.ca/system/downloads/current/structures.zip")
+            os.system("unzip "+ input_dir + "structures.zip" + " -d " + input_dir)
             
         # Load the sdf
         dframe = PandasTools.LoadSDF((input_dir+"structures.sdf"),
@@ -124,10 +115,12 @@ def spec_postproc(input_dir, Source = "all"):
             csvname = (os.path.splitext(k)[0])+"proc"+".csv" # name for writing it in a new file
             hmdb_df.to_csv(csvname) #write
             HMDBcsvfiles2.append(csvname)# add to a list
+            dict1 = {'HMDBr': HMDBcsvfiles2} 
+            df = pd.DataFrame(dict1)
         
     #MassBank CSV Result file pre_processing
     
-    if Source == "mbank" or "all":
+    if Source == "mbank" or Source == "all":
         
         #open another csv path holding empty list, which will be filled 
         #with post processed csv results
@@ -154,113 +147,46 @@ def spec_postproc(input_dir, Source = "all"):
             csvname = (os.path.splitext(l)[0])+"proc"+".csv"
             mbank_df.to_csv(csvname)
             MassBankcsvfiles2.append(csvname)
+            
+            dict1 = {'MBr': MassBankcsvfiles2} 
+            df = pd.DataFrame(dict1)
     
     # GNPS CSV Result file pre_processing
-    if Source == "gnps" or "all":
-        
-        #currently only these subsets are removed from the names from GNPS
-        matches = ["M+","[M", "M-", "2M", "M*" "20.0", "50.0", "30.0", "40.0", "60.0", "70.0", "eV", "Massbank"
-               , "Spectral", "Match", "to", "from", "NIST14", "MoNA", '[IIN-based:',  '[IIN-based', 'on:', 'CCMSLIB00003136269]']
-        
+    if Source == "gnps" or Source == "all":
         #open another csv path holding empty list, which will be filled 
         #with post processed csv results
-<<<<<<< HEAD
-            # GNPS CSV Result file pre_processing
-    if Source == "gnps" or "all":
-        
-        #currently only these subsets are removed from the names from GNPS
-        matches = ["M+","[M", "M-", "2M", "M*" "20.0", "50.0", "30.0", "40.0", "60.0", "70.0", "eV", "Massbank"
-               , "Spectral", "Match", "to", "from", "NIST14", "MoNA", '[IIN-based:',  '[IIN-based', 'on:', 'CCMSLIB00003136269]']
-        
-        #open another csv path holding empty list, which will be filled 
-        #with post processed csv results
-=======
->>>>>>> 25c6491 (cleaned directory)
         GNPScsvfiles2 = []
-        
+        #currently only these subsets are removed from the names from GNPS
+        matches = ["M+","[M", "M-", "2M", "M*" "20.0", "50.0", "30.0", "40.0", "60.0", "70.0", "eV", "Massbank"
+               , "Spectral", "Match", "to", "from", "NIST14", "MoNA", '[IIN-based:',  '[IIN-based', 'on:', 'CCMSLIB00003136269]']
+
         for l in GNPScsvfiles:
-            
             gnps_df = pd.read_csv(l)
-    
+
             for i, row in gnps_df.iterrows():
-            
-<<<<<<< HEAD
-                if isNaN(gnps_df['GNPSSMILES'][i]):
-            
-                    # if compound name is present
-                    if not isNaN(gnps_df['GNPScompound_name'][i]):
-                    
-                        # split if there is a gap in the names
-                        string_chng = (gnps_df['GNPScompound_name'][i].split(" "))
-                    
-                        # create an empty list
-                        newstr = []
-                    
-                        # for each part of the string in the names
-                        chng = []
-                    
-                        for j in range(len(string_chng)):
-                            
-                            # check if the substrings re present in the matches and no - is present
-                            if not any(x in string_chng[j] for x in matches) and not '-' == string_chng[j]:
-                            
-                                # IF | and ! not in the substring
-                                if '|' not in string_chng[j] or '!' not in string_chng[j]:
-                                    newstr.append(string_chng[j])
-                                
-                                # if | present in the substring   
-                                elif '|' in string_chng[j]:
-                                
-                                    #split the string
-                                    jlen = string_chng[j].split("|")
-                                    #how many substrings are left now
-                                    lst = len(jlen)-1
-                                    #append this to chng
-                                    chng.append(jlen[lst])
-                                    break
-                                
-                        # now append chng to newstr            
-                        chng.append(' '.join(newstr))
-                        #save this as the correct name
-                        gnps_df.loc[i, "corr_names"] = chng[0]
-                    
-                        if not isNaN(gnps_df['GNPSSMILES'][i]):
-                            if chng == '':
-                                break
-                            elif gnps_df['GNPSSMILES'][i].isalpha():
-                                s = pcp.get_compounds(chng[0], 'name')
-                                if s:
-                                    for comp in s:
-                                        gnps_df["GNPSSMILES"][i] = comp.isomeric_smiles
-                                else:
-                                    gnps_df["GNPSSMILES"][i] = ''
-                    else:
-                        gnps_df["GNPSSMILES"][i] = ''
-=======
                 # if compound name is present
                 if not isNaN(gnps_df['GNPScompound_name'][i]):
-                    
                     # split if there is a gap in the names
                     string_chng = (gnps_df['GNPScompound_name'][i].split(" "))
-                    
+
                     # create an empty list
                     newstr = []
-                    
+
                     # for each part of the string in the names
                     chng = []
-                    
+
                     for j in range(len(string_chng)):
-                        
-                        # check if the substrings re present in the matches and no - is present
-                        if not any(x in string_chng[j] for x in matches) and not '-' == string_chng[j]:
-                            
+
+                        # check if the substrings are present in the matches and no - is present
+                        if not any(x in string_chng[j] for x in matches): #and not '-' == string_chng[j]:
+
                             # IF | and ! not in the substring
                             if '|' not in string_chng[j] or '!' not in string_chng[j]:
                                 newstr.append(string_chng[j])
-                                
+
                             # if | present in the substring   
                             elif '|' in string_chng[j]:
-                                
+
                                 #split the string
                                 jlen = string_chng[j].split("|")
                                 #how many substrings are left now
@@ -268,12 +194,11 @@ def spec_postproc(input_dir, Source = "all"):
                                 #append this to chng
                                 chng.append(jlen[lst])
                                 break
-                                
+
                     # now append chng to newstr            
                     chng.append(' '.join(newstr))
                     #save this as the correct name
                     gnps_df.loc[i, "corr_names"] = chng[0]
-                    
                     if not isNaN(gnps_df['GNPSSMILES'][i]):
                         if chng == '':
                             break
@@ -286,9 +211,22 @@ def spec_postproc(input_dir, Source = "all"):
                                 gnps_df["GNPSSMILES"][i] = ''
                 else:
                     gnps_df["GNPSSMILES"][i] = ''
->>>>>>> 25c6491 (cleaned directory)
-                    
+
             for i, row in gnps_df.iterrows():
+                if isNaN(gnps_df['GNPSSMILES'][i]):
+                    if "[" in gnps_df['GNPScompound_name'][i].split(" ")[-1]:
+                        string_chng = (gnps_df['GNPScompound_name'][i].split("["))
+                        #print(gnps_df['GNPScompound_name'][i])
+                        keep_names = []
+                        for j in range(len(string_chng)-1):
+                            gnps_df.loc[i, "corr_names"] == string_chng[j]
+                            s = pcp.get_compounds(string_chng[j], 'name')
+
+                            if s:
+                                for comp in s:
+                                    gnps_df["GNPSSMILES"][i] = comp.isomeric_smiles
+                            else:
+                                gnps_df["GNPSSMILES"][i] = ''
                 if not isNaN(gnps_df['GNPSSMILES'][i]):
                     try:
                         sx = pcp.get_compounds(gnps_df['GNPSSMILES'][i], 'smiles')
@@ -298,14 +236,13 @@ def spec_postproc(input_dir, Source = "all"):
                             gnps_df.loc[i, 'GNPSformula'] = comp.molecular_formula
                     except:
                         gnps_df.loc[i, 'GNPSformula'] = ''
-                        
-            csvname = (os.path.splitext(l)[0])+"_with_cor_names"+".csv"
+
+            csvname = (os.path.splitext(l)[0])+"proc"+".csv"
             gnps_df.to_csv(csvname)
             GNPScsvfiles2.append(csvname)
-<<<<<<< HEAD
-=======
-    
->>>>>>> 25c6491 (cleaned directory)
+            dict1 = {'GNPSr': GNPScsvfiles2} 
+            df = pd.DataFrame(dict1)
+        
 
     if Source == "all":
         
@@ -314,5 +251,11 @@ def spec_postproc(input_dir, Source = "all"):
 
         return(df)
 
-spec_postproc(sys.argv[1], sys.argv[2])
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python spec_postproc.py input_dir, Source = "all"")
+    else:
+        spec_postproc(sys.argv[1], sys.argv[2])
+
+
 
