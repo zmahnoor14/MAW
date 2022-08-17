@@ -28,11 +28,11 @@ docker build -t mawr .
 # go back to MAW
 cd ..
 cd ..
-pwd
-MAW
+pwd # your local MAW Directory
+/Users/my_name/Github/MAW
 # enter the shell for the container
 docker run --name container_name_of_your_choice -v $(pwd):/opt/workdir -i -t mawr /bin/bash
-```shell
+```
 
 
 
