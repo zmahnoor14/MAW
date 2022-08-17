@@ -8,13 +8,15 @@
 
 This repository hosts Metabolome Annotation Workflow (MAW). The workflow takes MS2 .mzML format data files as an input in R. It performs spectral database dereplication using R Package [Spectra](https://rformassspectrometry.github.io/Spectra/) and compound database dereplication using [SIRIUS](https://bio.informatik.uni-jena.de/software/sirius/). Final candidate selection is done in Python using [RDKit](https://www.rdkit.org/) and [PubChemPy](https://pubchempy.readthedocs.io/en/latest/).The classification of the tentative candidates from the input data are classified using [CANOPUS](https://bio.informatik.uni-jena.de/software/canopus/) and [ClassyFire](http://classyfire.wishartlab.com/).
 
-## Install MAW with Docker container
+## Install MAW
+
 Install Docker on your [MAC OS](https://www.docker.com/get-started/) OR on [Linux](https://docs.docker.com/engine/install/ubuntu/). <br>
-Since MAW is implemented in R and Python so we have two separate Docker images.To create a R-docker image, the following files are required:
+
+Since MAW is implemented in R and Python so we have two separate Docker images. To create a R-docker image, the following files are required which are present in MAW/R/cwl:
 1. Dockerfile
 2. Workflow_R_Functions.r
 3. install_packages.R <br>
-<<<<<<< HEAD
+
 These files will create a docker image on your local system with the following command:
 ```shell
 # build the image
@@ -25,11 +27,12 @@ docker run -v /workdir:/workdir -i -t -p 8888:8888 maw /bin/bash -c "jupyter not
 These files can be accessed via the folder R/cwl/.  A docker image will be created on your local system with these files using following command:
 ```shell
 # clone the reporistory
+git clone https://github.com/zmahnoor14/MAW.git
 # go to the directory
 cd MAW/R/cwl
 # build the image
 docker build -t mawr .
-# run MAW in a jupyter notebook; change /workdir to your working directory
+# enter the shell for the container
 docker run --name container_name_of_your_choice -v $(pwd):/opt/workdir -i -t mawr /bin/bash
 >>>>>>> refs/remotes/origin/main
 ```
