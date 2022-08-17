@@ -35,6 +35,9 @@ docker run --name container_name_of_your_choice -v $(pwd):/opt/workdir -i -t maw
 ```
 
 
+## Use Case
+
+Download example .mzML file from this google drive link - [Link to MAW_ExampleData](https://drive.google.com/drive/folders/19huIu1sQ-bxgdx1C4nXZ75B_3eLpC9k-?usp=sharing)
 
 ## More information about our research group
 
