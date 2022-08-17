@@ -37,13 +37,21 @@ docker run --name container_name_of_your_choice -v $(pwd):/opt/workdir -i -t maw
 
 ## Use Case
 
-1. Download example .mzML file from this google drive link - [Link to MAW_ExampleData](https://drive.google.com/drive/folders/19huIu1sQ-bxgdx1C4nXZ75B_3eLpC9k-?usp=sharing). This file should be in the same folder as MAW.
+1. Download example .mzML file from this google drive link - [Link to MAW_ExampleData](https://drive.google.com/drive/folders/19huIu1sQ-bxgdx1C4nXZ75B_3eLpC9k-?usp=sharing). This file should be in the same folder as MAW/Tutorial.
 2. Check the following files: MAW/Workflow_R_Workflow.r, MAW/Workflow_Python_Workflow.py
 3. Check Tutorial files: MAW/Tutorial/Workflow_R_Script.r, MAW/Tutorial/Workflow_Python_Script.py
 4. (optional to point 3)If you want to run Jupyter notebooks then check for following files: MAW/Tutorial/Workflow_R_Script.ipynb,  MAW/Tutorial/Workflow_Python_Script.ipynb
-5. If following point 3, then MAW can simply be ran using Rscript and python3 commands within Docker container. To do so, following commands are used:
-6. 
-
+5. If following point 3, then MAW can simply be run using Rscript and python3 commands within Docker container. To do so, following commands are used:
+```shell
+# enter the shell for the container
+docker run --name container_name_of_your_choice -v $(pwd):/opt/workdir -i -t mawr /bin/bash
+#opt/workdir$
+# for R
+Rscript --no-save --no-restore --verbose Workflow_R_Script.r >outputFile.txt 2>&1 
+# for Python
+python3 Workflow_Python_Script.py
+```
+For details on using the workflow on Jupyter notebooks in a more interactive mode, please follow the Tutorial part on wiki page of this repository
 
 ## More information about our research group
 
