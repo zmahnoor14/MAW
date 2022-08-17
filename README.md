@@ -51,44 +51,6 @@ docker run -v $(pwd):/mnt -i -t maw /bin/bash
 ```
 You are ready to use the workflow on a docker container on your system
 
-## Install MAW with Conda Environment
-To create a conda environment, install conda from (https://www.anaconda.com/products/distribution). Once installed, type:
-```shell
-conda init # add to bashrc
-conda
-```
-To install the packages for MAW, using the maw.yml environment file which is created using conda, follow the command:
-```
-conda env create -f maw.yml
-activate mawRpy # which is the name of the environment in the maw.yml file
-```
-Currently, MsBackendMsp requires R 4.2, but to avoid the need to install R 4.2 which is unavailable on conda currently), use Docker image. The following code is only possible if you have an installation folder for MsBackednMsp saved (as it was previously available to download with 4.1.2). Follow the following instructions on the terminal to make the package available in your current R installation if you have a folder installed.
-```shell
-conda activate myenv
-echo $CONDA_PREFIX
-# you will receive a path, where you can keep the MsBackendMsp folder
-```
-There are some packages that are not available via any channel on conda OR there are errors downloading these packages with conda. To install such R packages, run the install_packages.R file within the mawRpy environment. For Python, install the following packages using ```pip3 install``` command.
-```
-pip3 install rdkit-pypi pubchempy requests_cache pybatchclassyfire
-```
-
-### Install SIRIUS
-If the conda environment installation method is used, please install the latest SIRIUS version with <https://bio.informatik.uni-jena.de/software/sirius/> for Linux or MAC OS.
-1. Installation with Linux
-  ```shell
-  echo $PATH # check which is already added to PATH variable
-  sudo emacs /etc/environment
-  PATH="usr/s_cost/sirius-gui/bin"
-  source /etc/environment
-  ```
-2. Installation with MAC
-  To use this command line, add the following path to either .bash_profile or .zprofile. You can find these files easily using FileZilla <https://filezilla-project.org/>. open your user name folder. Open your .bash_profile, add this to the $PATH variable.
-  ```shell
-  PATH="/usr/s_cost/sirius.app/Contents/MacOS/:${PATH}"
-  export PATH
-  ```
-The path may differ, so check your Sirius installation folder to get the correct path name.
 
 ## More information about our research group
 
