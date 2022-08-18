@@ -2143,7 +2143,7 @@
 # In[ ]:
 
 
-def suspectListScreening(input_dir, slistcsv, SpectralDB_Results, db = "all"):
+#def suspectListScreening(input_dir, slistcsv, SpectralDB_Results, db = "all"):
     
 #     """suspectListScreening runs tanoimoto similarity score to between
 #     compounds from the results from spectral DBs and suspect list
