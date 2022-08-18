@@ -555,10 +555,11 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                                         ALL_structure_csv.loc[structure, 'numExplainedPeaks'] = ALL_formula_csv['numExplainedPeaks'][formula]
                                         ALL_structure_csv.loc[structure, 'explainedIntensity'] = ALL_formula_csv['explainedIntensity'][formula]
                                         ALL_structure_csv.loc[structure, "SuspectListEntry"] = "FALSE"
-                                        if ALL_formula_csv["molecularFormula"][formula] == ALL_Canopus["molecularFormula"][0]:
-                                            ALL_structure_csv.loc[structure, 'superclass'] = ALL_Canopus['superclass'][0]
-                                            ALL_structure_csv.loc[structure, 'class'] = ALL_Canopus['class'][0]
-                                            ALL_structure_csv.loc[structure, 'subclass'] = ALL_Canopus['subclass'][0]
+                                        if len(ALL_Canopus)>0:
+                                            if ALL_formula_csv["molecularFormula"][formula] == ALL_Canopus["molecularFormula"][0]:
+                                                ALL_structure_csv.loc[structure, 'superclass'] = ALL_Canopus['superclass'][0]
+                                                ALL_structure_csv.loc[structure, 'class'] = ALL_Canopus['class'][0]
+                                                ALL_structure_csv.loc[structure, 'subclass'] = ALL_Canopus['subclass'][0]
 
                             # Add the structure and formula files together
                             for structure_sl, rows in SL_structure_csv.iterrows():
@@ -568,10 +569,11 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                                         SL_structure_csv.loc[structure_sl, 'numExplainedPeaks'] = SL_formula_csv['numExplainedPeaks'][formula_sl]
                                         SL_structure_csv.loc[structure_sl, 'explainedIntensity'] = SL_formula_csv['explainedIntensity'][formula_sl]
                                         SL_structure_csv.loc[structure_sl, "SuspectListEntry"] = "TRUE"   
-                                        if SL_formula_csv["molecularFormula"][formula_sl] == SL_Canopus["molecularFormula"][0]:
-                                            SL_structure_csv.loc[structure_sl, 'superclass'] = SL_Canopus['superclass'][0]
-                                            SL_structure_csv.loc[structure_sl, 'class'] = SL_Canopus['class'][0]
-                                            SL_structure_csv.loc[structure_sl, 'subclass'] = SL_Canopus['subclass'][0] 
+                                        if len(SL_Canopus)>0:
+                                            if SL_formula_csv["molecularFormula"][formula_sl] == SL_Canopus["molecularFormula"][0]:
+                                                SL_structure_csv.loc[structure_sl, 'superclass'] = SL_Canopus['superclass'][0]
+                                                SL_structure_csv.loc[structure_sl, 'class'] = SL_Canopus['class'][0]
+                                                SL_structure_csv.loc[structure_sl, 'subclass'] = SL_Canopus['subclass'][0] 
 
 
                             # after formula and structure have been merged, merge SL and ALL results
@@ -601,10 +603,11 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                                         ALL_structure_csv.loc[structure, 'numExplainedPeaks'] = ALL_formula_csv['numExplainedPeaks'][formula]
                                         ALL_structure_csv.loc[structure, 'explainedIntensity'] = ALL_formula_csv['explainedIntensity'][formula]
                                         ALL_structure_csv.loc[structure, "SuspectListEntry"] = "FALSE"
-                                        if ALL_formula_csv["molecularFormula"][formula] == ALL_Canopus["molecularFormula"][0]:
-                                            ALL_structure_csv.loc[structure, 'superclass'] = ALL_Canopus['superclass'][0]
-                                            ALL_structure_csv.loc[structure, 'class'] = ALL_Canopus['class'][0]
-                                            ALL_structure_csv.loc[structure, 'subclass'] = ALL_Canopus['subclass'][0]
+                                        if len(ALL_Canopus)>0:
+                                            if ALL_formula_csv["molecularFormula"][formula] == ALL_Canopus["molecularFormula"][0]:
+                                                ALL_structure_csv.loc[structure, 'superclass'] = ALL_Canopus['superclass'][0]
+                                                ALL_structure_csv.loc[structure, 'class'] = ALL_Canopus['class'][0]
+                                                ALL_structure_csv.loc[structure, 'subclass'] = ALL_Canopus['subclass'][0]
 
                             for str_siriusA, row in ALL_structure_csv.iterrows():
                                 if not str_can_score(ALL_structure_csv, str_siriusA):
@@ -622,10 +625,11 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                             if os.path.exists(sub_sub_dirALL_formula_can) and pd.read_csv(sub_sub_dirALL_formula_can, sep = "\t"):
                                 ALL_formula_csv = pd.read_csv(sub_sub_dirALL_formula_can, sep = "\t")
                                 ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep = "\t")
-                                for formula, rows in ALL_formula_csv.iterrows():
-                                    ALL_formula_csv.loc[formula, 'superclass'] = ALL_Canopus['superclass'][0]
-                                    ALL_formula_csv.loc[formula, 'class'] = ALL_Canopus['class'][0]
-                                    ALL_formula_csv.loc[formula, 'subclass'] = ALL_Canopus['subclass'][0]
+                                if len(ALL_Canopus)>0:
+                                    for formula, rows in ALL_formula_csv.iterrows():
+                                        ALL_formula_csv.loc[formula, 'superclass'] = ALL_Canopus['superclass'][0]
+                                        ALL_formula_csv.loc[formula, 'class'] = ALL_Canopus['class'][0]
+                                        ALL_formula_csv.loc[formula, 'subclass'] = ALL_Canopus['subclass'][0]
 
                                 for for_siriusA, row in ALL_formula_csv.iterrows():
                                     if not ALL_formula_csv['explainedIntensity'][for_siriusA] >= exp_int:
@@ -663,11 +667,11 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                                         ALL_structure_csv.loc[structure, 'numExplainedPeaks'] = ALL_formula_csv['numExplainedPeaks'][formula]
                                         ALL_structure_csv.loc[structure, 'explainedIntensity'] = ALL_formula_csv['explainedIntensity'][formula]
                                         ALL_structure_csv.loc[structure, "SuspectListEntry"] = "FALSE"
-
-                                        if ALL_formula_csv["molecularFormula"][formula] == ALL_Canopus["molecularFormula"][0]:
-                                            ALL_structure_csv.loc[structure, 'superclass'] = ALL_Canopus['superclass'][0]
-                                            ALL_structure_csv.loc[structure, 'class'] = ALL_Canopus['class'][0]
-                                            ALL_structure_csv.loc[structure, 'subclass'] = ALL_Canopus['subclass'][0]
+                                        if len(ALL_Canopus)>0:
+                                            if ALL_formula_csv["molecularFormula"][formula] == ALL_Canopus["molecularFormula"][0]:
+                                                ALL_structure_csv.loc[structure, 'superclass'] = ALL_Canopus['superclass'][0]
+                                                ALL_structure_csv.loc[structure, 'class'] = ALL_Canopus['class'][0]
+                                                ALL_structure_csv.loc[structure, 'subclass'] = ALL_Canopus['subclass'][0]
 
                             for str_siriusA, row in ALL_structure_csv.iterrows():
                                 if not str_can_score(ALL_structure_csv, str_siriusA):
@@ -685,10 +689,11 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                             if os.path.exists(sub_sub_dirALL_formula_can) and pd.read_csv(sub_sub_dirALL_formula_can, sep = "\t"):
                                 ALL_formula_csv = pd.read_csv(sub_sub_dirALL_formula_can, sep = "\t")
                                 ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep = "\t")
-                                for formula, rows in ALL_formula_csv.iterrows():
-                                    ALL_formula_csv.loc[formula, 'superclass'] = ALL_Canopus['superclass'][0]
-                                    ALL_formula_csv.loc[formula, 'class'] = ALL_Canopus['class'][0]
-                                    ALL_formula_csv.loc[formula, 'subclass'] = ALL_Canopus['subclass'][0]
+                                if len(ALL_Canopus)>0:
+                                    for formula, rows in ALL_formula_csv.iterrows():
+                                        ALL_formula_csv.loc[formula, 'superclass'] = ALL_Canopus['superclass'][0]
+                                        ALL_formula_csv.loc[formula, 'class'] = ALL_Canopus['class'][0]
+                                        ALL_formula_csv.loc[formula, 'subclass'] = ALL_Canopus['subclass'][0]
 
                                 for for_siriusA, row in ALL_formula_csv.iterrows():
                                     if not ALL_formula_csv['explainedIntensity'][for_siriusA] >= exp_int:
