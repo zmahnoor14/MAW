@@ -495,7 +495,7 @@ def spec_postproc(input_dir, Source = "all"):
 
 # # SIRIUS Post Processing
 
-# In[9]:
+# In[7]:
 
 
 def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
@@ -566,7 +566,7 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                             SL_Canopus_csv = files_for_mz[1] + "/canopus_summary.tsv"
 
                         # if both structure files exist and they have more than 0 rows
-                        if os.path.exists(sub_sub_dirSL_structure_can) and len(pd.read_csv(sub_sub_dirSL_structure_can, sep = "\t"))>0 and os.path.exists(sub_sub_dirALL_structure_can) and len(pd.read_csv(sub_sub_dirALL_structure_can, sep = "\t")):
+                        if os.path.exists(sub_sub_dirSL_structure_can) and len(pd.read_csv(sub_sub_dirSL_structure_can, sep = "\t"))>0 and os.path.exists(sub_sub_dirALL_structure_can) and len(pd.read_csv(sub_sub_dirALL_structure_can, sep = "\t"))>0:
 
                             # read strcuture and formula tsv files for both SL and ALL
                             SL_structure_csv = pd.read_csv(sub_sub_dirSL_structure_can, sep = "\t")
@@ -613,15 +613,12 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                                 if not str_can_score(all_sl_db, str_sirius):
                                     all_sl_db = all_sl_db.drop(str_sirius, inplace=False)
 
-                            if not os.path.exists(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]):
-                                os.mkdir(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1])
-
-                            result_sirius_name = (sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"structure_"+json_dirALL[0].split("_")[-1] + ".csv")
+                            result_sirius_name = (sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"structure.csv")
                             msp.loc[mz, "sirius_result_dir"] = result_sirius_name.replace(input_dir, ".")
-                            all_sl_db.to_csv(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"structure_"+json_dirALL[0].split("_")[-1] + ".csv")
+                            all_sl_db.to_csv(result_sirius_name)
 
                         # if only ALL structure file exists and they have more than 0 rows
-                        elif not (os.path.exists(sub_sub_dirSL_structure_can) and len(pd.read_csv(sub_sub_dirSL_structure_can, sep = "\t"))>0) and os.path.exists(sub_sub_dirALL_structure_can) and len(pd.read_csv(sub_sub_dirALL_structure_can, sep = "\t")):
+                        elif not (os.path.exists(sub_sub_dirSL_structure_can) and len(pd.read_csv(sub_sub_dirSL_structure_can, sep = "\t"))>0) and os.path.exists(sub_sub_dirALL_structure_can) and len(pd.read_csv(sub_sub_dirALL_structure_can, sep = "\t"))>0:
                             ALL_structure_csv = pd.read_csv(sub_sub_dirALL_structure_can, sep = "\t")
                             ALL_formula_csv = pd.read_csv(sub_sub_dirALL_formula_can, sep = "\t")
                             ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep = "\t")
@@ -639,21 +636,17 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                                                 ALL_structure_csv.loc[structure, 'superclass'] = ALL_Canopus['superclass'][0]
                                                 ALL_structure_csv.loc[structure, 'class'] = ALL_Canopus['class'][0]
                                                 ALL_structure_csv.loc[structure, 'subclass'] = ALL_Canopus['subclass'][0]
-
+                            # scoring function
                             for str_siriusA, row in ALL_structure_csv.iterrows():
                                 if not str_can_score(ALL_structure_csv, str_siriusA):
                                     ALL_structure_csv = ALL_structure_csv.drop(str_siriusA, inplace=False)
 
-
-                            if not os.path.exists(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]):
-                                os.mkdir(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1])
-
-                            result_sirius_name = (sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"structure_"+json_dirALL[0].split("_")[-1] + ".csv")
+                            result_sirius_name = (sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"structure.csv")
                             msp.loc[mz, "sirius_result_dir"] = result_sirius_name.replace(input_dir, ".")
-                            ALL_structure_csv.to_csv(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"structure_"+json_dirALL[0].split("_")[-1] + ".csv")
+                            ALL_structure_csv.to_csv(result_sirius_name)
 
-                        elif not(os.path.exists(sub_sub_dirSL_structure_can) and len(pd.read_csv(sub_sub_dirSL_structure_can, sep = "\t"))>0 and os.path.exists(sub_sub_dirALL_structure_can) and len(pd.read_csv(sub_sub_dirALL_structure_can, sep = "\t"))):
-                            if os.path.exists(sub_sub_dirALL_formula_can) and pd.read_csv(sub_sub_dirALL_formula_can, sep = "\t"):
+                        elif not(os.path.exists(sub_sub_dirSL_structure_can) and len(pd.read_csv(sub_sub_dirSL_structure_can, sep = "\t"))>0 and os.path.exists(sub_sub_dirALL_structure_can) and len(pd.read_csv(sub_sub_dirALL_structure_can, sep = "\t"))>0):
+                            if os.path.exists(sub_sub_dirALL_formula_can) and len(pd.read_csv(sub_sub_dirALL_formula_can, sep = "\t"))>0:
                                 ALL_formula_csv = pd.read_csv(sub_sub_dirALL_formula_can, sep = "\t")
                                 ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep = "\t")
                                 if len(ALL_Canopus)>0:
@@ -665,13 +658,11 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                                 for for_siriusA, row in ALL_formula_csv.iterrows():
                                     if not ALL_formula_csv['explainedIntensity'][for_siriusA] >= exp_int:
                                         ALL_formula_csv = ALL_formula_csv.drop(for_siriusA, inplace=False)
-                                if not os.path.exists(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]):
-                                    os.mkdir(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1])
 
-                                result_sirius_name = (sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"formula_"+json_dirALL[0].split("_")[-1] + ".csv")
+                                result_sirius_name = (sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"formula.csv")
                                 msp.loc[mz, "sirius_result_dir"] = result_sirius_name.replace(input_dir, ".")
 
-                                ALL_formula_csv.to_csv(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"formula_"+json_dirALL[0].split("_")[-1] + ".csv")
+                                ALL_formula_csv.to_csv(result_sirius_name)
 
                             else:
                                 pass
@@ -707,17 +698,15 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                             for str_siriusA, row in ALL_structure_csv.iterrows():
                                 if not str_can_score(ALL_structure_csv, str_siriusA):
                                     ALL_structure_csv = ALL_structure_csv.drop(str_siriusA, inplace=False)
-                            if not os.path.exists(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]):
-                                os.mkdir(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1])
 
-                            result_sirius_name = (sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"structure_"+json_dirALL[0].split("_")[-1] + ".csv")
+                            result_sirius_name = (sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"structure.csv")
                             msp.loc[mz, "sirius_result_dir"] = result_sirius_name.replace(input_dir, ".")
 
-                            ALL_structure_csv.to_csv(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"structure_"+json_dirALL[0].split("_")[-1] + ".csv")
+                            ALL_structure_csv.to_csv(result_sirius_name)
 
 
-                        elif not (os.path.exists(sub_sub_dirALL_structure_can) and len(pd.read_csv(sub_sub_dirALL_structure_can, sep = "\t"))):
-                            if os.path.exists(sub_sub_dirALL_formula_can) and pd.read_csv(sub_sub_dirALL_formula_can, sep = "\t"):
+                        elif not (os.path.exists(sub_sub_dirALL_structure_can) and len(pd.read_csv(sub_sub_dirALL_structure_can, sep = "\t"))>0):
+                            if os.path.exists(sub_sub_dirALL_formula_can) and len(pd.read_csv(sub_sub_dirALL_formula_can, sep = "\t"))>0:
                                 ALL_formula_csv = pd.read_csv(sub_sub_dirALL_formula_can, sep = "\t")
                                 ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep = "\t")
                                 if len(ALL_Canopus)>0:
@@ -729,13 +718,11 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                                 for for_siriusA, row in ALL_formula_csv.iterrows():
                                     if not ALL_formula_csv['explainedIntensity'][for_siriusA] >= exp_int:
                                         ALL_formula_csv = ALL_formula_csv.drop(for_siriusA, inplace=False)
-                                if not os.path.exists(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]):
-                                    os.mkdir(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1])
 
-                                result_sirius_name = (sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"formula_"+json_dirALL[0].split("_")[-1] + ".csv")
+                                result_sirius_name = (sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"formula.csv")
                                 msp.loc[mz, "sirius_result_dir"] = result_sirius_name.replace(input_dir, ".")
 
-                                ALL_formula_csv.to_csv(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"formula_"+json_dirALL[0].split("_")[-1] + ".csv")
+                                ALL_formula_csv.to_csv(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"formula.csv")
 
                             else:
                                 pass
