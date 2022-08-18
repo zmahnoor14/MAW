@@ -342,7 +342,7 @@ def spec_postproc(input_dir, Source = "all"):
                         if not os.path.exists(input_dir+"/structures.sdf"):
                             #download SDF structures
                             os.system("wget -P " + input_dir + " https://hmdb.ca/system/downloads/current/structures.zip")
-                            os.system("unzip "+ input_dir + "structures.zip" + " -d " + input_dir)
+                            os.system("unzip "+ input_dir + "/structures.zip" + " -d " + input_dir)
                         # Load the sdf
                         dframe = PandasTools.LoadSDF((input_dir+"/structures.sdf"),
                                                      idName='HMDB_ID',smilesName='SMILES',
