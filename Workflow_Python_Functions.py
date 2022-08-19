@@ -876,14 +876,13 @@ def MCSS_for_SpecDB(input_dir, Source):
 # In[13]:
 
 
-def MCSS_for_SIRIUS(input_dir):
+def MCSS_for_SIRIUS(input_dir):    
     def isNaN(string):
         return string != string
     # Describe the heavy atoms to be considered for MCSS
     heavy_atoms = ['C', 'N', 'P', 'O', 'S']
     #list all files and directories
     for entry in os.listdir(input_dir):
-
         if os.path.isdir(os.path.join(input_dir, entry)):
             #for sirius
             sirius_msp_csv = input_dir + "/" + entry + "/insilico/MS1DATA.csv"
@@ -891,16 +890,14 @@ def MCSS_for_SIRIUS(input_dir):
             if os.path.exists(sirius_msp_csv) and os.path.exists(sub_dir):
                 sirius_msp = pd.read_csv(sirius_msp_csv) 
                 sirius_files = (glob.glob(sub_dir))
-                for mz, row in sirius_msp.iterrows():
-                    for sir_file in sirius_files:
-                        r = [s for s in os.listdir(sir_file) if "results" in s][0]
-                        sirius_f = (glob.glob((sir_file+r)+'/*.csv'))
-                        if str(sirius_msp["id_X"][mz].split("_")[1]) in sirius_f[0]:
-                            print(sirius_f)
-                            if len(sirius_f) == 1:
-                                s_f = pd.read_csv(sirius_f[0])
+                for sir_file in sirius_files:
+                    r = [s for s in os.listdir(sir_file) if "structure" in s]
+                    for filenames in r:
+                        sirius_f = sir_file+filenames
+                        for mz, row in sirius_msp.iterrows():
+                            if str(sirius_msp["id_X"][mz].split("_")[1]) in sirius_f:
+                                s_f = pd.read_csv(str(sirius_f))
                                 if len(s_f)>0 and 'smiles' in s_f.columns.values.tolist():
-
                                     S_Smiles = s_f["smiles"]
                                     #create empty list of MB top smiles
                                     SIRIUS_Mol = []
