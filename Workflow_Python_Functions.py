@@ -862,7 +862,6 @@ def MCSS_for_SpecDB(input_dir, Source):
                                                     spec_msp.loc[mz, 'MB_MCSSstring'] = res.smartsString
                                                     spec_msp.loc[mz, 'MB_MCSS_SMILES'] = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
                     spec_msp.to_csv(specdb_msp_file[0])
-            return(specdb_msp_file)
 
 
 # In[12]:

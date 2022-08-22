@@ -13,7 +13,7 @@ source(paste(input_dir, "/Workflow_R_Functions.r", sep = ""))
 input_table <- data.frame(ms2_rfilename(input_dir))
 #input_table
 
-for (i in 11:nrow(input_table)){
+for (i in 1:nrow(input_table)){
     #Preprocess and Read the mzMLfiles
     spec_pr <- spec_Processing(input_dir,
                                input_table[i, "mzml_files"], 
