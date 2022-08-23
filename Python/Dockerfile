@@ -10,7 +10,11 @@ RUN wget https://github.com/boecker-lab/sirius/releases/download/v5.5.4/sirius-5
 
 ENV PATH="/usr/local/sirius/bin:${PATH}"
 
+WORKDIR /opt/workdir
+RUN mkdir /opt/workdir/data
+
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
-WORKDIR /opt/workdir
+COPY Workflow_Python_Functions.py .
+COPY Workflow_Python_Script.py .

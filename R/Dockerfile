@@ -23,3 +23,4 @@ COPY install_packages.R .
 RUN Rscript install_packages.R
 
 COPY Workflow_R_Functions.r .
+COPY Workflow_R_Script.r .
