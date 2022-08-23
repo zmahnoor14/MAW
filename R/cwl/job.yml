@@ -1,7 +1,0 @@
-src:
-  class: File
-  path: /Users/lgadelha/repositories/MAW/R/exampleCWL.r
-mzml_files: [
-  {class: File,
-   path: /Users/lgadelha/MAW_data/VN_211016_pipecolate.mzML}
-]

@@ -108,9 +108,6 @@ download_specDB_new <- function(input_dir, db = "all"){
     }
 }
 
-
-
-
 download_specDB <- function(input_dir, db = "all"){
 
     if (dir.exists(input_dir)){
@@ -273,7 +270,6 @@ download_specDB <- function(input_dir, db = "all"){
 }
 
 
-
 ##-----------------------------------------------------------------
 ## filter intensity 
 ##-----------------------------------------------------------------
@@ -297,12 +293,6 @@ norm_int <- function(y, ...) {
     y[, "intensity"] <- 100 * y[, "intensity"] / maxint
     y
 }
-
-
-
-
-
-
 
 
 ## Specifying a function for creating result directories for each input mzml
@@ -348,9 +338,6 @@ ms2_rfilename<- function(input_dir){
 
 
 
-
-
-
 #' All spectra in mzML files preprocessing, return two outputs, pre-processed MS2 spectra and all precursor masses
 # x is one mzML file
 spec_Processing <- function(input_dir, x, result_dir){
@@ -389,9 +376,6 @@ spec_Processing <- function(input_dir, x, result_dir){
     }
     
 }
-
-
-
 
 
 spec2_Processing <- function(z, obj, spec = "spec_all", ppmx = 15){
@@ -467,10 +451,6 @@ spec2_Processing <- function(z, obj, spec = "spec_all", ppmx = 15){
 
 
 
-
-
-
-
 ##-----------------------------------------------------------------
 ## Extract peaksdata in a dataframe
 ##-----------------------------------------------------------------
@@ -540,9 +520,6 @@ peakdf <- function(a, b, ppmx){
     }
     #output is a dataframe with mz and intensity from db spectra and query spectra and their difference
 }
-
-
-
 
 
 
@@ -2551,10 +2528,6 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
 
 
-
-
-
-
 #' Extract MS2 Fragment peaks
 # This functon returns a dataframe and stores a csv file 
     # the directory for csv file is input_dir + /insilico/MS2DATA.csv
@@ -2680,8 +2653,6 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
     write.csv(first_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS2DATA.csv', sep = ""), "."), sep =""))
     return(first_list)
 }
-
-
 
 
 #cam_funcMode <- function(path, pattern = ".mzML"){
@@ -2854,7 +2825,6 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
 
 
 
-
 cam_func <- function(input_dir, f, ms2features){
     modes_file <- read_csv(ms2features)
     mode = unique(modes_file["pol"])
@@ -2926,8 +2896,6 @@ cam_func <- function(input_dir, f, ms2features){
     }
     return(peaklist)
 }
-
-
 
 # Extract isotopic peaks for each pre_mz
 # The input is x = first_list (from ms2peaks function) and y = camera results 
@@ -3040,7 +3008,6 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile){
     }
     
 }
-
 
 
 
@@ -3538,8 +3505,6 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile){
 
 
 
-
-
 # input x is result from either ms1_peaks
 # SL is if a suspect list is present
 
@@ -3752,9 +3717,6 @@ sirius_param <- function(x, result_dir, input_dir, SL = FALSE){
 }
 
 
-
-
-
 run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, SL_path, candidates = 30, profile){
     files <- read.csv(files, sep = "\t")
 
@@ -3856,7 +3818,6 @@ sirius_adduct <- function(input_dir, x, SL = TRUE){
     write.csv(msdata, paste(input_dir, str_remove(x, "."), "/insilico/MS1DATAsirius.csv", sep = ''))
     return(msdata)
 }
-
 
 
 
@@ -3962,8 +3923,6 @@ metfrag_param <- function(x, result_dir, input_dir, sl_mtfrag, SL = TRUE, ppm_ma
 }
 
 
-
-
 run_metfrag <- function(met_param){
     line <- system.time({
     
@@ -4003,6 +3962,9 @@ run_metfrag <- function(met_param){
     }
     
 }
+
+
+
 
 
 

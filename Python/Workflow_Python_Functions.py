@@ -924,7 +924,7 @@ def MCSS_for_SIRIUS(input_dir):
 
 # # Suspect list Screening with Spec DBs
 
-# In[14]:
+# In[1]:
 
 
 def SuspectListScreening(input_dir, SuspectListPath, tanimoto, Source):
@@ -1080,7 +1080,7 @@ def chemMN_CandidateSelection(df, tn_sim = 0.85):
                 })
 
             except Exception as e:
-                print(e.string)
+                #print(e.string)
                 pass
 
     # save chemical similarities                    
