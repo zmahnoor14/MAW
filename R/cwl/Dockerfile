@@ -15,10 +15,11 @@ RUN wget https://github.com/boecker-lab/sirius/releases/download/v4.9.12/sirius-
 
 ENV PATH="/usr/local/sirius/bin:${PATH}"
 
+
 WORKDIR /opt/workdir
+RUN mkdir /opt/workdir/data
 
 COPY install_packages.R .
 RUN Rscript install_packages.R
 
 COPY Workflow_R_Functions.r .
-
