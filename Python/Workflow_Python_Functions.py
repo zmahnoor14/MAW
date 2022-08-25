@@ -725,9 +725,9 @@ def sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150):
                                 ALL_formula_csv.to_csv(sub_dir+"results_for_"+json_dirALL[0].split("_")[-1]+"_"+"formula.csv")
 
                             else:
-                                pass
+                                print("no file for formula")
                         else:
-                            pass
+                            print("no file for structure or formula")
                 msp.to_csv(msp_csv)
                 
 
