@@ -8,7 +8,7 @@
 # coding: utf-8
 
 #!/usr/bin/env python
-#make executable in bash chmod +x PyRun
+# make executable in bash chmod +x PyRun
 
 # Libraries
 import os
@@ -17,7 +17,7 @@ import re
 
 import sys
 
-import csv 
+import csv
 import time
 import json
 
@@ -31,9 +31,20 @@ from rdkit.Chem import AllChem
 from rdkit.Chem import rdFMCS
 from rdkit.Chem import PandasTools
 
+
+def main():
+    if len(sys.argv) != 4:
+        print(
+            "Usage python3 SMILESscreening.py input_directory resultcsv complist listname"
+        )
+    else:
+        SMILESscreening(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+
+
 def SMILESscreening(input_dir, resultcsv, complist, listname):
     def isNaN(string):
         return string != string
+
     """SMILESscreening takes a list of SMILES
 
     Parameters:
@@ -52,24 +63,41 @@ def SMILESscreening(input_dir, resultcsv, complist, listname):
     checkSMILES_validity(input_dir = "usr/project/", results)
 
     """
-    
+
     results = pd.read_csv(resultcsv)
     with open(complist, "r") as text_file:
-        cd = text_file.read().split('\n')
-    
+        cd = text_file.read().split("\n")
+
     for i, row in results.iterrows():
-        if not isNaN(results['SMILES'][i]):
-            if 'invalid_SMILES' not in results['SMILES'][i] and 'invalid_chemistry' not in results['SMILES'][i]:
+        if not isNaN(results["SMILES"][i]):
+            if (
+                "invalid_SMILES" not in results["SMILES"][i]
+                and "invalid_chemistry" not in results["SMILES"][i]
+            ):
                 for j in cd:
                     if not isNaN(j):
-                        CGms = [Chem.MolFromSmiles(results['SMILES'][i]), Chem.MolFromSmiles(j)]
-                        CGfps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in CGms]
-                        CGtn = DataStructs.FingerprintSimilarity(CGfps[0],CGfps[1])
-                        if CGtn == 1 and listname not in results['Annotation_Source'][i]:
-                            results['Annotation_Source'][i] = results['Annotation_Source'][i] + ', ' + listname
-    
+                        CGms = [
+                            Chem.MolFromSmiles(results["SMILES"][i]),
+                            Chem.MolFromSmiles(j),
+                        ]
+                        CGfps = [
+                            AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=1024)
+                            for x in CGms
+                        ]
+                        CGtn = DataStructs.FingerprintSimilarity(CGfps[0], CGfps[1])
+                        if (
+                            CGtn == 1
+                            and listname not in results["Annotation_Source"][i]
+                        ):
+                            results["Annotation_Source"][i] = (
+                                results["Annotation_Source"][i] + ", " + listname
+                            )
 
-    frame.to_csv(input_dir + "MetabolomicsResults/final_curationListVS"+listname+".csv")
-    return(frame)
-SMILESscreening(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    frame.to_csv(
+        input_dir + "MetabolomicsResults/final_curationListVS" + listname + ".csv"
+    )
+    return frame
 
+
+if __name__ == "__main__":
+    main()
