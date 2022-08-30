@@ -2,7 +2,7 @@
 # coding: utf-8
 
 #!/usr/bin/env python
-#make executable in bash chmod +x PyRun
+# make executable in bash chmod +x PyRun
 
 # Libraries
 
@@ -24,10 +24,18 @@ import os
 import glob
 import re
 
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage python3 sirius_postProc2.py input_directory input_tablecsv")
+    else:
+        sirius_postProc2(sys.argv[1], sys.argv[2])
+
+
 def sirius_postProc2(input_dir, input_tablecsv):
-    
     def isNaN(string):
         return string != string
+
     """sirius_postProc2 is the second part of the function 
     sirius_postProc defined in R part of the workflow. This function
     re-checks the Suspect list, if present or given as a parameter, 
@@ -62,29 +70,34 @@ def sirius_postProc2(input_dir, input_tablecsv):
 
 
     """
-    
+
     # Describe the heavy atoms to be considered for MCSS
-    heavy_atoms = ['C', 'N', 'P', 'O', 'S']
-    
+    heavy_atoms = ["C", "N", "P", "O", "S"]
+
     input_table = pd.read_csv(input_tablecsv)
-    
+
     for m, row in input_table.iterrows():
-        
-        # Read the file result_dir/insilico/MS1DATAsirius.csv. 
-        # This file has been produced in R workflow and contains 
+
+        # Read the file result_dir/insilico/MS1DATAsirius.csv.
+        # This file has been produced in R workflow and contains
         # SIRIUS results.
 
-        file1 = pd.read_csv(input_dir + (input_table['ResultFileNames'][m] + '/insilico/MS1DATAsirius.csv').replace("./", ""))
-        
+        file1 = pd.read_csv(
+            input_dir
+            + (
+                input_table["ResultFileNames"][m] + "/insilico/MS1DATAsirius.csv"
+            ).replace("./", "")
+        )
+
         for i, row in file1.iterrows():
-            
+
             # if the entry has SMILES extracted for MCSS calculation
-            if not isNaN(file1['SMILESforMCSS'][i]):
-                
+            if not isNaN(file1["SMILESforMCSS"][i]):
+
                 # split the SMILES using |
-                top_smiles = file1['SMILESforMCSS'][i].split("|")
-                
-                # if there are more than 1 smiles in the top smiles, 
+                top_smiles = file1["SMILESforMCSS"][i].split("|")
+
+                # if there are more than 1 smiles in the top smiles,
                 if len(top_smiles) > 1:
                     mol = []
                     for j in top_smiles:
@@ -95,31 +108,36 @@ def sirius_postProc2(input_dir, input_tablecsv):
                     sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
                     # Check if the MCSS has one of the heavy atoms and whether they are
                     # more than 3
-                    elem = [ele for ele in heavy_atoms if(ele in sm_res)]
-                    if elem and len(sm_res)>=3:
-                        file1.loc[i, 'MCSSstring'] = res.smartsString
-                        file1.loc[i, 'MCSS_SMILES'] = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
-                        
-                        
+                    elem = [ele for ele in heavy_atoms if (ele in sm_res)]
+                    if elem and len(sm_res) >= 3:
+                        file1.loc[i, "MCSSstring"] = res.smartsString
+                        file1.loc[i, "MCSS_SMILES"] = Chem.MolToSmiles(
+                            Chem.MolFromSmarts(res.smartsString)
+                        )
+
             if file1["FormulaRank"][i] == 1.0:
-                sep = 'json/'
-                strpd = file1["dir"][i].split(sep, 1)[0] +"json/canopus_summary.tsv"
+                sep = "json/"
+                strpd = file1["dir"][i].split(sep, 1)[0] + "json/canopus_summary.tsv"
                 if os.path.isfile(strpd):
 
-                    canopus = pd.read_csv(strpd, sep='\t')
+                    canopus = pd.read_csv(strpd, sep="\t")
                     if len(canopus) > 0:
-                        #file1.loc[i, 'most_specific_class'] = canopus["most specific class"][0]
-                        #file1.loc[i, 'level _5'] = canopus["level 5"][0]
-                        file1.loc[i, 'subclass'] = canopus["subclass"][0]
-                        file1.loc[i, 'class'] = canopus["class"][0]
-                        file1.loc[i, 'superclass'] = canopus["superclass"][0]
-                        #file1.loc[i, 'all_classifications'] = canopus["all classifications"][0]
-                        file1.loc[i, 'Classification_Source'] = 'CANOPUS'
-                    
-        
-        file1.to_csv(input_dir + (input_table['ResultFileNames'][m] + '/insilico/SiriusResults.csv').replace("./", ""))
-        return(file1)
-        
-        
-sirius_postProc2(sys.argv[1], sys.argv[2])
+                        # file1.loc[i, 'most_specific_class'] = canopus["most specific class"][0]
+                        # file1.loc[i, 'level _5'] = canopus["level 5"][0]
+                        file1.loc[i, "subclass"] = canopus["subclass"][0]
+                        file1.loc[i, "class"] = canopus["class"][0]
+                        file1.loc[i, "superclass"] = canopus["superclass"][0]
+                        # file1.loc[i, 'all_classifications'] = canopus["all classifications"][0]
+                        file1.loc[i, "Classification_Source"] = "CANOPUS"
 
+        file1.to_csv(
+            input_dir
+            + (
+                input_table["ResultFileNames"][m] + "/insilico/SiriusResults.csv"
+            ).replace("./", "")
+        )
+        return file1
+
+
+if __name__ == "__main__":
+    main()

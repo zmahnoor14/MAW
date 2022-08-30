@@ -8,7 +8,7 @@
 # coding: utf-8
 
 #!/usr/bin/env python
-#make executable in bash chmod +x PyRun
+# make executable in bash chmod +x PyRun
 
 # Libraries
 
@@ -22,10 +22,19 @@ import glob
 import re
 
 
-def combine_insilico(input_dir, input_tablecsv, Source = "all_insilico"):
+def main():
+    if len(sys.argv) != 3:
+        print(
+            "Usage python3 combine_insilico.py input_dir input_tablecsv.csv Source(optional, default= all_insilico)"
+        )
+    else:
+        combine_insilico(sys.argv[1], sys.argv[2], sys.argv[3])
+
+
+def combine_insilico(input_dir, input_tablecsv, Source="all_insilico"):
     def isNaN(string):
         return string != string
-    
+
     """combine_insilico function combines the Sirius results from all
     result directories for each input mzml file. It does same for 
     Metfrag.
@@ -60,39 +69,47 @@ def combine_insilico(input_dir, input_tablecsv, Source = "all_insilico"):
 
 
     """
-    
+
     input_table = pd.read_csv(input_tablecsv)
     # create a new directory to store all results /MetabolomicsResults/
     path = os.path.join(input_dir, "MetabolomicsResults")
     if not os.path.isdir(path):
-        os.mkdir(path)    
+        os.mkdir(path)
     # if Sirius results are to be combined
     if Source == "all_insilico" or Source == "SIRIUS":
-        
+
         # store all files paths here
         all_files = []
         for n, row in input_table.iterrows():
-            all_files.append(input_dir + input_table['ResultFileNames'][n].replace("./", "") + '/insilico/SiriusResults.csv')
-        
+            all_files.append(
+                input_dir
+                + input_table["ResultFileNames"][n].replace("./", "")
+                + "/insilico/SiriusResults.csv"
+            )
+
         # store all dataframes of the results here
         li = []
-    
+
         for filename in all_files:
             df = pd.read_csv(filename, index_col=None, header=0)
             df["ResultFileNames"] = filename
             li.append(df)
-            
+
         # join all resulst dataframe
         frame = pd.concat(li, axis=0, ignore_index=True)
-        frame.to_csv(input_dir + '/MetabolomicsResults/SIRIUS_combined.csv')       
-    
+        frame.to_csv(input_dir + "/MetabolomicsResults/SIRIUS_combined.csv")
+
     # if MetFrag results are to be combined
     if Source == "all_insilico" or Source == "MetFrag":
-        
+
         # store all files paths here
         all_files = []
         for m, row in input_table.iterrows():
-            all_files.append(input_dir + input_table['ResultFileNames'][m].replace("./", "") + '/insilico/MetFragResults.csv')
+            all_files.append(
+                input_dir
+                + input_table["ResultFileNames"][m].replace("./", "")
+                + "/insilico/MetFragResults.csv"
+            )
         li = []
 
         for filename in all_files:
@@ -101,8 +118,8 @@ def combine_insilico(input_dir, input_tablecsv, Source = "all_insilico"):
             li.append(df)
 
         frame = pd.concat(li, axis=0, ignore_index=True)
-        frame.to_csv(input_dir+'MetabolomicsResults/MetFrag_combined.csv')
-        
+        frame.to_csv(input_dir + "MetabolomicsResults/MetFrag_combined.csv")
 
-combine_insilico(sys.argv[1], sys.argv[2], sys.argv[3])
 
+if __name__ == "__main__":
+    main()

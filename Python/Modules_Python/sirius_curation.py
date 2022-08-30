@@ -8,14 +8,14 @@
 # coding: utf-8
 
 #!/usr/bin/env python
-#make executable in bash chmod +x PyRun
+# make executable in bash chmod +x PyRun
 
 # Libraries
 import os
 import glob
 import re
 
-import csv 
+import csv
 import time
 import json
 import sys
@@ -30,9 +30,19 @@ from rdkit.Chem import PandasTools
 import pubchempy as pcp
 
 
-def sirius_curation(input_dir, siriuscsv, sl = True):
+def main():
+    if len(sys.argv) != 3:
+        print(
+            "Usage python3 sirius_curation.py input_directory siriuscsv sl=True (optional)"
+        )
+    else:
+        sirius_curation(sys.argv[1], sys.argv[2], sys.argv[3])
+
+
+def sirius_curation(input_dir, siriuscsv, sl=True):
     def isNaN(string):
         return string != string
+
     """sirius_curation checks if candidate selected has a good score for 
     explained intensity. It also checks if there was any similarity to
     a compound from Suspect list
@@ -52,29 +62,30 @@ def sirius_curation(input_dir, siriuscsv, sl = True):
     siriuscsv = "usr/project/MetabolomicsResults/Sirius_combined.csv")
 
     """
-    
+
     sirius = pd.read_csv(siriuscsv)
     for i, row in sirius.iterrows():
-    
+
         # If the explained intensity is greater than 0.70 and there is no suspect list entry
-        if sirius['exp_int'][i] >= 0.70 and "SIRIUS_SL" not in sirius['Result'][i]:
-            sirius.loc[i, 'Annotation_S'] = 'SIRIUS'
-            #sirius.loc[i, 'SMILES_final'] = sirius['SMILES'][i]
+        if sirius["exp_int"][i] >= 0.70 and "SIRIUS_SL" not in sirius["Result"][i]:
+            sirius.loc[i, "Annotation_S"] = "SIRIUS"
+            # sirius.loc[i, 'SMILES_final'] = sirius['SMILES'][i]
         else:
             if sl:
-                
-                #If the explained intensity is greater than 0.70 and there is an entry from suspect list
-                if sirius['exp_int'][i] >= 0.70 and "SIRIUS_SL" in sirius['Result'][i]:
-                    sirius.loc[i, 'Annotation_S'] = 'SIRIUS, SuspectList'
-                    #sirius.loc[i, 'SMILES_final'] = sirius['SMILES'][i]
-    
+
+                # If the explained intensity is greater than 0.70 and there is an entry from suspect list
+                if sirius["exp_int"][i] >= 0.70 and "SIRIUS_SL" in sirius["Result"][i]:
+                    sirius.loc[i, "Annotation_S"] = "SIRIUS, SuspectList"
+                    # sirius.loc[i, 'SMILES_final'] = sirius['SMILES'][i]
+
                 # if the intensity is less thna 0.70 but it still is similar to an entry in Suspect list,
-                elif sirius['exp_int'][i] < 0.70 and "SIRIUS_SL" in sirius['Result'][i]:
-                    sirius.loc[i, 'Annotation_S'] = 'SIRIUS, SuspectList'
-                    #sirius.loc[i, 'SMILES_final'] = sirius['SMILES'][i]
-        
+                elif sirius["exp_int"][i] < 0.70 and "SIRIUS_SL" in sirius["Result"][i]:
+                    sirius.loc[i, "Annotation_S"] = "SIRIUS, SuspectList"
+                    # sirius.loc[i, 'SMILES_final'] = sirius['SMILES'][i]
+
     sirius.to_csv(input_dir + "MetabolomicsResults/sirius_curated.csv")
-    return(sirius)
+    return sirius
 
-sirius_curation(sys.argv[1], sys.argv[2], sys.argv[3])
 
+if __name__ == "__main__":
+    main()

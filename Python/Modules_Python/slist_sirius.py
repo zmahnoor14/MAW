@@ -5,7 +5,7 @@
 
 
 #!/usr/bin/env python
-#make executable in bash chmod +x PyRun
+# make executable in bash chmod +x PyRun
 
 # Libraries
 from rdkit import Chem
@@ -18,7 +18,15 @@ import pandas as pd
 import numpy as np
 import os
 
-def slist_sirius(input_dir, slist_csv, substring = None):
+
+def main():
+    if len(sys.argv) != 3:
+        print("Usage: python slist_sirius.py input_dir, slist_csv, substring = None")
+    else:
+        slist_sirius(sys.argv[1], sys.argv[2], list1)
+
+
+def slist_sirius(input_dir, slist_csv, substring=None):
     """slist_sirius is used to create a tsv file that contains a list of 
     SMILES. The function also runs the sirius command custom db to create
     fingerprints for each SMILES in a folder that we by default name as
@@ -56,16 +64,18 @@ def slist_sirius(input_dir, slist_csv, substring = None):
     substring = None)
 
     """
+
     def isNaN(string):
         return string != string
 
-    
     sl = pd.read_csv(slist_csv)
-    
+
     # define function to neutralize the charged SMILES
     def neutralize_atoms(mol):
-        
-        pattern = Chem.MolFromSmarts("[+1!h0!$([*]~[-1,-2,-3,-4]),-1!$([*]~[+1,+2,+3,+4])]")
+
+        pattern = Chem.MolFromSmarts(
+            "[+1!h0!$([*]~[-1,-2,-3,-4]),-1!$([*]~[+1,+2,+3,+4])]"
+        )
         at_matches = mol.GetSubstructMatches(pattern)
         at_matches_list = [y[0] for y in at_matches]
         if len(at_matches_list) > 0:
@@ -77,51 +87,47 @@ def slist_sirius(input_dir, slist_csv, substring = None):
                 atom.SetNumExplicitHs(hcount - chg)
                 atom.UpdatePropertyCache()
         return mol
-    
 
     for i, row in sl.iterrows():
         # remove SMILES with wild card
         if "*" in sl["SMILES"][i]:
-            sl = sl.drop(labels = i, axis = 0) 
+            sl = sl.drop(labels=i, axis=0)
     for i, row in sl.iterrows():
         # remove SMILES with any string present in the substring
         if substring:
-            if bool([ele for ele in substring if(ele in sl["SMILES"][i])]):
-                sl = sl.drop(labels = i, axis = 0)
+            if bool([ele for ele in substring if (ele in sl["SMILES"][i])]):
+                sl = sl.drop(labels=i, axis=0)
     for i, row in sl.iterrows():
         if "." in sl["SMILES"][i]:
-            sl.loc[i, "SMILES"] = sl["SMILES"][i].split('.')[0]
+            sl.loc[i, "SMILES"] = sl["SMILES"][i].split(".")[0]
     # Neutralize the charged SMILES
     for i, row in sl.iterrows():
         if "+" in sl["SMILES"][i] or "-" in sl["SMILES"][i]:
             mol = Chem.MolFromSmiles(sl["SMILES"][i])
             neutralize_atoms(mol)
             sl.loc[i, "SMILES"] = Chem.MolToSmiles(mol)
-            
+
             # Remove multiple charged SMILES
             if "+" in sl["SMILES"][i] or "-" in sl["SMILES"][i]:
-                pos = sl["SMILES"][i].count('+')
-                neg = sl["SMILES"][i].count('-')
-                charge = pos + neg 
+                pos = sl["SMILES"][i].count("+")
+                neg = sl["SMILES"][i].count("-")
+                charge = pos + neg
                 if charge > 1:
-                    sl = sl.drop(labels = i, axis = 0) 
-                    
-    slsirius = pd.DataFrame({'smiles':sl["SMILES"]})
-    slsirius.to_csv(input_dir+ "SL_Sirius.tsv", sep = "\t", header = False, index = False)
-    os.system("sirius --input " + input_dir + "SL_Sirius.tsv custom-db --name=SL_Frag --output "+ input_dir)
+                    sl = sl.drop(labels=i, axis=0)
 
-    
+    slsirius = pd.DataFrame({"smiles": sl["SMILES"]})
+    slsirius.to_csv(input_dir + "SL_Sirius.tsv", sep="\t", header=False, index=False)
+    os.system(
+        "sirius --input "
+        + input_dir
+        + "SL_Sirius.tsv custom-db --name=SL_Frag --output "
+        + input_dir
+    )
+
+
 sys.argv[1]
 sys.argv[2]
-list1 = sys.argv[3].split(',')
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: python specDB_Curation.py input_dir, slist_csv, substring = None")
-    else:
-        slist_sirius(sys.argv[1],sys.argv[2], list1) 
+list1 = sys.argv[3].split(",")
 
-
-
-
-
-
+if __name__ == "__main__":
+    main()
