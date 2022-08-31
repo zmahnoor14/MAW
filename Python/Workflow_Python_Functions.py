@@ -1,27 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import csv
 import glob
 import json
 import os
 import re
 import time
 import wget
-import string
 import urllib.parse
-import openpyxl
-import statistics
-import sys
 
 import numpy as np
 import pandas as pd
 import pubchempy as pcp
 
-from itertools import chain
 from pybatchclassyfire import *
 from pandas import json_normalize
-from platform import python_version
 from rdkit import Chem
 from rdkit import DataStructs
 from rdkit.Chem import AllChem
@@ -35,40 +28,40 @@ def isNaN(string):
 
 def slist_sirius(input_dir, slist_csv, substring=None):
 
-    """slist_sirius is used to create a tsv file that contains a list of 
+    """slist_sirius is used to create a tsv file that contains a list of
     SMILES. The function also runs the sirius command custom db to create
     fingerprints for each SMILES in a folder that we by default name as
-    SL_Frag/. This fingerprints folder is later used by SIRIUS to use 
+    SL_Frag/. This fingerprints folder is later used by SIRIUS to use
     these compounds as a another small list of compounds to match against
     the input spectra fingerprints.
-    Since SIRIUS doesn't take disconnected structure, Multiply charged, 
+    Since SIRIUS doesn't take disconnected structure, Multiply charged,
     Incorrect syntax, wild card(*) in smiles; this function removes all
     such SMILES from the Suspect List.
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
-    files and their respective result directories are stored. For this 
-    function this directory must contain a csv file that has a column 
+    input_dir (str): This is the input directory where all the .mzML
+    files and their respective result directories are stored. For this
+    function this directory must contain a csv file that has a column
     named "SMILES".
-    
-    slist_csv (str): This is the csv file that contains a column of 
-    "SMILES". Additionally this file can contain other information 
-    about the compounds, but for this function, column of "SMILES", 
+
+    slist_csv (str): This is the csv file that contains a column of
+    "SMILES". Additionally this file can contain other information
+    about the compounds, but for this function, column of "SMILES",
     named as "SMILES" is necessary.
-    
-    substring (list): provide a list of strings of SMILES that 
+
+    substring (list): provide a list of strings of SMILES that
     shouldn't be considered, provide a list even if there is one string
-    that shouldnt be considered. e.g: "[Fe+2]". 
+    that shouldnt be considered. e.g: "[Fe+2]".
 
     Returns:
-    tsv: a tsv file of list of SMILES, named as SL_Sirius.tsv, is stored 
+    tsv: a tsv file of list of SMILES, named as SL_Sirius.tsv, is stored
     in input_dir
-    directory: a directory with compound fragmentations will be created 
+    directory: a directory with compound fragmentations will be created
     in a folder named SL_Frag/ within the same input_dir
-    
-    
+
+
     Usage:
-    slist_sirius("/user/project/", "suspectlist.csv", 
+    slist_sirius("/user/project/", "suspectlist.csv",
     substring = None)
 
     """
@@ -132,20 +125,20 @@ def slist_sirius(input_dir, slist_csv, substring=None):
 
 def spec_postproc(input_dir, Source="all"):
 
-    """spec_postproc function processes the resulst from dereplication 
-    using different spectral DBs. 
+    """spec_postproc function processes the resulst from dereplication
+    using different spectral DBs.
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
+    input_dir (str): This is the input directory where all the .mzML
     files and their respective result directories are stored.
-    
+
     Source (str): either "mbank" or "hmdb" or "gnps", or "all"
 
     Returns:
-    
+
     dataframe: of the paths of the processed DB results
-    
-    
+
+
     Usage:
     spec_postproc(input_dir = "/user/project/", Source = "all")
 
@@ -379,7 +372,7 @@ def spec_postproc(input_dir, Source="all"):
                                                         ][k].split("[")
                                                         # print(gnps_df['GNPScompound_name'][i])
 
-                                                        keep_names = []
+                                                        # keep_names = []
                                                         for j in range(
                                                             len(string_chng) - 1
                                                         ):
@@ -424,7 +417,6 @@ def spec_postproc(input_dir, Source="all"):
                                                                 ] = ""
                                                 if not isNaN(gnps_df["GNPSSMILES"][k]):
                                                     try:
-
                                                         sx = pcp.get_compounds(
                                                             gnps_df["GNPSSMILES"][k],
                                                             "smiles",
@@ -450,7 +442,7 @@ def spec_postproc(input_dir, Source="all"):
                                                                 k, "GNPSformula"
                                                             ] = comp.molecular_formula
 
-                                                    except:
+                                                    except Exception:
                                                         gnps_df.loc[
                                                             k, "GNPSformula"
                                                         ] = ""
@@ -1257,15 +1249,15 @@ def SuspectListScreening(input_dir, SuspectListPath, tanimoto, Source):
 def chemMN_CandidateSelection(df, tn_sim=0.85):
 
     """chemMN_CandidateSelection function is used to generate a Cytoscape readable tsv file.
-    This file contains start(starting SMILES) and end(target SMILES) nodes and the tanimoto 
-    similarity scores between the nodes. User can visualize the structural similarity 
+    This file contains start(starting SMILES) and end(target SMILES) nodes and the tanimoto
+    similarity scores between the nodes. User can visualize the structural similarity
     between the given SMILES. It provides an "ALL against ALL" network.
-    
-    Parameters: 
-    df: dataframe that contains "SMILES", "ranks", "Source". This function is specifically for 
+
+    Parameters:
+    df: dataframe that contains "SMILES", "ranks", "Source". This function is specifically for
     candidate selection and so these columns are necessary.
-    
-    
+
+
     Returns:
     dataframe: it returns a df with follwoing columns to be loaded into Cytoscape.
     1. Start, starting node/SMILES
@@ -1277,8 +1269,8 @@ def chemMN_CandidateSelection(df, tn_sim=0.85):
     7. End_Source
     8. MCSS, Maximum Common Substructure between start and end node/SMILES
     9. sorted_row, contains ids of the start and end nodes as a list
-    
-    
+
+
     Usage:
     chemMN_CandidateSelection(df)
 
@@ -1316,7 +1308,7 @@ def chemMN_CandidateSelection(df, tn_sim=0.85):
                     }
                 )
 
-            except Exception as e:
+            except Exception:
                 # print(e.string)
                 pass
 
@@ -1382,19 +1374,19 @@ def one_candidate_selection(
     hmdb_df=None,
 ):
 
-    """one_candidate_selection function is used to generate a dataframe that tells, 
-    for each candidate SMILES, what was the source or how many sources had the same 
+    """one_candidate_selection function is used to generate a dataframe that tells,
+    for each candidate SMILES, what was the source or how many sources had the same
     candidate. The idea is to merge all candidate SMILES into one list, preserving
     the rank and source, and then checking whether these SMILES come from SIRIUS or
-    any spectral DB. If a SMILE is repeated in more sources, its confidence score 
-    increases and is considered the most likely candidate structure. This function 
+    any spectral DB. If a SMILE is repeated in more sources, its confidence score
+    increases and is considered the most likely candidate structure. This function
     is not stand-alone and is part of the function CandidateSelection_SimilarityandIdentity
 
-    
-    Parameters: 
-    df: dataframe that contains "SMILES", "ranks", "Source". This function is 
+
+    Parameters:
+    df: dataframe that contains "SMILES", "ranks", "Source". This function is
     specifically for candidate selection and so these columns are necessary.
-    Source: this depends on how many sources were used. Possiblilities are: 
+    Source: this depends on how many sources were used. Possiblilities are:
     1. SGHM (all)
     2. SGM (SIRIUS, GNPS, MassBank)
     3. SHM (SIRIUS, HMDB, MassBank)
@@ -1410,21 +1402,21 @@ def one_candidate_selection(
     13. G
     14. H
     15. M
-    
+
     Returns:
-    dataframe: it returns a df with follwoing columns which can be used to 
+    dataframe: it returns a df with follwoing columns which can be used to
     prioritize a database for the final candidate selection.
     1. Source, contains name of the source (SIRIUS, GNPS, HMDB or MassBank)
-    2. ranks, contains first letter of the source and a rank number seperated 
+    2. ranks, contains first letter of the source and a rank number seperated
     by _ e.g: G_1(GNPS, 1st rank)
     3. SMILES
-    4. SIRIUS, the rank again but only when the corresponding row SMILES is 
+    4. SIRIUS, the rank again but only when the corresponding row SMILES is
     also part of SIRIUS results
     5. GNPS , same as SIRIUS but for GNPS
     5. MassBank
     6. HMDB
-    
-    
+
+
     Usage:
     chemMN_CandidateSelection(df, Source = "SGHM")
 
@@ -1480,7 +1472,7 @@ def one_candidate_selection(
                                 + sirius_df["rank_ids"][sirius_i]
                             )
 
-                except Exception as e:
+                except Exception:
                     # print(e.string)
                     pass
 
@@ -1525,7 +1517,7 @@ def one_candidate_selection(
                                 + gnps_df["rank_ids"][gnps_i]
                             )
 
-                except Exception as e:
+                except Exception:
                     # print(e.string)
                     pass
 
@@ -1569,7 +1561,7 @@ def one_candidate_selection(
                                 + mbank_df["rank_ids"][mbank_i]
                             )
 
-                except Exception as e:
+                except Exception:
                     # print(e.string)
                     pass
 
@@ -1613,7 +1605,7 @@ def one_candidate_selection(
                                 + hmdb_df["rank_ids"][hmdb_i]
                             )
 
-                except Exception as e:
+                except Exception:
                     # print(e.string)
                     pass
 
@@ -1657,18 +1649,18 @@ def add_count_column(df_one_candidate):
 
 def sources_1(candidates_with_counts, merged_df, mer):
     """if only 1 source has confirmed the presence of a certain SMILES.
-    This holds true when each candidate SMILES has only one source. The 
+    This holds true when each candidate SMILES has only one source. The
     function selects the best candidate
-    
-    Parameters: 
+
+    Parameters:
     candidates_with_counts: this is the result from the function add_count_column
     and contains a ordered dataframe, with the most sourced SMILES at top.
-    merged_df: dataframe that contains all features from the input mzML file  
-    
-    Returns: 
-    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and 
+    merged_df: dataframe that contains all features from the input mzML file
+
+    Returns:
+    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and
     MSI-Level
-    
+
     Usage:
     sources_1(candidates_with_counts, merged_df)
 
@@ -1850,19 +1842,19 @@ def sources_1(candidates_with_counts, merged_df, mer):
 def sources_2(candidates_with_counts, merged_df, mer):
 
     """if only 2 sources have confirmed the presence of a certain SMILES.
-    This holds true when each candidate SMILES has only two sources. The 
-    function selects the best candidate and adds the two sources as 
+    This holds true when each candidate SMILES has only two sources. The
+    function selects the best candidate and adds the two sources as
     annotation sources
-    
-    Parameters: 
+
+    Parameters:
     candidates_with_counts: this is the result from the function add_count_column
     and contains a ordered dataframe, with the most sourced SMILES at top.
-    merged_df: dataframe that contains all features from the input mzML file  
-    
-    Returns: 
-    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and 
+    merged_df: dataframe that contains all features from the input mzML file
+
+    Returns:
+    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and
     MSI-Level
-    
+
     Usage:
     sources_2(candidates_with_counts, merged_df, mer)
 
@@ -1974,19 +1966,19 @@ def sources_2(candidates_with_counts, merged_df, mer):
 def sources_3(candidates_with_counts, merged_df, mer):
 
     """if only 3 sources have confirmed the presence of a certain SMILES.
-    This holds true when each candidate SMILES has only 3 sources. The 
-    function selects the best candidate and adds the 3 sources as 
+    This holds true when each candidate SMILES has only 3 sources. The
+    function selects the best candidate and adds the 3 sources as
     annotation sources
-    
-    Parameters: 
+
+    Parameters:
     candidates_with_counts: this is the result from the function add_count_column
     and contains a ordered dataframe, with the most sourced SMILES at top.
-    merged_df: dataframe that contains all features from the input mzML file  
-    
-    Returns: 
-    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and 
+    merged_df: dataframe that contains all features from the input mzML file
+
+    Returns:
+    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and
     MSI-Level
-    
+
     Usage:
     sources_2(candidates_with_counts, merged_df, mer)
 
@@ -2120,19 +2112,19 @@ def sources_3(candidates_with_counts, merged_df, mer):
 def sources_4(candidates_with_counts, merged_df, mer):
 
     """if only 3 sources have confirmed the presence of a certain SMILES.
-    This holds true when each candidate SMILES has only 3 sources. The 
-    function selects the best candidate and adds the 3 sources as 
+    This holds true when each candidate SMILES has only 3 sources. The
+    function selects the best candidate and adds the 3 sources as
     annotation sources
-    
-    Parameters: 
+
+    Parameters:
     candidates_with_counts: this is the result from the function add_count_column
     and contains a ordered dataframe, with the most sourced SMILES at top.
-    merged_df: dataframe that contains all features from the input mzML file  
-    
-    Returns: 
-    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and 
+    merged_df: dataframe that contains all features from the input mzML file
+
+    Returns:
+    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and
     MSI-Level
-    
+
     Usage:
     sources_2(candidates_with_counts, merged_df, mer)
 
@@ -2229,12 +2221,12 @@ def sources_4(candidates_with_counts, merged_df, mer):
         else:
             pass
     elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
-        if len(df_count_3.loc[df_count_3["Source"] == "SIRIUS"]) == 1:
-            new = df_count_3.loc[df_count_3["Source"] == "SIRIUS"]
+        if len(df_count_4.loc[df_count_4["Source"] == "SIRIUS"]) == 1:
+            new = df_count_4.loc[df_count_4["Source"] == "SIRIUS"]
             new.reset_index(drop=True, inplace=True)
             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-        elif len(df_count_3.loc[df_count_3["Source"] == "SIRIUS"]) > 1:
-            new = df_count_3.loc[df_count_3["Source"] == "SIRIUS"]
+        elif len(df_count_4.loc[df_count_4["Source"] == "SIRIUS"]) > 1:
+            new = df_count_4.loc[df_count_4["Source"] == "SIRIUS"]
             new.reset_index(drop=True, inplace=True)
             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
         else:
@@ -3482,19 +3474,19 @@ def checkSMILES_validity(input_dir, resultcsv):
         return string != string
 
     """checkSMILES_validity does exactly as the name says, using
-    RDKit, whether the SMILES are invalid or have invalid 
+    RDKit, whether the SMILES are invalid or have invalid
     chemistry
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
+    input_dir (str): This is the input directory where all the .mzML
     files and their respective result directories are stored.
-    
+
     results: df from combine_CuratedR
-    
+
     Returns:
     dataframe: with valid SMILES
     csv: "MetabolomicsResults/final_curation_with_validSMILES.csv"
-    
+
     Usage:
     checkSMILES_validity(input_dir = "usr/project/", results)
 
@@ -3509,7 +3501,7 @@ def checkSMILES_validity(input_dir, resultcsv):
             else:
                 try:
                     Chem.SanitizeMol(m)
-                except:
+                except Exception:
                     results["SMILES_final"][i] = "invalid_chemistry"
     results.to_csv(
         input_dir + "MetabolomicsResults/final_curation_with_validSMILES.csv"
@@ -3524,15 +3516,15 @@ def classification(input_dir, resultcsv):
     """classification function uses ClassyFire ChemONT
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
+    input_dir (str): This is the input directory where all the .mzML
     files and their respective result directories are stored.
-    
+
     resultcsv: csv of df from combine_CuratedR or checkSMILES_validity
-    
+
     Returns:
     dataframe: with classification
     csv: "MetabolomicsResults/final_curationList.csv"
-    
+
     Usage:
     checkSMILES_validity(input_dir = "usr/project/", frame)
 
@@ -3552,24 +3544,26 @@ def classification(input_dir, resultcsv):
                         "inchikey": InChIKey,
                     }
                 )
-            except:
+            except Exception:
                 pass
     inchis = pd.DataFrame(inchis)
     if len(inchis):
         inchis = inchis.loc[-isNaN(inchis["inchikey"])]
-        ## Retrieve ClassyFire classifications ##
+        # Retrieve ClassyFire classifications
 
         # This first step is done using inchikey and interrogation of the gnps classified structures
+        """
         gnps_proxy = True
         url = "http://classyfire.wishartlab.com"
         proxy_url = "https://gnps-classyfire.ucsd.edu"
         chunk_size = 1000
         sleep_interval = 12
+        """
 
         all_inchi_keys = list(inchis["inchikey"].drop_duplicates())
 
         resolved_ik_number_list = [0, 0]
-        total_inchikey_number = len(all_inchi_keys)
+        # total_inchikey_number = len(all_inchi_keys)
 
         while True:
 
@@ -3629,17 +3623,17 @@ def SMILESscreening(input_dir, resultcsv, complist, listname):
     """SMILESscreening takes a list of SMILES
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
+    input_dir (str): This is the input directory where all the .mzML
     files and their respective result directories are stored.
-    
+
     resultcsv: df from combine_CuratedR or checkSMILES_validity or classification
     complist: list of /n separated txt file conyaining smiles on each line
     listname: name of the list of compounds
-    
+
     Returns:
     dataframe: comparison with another list of compounds
     csv: "MetabolomicsResults/final_curation_with_validSMILES.csv"
-    
+
     Usage:
     checkSMILES_validity(input_dir = "usr/project/", results)
 
@@ -3716,7 +3710,7 @@ def Np_pathways(input_dir, resultcsv):
                 npresults.append(
                     {
                         "index": i,
-                        #'id': df['file_id'][i],
+                        # 'id': df['file_id'][i],
                         "mz": df["premz"][i],
                         "rt": df["rtmed"][i],
                         "SMILES": df["SMILES"][i],
@@ -3725,7 +3719,7 @@ def Np_pathways(input_dir, resultcsv):
                         "pathway": xop,
                     }
                 )
-            except:
+            except Exception:
                 pass
     np_results = pd.DataFrame(npresults)
     np_results.to_csv(input_dir + "/MetabolomicsResults/NPClassifier_Results.csv")
@@ -3801,8 +3795,8 @@ def chemMN(input_dir, resultcsv):
                     "Tanimoto": db_edgenode["Tanimoto"][i],
                     "Start_SMILES": db_edgenode["i"][i],
                     "End_SMILES": db_edgenode["j"][i],
-                    #'Start_Source':db_edgenode['Source_i'][i],
-                    #'End_Source':db_edgenode['Source_j'][i],
+                    # 'Start_Source':db_edgenode['Source_i'][i],
+                    # 'End_Source':db_edgenode['Source_j'][i],
                     "MCSS": MCSS_SMILES,
                 }
             )
@@ -3846,18 +3840,18 @@ def gnpsMNvsgnpsMAW(input_dir):
     results from MAW GNPS and GNPS MN Masst results give same candidate
 
     Parameters:
-    input_dir = input directory where you have stored the cytoscape file 
+    input_dir = input directory where you have stored the cytoscape file
     from GNPS MN results and have exported edge and node tables from cytoscape
     These two csv egde and node files must have "edge" and "node" in their name
-    
+
     Returns:
     GNPS results with cluster index named
-    GNPS MN results with a confirmation column if MAW detected same candidate, 
-    file named: 
-    
-    Usage: 
+    GNPS MN results with a confirmation column if MAW detected same candidate,
+    file named:
+
+    Usage:
     gnpsMNvsgnpsMAW(input_dir)
-    
+
     """
     # extract files with edges from MN results
     GMNfile_edge = [f for f in os.listdir(input_dir) if "edge" in f]
