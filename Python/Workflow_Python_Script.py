@@ -1,77 +1,43 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
-
 
 # import the function file
-from Workflow_Python_Functions import *
+from Workflow_Python_Functions import (
+    os,
+    spec_postproc,
+    MCSS_for_SpecDB,
+    sirius_postproc,
+    MCSS_for_SIRIUS,
+    CandidateSelection_SimilarityandIdentity,
+    checkSMILES_validity,
+    classification,
+    Np_pathways,
+    chemMN,
+    gnpsMNvsgnpsMAW,
+)
 
 
-# In[ ]:
-
-
-#Define input directory, keep all files in same directory and scripts so getwd works
-input_dir = os.getwd()+"/data"
+# Define input directory, keep all files in same directory and scripts so getwd works
+input_dir = os.getwd() + "/data"
 input_dir
 
+spec_postproc(input_dir, Source="all")
 
-# In[ ]:
+MCSS_for_SpecDB(input_dir)
 
+sirius_postproc(input_dir, exp_int=0.90, csi_score=-150)
 
-spec_postproc(input_dir, Source = "all")
-
-
-# In[ ]:
-
-
-MCSS_for_SpecDB(input_dir, Source)
-
-
-# In[ ]:
-
-
-sirius_postproc(input_dir, exp_int = 0.90, csi_score = -150)
-
-
-# In[ ]:
-
-
-MCSS_for_SIRIUS(input_dir)    
-
-
-# In[ ]:
-
+MCSS_for_SIRIUS(input_dir)
 
 CandidateSelection_SimilarityandIdentity(input_dir)
 
+checkSMILES_validity(input_dir)
 
-# In[ ]:
+classification(input_dir)
 
+Np_pathways(input_dir)
 
-checkSMILES_validity(input_dir, resultcsv)
-
-
-# In[ ]:
-
-
-classification(input_dir, resultcsv)
-
-
-# In[ ]:
-
-
-Np_pathways(input_dir, resultcsv)
-
-
-# In[ ]:
-
-
-chemMN(input_dir, resultcsv)
-
-
-# In[ ]:
-
+chemMN(input_dir)
 
 gnpsMNvsgnpsMAW(input_dir)
-
