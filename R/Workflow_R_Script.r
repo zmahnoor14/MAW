@@ -1,3 +1,20 @@
+library(parallel)
+library(doParallel)
+library(foreach)
+
+# detects number of cores
+n.cores <- parallel::detectCores() 
+
+# creates the parallel cluster
+my.cluster <- parallel::makeCluster(
+  n.cores, 
+  type = "PSOCK"
+  )
+
+# register it to be used by %dopar%
+doParallel::registerDoParallel(cl = my.cluster)
+
+
 start.time <- Sys.time()
 
 # ---------- Script ----------
