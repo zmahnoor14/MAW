@@ -3,7 +3,7 @@ library(doParallel)
 library(foreach)
 library(future)
 
-options(future.globals.maxSize = 8000 * 1024^2) # increase dataset size limit taken by future
+options(future.globals.maxSize = 8 * 1024^3) # increase dataset size limit taken by future to 8GB
 
 # detects number of cores
 n.cores <- parallel::detectCores()
