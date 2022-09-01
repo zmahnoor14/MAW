@@ -1,3 +1,6 @@
+# To run the container one can use (assuming your data is in the current directory):
+# docker run -v `pwd`:/opt/workdir/data zmahnoor/maw-r Rscript --no-save --no-restore --verbose Workflow_R_Script.r
+
 FROM rocker/r-ver:4.2.0
 
 ENV DEBIAN_FRONTEND=noninteractive
