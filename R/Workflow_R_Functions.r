@@ -2506,7 +2506,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
         })# ends mbank
 
-        v <- (f_gnps, f_hmdb, f_mbank) # blocks execution until threads finish
+        v <- c(f_gnps, f_hmdb, f_mbank) # blocks execution until threads finish
 
     } # ends each pre mz
     result_dir_spectra <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication", sep = ""), "."), sep = "")
