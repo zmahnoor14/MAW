@@ -580,7 +580,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
 
     # for each pre mass
-    for (x in pre_mz){
+    foreach (x in pre_mz) %dopar% {
 
         print(x)
 
