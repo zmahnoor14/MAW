@@ -2,6 +2,7 @@ library(parallel)
 library(doParallel)
 library(foreach)
 library(future)
+library(iterators)
 
 options(future.globals.maxSize = 8 * 1024^3) # increase dataset size limit taken by future to 8GB
 

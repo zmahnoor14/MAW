@@ -581,7 +581,6 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
     # for each pre mass
     for (x in pre_mz){
-        f_pre_mz <- future({
         print(x)
 
         # to name the file
@@ -2506,9 +2505,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
         })# ends mbank
 
-        v <- c(f_gnps, f_hmdb, f_mbank) # blocks execution until threads finish
-      })
-      v_fut_premz <- f_pre_mz
+        v <- c(value(f_gnps), value(f_hmdb), value(f_mbank)) # blocks execution until threads finish
     } # ends each pre mz
     result_dir_spectra <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication", sep = ""), "."), sep = "")
     spectra_input <- data.frame(cbind(id_X, premz, rtmin,
