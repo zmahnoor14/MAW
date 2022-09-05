@@ -18,16 +18,16 @@ for (i in 1:nrow(input_table)){
                                input_table[i, "mzml_files"], 
                                input_table[i, "ResultFileNames"])
     
-    #perform dereplication with all dbs
-    df_derep <- spec_dereplication_file(mzml_file = input_table[i, "mzml_files"],
-                                   pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "."), sep =""), 
-                                   proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "."), sep =""),
-                                   db = "all", 
-                                   result_dir = input_table[i, "ResultFileNames"],
-                                   file_id = input_table[i, "File_id"], 
-                                   input_dir, 
-                                   no_of_candidates = 30,
-                                   ppmx = 15)
+#     #perform dereplication with all dbs
+#     df_derep <- spec_dereplication_file(mzml_file = input_table[i, "mzml_files"],
+#                                    pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "."), sep =""), 
+#                                    proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "."), sep =""),
+#                                    db = "all", 
+#                                    result_dir = input_table[i, "ResultFileNames"],
+#                                    file_id = input_table[i, "File_id"], 
+#                                    input_dir, 
+#                                    no_of_candidates = 30,
+#                                    ppmx = 15)
     
     
     # Extract MS2 peak lists

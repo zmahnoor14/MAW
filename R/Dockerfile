@@ -4,7 +4,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get -y install libnode-dev librdf0 librdf0-dev unzip wget default-jre && apt-get clean
 
-RUN apt-get install -y libnetcdf-dev libxml2-dev
+RUN apt-get update
+
+RUN apt-get install -y libnetcdf-dev libxml2-dev libcurl4-openssl-dev librsvg2-bin
 
 
 RUN apt-get install -y \
