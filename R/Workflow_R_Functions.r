@@ -14,8 +14,8 @@ library(xml2)
 options(warn=-1)
 library("mzR")
 #' Download the CompDb database using curl
-#library(curl)
-#library(CompoundDb)
+library(curl)
+library(CompoundDb)
 
 download_specDB_new <- function(input_dir, db = "all"){
 

@@ -2,7 +2,9 @@
 #install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'uuid', 'digest'), #repos="https://cloud.r-project.org")
 #install.packages('IRkernel', repos="https://cloud.r-project.org")
 #IRkernel::installspec()
-install.packages(c("rvest", "xml2", "dplyr", "stringr", "readr", "remotes", "devtools", "ncdf4", "parallel", "doParallel", "foreach", "future"))
+
+install.packages(c("rvest", "xml2", "dplyr", "stringr", "readr", "remotes", "devtools", "ncdf4", "parallel", "doParallel", "foreach", "future", curl))
+
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install(version = "3.15")

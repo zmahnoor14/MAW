@@ -49,29 +49,5 @@ CandidateSelection_SimilarityandIdentity(input_dir)
 # In[ ]:
 
 
-checkSMILES_validity(input_dir, resultcsv)
-
-
-# In[ ]:
-
-
 classification(input_dir, resultcsv)
-
-
-# In[ ]:
-
-
-Np_pathways(input_dir, resultcsv)
-
-
-# In[ ]:
-
-
-chemMN(input_dir, resultcsv)
-
-
-# In[ ]:
-
-
-gnpsMNvsgnpsMAW(input_dir)
 
