@@ -3,7 +3,7 @@
 #install.packages('IRkernel', repos="https://cloud.r-project.org")
 #IRkernel::installspec()
 
-install.packages(c("rvest", "xml2", "dplyr", "stringr", "readr", "remotes", "devtools", "ncdf4", "parallel", "doParallel", "foreach", "future", curl))
+install.packages(c("rvest", "xml2", "dplyr", "stringr", "readr", "remotes", "devtools", "ncdf4", "parallel", "doParallel", "future", curl))
 
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")

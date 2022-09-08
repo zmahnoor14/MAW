@@ -1,24 +1,20 @@
 library(parallel)
 library(doParallel)
-library(foreach)
 library(future)
 library(iterators)
+library(listenv)
 
 options(future.globals.maxSize = 8 * 1024^3) # increase dataset size limit taken by future to 8GB
 
 # detects number of cores
 n.cores <- parallel::detectCores()
 
-# creates the parallel cluster
-my.cluster <- parallel::makeCluster(
-  n.cores,
-  type = "FORK"
-  )
 
-# register it to be used by %dopar%
-doParallel::registerDoParallel(cl = my.cluster)
-
-plan(cluster, workers = my.cluster)
+plan(list(
+  tweak(multisession, workers = ((n.cores + 5) %/% 3) %/% 2),
+  tweak(multisession, workers = ((n.cores + 5) %/% 3) %/% 2),
+  tweak(multisession, workers = 3)
+))
 
 start.time <- Sys.time()
 
@@ -33,8 +29,9 @@ source(paste(getwd(), "/Workflow_R_Functions.r", sep = ""))
 input_table <- data.frame(ms2_rfilename(input_dir))
 input_table
 
+input_table_idxs <- listenv()
 for (i in 1:nrow(input_table)){
-
+    input_table_idxs[[i]] <- future({
     #Preprocess and Read the mzMLfiles
     spec_pr <- spec_Processing(input_dir,
                                input_table[i, "mzml_files"],
@@ -88,9 +85,12 @@ for (i in 1:nrow(input_table)){
                SL_path = NA,
                candidates = 30,
               profile = "qtof")
+              
+   }) #end input_table_idxs future
 }
 
-stopCluster(my.cluster)
+input_table_idxs <- as.list(input_table_idxs)
+v_input_table_idxs <- value(input_table_idxs)
 
 end.time <- Sys.time()
 
