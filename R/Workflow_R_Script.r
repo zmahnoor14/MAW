@@ -85,12 +85,12 @@ for (i in 1:nrow(input_table)){
                SL_path = NA,
                candidates = 30,
               profile = "qtof")
-              
+
    }) #end input_table_idxs future
 }
 
 input_table_idxs <- as.list(input_table_idxs)
-v_input_table_idxs <- value(input_table_idxs)
+v_input_table_idxs <- future::value(input_table_idxs)
 
 end.time <- Sys.time()
 

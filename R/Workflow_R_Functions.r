@@ -2507,11 +2507,11 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
         })# ends mbank
 
-        v <- c(value(f_gnps), value(f_hmdb), value(f_mbank)) # blocks execution until threads finish
+        v <- c(future::value(f_gnps), future::value(f_hmdb), future::value(f_mbank)) # blocks execution until threads finish
       }) # ends pre_mzs future
     } # ends each pre mz
     pre_mzs <- as.list(pre_mzs)
-    v_pre_mzs <- value(pre_mzs)
+    v_pre_mzs <- future::value(pre_mzs)
     result_dir_spectra <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication", sep = ""), "."), sep = "")
     spectra_input <- data.frame(cbind(id_X, premz, rtmin,
                                       rtmax, rtmed, rtmean,
