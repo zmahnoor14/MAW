@@ -1484,9 +1484,9 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                      }# if res_top has some results ends here
                 }# first condition hmdb ends
                 else if (length(sps) == 1 && length(hmdb_with_mz) >1){
-                    if (length(res)>no_of_candidates){
-                        res <- res[1:no_of_candidates]
-                    }
+#                     if (length(res)>no_of_candidates){
+#                         res <- res[1:no_of_candidates]
+#                     }
                     # given threshold of 0.70 for HMDB, extract top candidates
                     res_top <- which(res > res[res>0.70], arr.ind = TRUE)
                     if (length(res_top) > 0){
