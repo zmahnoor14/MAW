@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 #!/usr/bin/env python
@@ -16,7 +16,7 @@ import wget
 import urllib.parse
 
 
-# In[3]:
+# In[2]:
 
 
 import numpy as np
@@ -24,7 +24,7 @@ import pandas as pd
 import pubchempy as pcp
 
 
-# In[4]:
+# In[3]:
 
 
 from pybatchclassyfire import *
@@ -36,7 +36,7 @@ from rdkit.Chem import rdFMCS
 from rdkit.Chem import PandasTools
 
 
-# In[5]:
+# In[4]:
 
 
 def isNaN(string):
@@ -276,7 +276,7 @@ def spec_postproc(input_dir, Source="all"):
 
                                         gnps_df = pd.read_csv(fls_g)
                                         gnps_df = gnps_df.drop_duplicates(
-                                            subset=["GNPSspectrumID"]
+                                            subset=["GNPSSMILES"]
                                         )
 
                                         if len(gnps_df) > 0:
@@ -652,34 +652,34 @@ def spec_postproc(input_dir, Source="all"):
                                         print(fls_m)
                                         mbank_df = pd.read_csv(fls_m)
                                         mbank_df = mbank_df.drop_duplicates(
-                                            subset=["MBinchiKEY"]
+                                            subset=["MBSMILES"]
                                         )
-                                        if len(mbank_df) > 0:
+#                                         if len(mbank_df) > 0:
 
-                                            for i, row in mbank_df.iterrows():
-                                                if MB_Scoring(mbank_df, i):
+#                                             for i, row in mbank_df.iterrows():
+#                                                 if MB_Scoring(mbank_df, i):
 
-                                                    inchiK = str(
-                                                        mbank_df["MBinchiKEY"][i]
-                                                    )
+#                                                     inchiK = str(
+#                                                         mbank_df["MBinchiKEY"][i]
+#                                                     )
 
-                                                    # extract inchikeys
-                                                    y = pcp.get_compounds(
-                                                        inchiK, "inchikey"
-                                                    )  # compound based on inchikey
+#                                                     # extract inchikeys
+#                                                     y = pcp.get_compounds(
+#                                                         inchiK, "inchikey"
+#                                                     )  # compound based on inchikey
 
-                                                    for compound in y:
+#                                                     for compound in y:
 
-                                                        # add smiles
-                                                        smles = compound.isomeric_smiles
-                                                        mbank_df.loc[
-                                                            i, "MBSMILES"
-                                                        ] = smles
-                                                        # mbank_df.loc[i, 'MBinchi'] =Chem.MolToInchi(Chem.MolFromSmiles(smles))
-                                                else:
-                                                    mbank_df.drop(
-                                                        [i], axis=0, inplace=True
-                                                    )
+#                                                         # add smiles
+#                                                         smles = compound.isomeric_smiles
+#                                                         mbank_df.loc[
+#                                                             i, "MBSMILES"
+#                                                         ] = smles
+#                                                         # mbank_df.loc[i, 'MBinchi'] =Chem.MolToInchi(Chem.MolFromSmiles(smles))
+#                                                 else:
+#                                                     mbank_df.drop(
+#                                                         [i], axis=0, inplace=True
+#                                                     )
 
                                         csvname = (
                                             (os.path.splitext(fls_m)[0])
@@ -741,154 +741,344 @@ def sirius_postproc(input_dir, exp_int=0.90, csi_score=-150):
 
                     # extract the formula and structure files
                     json_dirALL = next(os.walk(files_for_mz[0]))[1]
-                    sub_sub_dirALL_structure_can = (
-                        files_for_mz[0]
-                        + "/"
-                        + json_dirALL[0]
-                        + "/structure_candidates.tsv"
-                    )
-                    sub_sub_dirALL_formula_can = (
-                        files_for_mz[0]
-                        + "/"
-                        + json_dirALL[0]
-                        + "/formula_candidates.tsv"
-                    )
-                    ALL_Canopus_csv = files_for_mz[0] + "/canopus_summary.tsv"
-
-                    # if both structure files exist
-                    if (
-                        os.path.exists(sub_sub_dirALL_structure_can)
-                        and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t")) > 0
-                    ):
-                        if (
-                            os.path.exists(sub_sub_dirALL_formula_can)
-                            and len(pd.read_csv(sub_sub_dirALL_formula_can, sep="\t"))
-                            > 0
-                        ):
-                            ALL_structure_csv = pd.read_csv(
-                                sub_sub_dirALL_structure_can, sep="\t"
-                            )
-                            ALL_formula_csv = pd.read_csv(
-                                sub_sub_dirALL_formula_can, sep="\t"
-                            )
-                            ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
-                            # Add the structure and formula files together
-                            for structure, rows in ALL_structure_csv.iterrows():
-                                for formula, rows in ALL_formula_csv.iterrows():
-                                    if (
-                                        ALL_structure_csv["formulaRank"][structure]
-                                        == ALL_formula_csv["rank"][formula]
-                                    ):
-                                        ALL_structure_csv.loc[
-                                            structure, "SiriusScore"
-                                        ] = ALL_formula_csv["SiriusScore"][formula]
-                                        ALL_structure_csv.loc[
-                                            structure, "numExplainedPeaks"
-                                        ] = ALL_formula_csv["numExplainedPeaks"][
-                                            formula
-                                        ]
-                                        ALL_structure_csv.loc[
-                                            structure, "explainedIntensity"
-                                        ] = ALL_formula_csv["explainedIntensity"][
-                                            formula
-                                        ]
-                                        # ALL_structure_csv.loc[structure, "SuspectListEntry"] = "FALSE"
-                                        if len(ALL_Canopus) > 0:
-                                            if (
-                                                ALL_formula_csv["molecularFormula"][
-                                                    formula
-                                                ]
-                                                == ALL_Canopus["molecularFormula"][0]
-                                            ):
-                                                ALL_structure_csv.loc[
-                                                    structure, "superclass"
-                                                ] = ALL_Canopus["superclass"][0]
-                                                ALL_structure_csv.loc[
-                                                    structure, "class"
-                                                ] = ALL_Canopus["class"][0]
-                                                ALL_structure_csv.loc[
-                                                    structure, "subclass"
-                                                ] = ALL_Canopus["subclass"][0]
-
-                            for str_siriusA, row in ALL_structure_csv.iterrows():
-                                if not str_can_score(ALL_structure_csv, str_siriusA):
-                                    ALL_structure_csv = ALL_structure_csv.drop(
-                                        str_siriusA, inplace=False
-                                    )
-
-                        result_sirius_name = (
-                            sub_dir
-                            + "results_for_"
-                            + json_dirALL[0].split("_")[-1]
-                            + "_"
-                            + "structure.csv"
+                    if len(json_dirALL) > 0:
+                        sub_sub_dirALL_structure_can = (
+                            files_for_mz[0]
+                            + "/"
+                            + json_dirALL[0]
+                            + "/structure_candidates.tsv"
                         )
-                        msp.loc[mz, "sirius_result_dir"] = result_sirius_name.replace(
-                            input_dir, "."
+                        sub_sub_dirALL_formula_can = (
+                            files_for_mz[0]
+                            + "/"
+                            + json_dirALL[0]
+                            + "/formula_candidates.tsv"
                         )
+                        ALL_Canopus_csv = files_for_mz[0] + "/canopus_summary.tsv"
 
-                        ALL_structure_csv.to_csv(result_sirius_name)
-
-                    elif not (
-                        os.path.exists(sub_sub_dirALL_structure_can)
-                        and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t")) > 0
-                    ):
+                        # if both structure files exist
                         if (
-                            os.path.exists(sub_sub_dirALL_formula_can)
-                            and len(pd.read_csv(sub_sub_dirALL_formula_can, sep="\t"))
-                            > 0
+                            os.path.exists(sub_sub_dirALL_structure_can)
+                            and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t")) > 0
                         ):
-                            ALL_formula_csv = pd.read_csv(
-                                sub_sub_dirALL_formula_can, sep="\t"
-                            )
-                            ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
-                            if len(ALL_Canopus) > 0:
-                                for formula, rows in ALL_formula_csv.iterrows():
-                                    ALL_formula_csv.loc[
-                                        formula, "superclass"
-                                    ] = ALL_Canopus["superclass"][0]
-                                    ALL_formula_csv.loc[formula, "class"] = ALL_Canopus[
-                                        "class"
-                                    ][0]
-                                    ALL_formula_csv.loc[
-                                        formula, "subclass"
-                                    ] = ALL_Canopus["subclass"][0]
+                            if (
+                                os.path.exists(sub_sub_dirALL_formula_can)
+                                and len(pd.read_csv(sub_sub_dirALL_formula_can, sep="\t"))
+                                > 0
+                            ):
+                                ALL_structure_csv = pd.read_csv(
+                                    sub_sub_dirALL_structure_can, sep="\t"
+                                )
+                                ALL_formula_csv = pd.read_csv(
+                                    sub_sub_dirALL_formula_can, sep="\t"
+                                )
+                                ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
+                                # Add the structure and formula files together
+                                for structure, rows in ALL_structure_csv.iterrows():
+                                    for formula, rows in ALL_formula_csv.iterrows():
+                                        if (
+                                            ALL_structure_csv["formulaRank"][structure]
+                                            == ALL_formula_csv["rank"][formula]
+                                        ):
+                                            ALL_structure_csv.loc[
+                                                structure, "SiriusScore"
+                                            ] = ALL_formula_csv["SiriusScore"][formula]
+                                            ALL_structure_csv.loc[
+                                                structure, "numExplainedPeaks"
+                                            ] = ALL_formula_csv["numExplainedPeaks"][
+                                                formula
+                                            ]
+                                            ALL_structure_csv.loc[
+                                                structure, "explainedIntensity"
+                                            ] = ALL_formula_csv["explainedIntensity"][
+                                                formula
+                                            ]
+                                            # ALL_structure_csv.loc[structure, "SuspectListEntry"] = "FALSE"
+                                            if len(ALL_Canopus) > 0:
+                                                if (
+                                                    ALL_formula_csv["molecularFormula"][
+                                                        formula
+                                                    ]
+                                                    == ALL_Canopus["molecularFormula"][0]
+                                                ):
+                                                    ALL_structure_csv.loc[
+                                                        structure, "superclass"
+                                                    ] = ALL_Canopus["superclass"][0]
+                                                    ALL_structure_csv.loc[
+                                                        structure, "class"
+                                                    ] = ALL_Canopus["class"][0]
+                                                    ALL_structure_csv.loc[
+                                                        structure, "subclass"
+                                                    ] = ALL_Canopus["subclass"][0]
 
-                            for for_siriusA, row in ALL_formula_csv.iterrows():
-                                if (
-                                    not ALL_formula_csv["explainedIntensity"][
-                                        for_siriusA
-                                    ]
-                                    >= exp_int
-                                ):
-                                    ALL_formula_csv = ALL_formula_csv.drop(
-                                        for_siriusA, inplace=False
-                                    )
+                                for str_siriusA, row in ALL_structure_csv.iterrows():
+                                    if not str_can_score(ALL_structure_csv, str_siriusA):
+                                        ALL_structure_csv = ALL_structure_csv.drop(
+                                            str_siriusA, inplace=False
+                                        )
 
                             result_sirius_name = (
                                 sub_dir
                                 + "results_for_"
                                 + json_dirALL[0].split("_")[-1]
                                 + "_"
-                                + "formula.csv"
+                                + "structure.csv"
                             )
-                            msp.loc[
-                                mz, "sirius_result_dir"
-                            ] = result_sirius_name.replace(input_dir, ".")
-
-                            ALL_formula_csv.to_csv(
-                                sub_dir
-                                + "results_for_"
-                                + json_dirALL[0].split("_")[-1]
-                                + "_"
-                                + "formula.csv"
+                            msp.loc[mz, "sirius_result_dir"] = result_sirius_name.replace(
+                                input_dir, "."
                             )
 
+                            ALL_structure_csv.to_csv(result_sirius_name)
+
+                        elif not (
+                            os.path.exists(sub_sub_dirALL_structure_can)
+                            and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t")) > 0
+                        ):
+                            if (
+                                os.path.exists(sub_sub_dirALL_formula_can)
+                                and len(pd.read_csv(sub_sub_dirALL_formula_can, sep="\t"))
+                                > 0
+                            ):
+                                ALL_formula_csv = pd.read_csv(
+                                    sub_sub_dirALL_formula_can, sep="\t"
+                                )
+                                ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
+                                if len(ALL_Canopus) > 0:
+                                    for formula, rows in ALL_formula_csv.iterrows():
+                                        ALL_formula_csv.loc[
+                                            formula, "superclass"
+                                        ] = ALL_Canopus["superclass"][0]
+                                        ALL_formula_csv.loc[formula, "class"] = ALL_Canopus[
+                                            "class"
+                                        ][0]
+                                        ALL_formula_csv.loc[
+                                            formula, "subclass"
+                                        ] = ALL_Canopus["subclass"][0]
+
+                                for for_siriusA, row in ALL_formula_csv.iterrows():
+                                    if (
+                                        not ALL_formula_csv["explainedIntensity"][
+                                            for_siriusA
+                                        ]
+                                        >= exp_int
+                                    ):
+                                        ALL_formula_csv = ALL_formula_csv.drop(
+                                            for_siriusA, inplace=False
+                                        )
+
+                                result_sirius_name = (
+                                    sub_dir
+                                    + "results_for_"
+                                    + json_dirALL[0].split("_")[-1]
+                                    + "_"
+                                    + "formula.csv"
+                                )
+                                msp.loc[
+                                    mz, "sirius_result_dir"
+                                ] = result_sirius_name.replace(input_dir, ".")
+
+                                ALL_formula_csv.to_csv(
+                                    sub_dir
+                                    + "results_for_"
+                                    + json_dirALL[0].split("_")[-1]
+                                    + "_"
+                                    + "formula.csv"
+                                )
+
+                            else:
+                                print("no file for formula")
                         else:
-                            print("no file for formula")
-                    else:
-                        print("no file for structure or formula")
+                            print("no file for structure or formula")
             msp.to_csv(msp_csv)
+
+
+# In[ ]:
+
+
+
+
+# def str_can_score(db, i):
+#     if (
+#         db["explainedIntensity"][i] >= exp_int
+#         #and db["CSI:FingerIDScore"][i] >= csi_score
+#     ):
+#         return True
+#     else:
+#         return False
+
+# # entry is all files and folders in input_dir
+# for entry in os.listdir(input_dir):
+#     # if the entry is also a directory
+#     if os.path.isdir(os.path.join(input_dir, entry)):
+#         sub_dir = input_dir + "/" + entry + "/insilico/SIRIUS/"
+#         msp_csv = input_dir + "/" + entry + "/insilico/MS1DATA.csv"
+#         if os.path.exists(msp_csv) and os.path.exists(sub_dir):
+#             # output json files from SIRIUS
+#             files_S = glob.glob(sub_dir + "/*.json")
+#             # list of precursor m/z
+#             msp = pd.read_csv(msp_csv)
+
+#             # for each mz
+#             for mz, row in msp.iterrows():
+#                 # make a list of files with this mz
+#                 #print(mz)
+#                 files_for_mz = []
+
+#                 for file in files_S:
+#                     if str(msp["premz"][mz]) in file:
+#                         files_for_mz.append(file)
+
+#                 # extract the formula and structure files
+#                 json_dirALL = next(os.walk(files_for_mz[0]))[1]
+#                 if len(json_dirALL)>0:
+#                     sub_sub_dirALL_structure_can = (
+#                         files_for_mz[0]
+#                         + "/"
+#                         + json_dirALL[0]
+#                         + "/structure_candidates.tsv"
+#                     )
+#                     sub_sub_dirALL_formula_can = (
+#                         files_for_mz[0]
+#                         + "/"
+#                         + json_dirALL[0]
+#                         + "/formula_candidates.tsv"
+#                     )
+#                     ALL_Canopus_csv = files_for_mz[0] + "/canopus_summary.tsv"
+
+#                     # if both structure files exist
+#                     if (
+#                         os.path.exists(sub_sub_dirALL_structure_can)
+#                         and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t")) > 0
+#                     ):
+#                         if (
+#                             os.path.exists(sub_sub_dirALL_formula_can)
+#                             and len(pd.read_csv(sub_sub_dirALL_formula_can, sep="\t"))
+#                             > 0
+#                         ):
+#                             ALL_structure_csv = pd.read_csv(
+#                                 sub_sub_dirALL_structure_can, sep="\t"
+#                             )
+#                             ALL_formula_csv = pd.read_csv(
+#                                 sub_sub_dirALL_formula_can, sep="\t"
+#                             )
+#                             ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
+#                             # Add the structure and formula files together
+#                             for structure, rows in ALL_structure_csv.iterrows():
+#                                 for formula, rows in ALL_formula_csv.iterrows():
+#                                     if (
+#                                         ALL_structure_csv["formulaRank"][structure]
+#                                         == ALL_formula_csv["rank"][formula]
+#                                     ):
+#                                         ALL_structure_csv.loc[
+#                                             structure, "SiriusScore"
+#                                         ] = ALL_formula_csv["SiriusScore"][formula]
+#                                         ALL_structure_csv.loc[
+#                                             structure, "numExplainedPeaks"
+#                                         ] = ALL_formula_csv["numExplainedPeaks"][
+#                                             formula
+#                                         ]
+#                                         ALL_structure_csv.loc[
+#                                             structure, "explainedIntensity"
+#                                         ] = ALL_formula_csv["explainedIntensity"][
+#                                             formula
+#                                         ]
+#                                         # ALL_structure_csv.loc[structure, "SuspectListEntry"] = "FALSE"
+#                                         if len(ALL_Canopus) > 0:
+#                                             if (
+#                                                 ALL_formula_csv["molecularFormula"][
+#                                                     formula
+#                                                 ]
+#                                                 == ALL_Canopus["molecularFormula"][0]
+#                                             ):
+#                                                 ALL_structure_csv.loc[
+#                                                     structure, "superclass"
+#                                                 ] = ALL_Canopus["superclass"][0]
+#                                                 ALL_structure_csv.loc[
+#                                                     structure, "class"
+#                                                 ] = ALL_Canopus["class"][0]
+#                                                 ALL_structure_csv.loc[
+#                                                     structure, "subclass"
+#                                                 ] = ALL_Canopus["subclass"][0]
+
+#                             for str_siriusA, row in ALL_structure_csv.iterrows():
+#                                 if not str_can_score(ALL_structure_csv, str_siriusA):
+#                                     ALL_structure_csv = ALL_structure_csv.drop(
+#                                         str_siriusA, inplace=False
+#                                     )
+
+#                         result_sirius_name = (
+#                             sub_dir
+#                             + "results_for_"
+#                             + json_dirALL[0].split("_")[-1]
+#                             + "_"
+#                             + "structure.csv"
+#                         )
+#                         msp.loc[mz, "sirius_result_dir"] = result_sirius_name.replace(
+#                             input_dir, "."
+#                         )
+
+#                         ALL_structure_csv.to_csv(result_sirius_name)
+
+#                     elif not (
+#                         os.path.exists(sub_sub_dirALL_structure_can)
+#                         and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t")) > 0
+#                     ):
+#                         if (
+#                             os.path.exists(sub_sub_dirALL_formula_can)
+#                             and len(pd.read_csv(sub_sub_dirALL_formula_can, sep="\t"))
+#                             > 0
+#                         ):
+#                             ALL_formula_csv = pd.read_csv(
+#                                 sub_sub_dirALL_formula_can, sep="\t"
+#                             )
+#                             ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
+#                             if len(ALL_Canopus) > 0:
+#                                 for formula, rows in ALL_formula_csv.iterrows():
+#                                     ALL_formula_csv.loc[
+#                                         formula, "superclass"
+#                                     ] = ALL_Canopus["superclass"][0]
+#                                     ALL_formula_csv.loc[formula, "class"] = ALL_Canopus[
+#                                         "class"
+#                                     ][0]
+#                                     ALL_formula_csv.loc[
+#                                         formula, "subclass"
+#                                     ] = ALL_Canopus["subclass"][0]
+
+#                             for for_siriusA, row in ALL_formula_csv.iterrows():
+#                                 if (
+#                                     not ALL_formula_csv["explainedIntensity"][
+#                                         for_siriusA
+#                                     ]
+#                                     >= exp_int
+#                                 ):
+#                                     ALL_formula_csv = ALL_formula_csv.drop(
+#                                         for_siriusA, inplace=False
+#                                     )
+
+#                             result_sirius_name = (
+#                                 sub_dir
+#                                 + "results_for_"
+#                                 + json_dirALL[0].split("_")[-1]
+#                                 + "_"
+#                                 + "formula.csv"
+#                             )
+#                             msp.loc[
+#                                 mz, "sirius_result_dir"
+#                             ] = result_sirius_name.replace(input_dir, ".")
+
+#                             ALL_formula_csv.to_csv(
+#                                 sub_dir
+#                                 + "results_for_"
+#                                 + json_dirALL[0].split("_")[-1]
+#                                 + "_"
+#                                 + "formula.csv"
+#                             )
+
+#                         else:
+#                             print("no file for formula")
+#                     else:
+#                         print("no file for structure or formula")
+#         msp.to_csv(msp_csv)
 
 
 # In[8]:
@@ -1561,7 +1751,7 @@ def one_candidate_selection(
                     # print(e.string)
                     pass
 
-        # If the source contains MassBank
+        # If the source contains HMDB
         if (
             Source == "SGHM"
             or Source == "SGM"
@@ -1571,6 +1761,50 @@ def one_candidate_selection(
             or Source == "GM"
             or Source == "HM"
             or Source == "H"
+        ):
+            for hmdb_i, row in hmdb_df.iterrows():
+                try:
+                    # calculate tanimoto
+                    ms = [
+                        Chem.MolFromSmiles(df["SMILES"][smiles]),
+                        Chem.MolFromSmiles(hmdb_df["HMDBSMILES"][hmdb_i]),
+                    ]
+                    fps = [
+                        AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048)
+                        for x in ms
+                    ]
+                    tn = DataStructs.FingerprintSimilarity(fps[0], fps[1])
+
+                    # since we are dealing with idenity here so tanimoto of 0.99 is appropriate
+                    if tn >= tn_ident:
+
+                        # if HMDB is blank, add the HMDB id
+                        if isNaN(df["HMDB"][smiles]):
+
+                            df.loc[smiles, "HMDB"] = hmdb_df["rank_ids"][hmdb_i]
+                        # if not empty, add HMDB id, with a comma
+                        else:
+                            df.loc[smiles, "HMDB"] = (
+                                str(df["HMDB"][smiles])
+                                + ", "
+                                + hmdb_df["rank_ids"][hmdb_i]
+                            )
+
+                except Exception:
+                    # print(e.string)
+                    pass
+
+
+        # If the source contains MassBank
+        if (
+            Source == "SGHM"
+            or Source == "SGH"
+            or Source == "SHM"
+            or Source == "GHM"
+            or Source == "SH"
+            or Source == "GH"
+            or Source == "HM"
+            or Source == "M"
         ):
             # mbank_df comes from within the function CandidateSelection_SimilarityandIdentity
             for mbank_i, row in mbank_df.iterrows():
@@ -1605,50 +1839,7 @@ def one_candidate_selection(
                     # print(e.string)
                     pass
 
-        # If the source contains HMDB
-        if (
-            Source == "SGHM"
-            or Source == "SGH"
-            or Source == "SHM"
-            or Source == "GHM"
-            or Source == "SH"
-            or Source == "GH"
-            or Source == "HM"
-            or Source == "M"
-        ):
-
-            for hmdb_i, row in hmdb_df.iterrows():
-                try:
-                    # calculate tanimoto
-                    ms = [
-                        Chem.MolFromSmiles(df["SMILES"][smiles]),
-                        Chem.MolFromSmiles(hmdb_df["HMDBSMILES"][hmdb_i]),
-                    ]
-                    fps = [
-                        AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048)
-                        for x in ms
-                    ]
-                    tn = DataStructs.FingerprintSimilarity(fps[0], fps[1])
-
-                    # since we are dealing with idenity here so tanimoto of 0.99 is appropriate
-                    if tn >= tn_ident:
-
-                        # if HMDB is blank, add the HMDB id
-                        if isNaN(df["HMDB"][smiles]):
-
-                            df.loc[smiles, "HMDB"] = hmdb_df["rank_ids"][hmdb_i]
-                        # if not empty, add HMDB id, with a comma
-                        else:
-                            df.loc[smiles, "HMDB"] = (
-                                str(df["HMDB"][smiles])
-                                + ", "
-                                + hmdb_df["rank_ids"][hmdb_i]
-                            )
-
-                except Exception:
-                    # print(e.string)
-                    pass
-
+            
     return df
 
 
@@ -1755,6 +1946,17 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
             merged_df["class"][mer] = np.nan
             merged_df["subclass"][mer] = np.nan
             merged_df["ClassificationSource"][mer] = np.nan
+        elif "SIRIUS" in list(df_count_1["Source"]):
+            can1 = df_count_1.index[
+                df_count_1["Source"].str.contains("SIRIUS")
+            ].tolist()
+            merged_df.loc[mer, "SMILES"] = list(df_count_1["SMILES"][can1])[0]
+            merged_df["Formula"] = sirius_df["molecularFormula"][0]
+            merged_df["superclass"] = sirius_df["superclass"][0]
+            merged_df["class"] = sirius_df["class"][0]
+            merged_df["subclass"] = sirius_df["subclass"][0]
+            merged_df["ClassificationSource"] = "CANOPUS"
+        
         elif "MassBank" in list(df_count_1["Source"]):
             can1 = df_count_1.index[
                 df_count_1["Source"].str.contains("MassBank")
@@ -1789,16 +1991,7 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
             merged_df["class"][mer] = np.nan
             merged_df["subclass"][mer] = np.nan
             merged_df["ClassificationSource"][mer] = np.nan
-        elif "SIRIUS" in list(df_count_1["Source"]):
-            can1 = df_count_1.index[
-                df_count_1["Source"].str.contains("SIRIUS")
-            ].tolist()
-            merged_df.loc[mer, "SMILES"] = list(df_count_1["SMILES"][can1])[0]
-            merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
+        
 
         
         
@@ -1829,12 +2022,7 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
                 str(merged_df["AnnotationSources"][mer]) + "|GNPS"
             )
             # print("gnps")
-        if (
-            "HMDB" in merged_df["AnnotationSources"][mer]
-            or "GNPS" in merged_df["AnnotationSources"][mer]
-            or "MassBank" in merged_df["AnnotationSources"][mer]
-        ):
-            merged_df.loc[mer, "MSILevel"] = 2
+        
         if "nan|SIRIUS" == merged_df["AnnotationSources"][mer]:
             merged_df.loc[mer, "MSILevel"] = 3
 
@@ -1842,6 +2030,13 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
             mer
         ].replace("nan|", "")
 
+        if (
+            "HMDB" in merged_df["AnnotationSources"][mer]
+            or "GNPS" in merged_df["AnnotationSources"][mer]
+            or "MassBank" in merged_df["AnnotationSources"][mer]
+        ):
+            merged_df.loc[mer, "MSILevel"] = 2
+        
     # if only two or more unique source
     else:
 
@@ -1885,6 +2080,17 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
                 merged_df["subclass"][mer] = np.nan
                 merged_df["ClassificationSource"][mer] = np.nan
 
+            
+            elif "SIRIUS" in list_sources:
+                merged_df.loc[mer, "AnnotationSources"] = (
+                    str(merged_df["AnnotationSources"][mer]) + "|SIRIUS"
+                )
+                merged_df["Formula"] = sirius_df["molecularFormula"][0]
+                merged_df["superclass"] = sirius_df["superclass"][0]
+                merged_df["class"] = sirius_df["class"][0]
+                merged_df["subclass"] = sirius_df["subclass"][0]
+                merged_df["ClassificationSource"] = "CANOPUS"
+                
             elif "MassBank" in list_sources:
                 merged_df.loc[mer, "AnnotationSources"] = (
                     str(merged_df["AnnotationSources"][mer]) + "|Massbank"
@@ -1921,15 +2127,7 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
                 merged_df["subclass"][mer] = np.nan
                 merged_df["ClassificationSource"][mer] = np.nan
 
-            elif "SIRIUS" in list_sources:
-                merged_df.loc[mer, "AnnotationSources"] = (
-                    str(merged_df["AnnotationSources"][mer]) + "|SIRIUS"
-                )
-                merged_df["Formula"] = sirius_df["molecularFormula"][0]
-                merged_df["superclass"] = sirius_df["superclass"][0]
-                merged_df["class"] = sirius_df["class"][0]
-                merged_df["subclass"] = sirius_df["subclass"][0]
-                merged_df["ClassificationSource"] = "CANOPUS"
+            
 
             
             merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][
@@ -1970,7 +2168,18 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
                     str(merged_df["AnnotationSources"][mer]) + "|GNPS"
                 )
                 
-
+            elif "SIRIUS" in np.unique(df_count_1["Source"]):
+                index = np.where(df_count_1["Source"] == "SIRIUS")[0]
+                merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
+                merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][index[0]]
+                merged_df["Formula"] = sirius_df["molecularFormula"][0]
+                merged_df["superclass"] = sirius_df["superclass"][0]
+                merged_df["class"] = sirius_df["class"][0]
+                merged_df["subclass"] = sirius_df["subclass"][0]
+                merged_df["ClassificationSource"] = "CANOPUS"
+                merged_df.loc[mer, "AnnotationSources"] = (
+                    str(merged_df["AnnotationSources"][mer]) + "|SIRIUS"
+                )
             elif "MassBank" in np.unique(df_count_1["Source"]):
                 index = np.where(df_count_1["Source"] == "MassBank")[0]
                 merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
@@ -2015,23 +2224,13 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
                     str(merged_df["AnnotationSources"][mer]) + "|HMDB"
                 )
 
-            elif "SIRIUS" in np.unique(df_count_1["Source"]):
-                index = np.where(df_count_1["Source"] == "SIRIUS")[0]
-                merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
-                merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][index[0]]
-                merged_df["Formula"] = sirius_df["molecularFormula"][0]
-                merged_df["superclass"] = sirius_df["superclass"][0]
-                merged_df["class"] = sirius_df["class"][0]
-                merged_df["subclass"] = sirius_df["subclass"][0]
-                merged_df["ClassificationSource"] = "CANOPUS"
-                merged_df.loc[mer, "AnnotationSources"] = (
-                    str(merged_df["AnnotationSources"][mer]) + "|SIRIUS"
-                )
-
             
             merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][
                 mer
             ].replace("nan|", "")
+            if "SIRIUS" == merged_df["AnnotationSources"][mer]:
+                merged_df.loc[mer, "MSILevel"] = 3
+
             if (
                 "HMDB" in merged_df["AnnotationSources"][mer]
                 or "GNPS" in merged_df["AnnotationSources"][mer]
@@ -2042,9 +2241,7 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
                 merged_df["class"][mer] = np.nan
                 merged_df["subclass"][mer] = np.nan
                 merged_df["ClassificationSource"][mer] = np.nan
-            if "SIRIUS" == merged_df["AnnotationSources"][mer]:
-                merged_df.loc[mer, "MSILevel"] = 3
-
+            
     return merged_df
 
 
@@ -2166,6 +2363,31 @@ def sources_2(candidates_with_counts, merged_df, mer, sirius_df):
             merged_df["ClassificationSource"][mer] = np.nan
         else:
             pass
+        
+        
+        
+    elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
+        if len(df_count_2.loc[df_count_2["Source"] == "SIRIUS"]) == 1:
+            new = df_count_2.loc[df_count_2["Source"] == "SIRIUS"]
+            new.reset_index(drop=True, inplace=True)
+            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+            merged_df["Formula"] = sirius_df["molecularFormula"][0]
+            merged_df["superclass"] = sirius_df["superclass"][0]
+            merged_df["class"] = sirius_df["class"][0]
+            merged_df["subclass"] = sirius_df["subclass"][0]
+            merged_df["ClassificationSource"] = "CANOPUS"
+        elif len(df_count_2.loc[df_count_2["Source"] == "SIRIUS"]) > 1:
+            new = df_count_2.loc[df_count_2["Source"] == "SIRIUS"]
+            new.reset_index(drop=True, inplace=True)
+            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+            merged_df["Formula"] = sirius_df["molecularFormula"][0]
+            merged_df["superclass"] = sirius_df["superclass"][0]
+            merged_df["class"] = sirius_df["class"][0]
+            merged_df["subclass"] = sirius_df["subclass"][0]
+            merged_df["ClassificationSource"] = "CANOPUS"
+            
+        else:
+            pass
     elif "MassBank" in merged_df["AnnotationSources"][mer]:
         if len(df_count_2.loc[df_count_2["Source"] == "MassBank"]) == 1:
             new = df_count_2.loc[df_count_2["Source"] == "MassBank"]
@@ -2240,28 +2462,7 @@ def sources_2(candidates_with_counts, merged_df, mer, sirius_df):
             merged_df["ClassificationSource"][mer] = np.nan
         else:
             pass
-    elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
-        if len(df_count_2.loc[df_count_2["Source"] == "SIRIUS"]) == 1:
-            new = df_count_2.loc[df_count_2["Source"] == "SIRIUS"]
-            new.reset_index(drop=True, inplace=True)
-            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-            merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
-        elif len(df_count_2.loc[df_count_2["Source"] == "SIRIUS"]) > 1:
-            new = df_count_2.loc[df_count_2["Source"] == "SIRIUS"]
-            new.reset_index(drop=True, inplace=True)
-            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-            merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
-            
-        else:
-            pass
+    
     
     return merged_df
 
@@ -2335,18 +2536,19 @@ def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
             str(merged_df["AnnotationSources"][mer]) + "|GNPS"
         )
         # print("gnps")
-    if (
-        "HMDB" in merged_df["AnnotationSources"][mer]
-        or "GNPS" in merged_df["AnnotationSources"][mer]
-        or "MassBank" in merged_df["AnnotationSources"][mer]
-    ):
-        merged_df.loc[mer, "MSILevel"] = 2
     if "nan|SIRIUS" == merged_df["AnnotationSources"][mer]:
         merged_df.loc[mer, "MSILevel"] = 3
 
     merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][mer].replace(
         "nan|", ""
     )
+    if (
+        "HMDB" in merged_df["AnnotationSources"][mer]
+        or "GNPS" in merged_df["AnnotationSources"][mer]
+        or "MassBank" in merged_df["AnnotationSources"][mer]
+    ):
+        merged_df.loc[mer, "MSILevel"] = 2
+    
 
     if "GNPS" in merged_df["AnnotationSources"][mer]:
         if len(df_count_3.loc[df_count_3["Source"] == "GNPS"]) == 1:
@@ -2385,6 +2587,30 @@ def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
             merged_df["ClassificationSource"][mer] = np.nan
         else:
             pass
+    
+    
+    elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
+        if len(df_count_3.loc[df_count_3["Source"] == "SIRIUS"]) == 1:
+            new = df_count_3.loc[df_count_3["Source"] == "SIRIUS"]
+            new.reset_index(drop=True, inplace=True)
+            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+            merged_df["Formula"] = sirius_df["molecularFormula"][0]
+            merged_df["superclass"] = sirius_df["superclass"][0]
+            merged_df["class"] = sirius_df["class"][0]
+            merged_df["subclass"] = sirius_df["subclass"][0]
+            merged_df["ClassificationSource"] = "CANOPUS"
+        elif len(df_count_3.loc[df_count_3["Source"] == "SIRIUS"]) > 1:
+            new = df_count_3.loc[df_count_3["Source"] == "SIRIUS"]
+            new.reset_index(drop=True, inplace=True)
+            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+            merged_df["Formula"] = sirius_df["molecularFormula"][0]
+            merged_df["superclass"] = sirius_df["superclass"][0]
+            merged_df["class"] = sirius_df["class"][0]
+            merged_df["subclass"] = sirius_df["subclass"][0]
+            merged_df["ClassificationSource"] = "CANOPUS"
+        else:
+            pass
+    
     elif "MassBank" in merged_df["AnnotationSources"][mer]:
         if len(df_count_3.loc[df_count_3["Source"] == "MassBank"]) == 1:
             new = df_count_3.loc[df_count_3["Source"] == "MassBank"]
@@ -2459,27 +2685,7 @@ def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
             merged_df["ClassificationSource"][mer] = np.nan
         else:
             pass
-    elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
-        if len(df_count_3.loc[df_count_3["Source"] == "SIRIUS"]) == 1:
-            new = df_count_3.loc[df_count_3["Source"] == "SIRIUS"]
-            new.reset_index(drop=True, inplace=True)
-            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-            merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
-        elif len(df_count_3.loc[df_count_3["Source"] == "SIRIUS"]) > 1:
-            new = df_count_3.loc[df_count_3["Source"] == "SIRIUS"]
-            new.reset_index(drop=True, inplace=True)
-            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-            merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
-        else:
-            pass
+    
     
     heavy_atoms = ["C", "N", "P", "O", "S"]
 
@@ -2571,19 +2777,23 @@ def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
             str(merged_df["AnnotationSources"][mer]) + "|GNPS"
         )
         # print("gnps")
-    if (
-        "HMDB" in merged_df["AnnotationSources"][mer]
-        or "GNPS" in merged_df["AnnotationSources"][mer]
-        or "MassBank" in merged_df["AnnotationSources"][mer]
-    ):
-        merged_df.loc[mer, "MSILevel"] = 2
+    
     if "nan|SIRIUS" == merged_df["AnnotationSources"][mer]:
         merged_df.loc[mer, "MSILevel"] = 3
 
     merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][mer].replace(
         "nan|", ""
     )
+    
+    if (
+        "HMDB" in merged_df["AnnotationSources"][mer]
+        or "GNPS" in merged_df["AnnotationSources"][mer]
+        or "MassBank" in merged_df["AnnotationSources"][mer]
+    ):
+        merged_df.loc[mer, "MSILevel"] = 2
+    
 
+    
     if "GNPS" in merged_df["AnnotationSources"][mer]:
         if len(df_count_4.loc[df_count_4["Source"] == "GNPS"]) == 1:
             new = df_count_4.loc[df_count_4["Source"] == "GNPS"]
@@ -2621,6 +2831,30 @@ def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
             merged_df["ClassificationSource"][mer] = np.nan
         else:
             pass
+    
+    elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
+        if len(df_count_4.loc[df_count_4["Source"] == "SIRIUS"]) == 1:
+            new = df_count_4.loc[df_count_4["Source"] == "SIRIUS"]
+            new.reset_index(drop=True, inplace=True)
+            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+            merged_df["Formula"] = sirius_df["molecularFormula"][0]
+            merged_df["superclass"] = sirius_df["superclass"][0]
+            merged_df["class"] = sirius_df["class"][0]
+            merged_df["subclass"] = sirius_df["subclass"][0]
+            merged_df["ClassificationSource"] = "CANOPUS"
+        elif len(df_count_4.loc[df_count_4["Source"] == "SIRIUS"]) > 1:
+            new = df_count_4.loc[df_count_4["Source"] == "SIRIUS"]
+            new.reset_index(drop=True, inplace=True)
+            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+            merged_df["Formula"] = sirius_df["molecularFormula"][0]
+            merged_df["superclass"] = sirius_df["superclass"][0]
+            merged_df["class"] = sirius_df["class"][0]
+            merged_df["subclass"] = sirius_df["subclass"][0]
+            merged_df["ClassificationSource"] = "CANOPUS"
+        else:
+            pass
+    
+    
     elif "MassBank" in merged_df["AnnotationSources"][mer]:
         if len(df_count_4.loc[df_count_4["Source"] == "MassBank"]) == 1:
             new = df_count_4.loc[df_count_4["Source"] == "MassBank"]
@@ -2695,27 +2929,7 @@ def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
             merged_df["ClassificationSource"][mer] = np.nan
         else:
             pass
-    elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
-        if len(df_count_4.loc[df_count_4["Source"] == "SIRIUS"]) == 1:
-            new = df_count_4.loc[df_count_4["Source"] == "SIRIUS"]
-            new.reset_index(drop=True, inplace=True)
-            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-            merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
-        elif len(df_count_4.loc[df_count_4["Source"] == "SIRIUS"]) > 1:
-            new = df_count_4.loc[df_count_4["Source"] == "SIRIUS"]
-            new.reset_index(drop=True, inplace=True)
-            merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-            merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
-        else:
-            pass
+    
     
     heavy_atoms = ["C", "N", "P", "O", "S"]
 
@@ -2784,7 +2998,7 @@ def checkSMILES_validity(input_dir, resultcsv):
 # In[35]:
 
 
-def CandidateSelection_SimilarityandIdentity(input_dir):
+def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
 
     # entry is all files and folders in input_dir
     for entry in os.listdir(input_dir):
@@ -4015,6 +4229,12 @@ def CandidateSelection_SimilarityandIdentity(input_dir):
 
                                 if max(candidates_with_counts["Count"]) == 1:
                                     sources_1(candidates_with_counts, merged_df, mer, sirius_df)
+                        
+                        if standards:
+                            if not isNaN(merged_df["SMILES"][mer]):
+                        
+                                merged_df.loc[mer, "MSILevel"] = 1
+                            
                     merged_df.to_csv(
                         input_dir
                         + "/"
@@ -4121,6 +4341,12 @@ def SMILESscreening(input_dir, resultcsv, complist, listname):
         input_dir + "MetabolomicsResults/final_curationListVS" + listname + ".csv"
     )
     return frame
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
@@ -4321,24 +4547,22 @@ def chemMN(input_dir, resultcsv):
                             tn = DataStructs.FingerprintSimilarity(fps[0], fps[1])
                             dbn.append(
                                 {
-                                    "Name_i": df["id_X"][i],
-                                    "Name_j": df["id_X"][j],
+                                    "Name_i": df["IUPAC"][i],
+                                    "Name_j": df["IUPAC"][j],
                                     "i": df["SMILES"][i],
                                     "j": df["SMILES"][j],
                                     "Tanimoto": tn,
                                 }
                             )
-                        except Exception as e:
-                            print(i)
-                            print(j)
-                            print(e)
+                        except Exception:
+                            pass
     # save chemical similarities
     db_edgenode = pd.DataFrame(dbn)
 
     dfe = []
     heavy_atoms = ["C", "N", "P", "O", "S"]
     for i, row in db_edgenode.iterrows():
-        if 1.0 > db_edgenode["Tanimoto"][i] >= 0.70:
+        if db_edgenode["Tanimoto"][i] >= 0.85:
             # list of mol used to calaculate the MCSS
             n = [
                 Chem.MolFromSmiles(db_edgenode["i"][i]),
@@ -4364,36 +4588,37 @@ def chemMN(input_dir, resultcsv):
                     "MCSS": MCSS_SMILES,
                 }
             )
+    if len(df_edge) > 0:
+        
+        df_edge = pd.DataFrame(dfe)
+        df_edge["Start"] = df_edge["Start"].astype(str)
+        df_edge["End"] = df_edge["End"].astype(str)
+        df_edge["sorted_row"] = [sorted([a, b]) for a, b in zip(df_edge.Start, df_edge.End)]
+        df_edge["sorted_row"] = df_edge["sorted_row"].astype(str)
+        df_edge.drop_duplicates(subset=["sorted_row"], inplace=True)
 
-    df_edge = pd.DataFrame(dfe)
-    df_edge["Start"] = df_edge["Start"].astype(str)
-    df_edge["End"] = df_edge["End"].astype(str)
-    df_edge["sorted_row"] = [sorted([a, b]) for a, b in zip(df_edge.Start, df_edge.End)]
-    df_edge["sorted_row"] = df_edge["sorted_row"].astype(str)
-    df_edge.drop_duplicates(subset=["sorted_row"], inplace=True)
+        nodes = []
+        for i, row in df.iterrows():
+            n = df["IUPAC"][i]
+            nodes.append({"nodes": n})
 
-    nodes = []
-    for i, row in df.iterrows():
-        n = df["id_X"][i]
-        nodes.append({"nodes": n})
+        node = pd.DataFrame(nodes)
 
-    node = pd.DataFrame(nodes)
+        df_edge.to_csv(input_dir + "/ChemMNedges.tsv", sep="\t")
+        node.to_csv(input_dir + "/ChemMNnodes.csv", index=False)
 
-    df_edge.to_csv(input_dir + "/ChemMNedges.tsv", sep="\t")
-    node.to_csv(input_dir + "/ChemMNnodes.csv", index=False)
+        newdf = df_edge
+        newdf["StartAtt"] = np.nan
+        newdf["EndAtt"] = np.nan
+        for i, row in newdf.iterrows():
+            for j, row in df.iterrows():
+                if newdf["Start"][i] == df["IUPAC"][j]:
+                    newdf.loc[i, "StartAtt"] = df["class"][j]
+                if newdf["End"][i] == df["IUPAC"][j]:
+                    newdf.loc[i, "EndAtt"] = df["class"][j]
+        newdf.to_csv(input_dir + "/ChemMNcys.tsv", sep="\t")
 
-    newdf = df_edge
-    newdf["StartAtt"] = np.nan
-    newdf["EndAtt"] = np.nan
-    for i, row in newdf.iterrows():
-        for j, row in df.iterrows():
-            if newdf["Start"][i] == df["id_X"][j]:
-                newdf.loc[i, "StartAtt"] = df["class"][j]
-            if newdf["End"][i] == df["id_X"][j]:
-                newdf.loc[i, "EndAtt"] = df["class"][j]
-    newdf.to_csv(input_dir + "/ChemMNcys.tsv", sep="\t")
-
-    return newdf
+        return newdf
 
 
 def gnpsMNvsgnpsMAW(input_dir):
@@ -4456,7 +4681,7 @@ def gnpsMNvsgnpsMAW(input_dir):
             "rtmean_x",
             "GNPSmax_similarity",
             "GNPSSMILES",
-            "GNPSspectrumID",
+            #"GNPSspectrumID",
             "GNPScompound_name",
             "GNPSmirrorSpec",
         ]
