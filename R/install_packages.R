@@ -3,12 +3,13 @@
 #install.packages('IRkernel', repos="https://cloud.r-project.org")
 #IRkernel::installspec()
 
-install.packages(c("rvest", "xml2", "dplyr", "stringr", "readr", "remotes", "devtools", "ncdf4", "parallel", "doParallel", "foreach", "future", curl))
-
+install.packages(c("rvest", "xml2", "dplyr", "stringr", "readr", "remotes", "devtools", "ncdf4", "parallel", "doParallel", "foreach", "future"))
+#install.packages("curl")
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install(version = "3.15")
 BiocManager::install(c("Spectra", "MsCoreUtils", "mzR", "CompoundDb"))
+#BiocManager::install(c("CompoundDb"))
 BiocManager::install("CAMERA")
 remotes::install_github("rformassspectrometry/MsBackendHmdb")
 remotes::install_github("rformassspectrometry/MsBackendMsp")

@@ -704,7 +704,7 @@ def spec_postproc(input_dir, Source="all"):
 
 # # SIRIUS Post Processing
 
-# In[7]:
+# In[1]:
 
 
 def sirius_postproc(input_dir, exp_int=0.90, csi_score=-150):
@@ -1551,7 +1551,7 @@ def chemMN_CandidateSelection(df, tn_sim=0.85):
     # for the previous dataframe
     for i, row in db_edgenode.iterrows():
         # if the tanimoto > 0.85 for high similarity
-        if db_edgenode["Tanimoto"][i] >= tn:
+        if db_edgenode["Tanimoto"][i] >= tn_sim:
 
             # calculate MCSS
             n = [
@@ -1754,11 +1754,11 @@ def one_candidate_selection(
         # If the source contains HMDB
         if (
             Source == "SGHM"
-            or Source == "SGM"
+            or Source == "SGH"
             or Source == "SHM"
             or Source == "GHM"
-            or Source == "SM"
-            or Source == "GM"
+            or Source == "SH"
+            or Source == "GH"
             or Source == "HM"
             or Source == "H"
         ):
@@ -1798,11 +1798,11 @@ def one_candidate_selection(
         # If the source contains MassBank
         if (
             Source == "SGHM"
-            or Source == "SGH"
+            or Source == "SGM"
             or Source == "SHM"
             or Source == "GHM"
-            or Source == "SH"
-            or Source == "GH"
+            or Source == "SM"
+            or Source == "GM"
             or Source == "HM"
             or Source == "M"
         ):
@@ -1847,6 +1847,7 @@ def one_candidate_selection(
 
 
 def add_count_column(df_one_candidate):
+    df_one_candidate = df_one_candidate.dropna(axis=0, how="all", subset = ['SIRIUS', 'GNPS', 'MassBank', 'HMDB'])
     # create new df only with the Sources column
     df = pd.DataFrame(
         {
@@ -1856,9 +1857,6 @@ def add_count_column(df_one_candidate):
             "HMDB": df_one_candidate["HMDB"],
         }
     )
-
-    # now check which rows have a value
-    df = df.dropna(axis=0, how="all")
 
     # df_one_candidate = df_one_candidate.dropna(subset=["SIRIUS", "GNPS", "HMDB", "MassBank"], how='all', inplace=True)
 
@@ -1952,10 +1950,11 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
             ].tolist()
             merged_df.loc[mer, "SMILES"] = list(df_count_1["SMILES"][can1])[0]
             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
+            if "class" in sirius_df.columns:
+                merged_df["superclass"] = sirius_df["superclass"][0]
+                merged_df["class"] = sirius_df["class"][0]
+                merged_df["subclass"] = sirius_df["subclass"][0]
+                merged_df["ClassificationSource"] = "CANOPUS"
         
         elif "MassBank" in list(df_count_1["Source"]):
             can1 = df_count_1.index[
@@ -2086,10 +2085,11 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
                     str(merged_df["AnnotationSources"][mer]) + "|SIRIUS"
                 )
                 merged_df["Formula"] = sirius_df["molecularFormula"][0]
-                merged_df["superclass"] = sirius_df["superclass"][0]
-                merged_df["class"] = sirius_df["class"][0]
-                merged_df["subclass"] = sirius_df["subclass"][0]
-                merged_df["ClassificationSource"] = "CANOPUS"
+                if "class" in sirius_df.columns:
+                    merged_df["superclass"] = sirius_df["superclass"][0]
+                    merged_df["class"] = sirius_df["class"][0]
+                    merged_df["subclass"] = sirius_df["subclass"][0]
+                    merged_df["ClassificationSource"] = "CANOPUS"
                 
             elif "MassBank" in list_sources:
                 merged_df.loc[mer, "AnnotationSources"] = (
@@ -2173,10 +2173,11 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
                 merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
                 merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][index[0]]
                 merged_df["Formula"] = sirius_df["molecularFormula"][0]
-                merged_df["superclass"] = sirius_df["superclass"][0]
-                merged_df["class"] = sirius_df["class"][0]
-                merged_df["subclass"] = sirius_df["subclass"][0]
-                merged_df["ClassificationSource"] = "CANOPUS"
+                if "class" in sirius_df.columns:
+                    merged_df["superclass"] = sirius_df["superclass"][0]
+                    merged_df["class"] = sirius_df["class"][0]
+                    merged_df["subclass"] = sirius_df["subclass"][0]
+                    merged_df["ClassificationSource"] = "CANOPUS"
                 merged_df.loc[mer, "AnnotationSources"] = (
                     str(merged_df["AnnotationSources"][mer]) + "|SIRIUS"
                 )
@@ -2372,19 +2373,21 @@ def sources_2(candidates_with_counts, merged_df, mer, sirius_df):
             new.reset_index(drop=True, inplace=True)
             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
+            if "class" in sirius_df.columns:
+                merged_df["superclass"] = sirius_df["superclass"][0]
+                merged_df["class"] = sirius_df["class"][0]
+                merged_df["subclass"] = sirius_df["subclass"][0]
+                merged_df["ClassificationSource"] = "CANOPUS"
         elif len(df_count_2.loc[df_count_2["Source"] == "SIRIUS"]) > 1:
             new = df_count_2.loc[df_count_2["Source"] == "SIRIUS"]
             new.reset_index(drop=True, inplace=True)
             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
+            if "class" in sirius_df.columns:
+                merged_df["superclass"] = sirius_df["superclass"][0]
+                merged_df["class"] = sirius_df["class"][0]
+                merged_df["subclass"] = sirius_df["subclass"][0]
+                merged_df["ClassificationSource"] = "CANOPUS"
             
         else:
             pass
@@ -2595,19 +2598,21 @@ def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
             new.reset_index(drop=True, inplace=True)
             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
+            if "class" in sirius_df.columns:
+                merged_df["superclass"] = sirius_df["superclass"][0]
+                merged_df["class"] = sirius_df["class"][0]
+                merged_df["subclass"] = sirius_df["subclass"][0]
+                merged_df["ClassificationSource"] = "CANOPUS"
         elif len(df_count_3.loc[df_count_3["Source"] == "SIRIUS"]) > 1:
             new = df_count_3.loc[df_count_3["Source"] == "SIRIUS"]
             new.reset_index(drop=True, inplace=True)
             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
+            if "class" in sirius_df.columns:
+                merged_df["superclass"] = sirius_df["superclass"][0]
+                merged_df["class"] = sirius_df["class"][0]
+                merged_df["subclass"] = sirius_df["subclass"][0]
+                merged_df["ClassificationSource"] = "CANOPUS"
         else:
             pass
     
@@ -2838,19 +2843,21 @@ def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
             new.reset_index(drop=True, inplace=True)
             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
+            if "class" in sirius_df.columns:
+                merged_df["superclass"] = sirius_df["superclass"][0]
+                merged_df["class"] = sirius_df["class"][0]
+                merged_df["subclass"] = sirius_df["subclass"][0]
+                merged_df["ClassificationSource"] = "CANOPUS"
         elif len(df_count_4.loc[df_count_4["Source"] == "SIRIUS"]) > 1:
             new = df_count_4.loc[df_count_4["Source"] == "SIRIUS"]
             new.reset_index(drop=True, inplace=True)
             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-            merged_df["superclass"] = sirius_df["superclass"][0]
-            merged_df["class"] = sirius_df["class"][0]
-            merged_df["subclass"] = sirius_df["subclass"][0]
-            merged_df["ClassificationSource"] = "CANOPUS"
+            if "class" in sirius_df.columns:
+                merged_df["superclass"] = sirius_df["superclass"][0]
+                merged_df["class"] = sirius_df["class"][0]
+                merged_df["subclass"] = sirius_df["subclass"][0]
+                merged_df["ClassificationSource"] = "CANOPUS"
         else:
             pass
     
@@ -3114,10 +3121,11 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
                                     sirius_df = sirius_df.dropna(subset=["smiles"])
                                 else:
                                     merged_df["Formula"] = sirius_df["molecularFormula"][0]
-                                    merged_df["superclass"] = sirius_df["superclass"][0]
-                                    merged_df["class"] = sirius_df["class"][0]
-                                    merged_df["subclass"] = sirius_df["subclass"][0]
-                                    merged_df["ClassificationSource"] = "CANOPUS"
+                                    if "class" in sirius_df.columns:
+                                        merged_df["superclass"] = sirius_df["superclass"][0]
+                                        merged_df["class"] = sirius_df["class"][0]
+                                        merged_df["subclass"] = sirius_df["subclass"][0]
+                                        merged_df["ClassificationSource"] = "CANOPUS"
                                 
 
                             mbank_df = pd.read_csv(mbank_csv)
