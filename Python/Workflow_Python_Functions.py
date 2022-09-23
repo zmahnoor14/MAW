@@ -892,9 +892,8 @@ def sirius_postproc(input_dir, exp_int=0.90, csi_score=-150):
             msp.to_csv(msp_csv)
 
 
+
 # In[ ]:
-
-
 
 
 # def str_can_score(db, i):
@@ -1081,6 +1080,7 @@ def sirius_postproc(input_dir, exp_int=0.90, csi_score=-150):
 #         msp.to_csv(msp_csv)
 
 
+
 # In[8]:
 
 
@@ -1134,7 +1134,7 @@ def MCSS_for_SpecDB(input_dir, Source):
                                                     GNPS_Mol.append(mol2)
 
                                             if len(GNPS_Mol) >= 2:
-                                                res = rdFMCS.FindMCS(GNPS_Mol)
+                                                res = rdFMCS.FindMCS(GNPS_Mol, timeout=60)
                                                 sm_res = Chem.MolToSmiles(
                                                     Chem.MolFromSmarts(res.smartsString)
                                                 )
@@ -1182,7 +1182,7 @@ def MCSS_for_SpecDB(input_dir, Source):
                                                     HMDB_Mol.append(mol2)
 
                                             if len(HMDB_Mol) >= 2:
-                                                res = rdFMCS.FindMCS(HMDB_Mol)
+                                                res = rdFMCS.FindMCS(HMDB_Mol, timeout=60)
                                                 sm_res = Chem.MolToSmiles(
                                                     Chem.MolFromSmarts(res.smartsString)
                                                 )
@@ -1230,7 +1230,7 @@ def MCSS_for_SpecDB(input_dir, Source):
                                                     MB_Mol.append(mol2)
 
                                             if len(MB_Mol) >= 2:
-                                                res = rdFMCS.FindMCS(MB_Mol)
+                                                res = rdFMCS.FindMCS(MB_Mol, timeout=60)
                                                 sm_res = Chem.MolToSmiles(
                                                     Chem.MolFromSmarts(res.smartsString)
                                                 )
@@ -1291,7 +1291,7 @@ def MCSS_for_SIRIUS(input_dir):
                                         mol2 = Chem.MolFromSmiles(j)
                                         SIRIUS_Mol.append(mol2)
                                     if len(SIRIUS_Mol) >= 2:
-                                        res = rdFMCS.FindMCS(SIRIUS_Mol)
+                                        res = rdFMCS.FindMCS(SIRIUS_Mol, timeout=60)
                                         sm_res = Chem.MolToSmiles(
                                             Chem.MolFromSmarts(res.smartsString)
                                         )
@@ -1486,7 +1486,7 @@ def chemMN_CandidateSelection(df, tn_sim=0.85):
 
 
     Returns:
-    dataframe: it returns a df with follwoing columns to be loaded into Cytoscape.
+    dataframe: it returns a df with following columns to be loaded into Cytoscape.
     1. Start, starting node/SMILES
     2. End, ending node/SMILES
     3. Tanimoto, Tanimoto between Start and End node
@@ -1521,19 +1521,20 @@ def chemMN_CandidateSelection(df, tn_sim=0.85):
                     AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048) for x in ms
                 ]
                 tn = DataStructs.FingerprintSimilarity(fps[0], fps[1])
-
-                # save all entries to a matrix
-                dbn.append(
-                    {
-                        "Name_i": df["ranks"][i],
-                        "Name_j": df["ranks"][j],
-                        "i": df["SMILES"][i],
-                        "j": df["SMILES"][j],
-                        "Source_i": df["Source"][i],
-                        "Source_j": df["Source"][j],
-                        "Tanimoto": tn,
-                    }
-                )
+                if tn>= tn_sim:
+                    if df["SMILES"][i]!= df["SMILES"][j]:
+                        # save all entries to a matrix
+                        dbn.append(
+                            {
+                                "Name_i": df["ranks"][i],
+                                "Name_j": df["ranks"][j],
+                                "i": df["SMILES"][i],
+                                "j": df["SMILES"][j],
+                                "Source_i": df["Source"][i],
+                                "Source_j": df["Source"][j],
+                                "Tanimoto": tn,
+                            }
+                        )
 
             except Exception:
                 # print(e.string)
@@ -1541,54 +1542,56 @@ def chemMN_CandidateSelection(df, tn_sim=0.85):
 
     # save chemical similarities
     db_edgenode = pd.DataFrame(dbn)
+    
+    if not db_edgenode.empty:
 
-    # another empty variable to store the results for final tsv file
-    dfe = []
+        # another empty variable to store the results for final tsv file
+        dfe = []
 
-    # heavy atoms for MCSS Calculation
-    heavy_atoms = ["C", "N", "P", "O", "S"]
+        # heavy atoms for MCSS Calculation
+        heavy_atoms = ["C", "N", "P", "O", "S"]
 
-    # for the previous dataframe
-    for i, row in db_edgenode.iterrows():
-        # if the tanimoto > 0.85 for high similarity
-        if db_edgenode["Tanimoto"][i] >= tn_sim:
+        # for the previous dataframe
+        for i, row in db_edgenode.iterrows():
+            # if the tanimoto > 0.85 for high similarity
+            if db_edgenode["Tanimoto"][i] >= tn_sim:
 
-            # calculate MCSS
-            n = [
-                Chem.MolFromSmiles(db_edgenode["i"][i]),
-                Chem.MolFromSmiles(db_edgenode["j"][i]),
-            ]
-            res = rdFMCS.FindMCS(n)
-            sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+                # calculate MCSS
+                n = [
+                    Chem.MolFromSmiles(db_edgenode["i"][i]),
+                    Chem.MolFromSmiles(db_edgenode["j"][i]),
+                ]
+                res = rdFMCS.FindMCS(n, timeout=60)
+                sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
 
-            # Check if the MCSS has one of the heavy atoms and whether they are
-            # more than 3
-            elem = [ele for ele in heavy_atoms if (ele in sm_res)]
-            if elem and len(sm_res) >= 3:
-                MCSS_SMILES = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+                # Check if the MCSS has one of the heavy atoms and whether they are
+                # more than 3
+                elem = [ele for ele in heavy_atoms if (ele in sm_res)]
+                if elem and len(sm_res) >= 3:
+                    MCSS_SMILES = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
 
-            # save everything into a dataframe
-            dfe.append(
-                {
-                    "Start": db_edgenode["Name_i"][i],
-                    "End": db_edgenode["Name_j"][i],
-                    "Tanimoto": db_edgenode["Tanimoto"][i],
-                    "Start_SMILES": db_edgenode["i"][i],
-                    "End_SMILES": db_edgenode["j"][i],
-                    "Start_Source": db_edgenode["Source_i"][i],
-                    "End_Source": db_edgenode["Source_j"][i],
-                    "MCSS": MCSS_SMILES,
-                }
-            )
-    df_edge = pd.DataFrame(dfe)
-    # generate a column called sorted_row which contains ids of the start and end nodes as a list
-    df_edge["Start"] = df_edge["Start"].astype(str)
-    df_edge["End"] = df_edge["End"].astype(str)
-    df_edge["sorted_row"] = [sorted([a, b]) for a, b in zip(df_edge.Start, df_edge.End)]
-    df_edge["sorted_row"] = df_edge["sorted_row"].astype(str)
-    df_edge.drop_duplicates(subset=["sorted_row"], inplace=True)
+                # save everything into a dataframe
+                dfe.append(
+                    {
+                        "Start": db_edgenode["Name_i"][i],
+                        "End": db_edgenode["Name_j"][i],
+                        "Tanimoto": db_edgenode["Tanimoto"][i],
+                        "Start_SMILES": db_edgenode["i"][i],
+                        "End_SMILES": db_edgenode["j"][i],
+                        "Start_Source": db_edgenode["Source_i"][i],
+                        "End_Source": db_edgenode["Source_j"][i],
+                        "MCSS": MCSS_SMILES,
+                    }
+                )
+        df_edge = pd.DataFrame(dfe)
+        # generate a column called sorted_row which contains ids of the start and end nodes as a list
+        df_edge["Start"] = df_edge["Start"].astype(str)
+        df_edge["End"] = df_edge["End"].astype(str)
+        df_edge["sorted_row"] = [sorted([a, b]) for a, b in zip(df_edge.Start, df_edge.End)]
+        df_edge["sorted_row"] = df_edge["sorted_row"].astype(str)
+        df_edge.drop_duplicates(subset=["sorted_row"], inplace=True)
 
-    return df_edge
+        return df_edge
 
 
 # In[12]:
@@ -1838,8 +1841,6 @@ def one_candidate_selection(
                 except Exception:
                     # print(e.string)
                     pass
-
-            
     return df
 
 
@@ -1866,17 +1867,31 @@ def add_count_column(df_one_candidate):
     index_HMDB = [x for x, row in df.iterrows() if not isNaN(df["HMDB"][x])]
 
     # make a list of the rows
-    list_of_indices = index_SIRIUS + index_GNPS + index_MassBank + index_HMDB
-
-    # count how mnay times one of the rows is appearing and add count
-    count_list = [[x, list_of_indices.count(x)] for x in set(list_of_indices)]
-    # add this info to one_can
-    df_one_candidate["Count"] = [count_list[x][1] for x in range(len(count_list))]
-    # sort the list by count in descending order
-    sorted_count_one_candidate = df_one_candidate.sort_values(
-        by="Count", ascending=False
-    )
-    return sorted_count_one_candidate
+    list_of_indices = [index_SIRIUS] + [index_GNPS] + [index_MassBank] + [index_HMDB]
+    len([idx for idx, x in enumerate(list_of_indices)  if x])
+    if len(list_of_indices) == 1:
+        df_one_candidate["Count"] = 1
+        df_one_candidate["rank_num"] = [counts.split("_")[1] for counts in df_one_candidate["ranks"]]
+        df_one_candidate["rank_num"] = [int(x) for x in df_one_candidate["rank_num"]]
+        df_one_candidate = df_one_candidate.sort_values(
+            by="rank_num", ascending=False
+        )
+        return df_one_candidate
+    else:
+        # make a list of the rows
+        list_of_indices = index_SIRIUS + index_GNPS + index_MassBank + index_HMDB
+        # count how many times one of the rows is appearing and add count
+        count_list = [[x, list_of_indices.count(x)] for x in set(list_of_indices)]
+        # add this info to one_can
+        df_one_candidate["Count"] = [count_list[x][1] for x in range(len(count_list))]
+        # sort the list by count in descending order
+        sorted_count_one_candidate = df_one_candidate.sort_values(
+            by="Count", ascending=False
+        )
+        sorted_count_one_candidate["rank_num"] = [counts.split("_")[1] for counts in sorted_count_one_candidate["ranks"]]
+        sorted_count_one_candidate["rank_num"] = [int(x) for x in sorted_count_one_candidate["rank_num"]]
+        
+        return sorted_count_one_candidate
 
 
 # In[33]:
@@ -2127,9 +2142,6 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
                 merged_df["subclass"][mer] = np.nan
                 merged_df["ClassificationSource"][mer] = np.nan
 
-            
-
-            
             merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][
                 mer
             ].replace("nan|", "")
@@ -2703,7 +2715,7 @@ def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
             Mol.append(mol2)
 
     if len(Mol) >= 2:
-        res = rdFMCS.FindMCS(Mol)
+        res = rdFMCS.FindMCS(Mol, timeout=60)
         sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
         # if there are atleast 3 heavy atoms in the MCSS, then add it to the result file
         elem = [ele for ele in heavy_atoms if (ele in sm_res)]
@@ -2949,7 +2961,7 @@ def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
             Mol.append(mol2)
 
     if len(Mol) >= 2:
-        res = rdFMCS.FindMCS(Mol)
+        res = rdFMCS.FindMCS(Mol, timeout=60)
         sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
         # if there are atleast 3 heavy atoms in the MCSS, then add it to the result file
         elem = [ele for ele in heavy_atoms if (ele in sm_res)]
@@ -3000,6 +3012,7 @@ def checkSMILES_validity(input_dir, resultcsv):
 #         input_dir + "MetabolomicsResults/final_curation_with_validSMILES.csv"
 #     )
     return results
+
 
 
 # In[35]:
@@ -4270,6 +4283,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
 
 def merge_all_results(input_dir):
     names = []
+    
     # entry is all files and folders in input_dir
     for entry in os.listdir(input_dir):
         # if the entry is also a directory
@@ -4468,8 +4482,6 @@ def classification(input_dir, resultcsv):
 # In[19]:
 
 
-
-
 # NP_Classifier classification
 def Np_pathways(input_dir, resultcsv):
     df = pd.read_csv(resultcsv)
@@ -4576,7 +4588,7 @@ def chemMN(input_dir, resultcsv):
                 Chem.MolFromSmiles(db_edgenode["i"][i]),
                 Chem.MolFromSmiles(db_edgenode["j"][i]),
             ]
-            res = rdFMCS.FindMCS(n)
+            res = rdFMCS.FindMCS(n, timeout=60)
             sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
             # Check if the MCSS has one of the heavy atoms and whether they are
             # more than 3
