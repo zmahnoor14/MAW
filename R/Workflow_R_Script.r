@@ -1,4 +1,3 @@
-
 library(parallel)
 library(doParallel)
 library(future)
@@ -17,8 +16,8 @@ plan(list(
   tweak(multisession, workers = 3)
 ))
 
-start.time <- Sys.time()
 
+start.time <- Sys.time()
 
 # ---------- Script ----------
 # input directory
@@ -34,25 +33,23 @@ input_table
 input_table_idxs <- listenv()
 
 for (i in 1:nrow(input_table)){
-  input_table_idxs[[i]] <- future({
 
+input_table_idxs[[i]] <- future({
     #Preprocess and Read the mzMLfiles
     spec_pr <- spec_Processing(input_dir,
                                input_table[i, "mzml_files"],
                                input_table[i, "ResultFileNames"])
-
-
+    
     #perform dereplication with all dbs
     df_derep <- spec_dereplication_file(mzml_file = input_table[i, "mzml_files"],
-                                   pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "."), sep =""),
-                                   proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "."), sep =""),
-                                   db = "all",
-                                   result_dir = input_table[i, "ResultFileNames"],
-                                   file_id = input_table[i, "File_id"],
-                                   input_dir,
-                                   no_of_candidates = 30,
-                                   ppmx = 15)
-
+                                        pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "."), sep =""),
+                                        proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "."), sep =""),
+                                        db = "all",
+                                        result_dir = input_table[i, "ResultFileNames"],
+                                        file_id = input_table[i, "File_id"],
+                                        input_dir,
+                                        no_of_candidates = 50,
+                                        ppmx = 15)
 
     # Extract MS2 peak lists
     spec_pr2 <- ms2_peaks(pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "."), sep =""),
@@ -60,18 +57,19 @@ for (i in 1:nrow(input_table)){
                           input_dir,
                           result_dir = input_table[i, "ResultFileNames"],
                          file_id = input_table[i, "File_id"])
-
+    
     # camera results for isotopes
     cam_res <- cam_func(input_dir,
-                        f = input_table[i, "mzml_files"],
+                        f = input_table[i, "mzml_files"], 
                         ms2features = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/insilico/MS2DATA.csv", sep = ""), "."), sep = ""))
 
     # Extract MS1 peaks or isotopic peaks
     ms1p <- ms1_peaks(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS2DATA.csv', sep = ""), "."), sep =""),
-                      y = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/CAMERAResults.csv', sep = ""), "."), sep =""),
+                      y = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/CAMERAResults.csv', sep = ""), "."), sep =""), 
                       input_table[i, "ResultFileNames"],
                       input_dir,
                       QCfile = TRUE)
+
 
     #prepare sirius parameter files
     sirius_param_files <- sirius_param(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA.csv', sep = ""), "."), sep =""),
@@ -88,8 +86,9 @@ for (i in 1:nrow(input_table)){
                SL = FALSE,
                SL_path = NA,
                candidates = 30,
-              profile = "qtof")
-  }) #end input_table_idxs future
+              profile = "orbitrap")
+
+   }) #end input_table_idxs future
 }
 
 input_table_idxs <- as.list(input_table_idxs)
