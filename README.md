@@ -21,22 +21,26 @@ docker pull zmahnoor/maw-r
 ```
 This will creat a R-Docker image on your system. This image contains /opt/workdir as the working directory which contains the following files and folders:
 1. /data (folder)
-2. /data/example.mzML
-3. Workflow_R_Functions.r (R function script)
-4. Workflow_R_Script.r (R example script)
-5. install_packages.R (R package installation script, these pacakges are already installed the docker container) <br>
+2. /data/example_Tyrosine.mzML
+3. /data/hmdb.rda
+4. /data/gnps.rda
+5. /data/mbankNIST.rda
+6. Workflow_R_Functions.r (R function script)
+7. Workflow_R_Script.r (R example script)
+8. install_packages.R (R package installation script, these pacakges are already installed the docker container) <br>
 
 ### Pull maw-py Docker Image
-To create a R-docker image, run the following command on your terminal:
+To create a Python-docker image, run the following command on your terminal:
 ```
 docker pull zmahnoor/maw-py
 ```
 This will creat a R-Docker image on your system. This image contains /opt/workdir as the working directory which contains the following files and folders:
 1. /data (folder) 
-2. /data/example_maw-r_results/ (folder)
-3. Workflow_Python_Functions.py (Python function script)
-4. Workflow_Python_Script.py (Python example script)
-5. requirements.txt (Python package installation script, these pacakges are already installed the docker container) <br>
+2. /data/example_Tyrosine/ (folder)
+3. /data/hmdb_dframe_str.csv
+4. Workflow_Python_Functions.py (Python function script)
+5. Workflow_Python_Script.py (Python example script)
+6. requirements.txt (Python package installation script, these pacakges are already installed the docker container) <br>
 
 ## Use Case
 
@@ -49,7 +53,7 @@ Once you enter the docker container, you can run the script and check the result
 ```
 Rscript --no-save --no-restore --verbose Workflow_R_Script.r >outputFile.txt 2>&1
 ```
-This command will run the Workflow_R_Script.r which is an example script for /data/example.mzML.
+This command will run the Workflow_R_Script.r which is an example script for /data/example_Tyrosine.mzML.
 
 2. Run maw-py
 ```
@@ -57,9 +61,9 @@ docker run --name example_maw-py -i -t zmahnoor/maw-py /bin/bash
 ```
 Once you enter the docker container, you can run the script and check the results.
 ```
-python3 Workflow_Python_Script.r
+python3 Workflow_Python_Script.py
 ```
-This command will run the Workflow_Python_Script.py which is an example script for /data/example_maw-r_results/
+This command will run the Workflow_Python_Script.py which is an example script for /data/example_maw-r_results/. In order to leave the container without killing the process, add $ at the end of commands inside of the container. Then disown the PID and leave the container with CTRL+P and CTRL+Q.
 
 
 For details on using the workflow on Jupyter notebooks in a more interactive mode, please follow the Tutorial part on wiki page of this repository
