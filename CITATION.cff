@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Zulfiqar"
+    given-names: "Mahnoor"
+    orcid: "https://orcid.org/0000-0002-8330-4071"
+  - family-names: "Gadelha"
+    given-names: "Luiz"
+    orcid: "https://orcid.org/0000-0002-8122-9522"
+  - family-names: "Steinbeck"
+    given-names: "Christoph"
+    orcid: "https://orcid.org/0000-0001-6966-0814" 
+  - family-names: "Sorokina"
+    given-names: "Maria"
+    orcid: "https://orcid.org/0000-0001-9359-7149"   
+title: "Metabolome Annotation Workflow (MAW)"
+version: 1.0.0
+doi: 10.5281/zenodo.7148450
+date-released: 2022.10.05
+url: "https://github.com/zmahnoor14/MAW"
+license: MIT
