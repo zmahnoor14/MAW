@@ -46,22 +46,22 @@ def suspectListScreening(input_dir, slistcsv, SpectralDB_Results, db="all"):
     compounds from the results from spectral DBs and suspect list
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
+    input_dir (str): This is the input directory where all the .mzML
     files and their respective result directories are stored.
     slistcsv (str): path to suspect list
     SpectralDB_Results (dataframe): dataframe from scoring_spec
     db(str): can be all, gnps, mbank, hmdb, gm, hg, hm
-    
+
     Returns:
-    dataframe: all features and specDB reults and suspect list screening 
+    dataframe: all features and specDB reults and suspect list screening
     results
     csv: CSV reuslt file named MetabolomicsResults/SpecDBvsSL.csv
     which contains all the features and their Spec DB annotations
     and suspect list occurences if any
-    
+
     Usage:
     suspectListScreening(input_dir = "usr/project/",
-    slistcsv = "usr/project/suspect_list.csv", 
+    slistcsv = "usr/project/suspect_list.csv",
     SpectralDB_Results)
 
     """

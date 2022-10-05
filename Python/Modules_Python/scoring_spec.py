@@ -42,18 +42,18 @@ def main():
 def scoring_spec(input_dir, spec_file):
 
     """scoring_spec extracts the candidates with high scores from
-    the results from combine_allspec function 
+    the results from combine_allspec function
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
+    input_dir (str): This is the input directory where all the .mzML
     files and their respective result directories are stored.
     combined (dataframe): dataframe from combine_allspec
-    
+
     Returns:
     dataframe: of the all features and their results
     csv: CSV reuslt file named MetabolomicsResults/combinedSpecDB.csv
     which contains all the features and their Spec DB annotations
-    
+
     Usage:
     scoring_spec(input_dir = "usr/project/", combined)
 

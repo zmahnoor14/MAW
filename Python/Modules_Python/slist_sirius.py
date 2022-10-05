@@ -27,40 +27,40 @@ def main():
 
 
 def slist_sirius(input_dir, slist_csv, substring=None):
-    """slist_sirius is used to create a tsv file that contains a list of 
+    """slist_sirius is used to create a tsv file that contains a list of
     SMILES. The function also runs the sirius command custom db to create
     fingerprints for each SMILES in a folder that we by default name as
-    SL_Frag/. This fingerprints folder is later used by SIRIUS to use 
+    SL_Frag/. This fingerprints folder is later used by SIRIUS to use
     these compounds as a another small list of compounds to match against
     the input spectra fingerprints.
-    Since SIRIUS doesn't take disconnected structure, Multiply charged, 
+    Since SIRIUS doesn't take disconnected structure, Multiply charged,
     Incorrect syntax, wild card(*) in smiles; this function removes all
     such SMILES from the Suspect List.
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
-    files and their respective result directories are stored. For this 
-    function this directory must contain a csv file that has a column 
+    input_dir (str): This is the input directory where all the .mzML
+    files and their respective result directories are stored. For this
+    function this directory must contain a csv file that has a column
     named "SMILES".
-    
-    slist_csv (str): This is the csv file that contains a column of 
-    "SMILES". Additionally this file can contain other information 
-    about the compounds, but for this function, column of "SMILES", 
+
+    slist_csv (str): This is the csv file that contains a column of
+    "SMILES". Additionally this file can contain other information
+    about the compounds, but for this function, column of "SMILES",
     named as "SMILES" is necessary.
-    
-    substring (list): provide a list of strings of SMILES that 
+
+    substring (list): provide a list of strings of SMILES that
     shouldn't be considered, provide a list even if there is one string
-    that shouldnt be considered. e.g: "[Fe+2]". 
+    that shouldnt be considered. e.g: "[Fe+2]".
 
     Returns:
-    tsv: a tsv file of list of SMILES, named as SL_Sirius.tsv, is stored 
+    tsv: a tsv file of list of SMILES, named as SL_Sirius.tsv, is stored
     in input_dir
-    directory: a directory with compound fragmentations will be created 
+    directory: a directory with compound fragmentations will be created
     in a folder named SL_Frag/ within the same input_dir
-    
-    
+
+
     Usage:
-    slist_sirius("/user/project/", "suspectlist.csv", 
+    slist_sirius("/user/project/", "suspectlist.csv",
     substring = None)
 
     """
