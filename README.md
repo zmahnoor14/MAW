@@ -61,7 +61,7 @@ docker run --name example_maw-py -i -t zmahnoor/maw-py /bin/bash
 ```
 Once you enter the docker container, you can run the script and check the results.
 ```
-python3 Workflow_Python_Script.r
+python3 Workflow_Python_Script.py
 ```
 This command will run the Workflow_Python_Script.py which is an example script for /data/example_maw-r_results/. In order to leave the container without killing the process, add $ at the end of commands inside of the container. Then disown the PID and leave the container with CTRL+P and CTRL+Q.
 
