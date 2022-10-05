@@ -45,16 +45,16 @@ def combine_CuratedR(input_dir, combinedSDBs, combinedSMs, data_type="standards"
     mbank>suspectlist>sirius>hmdb>metfrag
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
+    input_dir (str): This is the input directory where all the .mzML
     files and their respective result directories are stored.
-    
+
     curatedSDB: df from specDB_Curation
     combinedSM: df from combineSM
-    
+
     Returns:
     dataframe: with curated Spectral DB results and CDB (S+M) results
     csv: "MetabolomicsResults/final_curation_without_classes.csv"
-    
+
     Usage:
     combine_CuratedR(input_dir = "usr/project/", curatedSDB, combinedSM)
 

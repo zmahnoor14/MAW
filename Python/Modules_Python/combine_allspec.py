@@ -37,16 +37,16 @@ def main():
 def combine_allspec(input_dir):
 
     """combine_allspec function combines all results from different
-    spectral dbs. Can only be used if more than one db is used 
+    spectral dbs. Can only be used if more than one db is used
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
+    input_dir (str): This is the input directory where all the .mzML
     files and their respective result directories are stored.
     df (dataframe): dataframe from combine_specdb
-    
+
     Returns:
     dataframe: of the paths of the merged results from all files
-    
+
     Usage:
     combine_allspec(input_dir = "usr/project/", comb_df)
 
