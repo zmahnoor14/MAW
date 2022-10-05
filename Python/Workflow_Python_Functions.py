@@ -5074,3 +5074,67 @@ def gnpsMNvsgnpsMAW(input_dir):
     only_GNPS.to_csv(input_dir + "/only_GNPS.csv")
     GMNdf.to_csv(input_dir + "/GMNdf.csv")
 
+
+# In[ ]:
+
+
+def sunburst(input_dir):
+    
+    cl = pd.read_csv(input_dir + "/final_candidates_classes.csv")
+    class_data = cl[['superclass', 'class', 'subclass']]
+    spclass = list(class_data['superclass']) # all superclasses
+    uniq_spclass = list(np.unique(list(class_data['superclass']))) # only unique super classes
+    uniq_spc = [s for s in uniq_spclass if 'nan' not in s ] # only unique super classes with no NA values
+    len(uniq_spclass)
+    clss = list(class_data['class'])
+    uniq_class = list(np.unique(list(class_data['class'])))
+    uniq_c = [s for s in uniq_class if 'nan' not in s ]
+    len(uniq_class)
+    sbclass = list(class_data['subclass'])
+    uniq_sbclass = list(np.unique(list(class_data['subclass'])))
+    uniq_sbc = [s for s in uniq_sbclass if 'nan' not in s ]
+    len(uniq_sbclass)
+
+    #all characters
+    Names = ['Organic Compounds'] + uniq_spclass+uniq_class+uniq_sbclass
+
+    df = pd.DataFrame(Names)
+    df['values'] = ''
+    df['parents'] = ''
+
+    df = df.rename(columns={0: 'characters'})
+    for i, row in df.iterrows():
+        if 'Organic Compounds' in df['characters'][i]:
+            df.loc[i, 'values'] = 0
+            df.loc[i, 'parents'] = ''
+
+        elif df['characters'][i] in uniq_spclass:
+
+            df.loc[i, 'values'] = spclass.count(df['characters'][i])
+            df.loc[i, 'parents'] = 'Organic Compounds'
+
+        elif df['characters'][i] in uniq_class:
+
+            df.loc[i, 'values'] = clss.count(df['characters'][i])
+            df.loc[i, 'parents'] = 'Organic Compounds'
+
+            df.loc[i, 'values'] = clss.count(df['characters'][i])
+            clsp = class_data['superclass'][class_data[class_data['class'] == df['characters'][i]].index.tolist()[0]]
+            df.loc[i, 'parents'] = clsp
+
+
+        elif df['characters'][i] in uniq_sbclass:
+            df.loc[i, 'values'] = sbclass.count(df['characters'][i])
+            sbclsp = class_data['class'][class_data[class_data['subclass'] == df['characters'][i]].index.tolist()[0]]
+            df.loc[i, 'parents'] = sbclsp
+
+    data = dict(character = df['characters'], parents = df['parents'], values = df['values'])
+    fig = px.sunburst(
+        data,
+        names='character',
+        parents='parents',
+        values='values',
+    )
+    fig.update_layout(margin = dict(t=0, l=0, r=0, b=0))
+    fig.show()
+
