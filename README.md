@@ -30,7 +30,7 @@ This will creat a R-Docker image on your system. This image contains /opt/workdi
 8. install_packages.R (R package installation script, these pacakges are already installed the docker container) <br>
 
 ### Pull maw-py Docker Image
-To create a R-docker image, run the following command on your terminal:
+To create a Python-docker image, run the following command on your terminal:
 ```
 docker pull zmahnoor/maw-py
 ```
