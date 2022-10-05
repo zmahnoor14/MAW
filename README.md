@@ -66,8 +66,11 @@ python3 Workflow_Python_Script.py
 ```
 This command will run the Workflow_Python_Script.py which is an example script for /data/example_maw-r_results/. In order to leave the container without killing the process, add $ at the end of commands inside of the container. Then disown the PID and leave the container with CTRL+P and CTRL+Q.
 
-
+**Tutorial**
 For details on using the workflow on Jupyter notebooks in a more interactive mode, please follow the Tutorial part on wiki page of this repository
+
+## Citation
+Zulfiqar, M., Gadelha, L., Steinbeck, C., & Sorokina, M. (2022). Metabolome Annotation Workflow (MAW) (Version 1.0.0) [Computer software]. https://doi.org/10.5281/zenodo.7148450
 
 ## More information about our research group
 
