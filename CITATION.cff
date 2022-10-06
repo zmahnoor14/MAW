@@ -13,6 +13,9 @@ authors:
   - family-names: "Sorokina"
     given-names: "Maria"
     orcid: "https://orcid.org/0000-0001-9359-7149"   
+  - family_names: "Peters"
+    given-names: "Kristian"
+    orcid: "https://orcid.org/0000-0002-4321-0257"
 title: "Metabolome Annotation Workflow (MAW)"
 version: 1.0.0
 doi: 10.5281/zenodo.7148450
