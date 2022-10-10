@@ -45,16 +45,16 @@ def specDB_Curation(input_dir, combinedx, sl=True, db="all"):
     mbank>suspectlist>hmdb
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
+    input_dir (str): This is the input directory where all the .mzML
     files and their respective result directories are stored.
-    
+
     combined: dataframe from either suspectListScreening function if
     sl = True OR from scoring_spec if sl = False
-    
+
     Returns:
     dataframe: with curated Spectral DB results
     csv: "MetabolomicsResults/curatedSDB.csv"
-    
+
     Usage:
     specDB_Curation(input_dir = "usr/project/",combinedx, sl = True)
 

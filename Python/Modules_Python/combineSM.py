@@ -51,15 +51,15 @@ def combineSM(input_dir, metfragcsv, siriuscsv):
     KEGG
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
+    input_dir (str): This is the input directory where all the .mzML
     files and their respective result directories are stored.
     sirius (dataframe): result of sirius_curation
     metfrag (dataframe): result of metfrag_curation
-    
+
     Returns:
     dataframe: dataframe of combined curated sirius and metfrag results
     csv: "MetabolomicsResults/combinedSM.csv"
-    
+
     Usage:
     combineSM(input_dir = "usr/project/", metfrag, sirius)
 

@@ -35,20 +35,20 @@ def main():
 
 def spec_postproc(input_dir, Source="all"):
 
-    """spec_postproc function processes the resulst from dereplication 
-    using different spectral DBs. 
+    """spec_postproc function processes the resulst from dereplication
+    using different spectral DBs.
 
     Parameters:
-    input_dir (str): This is the input directory where all the .mzML 
+    input_dir (str): This is the input directory where all the .mzML
     files and their respective result directories are stored.
-    
+
     Source (str): either "mbank" or "hmdb" or "gnps", or "all"
 
     Returns:
-    
+
     dataframe: of the paths of the processed DB results
-    
-    
+
+
     Usage:
     spec_postproc(input_dir = "/user/project/", Source = "all")
 
