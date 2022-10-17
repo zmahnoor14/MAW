@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# In[6]:
+
+
+#!/usr/bin/env python
+# coding: utf-8
+
 import glob
 import json
 import os
@@ -10,9 +16,15 @@ import wget
 import urllib.parse
 
 
+# In[7]:
+
+
 import numpy as np
 import pandas as pd
 import pubchempy as pcp
+
+
+# In[8]:
 
 
 from pybatchclassyfire import *
@@ -24,8 +36,14 @@ from rdkit.Chem import rdFMCS
 from rdkit.Chem import PandasTools
 
 
+# In[9]:
+
+
 def isNaN(string):
     return string != string
+
+
+# In[10]:
 
 
 def slist_sirius(input_dir, slist_csv, substring=None):
@@ -123,6 +141,15 @@ def slist_sirius(input_dir, slist_csv, substring=None):
         + "SL_Sirius.tsv custom-db --name=SL_Frag --output "
         + input_dir
     )
+
+
+# In[ ]:
+
+
+
+
+
+# In[7]:
 
 
 def spec_postproc(input_dir, Source="all"):
@@ -627,32 +654,32 @@ def spec_postproc(input_dir, Source="all"):
                                         mbank_df = mbank_df.drop_duplicates(
                                             subset=["MBSMILES"]
                                         )
-                                        #                                         if len(mbank_df) > 0:
+#                                         if len(mbank_df) > 0:
 
-                                        #                                             for i, row in mbank_df.iterrows():
-                                        #                                                 if MB_Scoring(mbank_df, i):
+#                                             for i, row in mbank_df.iterrows():
+#                                                 if MB_Scoring(mbank_df, i):
 
-                                        #                                                     inchiK = str(
-                                        #                                                         mbank_df["MBinchiKEY"][i]
-                                        #                                                     )
+#                                                     inchiK = str(
+#                                                         mbank_df["MBinchiKEY"][i]
+#                                                     )
 
-                                        #                                                     # extract inchikeys
-                                        #                                                     y = pcp.get_compounds(
-                                        #                                                         inchiK, "inchikey"
-                                        #                                                     )  # compound based on inchikey
+#                                                     # extract inchikeys
+#                                                     y = pcp.get_compounds(
+#                                                         inchiK, "inchikey"
+#                                                     )  # compound based on inchikey
 
-                                        #                                                     for compound in y:
+#                                                     for compound in y:
 
-                                        #                                                         # add smiles
-                                        #                                                         smles = compound.isomeric_smiles
-                                        #                                                         mbank_df.loc[
-                                        #                                                             i, "MBSMILES"
-                                        #                                                         ] = smles
-                                        #                                                         # mbank_df.loc[i, 'MBinchi'] =Chem.MolToInchi(Chem.MolFromSmiles(smles))
-                                        #                                                 else:
-                                        #                                                     mbank_df.drop(
-                                        #                                                         [i], axis=0, inplace=True
-                                        #                                                     )
+#                                                         # add smiles
+#                                                         smles = compound.isomeric_smiles
+#                                                         mbank_df.loc[
+#                                                             i, "MBSMILES"
+#                                                         ] = smles
+#                                                         # mbank_df.loc[i, 'MBinchi'] =Chem.MolToInchi(Chem.MolFromSmiles(smles))
+#                                                 else:
+#                                                     mbank_df.drop(
+#                                                         [i], axis=0, inplace=True
+#                                                     )
 
                                         csvname = (
                                             (os.path.splitext(fls_m)[0])
@@ -677,199 +704,246 @@ def spec_postproc(input_dir, Source="all"):
 
 # # SIRIUS Post Processing
 
+# In[1]:
+
+
+def sirius_db_post_proc(msp, one_file, mz, sl):
+    # extract the formula and structure files
+    json_dirALL = next(os.walk(one_file))[1]
+    if len(json_dirALL) > 0:
+        sub_sub_dirALL_structure_can = (
+            one_file
+            + "/"
+            + json_dirALL[0]
+            + "/structure_candidates.tsv"
+        )
+        #print(sub_sub_dirALL_structure_can)
+        sub_sub_dirALL_formula_can = (
+            one_file
+            + "/"
+            + json_dirALL[0]
+            + "/formula_candidates.tsv"
+        )
+        #print(sub_sub_dirALL_formula_can)
+        ALL_Canopus_csv = one_file + "/canopus_summary.tsv"
+        #print(ALL_Canopus_csv)
+        # if both structure files exist
+        if (
+            os.path.exists(sub_sub_dirALL_structure_can)
+            and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t")) > 0
+        ):
+            if (
+                os.path.exists(sub_sub_dirALL_formula_can)
+                and len(pd.read_csv(sub_sub_dirALL_formula_can, sep="\t"))
+                > 0
+            ):
+                ALL_structure_csv = pd.read_csv(
+                    sub_sub_dirALL_structure_can, sep="\t"
+                )
+                ALL_formula_csv = pd.read_csv(
+                    sub_sub_dirALL_formula_can, sep="\t"
+                )
+                ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
+
+                for structure, rows in ALL_structure_csv.iterrows():
+                    for formula, rows in ALL_formula_csv.iterrows():
+                        if (
+                            ALL_structure_csv["formulaRank"][structure]
+                            == ALL_formula_csv["rank"][formula]
+                        ):
+                            ALL_structure_csv.loc[
+                                structure, "SiriusScore"
+                            ] = ALL_formula_csv["SiriusScore"][formula]
+                            ALL_structure_csv.loc[
+                                structure, "numExplainedPeaks"
+                            ] = ALL_formula_csv["numExplainedPeaks"][
+                                formula
+                            ]
+                            ALL_structure_csv.loc[
+                                structure, "explainedIntensity"
+                            ] = ALL_formula_csv["explainedIntensity"][
+                                formula
+                            ]
+                            if sl:
+
+                                ALL_structure_csv.loc[structure, "SuspectListEntry"] = "TRUE"
+                            else:
+                                ALL_structure_csv.loc[structure, "SuspectListEntry"] = "FALSE"
+
+                            if len(ALL_Canopus) > 0:
+                                if (
+                                    ALL_formula_csv["molecularFormula"][
+                                        formula
+                                    ]
+                                    == ALL_Canopus["molecularFormula"][0]
+                                ):
+                                    ALL_structure_csv.loc[
+                                        structure, "superclass"
+                                    ] = ALL_Canopus["superclass"][0]
+                                    ALL_structure_csv.loc[
+                                        structure, "class"
+                                    ] = ALL_Canopus["class"][0]
+                                    ALL_structure_csv.loc[
+                                        structure, "subclass"
+                                    ] = ALL_Canopus["subclass"][0]
+
+    #                                 for str_siriusA, row in ALL_structure_csv.iterrows():
+    #                                     if not str_can_score(ALL_structure_csv, str_siriusA):
+    #                                         ALL_structure_csv = ALL_structure_csv.drop(
+    #                                             str_siriusA, inplace=False
+    #                                         )
+
+
+
+                if sl:
+                    result_sirius_name = (
+                        sub_dir
+                        + "results_for_"
+                        + json_dirALL[0].split("_")[-1]
+                        + "_"
+                        + "structure-slist.csv"
+                    )
+                    msp.loc[mz, "sirius_result_dir-slist"] = result_sirius_name.replace(
+                        input_dir, "."
+                    )
+
+                    ALL_structure_csv.to_csv(result_sirius_name)
+                else:
+                    result_sirius_name = (
+                        sub_dir
+                        + "results_for_"
+                        + json_dirALL[0].split("_")[-1]
+                        + "_"
+                        + "structure.csv"
+                    )
+                    msp.loc[mz, "sirius_result_dir"] = result_sirius_name.replace(
+                        input_dir, "."
+                    )
+
+                    ALL_structure_csv.to_csv(result_sirius_name)
+                    return(ALL_structure_csv)
+        elif not (
+            os.path.exists(sub_sub_dirALL_structure_can)
+            and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t")) >0
+        ):
+            if (
+                os.path.exists(sub_sub_dirALL_formula_can)
+                and len(pd.read_csv(sub_sub_dirALL_formula_can, sep="\t"))
+                > 0
+            ):
+                
+                ALL_formula_csv = pd.read_csv(
+                    sub_sub_dirALL_formula_can, sep="\t"
+                )
+                ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
+                for formula, rows in ALL_formula_csv.iterrows():
+                    if sl:
+
+                        ALL_formula_csv.loc[formula, "SuspectListEntry"] = "TRUE"
+                    else:
+                        ALL_formula_csv.loc[formula, "SuspectListEntry"] = "FALSE"
+
+                    if len(ALL_Canopus) > 0:
+                        for formula, rows in ALL_formula_csv.iterrows():
+                            ALL_formula_csv.loc[
+                                formula, "superclass"
+                            ] = ALL_Canopus["superclass"][0]
+                            ALL_formula_csv.loc[formula, "class"] = ALL_Canopus[
+                                "class"
+                            ][0]
+                            ALL_formula_csv.loc[
+                                formula, "subclass"
+                            ] = ALL_Canopus["subclass"][0]
+
+                if sl:
+
+
+                    result_sirius_name = (
+                        sub_dir
+                        + "results_for_"
+                        + json_dirALL[0].split("_")[-1]
+                        + "_"
+                        + "formula-slist.csv"
+                    )
+                    msp.loc[
+                        mz, "sirius_result_dir-slist"
+                    ] = result_sirius_name.replace(input_dir, ".")
+
+                    ALL_formula_csv.to_csv(
+                        result_sirius_name
+                    )
+                else:
+                    result_sirius_name = (
+                        sub_dir
+                        + "results_for_"
+                        + json_dirALL[0].split("_")[-1]
+                        + "_"
+                        + "formula.csv"
+                    )
+                    msp.loc[
+                        mz, "sirius_result_dir"
+                    ] = result_sirius_name.replace(input_dir, ".")
+
+                    ALL_formula_csv.to_csv(
+                        result_sirius_name
+                    )
+                return(ALL_formula_csv)
+            else:
+                print("no file for formula")
+        else:
+            print("no file for structure or formula")
+
+
+# In[12]:
+
 
 def sirius_postproc(input_dir):
-    # exp_int=0.90, csi_score=-150:
+#exp_int=0.90, csi_score=-150:
 
-    #     def str_can_score(db, i):
-    #         if (
-    #             db["explainedIntensity"][i] >= exp_int
-    #             and db["CSI:FingerIDScore"][i] >= csi_score
-    #         ):
-    #             return True
-    #         else:
-    #             return False
+#     def str_can_score(db, i):
+#         if (
+#             db["explainedIntensity"][i] >= exp_int
+#             and db["CSI:FingerIDScore"][i] >= csi_score
+#         ):
+#             return True
+#         else:
+#             return False
 
-    # entry is all files and folders in input_dir
     for entry in os.listdir(input_dir):
         # if the entry is also a directory
         if os.path.isdir(os.path.join(input_dir, entry)):
-            sub_dir = input_dir + "/" + entry + "/insilico/SIRIUS/"
-            msp_csv = input_dir + "/" + entry + "/insilico/MS1DATA.csv"
-            if os.path.exists(msp_csv) and os.path.exists(sub_dir):
-                # output json files from SIRIUS
-                files_S = glob.glob(sub_dir + "/*.json")
-                # list of precursor m/z
-                msp = pd.read_csv(msp_csv)
+            print(entry)
+            sub_dir1 = input_dir + "/" + entry + "/insilico"
+            if os.path.isdir(sub_dir1):
+                sub_dir = sub_dir1 + "/SIRIUS/"
+                msp_csv = input_dir + "/" + entry + "/insilico/MS1DATA.csv"
+                if os.path.exists(msp_csv) and os.path.exists(sub_dir):
+                    # output json files from SIRIUS
+                    files_S = glob.glob(sub_dir + "/*.json")
+                    # list of precursor m/z
+                    msp = pd.read_csv(msp_csv)
 
-                # for each mz
-                for mz, row in msp.iterrows():
-                    # make a list of files with this mz
-                    files_for_mz = []
+                    # for each mz
+                    for mz, row in msp.iterrows():
+                        # make a list of files with this mz
+                        files_for_mz = []
 
-                    for file in files_S:
-                        if str(msp["premz"][mz]) in file:
-                            files_for_mz.append(file)
+                        for file in files_S:
+                            if str(msp["premz"][mz]) in file:
+                                files_for_mz.append(file)
+                        print(files_for_mz)
+                        if len(files_for_mz)>1:
+                            for i in files_for_mz:
+                                if "param.json" in i:
+                                    #print(1)
+                                    sirius_db_post_proc(msp = msp, one_file = i, mz = mz, sl = False)
+                                elif "SList" in i:
+                                    #print(i)
+                                    sirius_db_post_proc(msp = msp, one_file = i, mz = mz,  sl = True)
+                msp.to_csv(msp_csv)
 
-                    # extract the formula and structure files
-                    json_dirALL = next(os.walk(files_for_mz[0]))[1]
-                    if len(json_dirALL) > 0:
-                        sub_sub_dirALL_structure_can = (
-                            files_for_mz[0]
-                            + "/"
-                            + json_dirALL[0]
-                            + "/structure_candidates.tsv"
-                        )
-                        sub_sub_dirALL_formula_can = (
-                            files_for_mz[0]
-                            + "/"
-                            + json_dirALL[0]
-                            + "/formula_candidates.tsv"
-                        )
-                        ALL_Canopus_csv = files_for_mz[0] + "/canopus_summary.tsv"
 
-                        # if both structure files exist
-                        if (
-                            os.path.exists(sub_sub_dirALL_structure_can)
-                            and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t"))
-                            > 0
-                        ):
-                            if (
-                                os.path.exists(sub_sub_dirALL_formula_can)
-                                and len(
-                                    pd.read_csv(sub_sub_dirALL_formula_can, sep="\t")
-                                )
-                                > 0
-                            ):
-                                ALL_structure_csv = pd.read_csv(
-                                    sub_sub_dirALL_structure_can, sep="\t"
-                                )
-                                ALL_formula_csv = pd.read_csv(
-                                    sub_sub_dirALL_formula_can, sep="\t"
-                                )
-                                ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
-                                # Add the structure and formula files together
-                                for structure, rows in ALL_structure_csv.iterrows():
-                                    for formula, rows in ALL_formula_csv.iterrows():
-                                        if (
-                                            ALL_structure_csv["formulaRank"][structure]
-                                            == ALL_formula_csv["rank"][formula]
-                                        ):
-                                            ALL_structure_csv.loc[
-                                                structure, "SiriusScore"
-                                            ] = ALL_formula_csv["SiriusScore"][formula]
-                                            ALL_structure_csv.loc[
-                                                structure, "numExplainedPeaks"
-                                            ] = ALL_formula_csv["numExplainedPeaks"][
-                                                formula
-                                            ]
-                                            ALL_structure_csv.loc[
-                                                structure, "explainedIntensity"
-                                            ] = ALL_formula_csv["explainedIntensity"][
-                                                formula
-                                            ]
-                                            # ALL_structure_csv.loc[structure, "SuspectListEntry"] = "FALSE"
-                                            if len(ALL_Canopus) > 0:
-                                                if (
-                                                    ALL_formula_csv["molecularFormula"][
-                                                        formula
-                                                    ]
-                                                    == ALL_Canopus["molecularFormula"][
-                                                        0
-                                                    ]
-                                                ):
-                                                    ALL_structure_csv.loc[
-                                                        structure, "superclass"
-                                                    ] = ALL_Canopus["superclass"][0]
-                                                    ALL_structure_csv.loc[
-                                                        structure, "class"
-                                                    ] = ALL_Canopus["class"][0]
-                                                    ALL_structure_csv.loc[
-                                                        structure, "subclass"
-                                                    ] = ALL_Canopus["subclass"][0]
-
-                            #                                 for str_siriusA, row in ALL_structure_csv.iterrows():
-                            #                                     if not str_can_score(ALL_structure_csv, str_siriusA):
-                            #                                         ALL_structure_csv = ALL_structure_csv.drop(
-                            #                                             str_siriusA, inplace=False
-                            #                                         )
-
-                            result_sirius_name = (
-                                sub_dir
-                                + "results_for_"
-                                + json_dirALL[0].split("_")[-1]
-                                + "_"
-                                + "structure.csv"
-                            )
-                            msp.loc[
-                                mz, "sirius_result_dir"
-                            ] = result_sirius_name.replace(input_dir, ".")
-
-                            ALL_structure_csv.to_csv(result_sirius_name)
-
-                        elif not (
-                            os.path.exists(sub_sub_dirALL_structure_can)
-                            and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t"))
-                            == 0
-                        ):
-                            if (
-                                os.path.exists(sub_sub_dirALL_formula_can)
-                                and len(
-                                    pd.read_csv(sub_sub_dirALL_formula_can, sep="\t")
-                                )
-                                > 0
-                            ):
-                                ALL_formula_csv = pd.read_csv(
-                                    sub_sub_dirALL_formula_can, sep="\t"
-                                )
-                                ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
-                                if len(ALL_Canopus) > 0:
-                                    for formula, rows in ALL_formula_csv.iterrows():
-                                        ALL_formula_csv.loc[
-                                            formula, "superclass"
-                                        ] = ALL_Canopus["superclass"][0]
-                                        ALL_formula_csv.loc[
-                                            formula, "class"
-                                        ] = ALL_Canopus["class"][0]
-                                        ALL_formula_csv.loc[
-                                            formula, "subclass"
-                                        ] = ALL_Canopus["subclass"][0]
-
-                                for for_siriusA, row in ALL_formula_csv.iterrows():
-                                    if (
-                                        not ALL_formula_csv["explainedIntensity"][
-                                            for_siriusA
-                                        ]
-                                        >= exp_int
-                                    ):
-                                        ALL_formula_csv = ALL_formula_csv.drop(
-                                            for_siriusA, inplace=False
-                                        )
-
-                                result_sirius_name = (
-                                    sub_dir
-                                    + "results_for_"
-                                    + json_dirALL[0].split("_")[-1]
-                                    + "_"
-                                    + "formula.csv"
-                                )
-                                msp.loc[
-                                    mz, "sirius_result_dir"
-                                ] = result_sirius_name.replace(input_dir, ".")
-
-                                ALL_formula_csv.to_csv(
-                                    sub_dir
-                                    + "results_for_"
-                                    + json_dirALL[0].split("_")[-1]
-                                    + "_"
-                                    + "formula.csv"
-                                )
-
-                            else:
-                                print("no file for formula")
-                        else:
-                            print("no file for structure or formula")
-            msp.to_csv(msp_csv)
+# In[ ]:
 
 
 # def str_can_score(db, i):
@@ -1056,6 +1130,10 @@ def sirius_postproc(input_dir):
 #         msp.to_csv(msp_csv)
 
 
+
+# In[8]:
+
+
 def MCSS_for_SpecDB(input_dir, Source):
     # Describe the heavy atoms to be considered for MCSS
     heavy_atoms = ["C", "N", "P", "O", "S"]
@@ -1106,9 +1184,7 @@ def MCSS_for_SpecDB(input_dir, Source):
                                                     GNPS_Mol.append(mol2)
 
                                             if len(GNPS_Mol) >= 2:
-                                                res = rdFMCS.FindMCS(
-                                                    GNPS_Mol, timeout=60
-                                                )
+                                                res = rdFMCS.FindMCS(GNPS_Mol, timeout=60)
                                                 sm_res = Chem.MolToSmiles(
                                                     Chem.MolFromSmarts(res.smartsString)
                                                 )
@@ -1156,9 +1232,7 @@ def MCSS_for_SpecDB(input_dir, Source):
                                                     HMDB_Mol.append(mol2)
 
                                             if len(HMDB_Mol) >= 2:
-                                                res = rdFMCS.FindMCS(
-                                                    HMDB_Mol, timeout=60
-                                                )
+                                                res = rdFMCS.FindMCS(HMDB_Mol, timeout=60)
                                                 sm_res = Chem.MolToSmiles(
                                                     Chem.MolFromSmarts(res.smartsString)
                                                 )
@@ -1230,7 +1304,11 @@ def MCSS_for_SpecDB(input_dir, Source):
                     spec_msp.to_csv(specdb_msp_file[0])
 
 
+# In[9]:
+
+
 def MCSS_for_SIRIUS(input_dir):
+
 
     # Describe the heavy atoms to be considered for MCSS
     heavy_atoms = ["C", "N", "P", "O", "S"]
@@ -1283,6 +1361,9 @@ def MCSS_for_SIRIUS(input_dir):
                                                 Chem.MolFromSmarts(res.smartsString)
                                             )
                 sirius_msp.to_csv(sirius_msp_csv)
+
+
+# In[10]:
 
 
 def SuspectListScreening(input_dir, SuspectListPath, tanimoto, Source):
@@ -1438,6 +1519,9 @@ def SuspectListScreening(input_dir, SuspectListPath, tanimoto, Source):
                         return mbankproc
 
 
+# In[11]:
+
+
 # Candidate Selection
 def chemMN_CandidateSelection(df, tn_sim=0.85):
 
@@ -1487,8 +1571,8 @@ def chemMN_CandidateSelection(df, tn_sim=0.85):
                     AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048) for x in ms
                 ]
                 tn = DataStructs.FingerprintSimilarity(fps[0], fps[1])
-                if tn >= tn_sim:
-                    if df["SMILES"][i] != df["SMILES"][j]:
+                if tn>= tn_sim:
+                    if df["SMILES"][i]!= df["SMILES"][j]:
                         # save all entries to a matrix
                         dbn.append(
                             {
@@ -1508,7 +1592,7 @@ def chemMN_CandidateSelection(df, tn_sim=0.85):
 
     # save chemical similarities
     db_edgenode = pd.DataFrame(dbn)
-
+    
     if not db_edgenode.empty:
 
         # another empty variable to store the results for final tsv file
@@ -1553,13 +1637,14 @@ def chemMN_CandidateSelection(df, tn_sim=0.85):
         # generate a column called sorted_row which contains ids of the start and end nodes as a list
         df_edge["Start"] = df_edge["Start"].astype(str)
         df_edge["End"] = df_edge["End"].astype(str)
-        df_edge["sorted_row"] = [
-            sorted([a, b]) for a, b in zip(df_edge.Start, df_edge.End)
-        ]
+        df_edge["sorted_row"] = [sorted([a, b]) for a, b in zip(df_edge.Start, df_edge.End)]
         df_edge["sorted_row"] = df_edge["sorted_row"].astype(str)
         df_edge.drop_duplicates(subset=["sorted_row"], inplace=True)
 
         return df_edge
+
+
+# In[12]:
 
 
 def one_candidate_selection(
@@ -1762,6 +1847,7 @@ def one_candidate_selection(
                     # print(e.string)
                     pass
 
+
         # If the source contains MassBank
         if (
             Source == "SGHM"
@@ -1808,10 +1894,11 @@ def one_candidate_selection(
     return df
 
 
+# In[13]:
+
+
 def add_count_column(df_one_candidate):
-    df_one_candidate = df_one_candidate.dropna(
-        axis=0, how="all", subset=["SIRIUS", "GNPS", "MassBank", "HMDB"]
-    )
+    df_one_candidate = df_one_candidate.dropna(axis=0, how="all", subset = ['SIRIUS', 'GNPS', 'MassBank', 'HMDB'])
     # create new df only with the Sources column
     df = pd.DataFrame(
         {
@@ -1831,31 +1918,31 @@ def add_count_column(df_one_candidate):
 
     # make a list of the rows
     list_of_indices = [index_SIRIUS] + [index_GNPS] + [index_MassBank] + [index_HMDB]
-    length_of_list = len([idx for idx, x in enumerate(list_of_indices) if x])
+    length_of_list = len([idx for idx, x in enumerate(list_of_indices)  if x])
     if length_of_list == 1:
-        # print("1 is correct")
+        #print("1 is correct")
         # change number of counts, since its 1 source, so all counts should be 1
         df_one_candidate["Count"] = 1
         # extract ranks numbers from ranks
-        df_one_candidate["rank_num"] = [
-            counts.split("_")[1] for counts in df_one_candidate["ranks"]
-        ]
+        df_one_candidate["rank_num"] = [counts.split("_")[1] for counts in df_one_candidate["ranks"]]
         # convert any str to int
         df_one_candidate["rank_num"] = [int(x) for x in df_one_candidate["rank_num"]]
-        # Sort by ranknum
-        df_one_candidate = df_one_candidate.sort_values(by="rank_num", ascending=False)
+        #Sort by ranknum
+        df_one_candidate = df_one_candidate.sort_values(
+            by="rank_num", ascending=False
+        )
         for r, rows in df_one_candidate.iterrows():
-            if df_one_candidate["Source"][r] == "GNPS":
+            if df_one_candidate["Source"][r]=="GNPS":
                 df_one_candidate.loc[r, "rank_db"] = 1
-            if df_one_candidate["Source"][r] == "SIRIUS":
+            if df_one_candidate["Source"][r]=="SIRIUS":
                 df_one_candidate.loc[r, "rank_db"] = 2
-            if df_one_candidate["Source"][r] == "MassBank":
+            if df_one_candidate["Source"][r]=="MassBank":
                 df_one_candidate.loc[r, "rank_db"] = 3
-            if df_one_candidate["Source"][r] == "HMDB":
+            if df_one_candidate["Source"][r]=="HMDB":
                 df_one_candidate.loc[r, "rank_db"] = 4
         df_one_candidate.sort_values(
-            by=["rank_num", "rank_db"], ascending=[True, True], inplace=True
-        )
+            by=["rank_num", "rank_db"], ascending=[True, True],
+            inplace=True)
 
         return df_one_candidate
     elif length_of_list > 1:
@@ -1869,28 +1956,25 @@ def add_count_column(df_one_candidate):
         sorted_count_one_candidate = df_one_candidate.sort_values(
             by="Count", ascending=False
         )
-        sorted_count_one_candidate["rank_num"] = [
-            counts.split("_")[1] for counts in sorted_count_one_candidate["ranks"]
-        ]
-        sorted_count_one_candidate["rank_num"] = [
-            int(x) for x in sorted_count_one_candidate["rank_num"]
-        ]
+        sorted_count_one_candidate["rank_num"] = [counts.split("_")[1] for counts in sorted_count_one_candidate["ranks"]]
+        sorted_count_one_candidate["rank_num"] = [int(x) for x in sorted_count_one_candidate["rank_num"]]
         for r, rows in sorted_count_one_candidate.iterrows():
-            if sorted_count_one_candidate["Source"][r] == "GNPS":
+            if sorted_count_one_candidate["Source"][r]=="GNPS":
                 sorted_count_one_candidate.loc[r, "rank_db"] = 1
-            if sorted_count_one_candidate["Source"][r] == "SIRIUS":
+            if sorted_count_one_candidate["Source"][r]=="SIRIUS":
                 sorted_count_one_candidate.loc[r, "rank_db"] = 2
-            if sorted_count_one_candidate["Source"][r] == "MassBank":
+            if sorted_count_one_candidate["Source"][r]=="MassBank":
                 sorted_count_one_candidate.loc[r, "rank_db"] = 3
-            if sorted_count_one_candidate["Source"][r] == "HMDB":
+            if sorted_count_one_candidate["Source"][r]=="HMDB":
                 sorted_count_one_candidate.loc[r, "rank_db"] = 4
 
         sorted_count_one_candidate.sort_values(
-            by=["Count", "rank_num", "rank_db"],
-            ascending=[False, True, True],
-            inplace=True,
-        )
+            by=["Count", "rank_num", "rank_db"], ascending=[False, True, True],
+            inplace=True)
         return sorted_count_one_candidate
+
+
+# In[2]:
 
 
 def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
@@ -1914,13 +1998,13 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
 
     df_count_1 = candidates_with_counts[candidates_with_counts["Count"] == 1]
     # rank number e.g:1
-    # df_count_1["rank_num"] = [counts.split("_")[1] for counts in df_count_1["ranks"]]
-    # df_count_1["rank_num"] = [int(x) for x in df_count_1["rank_num"]]
+    #df_count_1["rank_num"] = [counts.split("_")[1] for counts in df_count_1["ranks"]]
+    #df_count_1["rank_num"] = [int(x) for x in df_count_1["rank_num"]]
 
     # if only one unique source e.g: only SIRIUS gave out candidates
-    # if len(np.unique(df_count_1["Source"])) == 1:
+    #if len(np.unique(df_count_1["Source"])) == 1:
 
-    # df_count_1 = df_count_1.sort_values(by="rank_num")
+    #df_count_1 = df_count_1.sort_values(by="rank_num")
 
     df_count_1 = df_count_1[df_count_1["rank_num"] == min(df_count_1["rank_num"])]
 
@@ -1938,69 +2022,75 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
 
     df_count_1.reset_index(drop=True, inplace=True)
 
-    #         #  choose the index/row from df_count_1 that contains priority wise databases
-    #         if "GNPS" in list(df_count_1["Source"]):
-    #             can1 = df_count_1.index[df_count_1["Source"].str.contains("GNPS")].tolist()
-    #             merged_df.loc[mer, "SMILES"] = list(df_count_1["SMILES"][can1])[0]
-    #             comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         elif "SIRIUS" in list(df_count_1["Source"]):
-    #             can1 = df_count_1.index[
-    #                 df_count_1["Source"].str.contains("SIRIUS")
-    #             ].tolist()
-    #             merged_df.loc[mer, "SMILES"] = list(df_count_1["SMILES"][can1])[0]
-    #             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-    #             if "class" in sirius_df.columns:
-    #                 merged_df["superclass"] = sirius_df["superclass"][0]
-    #                 merged_df["class"] = sirius_df["class"][0]
-    #                 merged_df["subclass"] = sirius_df["subclass"][0]
-    #                 merged_df["ClassificationSource"] = "CANOPUS"
 
-    #         elif "MassBank" in list(df_count_1["Source"]):
-    #             can1 = df_count_1.index[
-    #                 df_count_1["Source"].str.contains("MassBank")
-    #             ].tolist()
-    #             merged_df.loc[mer, "SMILES"] = list(df_count_1["SMILES"][can1])[0]
-    #             comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         elif "HMDB" in list(df_count_1["Source"]):
-    #             can1 = df_count_1.index[df_count_1["Source"].str.contains("HMDB")].tolist()
-    #             merged_df.loc[mer, "SMILES"] = list(df_count_1["SMILES"][can1])[0]
-    #             comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
+
+#         #  choose the index/row from df_count_1 that contains priority wise databases
+#         if "GNPS" in list(df_count_1["Source"]):
+#             can1 = df_count_1.index[df_count_1["Source"].str.contains("GNPS")].tolist()
+#             merged_df.loc[mer, "SMILES"] = list(df_count_1["SMILES"][can1])[0]
+#             comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         elif "SIRIUS" in list(df_count_1["Source"]):
+#             can1 = df_count_1.index[
+#                 df_count_1["Source"].str.contains("SIRIUS")
+#             ].tolist()
+#             merged_df.loc[mer, "SMILES"] = list(df_count_1["SMILES"][can1])[0]
+#             merged_df["Formula"] = sirius_df["molecularFormula"][0]
+#             if "class" in sirius_df.columns:
+#                 merged_df["superclass"] = sirius_df["superclass"][0]
+#                 merged_df["class"] = sirius_df["class"][0]
+#                 merged_df["subclass"] = sirius_df["subclass"][0]
+#                 merged_df["ClassificationSource"] = "CANOPUS"
+
+#         elif "MassBank" in list(df_count_1["Source"]):
+#             can1 = df_count_1.index[
+#                 df_count_1["Source"].str.contains("MassBank")
+#             ].tolist()
+#             merged_df.loc[mer, "SMILES"] = list(df_count_1["SMILES"][can1])[0]
+#             comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         elif "HMDB" in list(df_count_1["Source"]):
+#             can1 = df_count_1.index[df_count_1["Source"].str.contains("HMDB")].tolist()
+#             merged_df.loc[mer, "SMILES"] = list(df_count_1["SMILES"][can1])[0]
+#             comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+
+
+
+
 
     merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][0]
 
@@ -2029,12 +2119,14 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
         )
         # print("gnps")
 
-    merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][mer].replace(
-        "nan|", ""
-    )
+    
 
+    merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][
+        mer
+    ].replace("nan|", "")
+    
     merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][0]
-    comp = pcp.get_compounds(df_count_1["SMILES"][0], "smiles")
+    comp = pcp.get_compounds(df_count_1["SMILES"][0], 'smiles')
     try:
         if comp:
             for c in comp:
@@ -2046,26 +2138,23 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
                 else:
                     merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
                     merged_df.loc[mer, "PubChemID"] = sirius_df["pubchemids"][0]
-
+        
+                
     except Exception:
         if "SIRIUS" == merged_df["AnnotationSources"][mer]:
-
-            comp = pcp.get_compounds(sirius_df["pubchemids"][0], "cid")
+            
+            comp = pcp.get_compounds(sirius_df["pubchemids"][0], 'cid')
             try:
                 if comp:
                     for c in comp:
                         if c.cid:
                             merged_df["synonyms"][mer] = c.synonyms
                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
-                            merged_df.loc[mer, "Formula"] = sirius_df[
-                                "molecularFormula"
-                            ][0]
+                            merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
                             merged_df.loc[mer, "PubChemID"] = sirius_df["pubchemids"][0]
                         else:
-
-                            merged_df.loc[mer, "Formula"] = sirius_df[
-                                "molecularFormula"
-                            ][0]
+                        
+                            merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
                             merged_df.loc[mer, "PubChemID"] = sirius_df["pubchemids"][0]
                 else:
                     merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
@@ -2092,208 +2181,217 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
     elif "SIRIUS" == merged_df["AnnotationSources"][mer]:
         merged_df.loc[mer, "MSILevel"] = 3
 
+    
+
+        
     # if only two or more unique source
-    #     else:
+#     else:
 
-    #         df_count_1 = candidates_with_counts[candidates_with_counts["Count"] == 1]
-    #         df_count_1["rank_num"] = [
-    #             counts.split("_")[1] for counts in df_count_1["ranks"]
-    #         ]
-    #         df_count_1["rank_num"] = [int(x) for x in df_count_1["rank_num"]]
-    #         df_count_1["count_min"] = [
-    #             str(df_count_1["SIRIUS"][x])
-    #             + str(df_count_1["GNPS"][x])
-    #             + str(df_count_1["MassBank"][x])
-    #             + str(df_count_1["HMDB"][x])
-    #             for x, row in df_count_1.iterrows()
-    #         ]
-    #         lengths = df_count_1["count_min"].str.len()
+#         df_count_1 = candidates_with_counts[candidates_with_counts["Count"] == 1]
+#         df_count_1["rank_num"] = [
+#             counts.split("_")[1] for counts in df_count_1["ranks"]
+#         ]
+#         df_count_1["rank_num"] = [int(x) for x in df_count_1["rank_num"]]
+#         df_count_1["count_min"] = [
+#             str(df_count_1["SIRIUS"][x])
+#             + str(df_count_1["GNPS"][x])
+#             + str(df_count_1["MassBank"][x])
+#             + str(df_count_1["HMDB"][x])
+#             for x, row in df_count_1.iterrows()
+#         ]
+#         lengths = df_count_1["count_min"].str.len()
+        
+#         if len(np.unique(lengths)) > 1:
+#             argmax = np.where(lengths == lengths.max())[0]
+#             merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][argmax[0]]
+#             merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][argmax[0]]
+#             df_count_na = df_count_1.notna()
+            
+#             list_sources = [*filter(df_count_na.loc[7].get, df_count_na.loc[7].index)]
+            
+#             if "GNPS" in list_sources:
+#                 merged_df.loc[mer, "AnnotationSources"] = (
+#                     str(merged_df["AnnotationSources"][mer]) + "|GNPS"
+#                 )
+#                 comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
+#                 try:
+#                     if comp:
+#                         for c in comp:
+#                             merged_df["synonyms"][mer] = c.synonyms
+#                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                             merged_df.loc[mer, "Formula"] = c.molecular_formula
+#                 except Exception:
+#                     pass
+#                 merged_df["superclass"][mer] = np.nan
+#                 merged_df["class"][mer] = np.nan
+#                 merged_df["subclass"][mer] = np.nan
+#                 merged_df["ClassificationSource"][mer] = np.nan
 
-    #         if len(np.unique(lengths)) > 1:
-    #             argmax = np.where(lengths == lengths.max())[0]
-    #             merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][argmax[0]]
-    #             merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][argmax[0]]
-    #             df_count_na = df_count_1.notna()
+            
+#             elif "SIRIUS" in list_sources:
+#                 merged_df.loc[mer, "AnnotationSources"] = (
+#                     str(merged_df["AnnotationSources"][mer]) + "|SIRIUS"
+#                 )
+#                 merged_df["Formula"] = sirius_df["molecularFormula"][0]
+#                 if "class" in sirius_df.columns:
+#                     merged_df["superclass"] = sirius_df["superclass"][0]
+#                     merged_df["class"] = sirius_df["class"][0]
+#                     merged_df["subclass"] = sirius_df["subclass"][0]
+#                     merged_df["ClassificationSource"] = "CANOPUS"
+                
+#             elif "MassBank" in list_sources:
+#                 merged_df.loc[mer, "AnnotationSources"] = (
+#                     str(merged_df["AnnotationSources"][mer]) + "|Massbank"
+#                 )
+#                 comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
+#                 try:
+#                     if comp:
+#                         for c in comp:
+#                             merged_df["synonyms"][mer] = c.synonyms
+#                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                             merged_df.loc[mer, "Formula"] = c.molecular_formula
+#                 except Exception:
+#                     pass
+#                 merged_df["superclass"][mer] = np.nan
+#                 merged_df["class"][mer] = np.nan
+#                 merged_df["subclass"][mer] = np.nan
+#                 merged_df["ClassificationSource"][mer] = np.nan
 
-    #             list_sources = [*filter(df_count_na.loc[7].get, df_count_na.loc[7].index)]
+#             elif "HMDB" in list_sources:
+#                 merged_df.loc[mer, "AnnotationSources"] = (
+#                     str(merged_df["AnnotationSources"][mer]) + "|HMDB"
+#                 )
+#                 comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
+#                 try:
+#                     if comp:
+#                         for c in comp:
+#                             merged_df["synonyms"][mer] = c.synonyms
+#                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                             merged_df.loc[mer, "Formula"] = c.molecular_formula
+#                 except Exception:
+#                     pass
+#                 merged_df["superclass"][mer] = np.nan
+#                 merged_df["class"][mer] = np.nan
+#                 merged_df["subclass"][mer] = np.nan
+#                 merged_df["ClassificationSource"][mer] = np.nan
 
-    #             if "GNPS" in list_sources:
-    #                 merged_df.loc[mer, "AnnotationSources"] = (
-    #                     str(merged_df["AnnotationSources"][mer]) + "|GNPS"
-    #                 )
-    #                 comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
-    #                 try:
-    #                     if comp:
-    #                         for c in comp:
-    #                             merged_df["synonyms"][mer] = c.synonyms
-    #                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                             merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #                 except Exception:
-    #                     pass
-    #                 merged_df["superclass"][mer] = np.nan
-    #                 merged_df["class"][mer] = np.nan
-    #                 merged_df["subclass"][mer] = np.nan
-    #                 merged_df["ClassificationSource"][mer] = np.nan
+#             merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][
+#                 mer
+#             ].replace("nan|", "")
+            
+            
+#             if (
+#                 "HMDB" in merged_df["AnnotationSources"][mer]
+#                 or "GNPS" in merged_df["AnnotationSources"][mer]
+#                 or "MassBank" in merged_df["AnnotationSources"][mer]
+#             ):
+#                 merged_df.loc[mer, "MSILevel"] = 2
+                
+#             if "SIRIUS" == merged_df["AnnotationSources"][mer]:
+#                 merged_df.loc[mer, "MSILevel"] = 3
+#         else:
+            
+#             if "GNPS" in np.unique(df_count_1["Source"]):
+#                 index = np.where(df_count_1["Source"] == "GNPS")[0]
+#                 merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
+#                 merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][index[0]]
+#                 comp = pcp.get_compounds(df_count_1["SMILES"][index[0]], 'smiles')
+#                 try:
+#                     if comp:
+#                         for c in comp:
+#                             merged_df["synonyms"][mer] = c.synonyms
+#                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                             merged_df.loc[mer, "Formula"] = c.molecular_formula
+#                 except Exception:
+#                     pass
+#                 merged_df["superclass"][mer] = np.nan
+#                 merged_df["class"][mer] = np.nan
+#                 merged_df["subclass"][mer] = np.nan
+#                 merged_df["ClassificationSource"][mer] = np.nan
 
-    #             elif "SIRIUS" in list_sources:
-    #                 merged_df.loc[mer, "AnnotationSources"] = (
-    #                     str(merged_df["AnnotationSources"][mer]) + "|SIRIUS"
-    #                 )
-    #                 merged_df["Formula"] = sirius_df["molecularFormula"][0]
-    #                 if "class" in sirius_df.columns:
-    #                     merged_df["superclass"] = sirius_df["superclass"][0]
-    #                     merged_df["class"] = sirius_df["class"][0]
-    #                     merged_df["subclass"] = sirius_df["subclass"][0]
-    #                     merged_df["ClassificationSource"] = "CANOPUS"
+#                 merged_df.loc[mer, "AnnotationSources"] = (
+#                     str(merged_df["AnnotationSources"][mer]) + "|GNPS"
+#                 )
+                
+#             elif "SIRIUS" in np.unique(df_count_1["Source"]):
+#                 index = np.where(df_count_1["Source"] == "SIRIUS")[0]
+#                 merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
+#                 merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][index[0]]
+#                 merged_df["Formula"] = sirius_df["molecularFormula"][0]
+#                 if "class" in sirius_df.columns:
+#                     merged_df["superclass"] = sirius_df["superclass"][0]
+#                     merged_df["class"] = sirius_df["class"][0]
+#                     merged_df["subclass"] = sirius_df["subclass"][0]
+#                     merged_df["ClassificationSource"] = "CANOPUS"
+#                 merged_df.loc[mer, "AnnotationSources"] = (
+#                     str(merged_df["AnnotationSources"][mer]) + "|SIRIUS"
+#                 )
+#             elif "MassBank" in np.unique(df_count_1["Source"]):
+#                 index = np.where(df_count_1["Source"] == "MassBank")[0]
+#                 merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
+#                 merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][index[0]]
+                
+#                 comp = pcp.get_compounds(df_count_1["SMILES"][index[0]], 'smiles')
+#                 try:
+#                     if comp:
+#                         for c in comp:
+#                             merged_df["synonyms"][mer] = c.synonyms
+#                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                             merged_df.loc[mer, "Formula"] = c.molecular_formula
+#                 except Exception:
+#                     pass
+#                 merged_df["superclass"][mer] = np.nan
+#                 merged_df["class"][mer] = np.nan
+#                 merged_df["subclass"][mer] = np.nan
+#                 merged_df["ClassificationSource"][mer] = np.nan
+#                 merged_df.loc[mer, "AnnotationSources"] = (
+#                     str(merged_df["AnnotationSources"][mer]) + "|MassBank"
+#                 )
 
-    #             elif "MassBank" in list_sources:
-    #                 merged_df.loc[mer, "AnnotationSources"] = (
-    #                     str(merged_df["AnnotationSources"][mer]) + "|Massbank"
-    #                 )
-    #                 comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
-    #                 try:
-    #                     if comp:
-    #                         for c in comp:
-    #                             merged_df["synonyms"][mer] = c.synonyms
-    #                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                             merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #                 except Exception:
-    #                     pass
-    #                 merged_df["superclass"][mer] = np.nan
-    #                 merged_df["class"][mer] = np.nan
-    #                 merged_df["subclass"][mer] = np.nan
-    #                 merged_df["ClassificationSource"][mer] = np.nan
+#             elif "HMDB" in np.unique(df_count_1["Source"]):
+#                 index = np.where(df_count_1["Source"] == "HMDB")[0]
+#                 merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
+#                 merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][index[0]]
+                
+#                 comp = pcp.get_compounds(df_count_1["SMILES"][index[0]], 'smiles')
+#                 try:
+#                     if comp:
+#                         for c in comp:
+#                             merged_df["synonyms"][mer] = c.synonyms
+#                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                             merged_df.loc[mer, "Formula"] = c.molecular_formula
+#                 except Exception:
+#                     pass
+#                 merged_df["superclass"][mer] = np.nan
+#                 merged_df["class"][mer] = np.nan
+#                 merged_df["subclass"][mer] = np.nan
+#                 merged_df["ClassificationSource"][mer] = np.nan
+#                 merged_df.loc[mer, "AnnotationSources"] = (
+#                     str(merged_df["AnnotationSources"][mer]) + "|HMDB"
+#                 )
 
-    #             elif "HMDB" in list_sources:
-    #                 merged_df.loc[mer, "AnnotationSources"] = (
-    #                     str(merged_df["AnnotationSources"][mer]) + "|HMDB"
-    #                 )
-    #                 comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
-    #                 try:
-    #                     if comp:
-    #                         for c in comp:
-    #                             merged_df["synonyms"][mer] = c.synonyms
-    #                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                             merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #                 except Exception:
-    #                     pass
-    #                 merged_df["superclass"][mer] = np.nan
-    #                 merged_df["class"][mer] = np.nan
-    #                 merged_df["subclass"][mer] = np.nan
-    #                 merged_df["ClassificationSource"][mer] = np.nan
+            
+#             merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][
+#                 mer
+#             ].replace("nan|", "")
+#             if "SIRIUS" == merged_df["AnnotationSources"][mer]:
+#                 merged_df.loc[mer, "MSILevel"] = 3
 
-    #             merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][
-    #                 mer
-    #             ].replace("nan|", "")
-
-    #             if (
-    #                 "HMDB" in merged_df["AnnotationSources"][mer]
-    #                 or "GNPS" in merged_df["AnnotationSources"][mer]
-    #                 or "MassBank" in merged_df["AnnotationSources"][mer]
-    #             ):
-    #                 merged_df.loc[mer, "MSILevel"] = 2
-
-    #             if "SIRIUS" == merged_df["AnnotationSources"][mer]:
-    #                 merged_df.loc[mer, "MSILevel"] = 3
-    #         else:
-
-    #             if "GNPS" in np.unique(df_count_1["Source"]):
-    #                 index = np.where(df_count_1["Source"] == "GNPS")[0]
-    #                 merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
-    #                 merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][index[0]]
-    #                 comp = pcp.get_compounds(df_count_1["SMILES"][index[0]], 'smiles')
-    #                 try:
-    #                     if comp:
-    #                         for c in comp:
-    #                             merged_df["synonyms"][mer] = c.synonyms
-    #                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                             merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #                 except Exception:
-    #                     pass
-    #                 merged_df["superclass"][mer] = np.nan
-    #                 merged_df["class"][mer] = np.nan
-    #                 merged_df["subclass"][mer] = np.nan
-    #                 merged_df["ClassificationSource"][mer] = np.nan
-
-    #                 merged_df.loc[mer, "AnnotationSources"] = (
-    #                     str(merged_df["AnnotationSources"][mer]) + "|GNPS"
-    #                 )
-
-    #             elif "SIRIUS" in np.unique(df_count_1["Source"]):
-    #                 index = np.where(df_count_1["Source"] == "SIRIUS")[0]
-    #                 merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
-    #                 merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][index[0]]
-    #                 merged_df["Formula"] = sirius_df["molecularFormula"][0]
-    #                 if "class" in sirius_df.columns:
-    #                     merged_df["superclass"] = sirius_df["superclass"][0]
-    #                     merged_df["class"] = sirius_df["class"][0]
-    #                     merged_df["subclass"] = sirius_df["subclass"][0]
-    #                     merged_df["ClassificationSource"] = "CANOPUS"
-    #                 merged_df.loc[mer, "AnnotationSources"] = (
-    #                     str(merged_df["AnnotationSources"][mer]) + "|SIRIUS"
-    #                 )
-    #             elif "MassBank" in np.unique(df_count_1["Source"]):
-    #                 index = np.where(df_count_1["Source"] == "MassBank")[0]
-    #                 merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
-    #                 merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][index[0]]
-
-    #                 comp = pcp.get_compounds(df_count_1["SMILES"][index[0]], 'smiles')
-    #                 try:
-    #                     if comp:
-    #                         for c in comp:
-    #                             merged_df["synonyms"][mer] = c.synonyms
-    #                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                             merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #                 except Exception:
-    #                     pass
-    #                 merged_df["superclass"][mer] = np.nan
-    #                 merged_df["class"][mer] = np.nan
-    #                 merged_df["subclass"][mer] = np.nan
-    #                 merged_df["ClassificationSource"][mer] = np.nan
-    #                 merged_df.loc[mer, "AnnotationSources"] = (
-    #                     str(merged_df["AnnotationSources"][mer]) + "|MassBank"
-    #                 )
-
-    #             elif "HMDB" in np.unique(df_count_1["Source"]):
-    #                 index = np.where(df_count_1["Source"] == "HMDB")[0]
-    #                 merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][index[0]]
-    #                 merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][index[0]]
-
-    #                 comp = pcp.get_compounds(df_count_1["SMILES"][index[0]], 'smiles')
-    #                 try:
-    #                     if comp:
-    #                         for c in comp:
-    #                             merged_df["synonyms"][mer] = c.synonyms
-    #                             merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                             merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #                 except Exception:
-    #                     pass
-    #                 merged_df["superclass"][mer] = np.nan
-    #                 merged_df["class"][mer] = np.nan
-    #                 merged_df["subclass"][mer] = np.nan
-    #                 merged_df["ClassificationSource"][mer] = np.nan
-    #                 merged_df.loc[mer, "AnnotationSources"] = (
-    #                     str(merged_df["AnnotationSources"][mer]) + "|HMDB"
-    #                 )
-
-    #             merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][
-    #                 mer
-    #             ].replace("nan|", "")
-    #             if "SIRIUS" == merged_df["AnnotationSources"][mer]:
-    #                 merged_df.loc[mer, "MSILevel"] = 3
-
-    #             if (
-    #                 "HMDB" in merged_df["AnnotationSources"][mer]
-    #                 or "GNPS" in merged_df["AnnotationSources"][mer]
-    #                 or "MassBank" in merged_df["AnnotationSources"][mer]
-    #             ):
-    #                 merged_df.loc[mer, "MSILevel"] = 2
-    #                 merged_df["superclass"][mer] = np.nan
-    #                 merged_df["class"][mer] = np.nan
-    #                 merged_df["subclass"][mer] = np.nan
-    #                 merged_df["ClassificationSource"][mer] = np.nan
-
+#             if (
+#                 "HMDB" in merged_df["AnnotationSources"][mer]
+#                 or "GNPS" in merged_df["AnnotationSources"][mer]
+#                 or "MassBank" in merged_df["AnnotationSources"][mer]
+#             ):
+#                 merged_df.loc[mer, "MSILevel"] = 2
+#                 merged_df["superclass"][mer] = np.nan
+#                 merged_df["class"][mer] = np.nan
+#                 merged_df["subclass"][mer] = np.nan
+#                 merged_df["ClassificationSource"][mer] = np.nan
+            
     return merged_df
+
+
+# In[1]:
 
 
 def sources_2(candidates_with_counts, merged_df, mer, sirius_df):
@@ -2318,9 +2416,9 @@ def sources_2(candidates_with_counts, merged_df, mer, sirius_df):
     """
 
     df_count_2 = candidates_with_counts[candidates_with_counts["Count"] == 2]
-    # df_count_2["rank_num"] = [counts.split("_")[1] for counts in df_count_2["ranks"]]
-    # df_count_2["rank_num"] = [int(x) for x in df_count_2["rank_num"]]
-    # df_count_2 = df_count_2.sort_values(by="rank_num")
+    #df_count_2["rank_num"] = [counts.split("_")[1] for counts in df_count_2["ranks"]]
+    #df_count_2["rank_num"] = [int(x) for x in df_count_2["rank_num"]]
+    #df_count_2 = df_count_2.sort_values(by="rank_num")
     df_countnew = df_count_2[df_count_2["rank_num"] == min(df_count_2["rank_num"])]
     df_countnew["count_min"] = [
         str(df_countnew["SIRIUS"][x])
@@ -2359,22 +2457,23 @@ def sources_2(candidates_with_counts, merged_df, mer, sirius_df):
             str(merged_df["AnnotationSources"][mer]) + "|GNPS"
         )
         # print("gnps")
-    #     if (
-    #         "HMDB" in merged_df["AnnotationSources"][mer]
-    #         or "GNPS" in merged_df["AnnotationSources"][mer]
-    #         or "MassBank" in merged_df["AnnotationSources"][mer]
-    #     ):
+#     if (
+#         "HMDB" in merged_df["AnnotationSources"][mer]
+#         or "GNPS" in merged_df["AnnotationSources"][mer]
+#         or "MassBank" in merged_df["AnnotationSources"][mer]
+#     ):
     merged_df.loc[mer, "MSILevel"] = 2
-    #     if "nan|SIRIUS" == merged_df["AnnotationSources"][mer]:
-    #         merged_df.loc[mer, "MSILevel"] = 3
+#     if "nan|SIRIUS" == merged_df["AnnotationSources"][mer]:
+#         merged_df.loc[mer, "MSILevel"] = 3
+        
 
     merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][mer].replace(
         "nan|", ""
     )
     merged_df.loc[mer, "AnnotationCount"] = df_countnew["Count"][0]
-
+    
     merged_df.loc[mer, "SMILES"] = df_countnew["SMILES"][0]
-    comp = pcp.get_compounds(df_countnew["SMILES"][0], "smiles")
+    comp = pcp.get_compounds(df_countnew["SMILES"][0], 'smiles')
     try:
         if comp:
             for c in comp:
@@ -2390,144 +2489,150 @@ def sources_2(candidates_with_counts, merged_df, mer, sirius_df):
         merged_df["subclass"][mer] = np.nan
         merged_df["ClassificationSource"][mer] = np.nan
 
-    #     if "GNPS" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_2.loc[df_count_2["Source"] == "GNPS"]) == 1:
-    #             new = df_count_2.loc[df_count_2["Source"] == "GNPS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         elif len(df_count_2.loc[df_count_2["Source"] == "GNPS"]) > 1:
-    #             new = df_count_2.loc[df_count_2["Source"] == "GNPS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         else:
-    #             pass
-
-    #     elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_2.loc[df_count_2["Source"] == "SIRIUS"]) == 1:
-    #             new = df_count_2.loc[df_count_2["Source"] == "SIRIUS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-    #             if "class" in sirius_df.columns:
-    #                 merged_df["superclass"] = sirius_df["superclass"][0]
-    #                 merged_df["class"] = sirius_df["class"][0]
-    #                 merged_df["subclass"] = sirius_df["subclass"][0]
-    #                 merged_df["ClassificationSource"] = "CANOPUS"
-    #         elif len(df_count_2.loc[df_count_2["Source"] == "SIRIUS"]) > 1:
-    #             new = df_count_2.loc[df_count_2["Source"] == "SIRIUS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-    #             if "class" in sirius_df.columns:
-    #                 merged_df["superclass"] = sirius_df["superclass"][0]
-    #                 merged_df["class"] = sirius_df["class"][0]
-    #                 merged_df["subclass"] = sirius_df["subclass"][0]
-    #                 merged_df["ClassificationSource"] = "CANOPUS"
-
-    #         else:
-    #             pass
-    #     elif "MassBank" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_2.loc[df_count_2["Source"] == "MassBank"]) == 1:
-    #             new = df_count_2.loc[df_count_2["Source"] == "MassBank"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         elif len(df_count_2.loc[df_count_2["Source"] == "MassBank"]) > 1:
-    #             new = df_count_2.loc[df_count_2["Source"] == "MassBank"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         else:
-    #             pass
-    #     elif "HMDB" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_2.loc[df_count_2["Source"] == "HMDB"]) == 1:
-    #             new = df_count_2.loc[df_count_2["Source"] == "HMDB"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"] = np.nan
-    #             merged_df["class"] = np.nan
-    #             merged_df["subclass"] = np.nan
-    #             merged_df["ClassificationSource"] = np.nan
-    #         elif len(df_count_2.loc[df_count_2["Source"] == "HMDB"]) > 1:
-    #             new = df_count_2.loc[df_count_2["Source"] == "HMDB"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         else:
-    #             pass
-
+#     if "GNPS" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_2.loc[df_count_2["Source"] == "GNPS"]) == 1:
+#             new = df_count_2.loc[df_count_2["Source"] == "GNPS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         elif len(df_count_2.loc[df_count_2["Source"] == "GNPS"]) > 1:
+#             new = df_count_2.loc[df_count_2["Source"] == "GNPS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         else:
+#             pass
+        
+        
+        
+#     elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_2.loc[df_count_2["Source"] == "SIRIUS"]) == 1:
+#             new = df_count_2.loc[df_count_2["Source"] == "SIRIUS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             merged_df["Formula"] = sirius_df["molecularFormula"][0]
+#             if "class" in sirius_df.columns:
+#                 merged_df["superclass"] = sirius_df["superclass"][0]
+#                 merged_df["class"] = sirius_df["class"][0]
+#                 merged_df["subclass"] = sirius_df["subclass"][0]
+#                 merged_df["ClassificationSource"] = "CANOPUS"
+#         elif len(df_count_2.loc[df_count_2["Source"] == "SIRIUS"]) > 1:
+#             new = df_count_2.loc[df_count_2["Source"] == "SIRIUS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             merged_df["Formula"] = sirius_df["molecularFormula"][0]
+#             if "class" in sirius_df.columns:
+#                 merged_df["superclass"] = sirius_df["superclass"][0]
+#                 merged_df["class"] = sirius_df["class"][0]
+#                 merged_df["subclass"] = sirius_df["subclass"][0]
+#                 merged_df["ClassificationSource"] = "CANOPUS"
+            
+#         else:
+#             pass
+#     elif "MassBank" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_2.loc[df_count_2["Source"] == "MassBank"]) == 1:
+#             new = df_count_2.loc[df_count_2["Source"] == "MassBank"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(merged_df["SMILES"][mer], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         elif len(df_count_2.loc[df_count_2["Source"] == "MassBank"]) > 1:
+#             new = df_count_2.loc[df_count_2["Source"] == "MassBank"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         else:
+#             pass
+#     elif "HMDB" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_2.loc[df_count_2["Source"] == "HMDB"]) == 1:
+#             new = df_count_2.loc[df_count_2["Source"] == "HMDB"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"] = np.nan
+#             merged_df["class"] = np.nan
+#             merged_df["subclass"] = np.nan
+#             merged_df["ClassificationSource"] = np.nan
+#         elif len(df_count_2.loc[df_count_2["Source"] == "HMDB"]) > 1:
+#             new = df_count_2.loc[df_count_2["Source"] == "HMDB"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         else:
+#             pass
+    
+    
     return merged_df
+
+
+# In[29]:
 
 
 def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
@@ -2553,10 +2658,10 @@ def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
     # if the count is 3
     df_count_3 = candidates_with_counts[candidates_with_counts["Count"] == 3]
     # extracts the ranks again
-    # df_count_3["rank_num"] = [counts.split("_")[1] for counts in df_count_3["ranks"]]
-    # df_count_3["rank_num"] = [int(x) for x in df_count_3["rank_num"]]
+    #df_count_3["rank_num"] = [counts.split("_")[1] for counts in df_count_3["ranks"]]
+    #df_count_3["rank_num"] = [int(x) for x in df_count_3["rank_num"]]
 
-    # df_count_3 = df_count_3.sort_values(by="rank_num")
+    #df_count_3 = df_count_3.sort_values(by="rank_num")
     df_count_3 = df_count_3[df_count_3["rank_num"] == min(df_count_3["rank_num"])]
     df_count_3["count_min"] = [
         str(df_count_3["SIRIUS"][x])
@@ -2572,7 +2677,7 @@ def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
     df_count_3.reset_index(drop=True, inplace=True)
 
     merged_df.loc[mer, "AnnotationCount"] = df_count_3["Count"][0]
-
+    
     heavy_atoms = ["C", "N", "P", "O", "S"]
 
     Mol = []
@@ -2624,14 +2729,14 @@ def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
     merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][mer].replace(
         "nan|", ""
     )
-    #     if (
-    #         "HMDB" in merged_df["AnnotationSources"][mer]
-    #         or "GNPS" in merged_df["AnnotationSources"][mer]
-    #         or "MassBank" in merged_df["AnnotationSources"][mer]
-    #     ):
+#     if (
+#         "HMDB" in merged_df["AnnotationSources"][mer]
+#         or "GNPS" in merged_df["AnnotationSources"][mer]
+#         or "MassBank" in merged_df["AnnotationSources"][mer]
+#     ):
     merged_df.loc[mer, "MSILevel"] = 2
     merged_df.loc[mer, "SMILES"] = df_count_3["SMILES"][0]
-    comp = pcp.get_compounds(df_count_3["SMILES"][0], "smiles")
+    comp = pcp.get_compounds(df_count_3["SMILES"][0], 'smiles')
     try:
         if comp:
             for c in comp:
@@ -2646,145 +2751,153 @@ def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
         merged_df["class"][mer] = np.nan
         merged_df["subclass"][mer] = np.nan
         merged_df["ClassificationSource"][mer] = np.nan
+    
+    
 
-    #     if "GNPS" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_3.loc[df_count_3["Source"] == "GNPS"]) == 1:
-    #             new = df_count_3.loc[df_count_3["Source"] == "GNPS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         elif len(df_count_3.loc[df_count_3["Source"] == "GNPS"]) > 1:
-    #             new = df_count_3.loc[df_count_3["Source"] == "GNPS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         else:
-    #             pass
-
-    #     elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_3.loc[df_count_3["Source"] == "SIRIUS"]) == 1:
-    #             new = df_count_3.loc[df_count_3["Source"] == "SIRIUS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-    #             if "class" in sirius_df.columns:
-    #                 merged_df["superclass"] = sirius_df["superclass"][0]
-    #                 merged_df["class"] = sirius_df["class"][0]
-    #                 merged_df["subclass"] = sirius_df["subclass"][0]
-    #                 merged_df["ClassificationSource"] = "CANOPUS"
-    #         elif len(df_count_3.loc[df_count_3["Source"] == "SIRIUS"]) > 1:
-    #             new = df_count_3.loc[df_count_3["Source"] == "SIRIUS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-    #             if "class" in sirius_df.columns:
-    #                 merged_df["superclass"] = sirius_df["superclass"][0]
-    #                 merged_df["class"] = sirius_df["class"][0]
-    #                 merged_df["subclass"] = sirius_df["subclass"][0]
-    #                 merged_df["ClassificationSource"] = "CANOPUS"
-    #         else:
-    #             pass
-
-    #     elif "MassBank" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_3.loc[df_count_3["Source"] == "MassBank"]) == 1:
-    #             new = df_count_3.loc[df_count_3["Source"] == "MassBank"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         elif len(df_count_3.loc[df_count_3["Source"] == "MassBank"]) > 1:
-    #             new = df_count_3.loc[df_count_3["Source"] == "MassBank"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         else:
-    #             pass
-    #     elif "HMDB" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_3.loc[df_count_3["Source"] == "HMDB"]) == 1:
-    #             new = df_count_3.loc[df_count_3["Source"] == "HMDB"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         elif len(df_count_3.loc[df_count_3["Source"] == "HMDB"]) > 1:
-    #             new = df_count_3.loc[df_count_3["Source"] == "HMDB"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         else:
-    #             pass
-
+#     if "GNPS" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_3.loc[df_count_3["Source"] == "GNPS"]) == 1:
+#             new = df_count_3.loc[df_count_3["Source"] == "GNPS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         elif len(df_count_3.loc[df_count_3["Source"] == "GNPS"]) > 1:
+#             new = df_count_3.loc[df_count_3["Source"] == "GNPS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         else:
+#             pass
+    
+    
+#     elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_3.loc[df_count_3["Source"] == "SIRIUS"]) == 1:
+#             new = df_count_3.loc[df_count_3["Source"] == "SIRIUS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             merged_df["Formula"] = sirius_df["molecularFormula"][0]
+#             if "class" in sirius_df.columns:
+#                 merged_df["superclass"] = sirius_df["superclass"][0]
+#                 merged_df["class"] = sirius_df["class"][0]
+#                 merged_df["subclass"] = sirius_df["subclass"][0]
+#                 merged_df["ClassificationSource"] = "CANOPUS"
+#         elif len(df_count_3.loc[df_count_3["Source"] == "SIRIUS"]) > 1:
+#             new = df_count_3.loc[df_count_3["Source"] == "SIRIUS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             merged_df["Formula"] = sirius_df["molecularFormula"][0]
+#             if "class" in sirius_df.columns:
+#                 merged_df["superclass"] = sirius_df["superclass"][0]
+#                 merged_df["class"] = sirius_df["class"][0]
+#                 merged_df["subclass"] = sirius_df["subclass"][0]
+#                 merged_df["ClassificationSource"] = "CANOPUS"
+#         else:
+#             pass
+    
+#     elif "MassBank" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_3.loc[df_count_3["Source"] == "MassBank"]) == 1:
+#             new = df_count_3.loc[df_count_3["Source"] == "MassBank"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         elif len(df_count_3.loc[df_count_3["Source"] == "MassBank"]) > 1:
+#             new = df_count_3.loc[df_count_3["Source"] == "MassBank"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         else:
+#             pass
+#     elif "HMDB" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_3.loc[df_count_3["Source"] == "HMDB"]) == 1:
+#             new = df_count_3.loc[df_count_3["Source"] == "HMDB"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         elif len(df_count_3.loc[df_count_3["Source"] == "HMDB"]) > 1:
+#             new = df_count_3.loc[df_count_3["Source"] == "HMDB"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         else:
+#             pass
+    
+    
+    
     return merged_df
+
+
+# In[30]:
 
 
 def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
@@ -2809,9 +2922,9 @@ def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
     """
 
     df_count_4 = candidates_with_counts[candidates_with_counts["Count"] == 4]
-    # df_count_4["rank_num"] = [counts.split("_")[1] for counts in df_count_4["ranks"]]
-    # df_count_4["rank_num"] = [int(x) for x in df_count_4["rank_num"]]
-    # df_count_4 = df_count_4.sort_values(by="rank_num")
+    #df_count_4["rank_num"] = [counts.split("_")[1] for counts in df_count_4["ranks"]]
+    #df_count_4["rank_num"] = [int(x) for x in df_count_4["rank_num"]]
+    #df_count_4 = df_count_4.sort_values(by="rank_num")
     df_count_4 = df_count_4[df_count_4["rank_num"] == min(df_count_4["rank_num"])]
     df_count_4["count_min"] = [
         str(df_count_4["SIRIUS"][x])
@@ -2826,9 +2939,9 @@ def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
     df_count_4.reset_index(drop=True, inplace=True)
 
     merged_df.loc[mer, "AnnotationCount"] = df_count_4["Count"][0]
-
+    
     heavy_atoms = ["C", "N", "P", "O", "S"]
-
+    
     Mol = []
 
     for j in list(df_count_4["SMILES"]):
@@ -2872,23 +2985,23 @@ def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
             str(merged_df["AnnotationSources"][mer]) + "|GNPS"
         )
         # print("gnps")
-
+    
     if "nan|SIRIUS" == merged_df["AnnotationSources"][mer]:
         merged_df.loc[mer, "MSILevel"] = 3
 
     merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][mer].replace(
         "nan|", ""
     )
-
-    #     if (
-    #         "HMDB" in merged_df["AnnotationSources"][mer]
-    #         or "GNPS" in merged_df["AnnotationSources"][mer]
-    #         or "MassBank" in merged_df["AnnotationSources"][mer]
-    #     ):
+    
+#     if (
+#         "HMDB" in merged_df["AnnotationSources"][mer]
+#         or "GNPS" in merged_df["AnnotationSources"][mer]
+#         or "MassBank" in merged_df["AnnotationSources"][mer]
+#     ):
     merged_df.loc[mer, "MSILevel"] = 2
-
+    
     merged_df.loc[mer, "SMILES"] = df_count_4["SMILES"][0]
-    comp = pcp.get_compounds(df_count_4["SMILES"][0], "smiles")
+    comp = pcp.get_compounds(df_count_4["SMILES"][0], 'smiles')
     try:
         if comp:
             for c in comp:
@@ -2903,148 +3016,159 @@ def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
         merged_df["class"][mer] = np.nan
         merged_df["subclass"][mer] = np.nan
         merged_df["ClassificationSource"][mer] = np.nan
+    
 
-    #     if "GNPS" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_4.loc[df_count_4["Source"] == "GNPS"]) == 1:
-    #             new = df_count_4.loc[df_count_4["Source"] == "GNPS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         elif len(df_count_4.loc[df_count_4["Source"] == "GNPS"]) > 1:
-    #             new = df_count_4.loc[df_count_4["Source"] == "GNPS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         else:
-    #             pass
+    
+#     if "GNPS" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_4.loc[df_count_4["Source"] == "GNPS"]) == 1:
+#             new = df_count_4.loc[df_count_4["Source"] == "GNPS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         elif len(df_count_4.loc[df_count_4["Source"] == "GNPS"]) > 1:
+#             new = df_count_4.loc[df_count_4["Source"] == "GNPS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         else:
+#             pass
+    
+#     elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_4.loc[df_count_4["Source"] == "SIRIUS"]) == 1:
+#             new = df_count_4.loc[df_count_4["Source"] == "SIRIUS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             merged_df["Formula"] = sirius_df["molecularFormula"][0]
+#             if "class" in sirius_df.columns:
+#                 merged_df["superclass"] = sirius_df["superclass"][0]
+#                 merged_df["class"] = sirius_df["class"][0]
+#                 merged_df["subclass"] = sirius_df["subclass"][0]
+#                 merged_df["ClassificationSource"] = "CANOPUS"
+#         elif len(df_count_4.loc[df_count_4["Source"] == "SIRIUS"]) > 1:
+#             new = df_count_4.loc[df_count_4["Source"] == "SIRIUS"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             merged_df["Formula"] = sirius_df["molecularFormula"][0]
+#             if "class" in sirius_df.columns:
+#                 merged_df["superclass"] = sirius_df["superclass"][0]
+#                 merged_df["class"] = sirius_df["class"][0]
+#                 merged_df["subclass"] = sirius_df["subclass"][0]
+#                 merged_df["ClassificationSource"] = "CANOPUS"
+#         else:
+#             pass
+    
+    
+#     elif "MassBank" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_4.loc[df_count_4["Source"] == "MassBank"]) == 1:
+#             new = df_count_4.loc[df_count_4["Source"] == "MassBank"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         elif len(df_count_4.loc[df_count_4["Source"] == "MassBank"]) > 1:
+#             new = df_count_4.loc[df_count_4["Source"] == "MassBank"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         else:
+#             pass
+#     elif "HMDB" in merged_df["AnnotationSources"][mer]:
+#         if len(df_count_4.loc[df_count_4["Source"] == "HMDB"]) == 1:
+#             new = df_count_4.loc[df_count_4["Source"] == "HMDB"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         elif len(df_count_4.loc[df_count_4["Source"] == "HMDB"]) > 1:
+#             new = df_count_4.loc[df_count_4["Source"] == "HMDB"]
+#             new.reset_index(drop=True, inplace=True)
+#             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
+#             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
+#             try:
+#                 if comp:
+#                     for c in comp:
+#                         merged_df["synonyms"][mer] = c.synonyms
+#                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
+#                         merged_df.loc[mer, "Formula"] = c.molecular_formula
+#             except Exception:
+#                 pass
+#             merged_df["superclass"][mer] = np.nan
+#             merged_df["class"][mer] = np.nan
+#             merged_df["subclass"][mer] = np.nan
+#             merged_df["ClassificationSource"][mer] = np.nan
+#         else:
+#             pass
+    
+    
+    
 
-    #     elif "SIRIUS" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_4.loc[df_count_4["Source"] == "SIRIUS"]) == 1:
-    #             new = df_count_4.loc[df_count_4["Source"] == "SIRIUS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-    #             if "class" in sirius_df.columns:
-    #                 merged_df["superclass"] = sirius_df["superclass"][0]
-    #                 merged_df["class"] = sirius_df["class"][0]
-    #                 merged_df["subclass"] = sirius_df["subclass"][0]
-    #                 merged_df["ClassificationSource"] = "CANOPUS"
-    #         elif len(df_count_4.loc[df_count_4["Source"] == "SIRIUS"]) > 1:
-    #             new = df_count_4.loc[df_count_4["Source"] == "SIRIUS"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             merged_df["Formula"] = sirius_df["molecularFormula"][0]
-    #             if "class" in sirius_df.columns:
-    #                 merged_df["superclass"] = sirius_df["superclass"][0]
-    #                 merged_df["class"] = sirius_df["class"][0]
-    #                 merged_df["subclass"] = sirius_df["subclass"][0]
-    #                 merged_df["ClassificationSource"] = "CANOPUS"
-    #         else:
-    #             pass
-
-    #     elif "MassBank" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_4.loc[df_count_4["Source"] == "MassBank"]) == 1:
-    #             new = df_count_4.loc[df_count_4["Source"] == "MassBank"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         elif len(df_count_4.loc[df_count_4["Source"] == "MassBank"]) > 1:
-    #             new = df_count_4.loc[df_count_4["Source"] == "MassBank"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         else:
-    #             pass
-    #     elif "HMDB" in merged_df["AnnotationSources"][mer]:
-    #         if len(df_count_4.loc[df_count_4["Source"] == "HMDB"]) == 1:
-    #             new = df_count_4.loc[df_count_4["Source"] == "HMDB"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         elif len(df_count_4.loc[df_count_4["Source"] == "HMDB"]) > 1:
-    #             new = df_count_4.loc[df_count_4["Source"] == "HMDB"]
-    #             new.reset_index(drop=True, inplace=True)
-    #             merged_df.loc[mer, "SMILES"] = new["SMILES"][0]
-    #             comp = pcp.get_compounds(new["SMILES"][0], 'smiles')
-    #             try:
-    #                 if comp:
-    #                     for c in comp:
-    #                         merged_df["synonyms"][mer] = c.synonyms
-    #                         merged_df.loc[mer, "IUPAC"] = c.iupac_name
-    #                         merged_df.loc[mer, "Formula"] = c.molecular_formula
-    #             except Exception:
-    #                 pass
-    #             merged_df["superclass"][mer] = np.nan
-    #             merged_df["class"][mer] = np.nan
-    #             merged_df["subclass"][mer] = np.nan
-    #             merged_df["ClassificationSource"][mer] = np.nan
-    #         else:
-    #             pass
-
+    
     return merged_df
 
 
+# In[ ]:
+
+
 def checkSMILES_validity(input_dir, resultcsv):
+    
 
     """checkSMILES_validity does exactly as the name says, using
     RDKit, whether the SMILES are invalid or have invalid
@@ -3076,14 +3200,19 @@ def checkSMILES_validity(input_dir, resultcsv):
                     Chem.SanitizeMol(m)
                 except Exception:
                     results["SMILES"][i] = "invalid_chemistry"
-    #     results.to_csv(
-    #         input_dir + "MetabolomicsResults/final_curation_with_validSMILES.csv"
-    #     )
+#     results.to_csv(
+#         input_dir + "MetabolomicsResults/final_curation_with_validSMILES.csv"
+#     )
     return results
 
 
-def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
 
+# In[5]:
+
+
+def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
+
+    
     # entry is all files and folders in input_dir
     for entry in os.listdir(input_dir):
         # if the entry is also a directory
@@ -3160,17 +3289,17 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                     merged_df["class"] = np.nan
                     merged_df["subclass"] = np.nan
                     merged_df["ClassificationSource"] = np.nan
-
+                    
                     for_only_formula = []
                     for_formula_canopus = []
-
+                    
                     can_selec_dir = input_dir + "/" + entry + "/Candidate_Selection"
                     if not os.path.isdir(can_selec_dir):
                         os.mkdir(can_selec_dir)
-                    #                     cmn_dir = can_selec_dir + "/ChemicalMN"
-                    #                     os.mkdir(cmn_dir)
-                    #                     cand_list_dir = can_selec_dir + "/Candidate_Lists"
-                    #                     os.mkdir(cmn_dir)
+#                     cmn_dir = can_selec_dir + "/ChemicalMN"
+#                     os.mkdir(cmn_dir)
+#                     cand_list_dir = can_selec_dir + "/Candidate_Lists"
+#                     os.mkdir(cmn_dir)      
 
                     for mer, rows in merged_df.iterrows():
                         print(merged_df["premz"][mer])
@@ -3178,11 +3307,11 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                             sirius_csv = merged_df["sirius_result_dir"][mer].replace(
                                 "./", input_dir + "/"
                             )
-                            # print(sirius_csv)
+                            #print(sirius_csv)
                         else:
-                            df = pd.DataFrame(list())
-                            df.to_csv(input_dir + "/empty_csv.csv")
-                            sirius_csv = input_dir + "/empty_csv.csv"
+                            df = pd. DataFrame(list())
+                            df. to_csv(input_dir + '/empty_csv.csv')
+                            sirius_csv = input_dir + '/empty_csv.csv'
 
                         mbank_csv = merged_df["mbank_results_csv"][mer].replace(
                             "./", input_dir + "/"
@@ -3209,16 +3338,13 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
 
                             sirius_df = pd.read_csv(sirius_csv)
                             if "formula" in sirius_csv:
-
+                            
                                 if len(sirius_df) > 0:
-
-                                    if (
-                                        "smiles" not in sirius_df.columns
-                                        and "molecularFormula" in sirius_df.columns
-                                    ):
-
-                                        # merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
-                                        # merged_df["AnnotationSources"][mer] = "SIRIUS-Formula"
+                                    
+                                    if "smiles" not in sirius_df.columns and "molecularFormula" in sirius_df.columns:
+                
+                                        #merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
+                                        #merged_df["AnnotationSources"][mer] = "SIRIUS-Formula"    
 
                                         index = mer
                                         Formula = sirius_df["molecularFormula"][0]
@@ -3226,16 +3352,16 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                             {
                                                 "index": index,
                                                 "Formula": Formula,
-                                                "AnnotationSources": "SIRIUS-Formula",
+                                                "AnnotationSources": "SIRIUS-Formula"
                                             }
                                         )
 
                                         if "class" in sirius_df.columns:
-                                            # merged_df.loc[mer, "superclass"] = sirius_df["superclass"][0]
-                                            # merged_df.loc[mer, "class"] = sirius_df["class"][0]
-                                            # merged_df.loc[mer, "subclass"] = sirius_df["subclass"][0]
-                                            # merged_df.loc[mer, "ClassificationSource"] = "CANOPUS"
-                                            # merged_df.loc[mer, "AnnotationSources"] = "SIRIUS-Formula|CANOPUS"
+                                            #merged_df.loc[mer, "superclass"] = sirius_df["superclass"][0]
+                                            #merged_df.loc[mer, "class"] = sirius_df["class"][0]
+                                            #merged_df.loc[mer, "subclass"] = sirius_df["subclass"][0]
+                                            #merged_df.loc[mer, "ClassificationSource"] = "CANOPUS"
+                                            #merged_df.loc[mer, "AnnotationSources"] = "SIRIUS-Formula|CANOPUS"
                                             index = mer
                                             Formula = sirius_df["molecularFormula"][0]
                                             superclass = sirius_df["superclass"][0]
@@ -3248,49 +3374,39 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                                     "superclass": superclass,
                                                     "class": classes,
                                                     "ClassificationSource": "CANOPUS",
-                                                    "AnnotationSources": "SIRIUS-Formula|CANOPUS",
+                                                    "AnnotationSources": "SIRIUS-Formula|CANOPUS"
                                                 }
                                             )
 
                                         sirius_df = []
 
                             if "structure" in sirius_csv:
-
+                            
                                 if len(sirius_df) > 0:
 
                                     if len(sirius_df) > 50:
                                         sirius_df = sirius_df[0:50]
                                     if "smiles" in sirius_df.columns:
-
+                                        
                                         sirius_df = sirius_df.drop_duplicates("smiles")
                                         sirius_df = sirius_df.dropna(subset=["smiles"])
-                                        merged_df["Formula"][mer] = sirius_df[
-                                            "molecularFormula"
-                                        ][0]
-                                        merged_df.loc[mer, "PubChemID"] = sirius_df[
-                                            "pubchemids"
-                                        ][0]
+                                        merged_df["Formula"][mer] = sirius_df["molecularFormula"][0]
+                                        merged_df.loc[mer, "PubChemID"] = sirius_df["pubchemids"][0]
                                         if "class" in sirius_df.columns:
-                                            merged_df["superclass"][mer] = sirius_df[
-                                                "superclass"
-                                            ][0]
-                                            merged_df["class"][mer] = sirius_df[
-                                                "class"
-                                            ][0]
-                                            merged_df["subclass"][mer] = sirius_df[
-                                                "subclass"
-                                            ][0]
-                                            merged_df["ClassificationSource"][
-                                                mer
-                                            ] = "CANOPUS"
-
+                                            merged_df["superclass"][mer] = sirius_df["superclass"][0]
+                                            merged_df["class"][mer] = sirius_df["class"][0]
+                                            merged_df["subclass"][mer] = sirius_df["subclass"][0]
+                                            merged_df["ClassificationSource"][mer] = "CANOPUS"
+                                            
                             elif len(sirius_df) == 0:
-                                # print("NO Structures")
+                                #print("NO Structures")
                                 merged_df["Formula"][mer] = np.nan
                                 merged_df["superclass"][mer] = np.nan
                                 merged_df["class"][mer] = np.nan
                                 merged_df["subclass"][mer] = np.nan
                                 merged_df["ClassificationSource"][mer] = np.nan
+                    
+
 
                             mbank_df = pd.read_csv(mbank_csv)
                             if len(mbank_df) > 0:
@@ -3360,12 +3476,13 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 df_edge = chemMN_CandidateSelection(sm)
                                 if df_edge is not None:
 
+
                                     df_edge.to_csv(
                                         input_dir
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -3386,40 +3503,20 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
                                     sep="\t",
                                 )
                                 if max(candidates_with_counts["Count"]) == 4:
-                                    sources_4(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_4(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 3:
-                                    sources_3(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_3(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 2:
-                                    sources_2(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_2(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df)
 
                             # 2 SGM
                             elif (
@@ -3468,12 +3565,13 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 df_edge = chemMN_CandidateSelection(sm)
                                 if df_edge is not None:
 
+
                                     df_edge.to_csv(
                                         input_dir
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -3493,7 +3591,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
@@ -3501,26 +3599,11 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 )
 
                                 if max(candidates_with_counts["Count"]) == 3:
-                                    sources_3(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_3(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 2:
-                                    sources_2(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_2(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df)
 
                             # 3 SHM
                             elif (
@@ -3571,12 +3654,13 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 df_edge = chemMN_CandidateSelection(sm)
                                 if df_edge is not None:
 
+
                                     df_edge.to_csv(
                                         input_dir
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -3596,7 +3680,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
@@ -3604,26 +3688,11 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 )
 
                                 if max(candidates_with_counts["Count"]) == 3:
-                                    sources_3(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_3(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 2:
-                                    sources_2(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_2(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df)
 
                             # 4 SGH
                             elif (
@@ -3673,12 +3742,15 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 df_edge = chemMN_CandidateSelection(sm)
                                 if df_edge is not None:
 
+
+
+
                                     df_edge.to_csv(
                                         input_dir
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -3698,33 +3770,19 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
                                     sep="\t",
                                 )
                                 if max(candidates_with_counts["Count"]) == 3:
-                                    sources_3(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_3(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 2:
-                                    sources_2(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_2(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df)
+
 
                             # 5 GHM
                             elif (
@@ -3774,12 +3832,13 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 df_edge = chemMN_CandidateSelection(sm)
                                 if df_edge is not None:
 
+
                                     df_edge.to_csv(
                                         input_dir
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -3799,7 +3858,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
@@ -3807,26 +3866,11 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 )
 
                                 if max(candidates_with_counts["Count"]) == 3:
-                                    sources_3(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_3(candidates_with_counts, merged_df, mer, sirius_df=None)
                                 if max(candidates_with_counts["Count"]) == 2:
-                                    sources_2(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_2(candidates_with_counts, merged_df, mer, sirius_df=None)
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df=None)
 
                             # 6 SG
                             elif (
@@ -3872,12 +3916,13 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 df_edge = chemMN_CandidateSelection(sm)
                                 if df_edge is not None:
 
+
                                     df_edge.to_csv(
                                         input_dir
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -3898,27 +3943,18 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
                                     sep="\t",
                                 )
 
+
                                 if max(candidates_with_counts["Count"]) == 2:
-                                    sources_2(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_2(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df)
 
                             # 7 SH
                             elif (
@@ -3962,12 +3998,13 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 df_edge = chemMN_CandidateSelection(sm)
                                 if df_edge is not None:
 
+
                                     df_edge.to_csv(
                                         input_dir
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -3988,7 +4025,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
@@ -3996,19 +4033,9 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 )
 
                                 if max(candidates_with_counts["Count"]) == 2:
-                                    sources_2(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_2(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df)
 
                             # 8 SM
                             elif (
@@ -4053,12 +4080,13 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 df_edge = chemMN_CandidateSelection(sm)
                                 if df_edge is not None:
 
+
                                     df_edge.to_csv(
                                         input_dir
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -4079,26 +4107,16 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
                                     sep="\t",
                                 )
                                 if max(candidates_with_counts["Count"]) == 2:
-                                    sources_2(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_2(candidates_with_counts, merged_df, mer, sirius_df)
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df)
 
                             # 9 GM
                             elif (
@@ -4143,12 +4161,13 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 df_edge = chemMN_CandidateSelection(sm)
                                 if df_edge is not None:
 
+
                                     df_edge.to_csv(
                                         input_dir
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -4169,26 +4188,16 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
                                     sep="\t",
                                 )
                                 if max(candidates_with_counts["Count"]) == 2:
-                                    sources_2(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_2(candidates_with_counts, merged_df, mer, sirius_df=None)
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df=None)
 
                             # 10 GH
                             elif (
@@ -4232,12 +4241,13 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 df_edge = chemMN_CandidateSelection(sm)
                                 if df_edge is not None:
 
+
                                     df_edge.to_csv(
                                         input_dir
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -4257,7 +4267,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
@@ -4265,19 +4275,9 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 )
 
                                 if max(candidates_with_counts["Count"]) == 2:
-                                    sources_2(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_2(candidates_with_counts, merged_df, mer, sirius_df=None)
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df=None)
                             # 11 HM
                             elif (
                                 len(sirius_df) == 0
@@ -4326,7 +4326,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -4346,26 +4346,16 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
                                     sep="\t",
                                 )
                                 if max(candidates_with_counts["Count"]) == 2:
-                                    sources_2(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_2(candidates_with_counts, merged_df, mer, sirius_df=None)
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df=None)
 
                             # S
                             elif (
@@ -4400,7 +4390,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -4421,7 +4411,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
@@ -4429,12 +4419,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 )
 
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df)
                             # G
                             elif (
                                 len(sirius_df) == 0
@@ -4465,7 +4450,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -4486,19 +4471,14 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
                                     sep="\t",
                                 )
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df=None)
                             # M
                             elif (
                                 len(sirius_df) == 0
@@ -4529,7 +4509,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -4550,19 +4530,14 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
                                     sep="\t",
                                 )
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df=None)
                             # H
                             elif (
                                 len(sirius_df) == 0
@@ -4588,12 +4563,13 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 df_edge = chemMN_CandidateSelection(sm)
                                 if df_edge is not None:
 
+
                                     df_edge.to_csv(
                                         input_dir
                                         + "/"
                                         + entry
                                         + "/"
-                                        + "Candidate_Selection"
+                                        + 'Candidate_Selection'
                                         + "/"
                                         + str(merged_df["premz"][mer])
                                         + "_ChemMNedges.tsv",
@@ -4614,7 +4590,7 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                     + "/"
                                     + entry
                                     + "/"
-                                    + "Candidate_Selection"
+                                    + 'Candidate_Selection'
                                     + "/"
                                     + str(merged_df["premz"][mer])
                                     + "sorted_candidate_list.tsv",
@@ -4622,56 +4598,39 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                                 )
 
                                 if max(candidates_with_counts["Count"]) == 1:
-                                    sources_1(
-                                        candidates_with_counts,
-                                        merged_df,
-                                        mer,
-                                        sirius_df=None,
-                                    )
+                                    sources_1(candidates_with_counts, merged_df, mer, sirius_df=None)
 
                         if standards:
                             if not isNaN(merged_df["SMILES"][mer]):
 
                                 merged_df.loc[mer, "MSILevel"] = 1
 
+                    
+                    
                     #### code for formula and canopus classes
-                    df_for_formula = pd.DataFrame(for_only_formula)
+                    df_for_formula=pd.DataFrame(for_only_formula)
                     df_for_formula_n_canopus = pd.DataFrame(for_formula_canopus)
-
+                    
+                    
+                    
                     for m, row in merged_df.iterrows():
                         for f, row in df_for_formula.iterrows():
                             if m == df_for_formula["index"][f]:
-                                merged_df.loc[m, "Formula"] = df_for_formula["Formula"][
-                                    f
-                                ]
-                                merged_df.loc[m, "AnnotationSources"] = df_for_formula[
-                                    "AnnotationSources"
-                                ][f]
+                                merged_df.loc[m, "Formula"] = df_for_formula["Formula"][f]
+                                merged_df.loc[m, "AnnotationSources"] = df_for_formula["AnnotationSources"][f]
 
                         for c, row in df_for_formula_n_canopus.iterrows():
                             if m == df_for_formula_n_canopus["index"][f]:
-                                merged_df.loc[m, "Formula"] = df_for_formula_n_canopus[
-                                    "Formula"
-                                ][f]
-                                merged_df.loc[m, "subclass"] = df_for_formula_n_canopus[
-                                    "subclass"
-                                ][f]
-                                merged_df.loc[m, "class"] = df_for_formula_n_canopus[
-                                    "class"
-                                ][f]
-                                merged_df.loc[
-                                    m, "superclass"
-                                ] = df_for_formula_n_canopus["superclass"][f]
-                                merged_df.loc[
-                                    m, "ClassificationSource"
-                                ] = df_for_formula_n_canopus["ClassificationSource"][f]
-                                merged_df.loc[m, "Formula"] = df_for_formula_n_canopus[
-                                    "Formula"
-                                ][f]
-                                merged_df.loc[
-                                    m, "AnnotationSources"
-                                ] = df_for_formula_n_canopus["AnnotationSources"][f]
+                                merged_df.loc[m, "Formula"] = df_for_formula_n_canopus["Formula"][f]
+                                merged_df.loc[m, "subclass"] = df_for_formula_n_canopus["subclass"][f]
+                                merged_df.loc[m, "class"] = df_for_formula_n_canopus["class"][f]
+                                merged_df.loc[m, "superclass"] = df_for_formula_n_canopus["superclass"][f]
+                                merged_df.loc[m, "ClassificationSource"] = df_for_formula_n_canopus["ClassificationSource"][f]
+                                merged_df.loc[m, "Formula"] = df_for_formula_n_canopus["Formula"][f]
+                                merged_df.loc[m, "AnnotationSources"] = df_for_formula_n_canopus["AnnotationSources"][f]
 
+
+                    
                     merged_df.to_csv(
                         input_dir
                         + "/"
@@ -4679,15 +4638,12 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                         + "/"
                         + "mergedResults-with-one-Candidates.csv"
                     )
-                    # print(merged_df)
-                    merged_df = checkSMILES_validity(
-                        input_dir,
-                        resultcsv=input_dir
+                    #print(merged_df)
+                    merged_df = checkSMILES_validity(input_dir, resultcsv = input_dir
                         + "/"
                         + entry
                         + "/"
-                        + "mergedResults-with-one-Candidates.csv",
-                    )
+                        + "mergedResults-with-one-Candidates.csv")
                     merged_df.to_csv(
                         input_dir
                         + "/"
@@ -4695,60 +4651,43 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards=False):
                         + "/"
                         + "mergedResults-with-one-Candidates.csv"
                     )
+                        
+
+
+# In[32]:
 
 
 def merge_all_results(input_dir):
     names = []
-
+    
     # entry is all files and folders in input_dir
     for entry in os.listdir(input_dir):
         # if the entry is also a directory
         if os.path.isdir(os.path.join(input_dir, entry)):
 
             # reach spectra_dereplication folder
-            merged_file_res = (
-                input_dir + "/" + entry + "/mergedResults-with-one-Candidates.csv"
-            )
+            merged_file_res = input_dir+ "/"+ entry+ "/mergedResults-with-one-Candidates.csv"
 
             if os.path.exists(merged_file_res):
                 merged_csv = pd.read_csv(merged_file_res)
                 names.append(merged_csv)
-    merged = pd.concat(names, ignore_index=True)
+    merged = (pd.concat(names, ignore_index=True))
     # Select the ones you want
-    merged = merged[
-        [
-            "id_X_x",
-            "premz",
-            "rtmed",
-            "rtmean",
-            "int",
-            "col_eng",
-            "pol",
-            "rtmin",
-            "rtmax",
-            "source_file",
-            "Formula",
-            "PubChemID",
-            "SMILES",
-            "IUPAC",
-            "synonyms",
-            "AnnotationSources",
-            "AnnotationCount",
-            "MSILevel",
-            "MCSS",
-            "subclass",
-            "class",
-            "superclass",
-            "ClassificationSource",
-        ]
-    ]
+    merged = merged[['id_X_x', 'premz', 'rtmed', 'rtmean',
+           'int', 'col_eng', 'pol', 'rtmin', 'rtmax', 'source_file', 'Formula',
+                     'PubChemID',
+                    'SMILES', 'IUPAC', 'synonyms', 'AnnotationSources', 'AnnotationCount',
+           'MSILevel', 'MCSS', 'subclass', 'class', 'superclass', 'ClassificationSource']]
     merged.to_csv(input_dir + "/final_candidates.csv")
-    return merged
+    return(merged)
+
+
+# In[24]:
 
 
 # Comparison with a list of SMILES from any Source
 def SMILESscreening(input_dir, resultcsv, complist, listname):
-
+   
     """SMILESscreening takes a list of SMILES
 
     Parameters:
@@ -4803,7 +4742,17 @@ def SMILESscreening(input_dir, resultcsv, complist, listname):
     return frame
 
 
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
 def classification(input_dir, resultcsv):
+   
 
     """classification function uses ClassyFire ChemONT
 
@@ -4821,7 +4770,7 @@ def classification(input_dir, resultcsv):
     checkSMILES_validity(input_dir = "usr/project/", frame)
 
     """
-
+    
     frame = pd.read_csv(resultcsv)
     inchis = []
     for i, row in frame.iterrows():
@@ -4922,6 +4871,9 @@ def classification(input_dir, resultcsv):
 
         frame.to_csv(input_dir + "/final_candidates_classes.csv")
         return frame
+
+
+# In[19]:
 
 
 # NP_Classifier classification
@@ -5051,13 +5003,11 @@ def chemMN(input_dir, resultcsv):
                 }
             )
     if len(df_edge) > 0:
-
+        
         df_edge = pd.DataFrame(dfe)
         df_edge["Start"] = df_edge["Start"].astype(str)
         df_edge["End"] = df_edge["End"].astype(str)
-        df_edge["sorted_row"] = [
-            sorted([a, b]) for a, b in zip(df_edge.Start, df_edge.End)
-        ]
+        df_edge["sorted_row"] = [sorted([a, b]) for a, b in zip(df_edge.Start, df_edge.End)]
         df_edge["sorted_row"] = df_edge["sorted_row"].astype(str)
         df_edge.drop_duplicates(subset=["sorted_row"], inplace=True)
 
@@ -5086,7 +5036,7 @@ def chemMN(input_dir, resultcsv):
 
 
 def gnpsMNvsgnpsMAW(input_dir):
-
+    
     """gnpsMNvsgnpsMAW checks with tanimoto similarity score, whether
     results from MAW GNPS and GNPS MN Masst results give same candidate
 
@@ -5145,7 +5095,7 @@ def gnpsMNvsgnpsMAW(input_dir):
             "rtmean_x",
             "GNPSmax_similarity",
             "GNPSSMILES",
-            # "GNPSspectrumID",
+            #"GNPSspectrumID",
             "GNPScompound_name",
             "GNPSmirrorSpec",
         ]
@@ -5174,71 +5124,66 @@ def gnpsMNvsgnpsMAW(input_dir):
     GMNdf.to_csv(input_dir + "/GMNdf.csv")
 
 
-def sunburst(input_dir):
+# In[ ]:
 
+
+def sunburst(input_dir):
+    
     cl = pd.read_csv(input_dir + "/final_candidates_classes.csv")
-    class_data = cl[["superclass", "class", "subclass"]]
-    spclass = list(class_data["superclass"])  # all superclasses
-    uniq_spclass = list(
-        np.unique(list(class_data["superclass"]))
-    )  # only unique super classes
-    uniq_spc = [
-        s for s in uniq_spclass if "nan" not in s
-    ]  # only unique super classes with no NA values
+    class_data = cl[['superclass', 'class', 'subclass']]
+    spclass = list(class_data['superclass']) # all superclasses
+    uniq_spclass = list(np.unique(list(class_data['superclass']))) # only unique super classes
+    uniq_spc = [s for s in uniq_spclass if 'nan' not in s ] # only unique super classes with no NA values
     len(uniq_spclass)
-    clss = list(class_data["class"])
-    uniq_class = list(np.unique(list(class_data["class"])))
-    uniq_c = [s for s in uniq_class if "nan" not in s]
+    clss = list(class_data['class'])
+    uniq_class = list(np.unique(list(class_data['class'])))
+    uniq_c = [s for s in uniq_class if 'nan' not in s ]
     len(uniq_class)
-    sbclass = list(class_data["subclass"])
-    uniq_sbclass = list(np.unique(list(class_data["subclass"])))
-    uniq_sbc = [s for s in uniq_sbclass if "nan" not in s]
+    sbclass = list(class_data['subclass'])
+    uniq_sbclass = list(np.unique(list(class_data['subclass'])))
+    uniq_sbc = [s for s in uniq_sbclass if 'nan' not in s ]
     len(uniq_sbclass)
 
-    # all characters
-    Names = ["Organic Compounds"] + uniq_spclass + uniq_class + uniq_sbclass
+    #all characters
+    Names = ['Organic Compounds'] + uniq_spclass+uniq_class+uniq_sbclass
 
     df = pd.DataFrame(Names)
-    df["values"] = ""
-    df["parents"] = ""
+    df['values'] = ''
+    df['parents'] = ''
 
-    df = df.rename(columns={0: "characters"})
+    df = df.rename(columns={0: 'characters'})
     for i, row in df.iterrows():
-        if "Organic Compounds" in df["characters"][i]:
-            df.loc[i, "values"] = 0
-            df.loc[i, "parents"] = ""
+        if 'Organic Compounds' in df['characters'][i]:
+            df.loc[i, 'values'] = 0
+            df.loc[i, 'parents'] = ''
 
-        elif df["characters"][i] in uniq_spclass:
+        elif df['characters'][i] in uniq_spclass:
 
-            df.loc[i, "values"] = spclass.count(df["characters"][i])
-            df.loc[i, "parents"] = "Organic Compounds"
+            df.loc[i, 'values'] = spclass.count(df['characters'][i])
+            df.loc[i, 'parents'] = 'Organic Compounds'
 
-        elif df["characters"][i] in uniq_class:
+        elif df['characters'][i] in uniq_class:
 
-            df.loc[i, "values"] = clss.count(df["characters"][i])
-            df.loc[i, "parents"] = "Organic Compounds"
+            df.loc[i, 'values'] = clss.count(df['characters'][i])
+            df.loc[i, 'parents'] = 'Organic Compounds'
 
-            df.loc[i, "values"] = clss.count(df["characters"][i])
-            clsp = class_data["superclass"][
-                class_data[class_data["class"] == df["characters"][i]].index.tolist()[0]
-            ]
-            df.loc[i, "parents"] = clsp
+            df.loc[i, 'values'] = clss.count(df['characters'][i])
+            clsp = class_data['superclass'][class_data[class_data['class'] == df['characters'][i]].index.tolist()[0]]
+            df.loc[i, 'parents'] = clsp
 
-        elif df["characters"][i] in uniq_sbclass:
-            df.loc[i, "values"] = sbclass.count(df["characters"][i])
-            sbclsp = class_data["class"][
-                class_data[
-                    class_data["subclass"] == df["characters"][i]
-                ].index.tolist()[0]
-            ]
-            df.loc[i, "parents"] = sbclsp
 
-    data = dict(character=df["characters"], parents=df["parents"], values=df["values"])
+        elif df['characters'][i] in uniq_sbclass:
+            df.loc[i, 'values'] = sbclass.count(df['characters'][i])
+            sbclsp = class_data['class'][class_data[class_data['subclass'] == df['characters'][i]].index.tolist()[0]]
+            df.loc[i, 'parents'] = sbclsp
+
+    data = dict(character = df['characters'], parents = df['parents'], values = df['values'])
     fig = px.sunburst(
         data,
-        names="character",
-        parents="parents",
-        values="values",
+        names='character',
+        parents='parents',
+        values='values',
     )
-    fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
+    fig.update_layout(margin = dict(t=0, l=0, r=0, b=0))
     fig.show()
+
