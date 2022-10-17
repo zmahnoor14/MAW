@@ -389,19 +389,40 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
     # if the database selected is HMDB or all
     # if the database selected is GNPS or all
     if (db == "all" || db =="gnps"){
-
-        # load the gnps spectral database
-        load(file = paste(input_dir,"/gnps.rda", sep = ""))
+        if (file.exists(paste(input_dir,"/gnps.rda", sep = ""))){
+            # load the gnps spectral database
+            load(file = paste(input_dir,"/gnps.rda", sep = ""))
+        }
+        else if (file.exists("gnps.rda")){
+            # load the gnps spectral database
+            load("gnps.rda")
+        }
+        
     }
     # if the database selected is HMDB or all
     if (db == "all" || db =="hmdb"){
-
-        # load the hmdb spectral database
-        load(file = paste(input_dir,"/hmdb.rda", sep = ""))
+        
+        if (file.exists(paste(input_dir,"/hmdb.rda", sep = ""))){
+            # load the hmdb spectral database
+            load(file = paste(input_dir,"/hmdb.rda", sep = ""))
+        }
+        else if (file.exists("hmdb.rda")){
+            # load the gnps spectral database
+            load("hmdb.rda")
+        }
+        
     }
     # if the database selected is HMDB or all
     if (db == "all" || db == "mbank"){
-        load(file = paste(input_dir,"/mbankNIST.rda", sep = ""))
+        if (file.exists(paste(input_dir,"/mbankNIST.rda", sep = ""))){
+            # load the mbank spectral database
+            load(file = paste(input_dir,"/mbankNIST.rda", sep = ""))
+        }
+        else if (file.exists("mbankNIST.rda")){
+            # load the gnps spectral database
+            load("mbankNIST.rda")
+        }
+        
     }
 
     # read spectra object
