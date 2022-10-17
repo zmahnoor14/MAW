@@ -2545,7 +2545,7 @@ sirius_param <- function(x, result_dir, input_dir, SL = FALSE, collision_info = 
 }
 
 
-run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, SL_path, candidates = 30, profile){
+run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, SL_path, candidates = 30, profile, db){
     files <- read.csv(files, sep = "\t")
 
     for (b in 1:nrow(files)){
@@ -2553,11 +2553,11 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
         if (QC){
             if (is.na(files[b, "isotopes"])){
                 system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                             "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                             "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database", db ,"canopus",
                              sep = " "))
                 if(!file.exists(files[b, "outputNames"])){
                     system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                                 "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                                 "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database", db ,"canopus",
                                  sep = " "))
                 }
                 if(SL){
@@ -2569,11 +2569,11 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
             }
             else if(files[b, "isotopes"] == "present"){
                 system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                             "formula --profile", profile, "--candidates", candidates, "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure --database ALL canopus",
+                             "formula --profile", profile, "--candidates", candidates, "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure --database", db ,"canopus",
                              sep = " "))
                 if(!file.exists(files[b, "outputNames"])){
                      system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                                 "formula --profile", profile, "--candidates", candidates, "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure --database ALL canopus",
+                                 "formula --profile", profile, "--candidates", candidates, "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure --database", db ,"canopus",
                                  sep = " "))
                 }
                 if(SL){
@@ -2585,11 +2585,11 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
         }
         else{
             system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                        "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                        "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database", db ,"canopus",
                         sep = " "))
             if(!file.exists(files[b, "outputNames"])){
                 system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                             "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database ALL canopus",
+                             "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database", db ,"canopus",
                              sep = " "))
             }
             if(SL){
