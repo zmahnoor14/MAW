@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[6]:
+# In[1]:
 
 
 #!/usr/bin/env python
@@ -16,7 +16,7 @@ import wget
 import urllib.parse
 
 
-# In[7]:
+# In[2]:
 
 
 import numpy as np
@@ -24,7 +24,7 @@ import pandas as pd
 import pubchempy as pcp
 
 
-# In[8]:
+# In[3]:
 
 
 from pybatchclassyfire import *
@@ -707,7 +707,7 @@ def spec_postproc(input_dir, Source="all"):
 # In[1]:
 
 
-def sirius_db_post_proc(msp, one_file, mz, sl):
+def sirius_db_post_proc(msp, one_file, mz, sub_dir, sl):
     # extract the formula and structure files
     json_dirALL = next(os.walk(one_file))[1]
     if len(json_dirALL) > 0:
@@ -932,14 +932,16 @@ def sirius_postproc(input_dir):
                             if str(msp["premz"][mz]) in file:
                                 files_for_mz.append(file)
                         print(files_for_mz)
+                        if len(files_for_mz) == 1:
+                            sirius_db_post_proc(msp = msp, one_file = files_for_mz[0], mz = mz, sub_dir = sub_dir, sl = False)
                         if len(files_for_mz)>1:
                             for i in files_for_mz:
                                 if "param.json" in i:
                                     #print(1)
-                                    sirius_db_post_proc(msp = msp, one_file = i, mz = mz, sl = False)
+                                    sirius_db_post_proc(msp = msp, one_file = i, mz = mz, sub_dir = sub_dir, sl = False)
                                 elif "SList" in i:
                                     #print(i)
-                                    sirius_db_post_proc(msp = msp, one_file = i, mz = mz,  sl = True)
+                                    sirius_db_post_proc(msp = msp, one_file = i, mz = mz,  sub_dir = sub_dir, sl = True)
                 msp.to_csv(msp_csv)
 
 
