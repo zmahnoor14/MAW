@@ -786,6 +786,12 @@ def sirius_db_post_proc(msp, one_file, mz, sub_dir, input_dir, sl):
                                     ALL_structure_csv.loc[
                                         structure, "subclass"
                                     ] = ALL_Canopus["subclass"][0]
+                                    ALL_formula_csv.loc[
+                                        formula, "level 5"
+                                    ] = ALL_Canopus["level 5"][0]
+                                    ALL_formula_csv.loc[
+                                        formula, "most specific class"
+                                    ] = ALL_Canopus["most specific class"][0]
 
     #                                 for str_siriusA, row in ALL_structure_csv.iterrows():
     #                                     if not str_can_score(ALL_structure_csv, str_siriusA):
@@ -845,6 +851,7 @@ def sirius_db_post_proc(msp, one_file, mz, sub_dir, input_dir, sl):
 
                     if len(ALL_Canopus) > 0:
                         for formula, rows in ALL_formula_csv.iterrows():
+                            
                             ALL_formula_csv.loc[
                                 formula, "superclass"
                             ] = ALL_Canopus["superclass"][0]
@@ -854,6 +861,12 @@ def sirius_db_post_proc(msp, one_file, mz, sub_dir, input_dir, sl):
                             ALL_formula_csv.loc[
                                 formula, "subclass"
                             ] = ALL_Canopus["subclass"][0]
+                            ALL_formula_csv.loc[
+                                formula, "level 5"
+                            ] = ALL_Canopus["level 5"][0]
+                            ALL_formula_csv.loc[
+                                formula, "most specific class"
+                            ] = ALL_Canopus["most specific class"][0]
 
                 if sl:
 
