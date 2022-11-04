@@ -1,24 +1,21 @@
 #!/usr/bin/env cwl-runner
-
 cwlVersion: v1.0
 class: CommandLineTool
-baseCommand: Rscript
+
+baseCommand: [ Rscript, Basic-Preprocessing-Script.r ]
+
 hints:
   DockerRequirement:
-    dockerPull: maw_r
+    dockerPull: zmahnoor/maw-r-basic-preprocessing
 requirements:
   InitialWorkDirRequirement:
     listing:
       - $(inputs.mzml_files)
 inputs:
-  src:
-    type: File
-    inputBinding:
-      position: 1
   mzml_files:
     type: File[]
-    inputBinding:
-      position: 2
+    inputBinding: 
+      position: 1
 
 outputs:
   results: Directory
