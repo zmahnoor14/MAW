@@ -855,9 +855,9 @@ def sirius_db_post_proc(msp, one_file, mz, sub_dir, input_dir, sl):
                             ALL_formula_csv.loc[
                                 formula, "superclass"
                             ] = ALL_Canopus["superclass"][0]
-                            ALL_formula_csv.loc[formula, "class"] = ALL_Canopus[
-                                "class"
-                            ][0]
+                            ALL_formula_csv.loc[
+                                formula, "class"
+                            ] = ALL_Canopus["class"][0]
                             ALL_formula_csv.loc[
                                 formula, "subclass"
                             ] = ALL_Canopus["subclass"][0]
@@ -3300,6 +3300,8 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
                     merged_df["AnnotationCount"] = np.nan
                     merged_df["MSILevel"] = np.nan
                     merged_df["MCSS"] = np.nan
+                    merged_df["most specific class"] = np.nan
+                    merged_df["level 5"] = np.nan
                     merged_df["superclass"] = np.nan
                     merged_df["class"] = np.nan
                     merged_df["subclass"] = np.nan
@@ -3353,11 +3355,11 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
 
                             sirius_df = pd.read_csv(sirius_csv)
                             if "formula" in sirius_csv:
-                            
+
                                 if len(sirius_df) > 0:
-                                    
+
                                     if "smiles" not in sirius_df.columns and "molecularFormula" in sirius_df.columns:
-                
+
                                         #merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
                                         #merged_df["AnnotationSources"][mer] = "SIRIUS-Formula"    
 
@@ -3379,6 +3381,8 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
                                             #merged_df.loc[mer, "AnnotationSources"] = "SIRIUS-Formula|CANOPUS"
                                             index = mer
                                             Formula = sirius_df["molecularFormula"][0]
+                                            most_specific_class = sirius_df["most specific class"][0]
+                                            level_5 = sirius_df["level 5"][0]
                                             superclass = sirius_df["superclass"][0]
                                             classes = sirius_df["class"][0]
                                             subclass = sirius_df["subclass"][0]
@@ -3386,8 +3390,11 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
                                                 {
                                                     "index": index,
                                                     "Formula": Formula,
-                                                    "superclass": superclass,
+                                                    "most specific class": most_specific_class,
+                                                    "level 5": level_5,
+                                                    "subclass": subclass,
                                                     "class": classes,
+                                                    "superclass": superclass,
                                                     "ClassificationSource": "CANOPUS",
                                                     "AnnotationSources": "SIRIUS-Formula|CANOPUS"
                                                 }
@@ -3396,31 +3403,36 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
                                         sirius_df = []
 
                             if "structure" in sirius_csv:
-                            
+
                                 if len(sirius_df) > 0:
 
                                     if len(sirius_df) > 50:
                                         sirius_df = sirius_df[0:50]
                                     if "smiles" in sirius_df.columns:
-                                        
+
                                         sirius_df = sirius_df.drop_duplicates("smiles")
                                         sirius_df = sirius_df.dropna(subset=["smiles"])
                                         merged_df["Formula"][mer] = sirius_df["molecularFormula"][0]
                                         merged_df.loc[mer, "PubChemID"] = sirius_df["pubchemids"][0]
                                         if "class" in sirius_df.columns:
+                                            if "most specific class" in sirius_df.columns and "level 5" in sirius_df.columns:
+                                                merged_df["most specific class"][mer] = sirius_df["most specific class"][0]
+                                                merged_df["level 5"][mer] = sirius_df["level 5"][0]
                                             merged_df["superclass"][mer] = sirius_df["superclass"][0]
                                             merged_df["class"][mer] = sirius_df["class"][0]
                                             merged_df["subclass"][mer] = sirius_df["subclass"][0]
                                             merged_df["ClassificationSource"][mer] = "CANOPUS"
-                                            
+
                             elif len(sirius_df) == 0:
                                 #print("NO Structures")
                                 merged_df["Formula"][mer] = np.nan
+                                merged_df["most specific class"][mer] = np.nan
+                                merged_df["level 5"][mer] = np.nan
                                 merged_df["superclass"][mer] = np.nan
                                 merged_df["class"][mer] = np.nan
                                 merged_df["subclass"][mer] = np.nan
                                 merged_df["ClassificationSource"][mer] = np.nan
-                    
+
 
 
                             mbank_df = pd.read_csv(mbank_csv)
@@ -3437,6 +3449,9 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
                             if len(hmdb_df) > 0:
                                 hmdb_df = hmdb_df.drop_duplicates("HMDBSMILES")
                                 hmdb_df = hmdb_df.dropna(subset=["HMDBSMILES"])
+
+
+
 
                             # 1 SGHM
                             if (
@@ -4620,14 +4635,15 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
 
                                 merged_df.loc[mer, "MSILevel"] = 1
 
-                    
-                    
+
+
+
                     #### code for formula and canopus classes
                     df_for_formula=pd.DataFrame(for_only_formula)
                     df_for_formula_n_canopus = pd.DataFrame(for_formula_canopus)
-                    
-                    
-                    
+
+
+
                     for m, row in merged_df.iterrows():
                         for f, row in df_for_formula.iterrows():
                             if m == df_for_formula["index"][f]:
@@ -4635,17 +4651,23 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
                                 merged_df.loc[m, "AnnotationSources"] = df_for_formula["AnnotationSources"][f]
 
                         for c, row in df_for_formula_n_canopus.iterrows():
-                            if m == df_for_formula_n_canopus["index"][f]:
-                                merged_df.loc[m, "Formula"] = df_for_formula_n_canopus["Formula"][f]
-                                merged_df.loc[m, "subclass"] = df_for_formula_n_canopus["subclass"][f]
-                                merged_df.loc[m, "class"] = df_for_formula_n_canopus["class"][f]
-                                merged_df.loc[m, "superclass"] = df_for_formula_n_canopus["superclass"][f]
-                                merged_df.loc[m, "ClassificationSource"] = df_for_formula_n_canopus["ClassificationSource"][f]
-                                merged_df.loc[m, "Formula"] = df_for_formula_n_canopus["Formula"][f]
-                                merged_df.loc[m, "AnnotationSources"] = df_for_formula_n_canopus["AnnotationSources"][f]
+                            if m == df_for_formula_n_canopus["index"][c]:
+                                merged_df.loc[m, "Formula"] = df_for_formula_n_canopus["Formula"][c]
+                                if "most specific class" in df_for_formula_n_canopus.columns:
+                                    merged_df.loc[m, "most specific class"] = df_for_formula_n_canopus["subclass"][c]
+                                if "level 5" in df_for_formula_n_canopus.columns:
+                                    merged_df.loc[m, "level 5"] = df_for_formula_n_canopus["subclass"][c]
+                                if "subclass" in df_for_formula_n_canopus.columns:
+                                    merged_df.loc[m, "subclass"] = df_for_formula_n_canopus["subclass"][c]
+
+                                merged_df.loc[m, "class"] = df_for_formula_n_canopus["class"][c]
+                                merged_df.loc[m, "superclass"] = df_for_formula_n_canopus["superclass"][c]
+                                merged_df.loc[m, "ClassificationSource"] = df_for_formula_n_canopus["ClassificationSource"][c]
+                                merged_df.loc[m, "Formula"] = df_for_formula_n_canopus["Formula"][c]
+                                merged_df.loc[m, "AnnotationSources"] = df_for_formula_n_canopus["AnnotationSources"][c]
 
 
-                    
+
                     merged_df.to_csv(
                         input_dir
                         + "/"
@@ -4666,7 +4688,8 @@ def CandidateSelection_SimilarityandIdentity(input_dir, standards = False):
                         + "/"
                         + "mergedResults-with-one-Candidates.csv"
                     )
-                        
+
+
 
 
 # In[32]:
