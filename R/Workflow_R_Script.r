@@ -50,7 +50,7 @@ input_table_idxs[[i]] <- future({
                                             input_dir,
                                             no_of_candidates = 50,
                                             ppmx = 15)
-        #Extract MS2 peak lists
+        Extract MS2 peak lists
         spec_pr2 <- ms2_peaks(pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "."), sep =""),
                               proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "."), sep =""),
                               input_dir,
@@ -83,7 +83,8 @@ input_table_idxs[[i]] <- future({
                    SL = FALSE,
                    SL_path = NA,
                    candidates = 30,
-                  profile = "orbitrap")
+                  profile = "orbitrap",
+                  db = "ALL")
    }) #end input_table_idxs future
 }
 
