@@ -59,14 +59,15 @@ This command will run the Workflow_R_Script.r which is an example script for /da
 
 2. Run maw-py
 ```
-docker run --name example_maw-py -i -t zmahnoor/maw-py /bin/bash
+docker run --name example_maw-py -i -t zmahnoor/maw-py:1.0.0 /bin/bash
 ```
 Once you enter the docker container, you can run the script and check the results.
 ```
 python3 Workflow_Python_Script.py
 ```
-This command will run the Workflow_Python_Script.py which is an example script for /data/example_maw-r_results/. In order to leave the container without killing the process, add $ at the end of commands inside of the container. Then disown the PID and leave the container with CTRL+P and CTRL+Q.
+This command will run the Workflow_Python_Script.py which is an example script for /data/Example_Tyrosine/ obtained earlier with MAW-R. In order to leave the container without killing the process, add $ at the end of commands inside of the container. Then disown the PID and leave the container with CTRL+P and CTRL+Q. <br>
 
+The results can be seen in the /data/final_candidates.csv 
 > **Note**
 > For details on using the workflow on Jupyter notebooks in a more interactive mode, please follow the Tutorial part on wiki page of this repository
 
