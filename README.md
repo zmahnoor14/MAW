@@ -49,7 +49,7 @@ This will creat a R-Docker image on your system. This image contains /opt/workdi
 1. First Run maw-r:
 
 ```
-docker run --name example_maw-r -i -t zmahnoor/maw-r /bin/bash
+docker run --name example_maw-r -i -t zmahnoor/maw-r:1.0.0 /bin/bash
 ```
 Once you enter the docker container, you can run the script and check the results.
 ```
