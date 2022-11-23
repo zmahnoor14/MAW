@@ -55,7 +55,7 @@ Once you enter the docker container, you can run the script and check the result
 ```
 Rscript --no-save --no-restore --verbose Workflow_R_Script.r >outputFile.txt 2>&1
 ```
-This command will run the Workflow_R_Script.r which is an example script for /data/example_Tyrosine.mzML.
+This command will run the Workflow_R_Script.r which is an example script for /data/example_Tyrosine.mzML. The calculation takes about 2 minutes on an Ubuntu system with 64GB RAM.
 
 2. Run maw-py
 ```
