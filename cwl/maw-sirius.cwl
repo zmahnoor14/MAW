@@ -16,12 +16,16 @@ inputs:
     type: File
 #    inputBinding: 
 #      prefix: --input
+  profile:
+    type: string #default orbitrap
   candidates:
     type: int #default: 30
   ppm-max:
     type: int #default: 5
   ppm-max-ms2:
     type: int #default: 15
+  datbase:
+    type: string # default: ALL
 
 arguments:
     - --input
@@ -30,7 +34,7 @@ arguments:
     - $(inputs.spectrum.nameroot).json
     - formula
     - --profile
-    - orbitrap
+    - $(inputs.profile)
     - --no-isotope-filter
     - --no-isotope-score
     - --candidates
@@ -41,7 +45,7 @@ arguments:
     - $(inputs.ppm-max-ms2)
     - structure
     - --database
-    - ALL
+    - $(inputs.database)
     - canopus
 
 outputs:
