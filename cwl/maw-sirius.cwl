@@ -16,6 +16,12 @@ inputs:
     type: File
 #    inputBinding: 
 #      prefix: --input
+  candidates:
+    type: int #default: 30
+  ppm-max:
+    type: int #default: 5
+  ppm-max-ms2:
+    type: int #default: 15
 
 arguments:
     - --input
@@ -28,11 +34,11 @@ arguments:
     - --no-isotope-filter
     - --no-isotope-score
     - --candidates
-    - "30"
+    - $(inputs.candidates)
     - --ppm-max
-    - "5"
+    - $(inputs.ppm-max)
     - --ppm-max-ms2
-    - "15"
+    - $(inputs.ppm-max-ms2)
     - structure
     - --database
     - ALL
