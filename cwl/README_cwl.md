@@ -28,7 +28,7 @@ $ export DOCKER_DEFAULT_PLATFORM=linux/amd64
 
 To run the workflow without collecting provenance is:
 ```shell
-$ cwltool --relax-path-check --cachedir cache --outdir run12  maw.cwl --r_script Workflow_R_Script_all.r --python_script Workflow_Python_Script_all.py --mzml_files ./mzml_Files 2> run12.log
+$ cwltool --relax-path-check --cachedir cache --outdir run12  maw.cwl --r_script Workflow_R_Script_all.r <br> --python_script Workflow_Python_Script_all.py --mzml_files ./mzml_Files 2> run12.log
 ```
 
 Make sure you have the paths entered correctly. Your working directory where you have kept maw.cwl, should also have both scripts and the maw-r.cwl and maw-py.cwl. In your working directory you can create another directory called mzml_Files folder which shoul have all the input files mention in the section above.
