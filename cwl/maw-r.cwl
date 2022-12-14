@@ -6,8 +6,7 @@ baseCommand: [ Rscript]
 
 requirements:
   DockerRequirement:
-    #dockerPull: biocrusoe/maw-r:1.0.6
-    dockerPull: zmahnoor/maw-r:1.0.7 #--platform=linux/amd64
+    dockerPull: docker.io/zmahnoor/maw-r:1.0.7
 
 
   InitialWorkDirRequirement:

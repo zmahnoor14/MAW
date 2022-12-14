@@ -9,7 +9,7 @@ baseCommand: [sirius]
 
 requirements:
   DockerRequirement:
-    dockerPull: zmahnoor/run-sirius4
+    dockerPull: docker.io/zmahnoor/run-sirius4
 
 inputs: 
   spectrum:
