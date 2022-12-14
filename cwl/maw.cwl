@@ -3,10 +3,17 @@ class: Workflow
 
 
 inputs: 
-    python_script: File
-    r_script: File
-    mzml_files:
-        type: Directory
+    python_script:
+      type: File
+      default:
+        class: File
+        path: Workflow_Python_Script_all.py
+    r_script:
+       type: File
+       default:
+         class: File
+         path: Workflow_R_Script_all.r
+    mzml_files: Directory
   
 steps:
     dereplication:
