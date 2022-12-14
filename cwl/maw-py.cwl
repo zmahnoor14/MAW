@@ -6,7 +6,7 @@ baseCommand: [python3]
 
 requirements:
   DockerRequirement:
-    dockerPull: zmahnoor/maw-py:1.0.6
+    dockerPull: docker.io/zmahnoor/maw-py:1.0.6
 
   InitialWorkDirRequirement:
     listing:
