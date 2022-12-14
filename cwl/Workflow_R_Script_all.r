@@ -2552,50 +2552,109 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
 
         if (QC){
             if (is.na(files[b, "isotopes"])){
-                system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                             "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database", db ,"canopus",
-                             sep = " "))
+                command1 = c("sirius",  "--input", files[b, "sirius_param_file"], 
+                "--output", files[b, "outputNames"],
+                "formula", "--profile", profile, "--no-isotope-filter",  "--no-isotope-score", "--candidates", 
+                candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2, "structure", "--database", 
+                db ,"canopus")
+                print(command1)
+                print("command1")
+                system2(command1)
                 if(!file.exists(files[b, "outputNames"])){
-                    system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                                 "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database", db ,"canopus",
-                                 sep = " "))
+                    command2 = c("sirius", "--input", files[b, "sirius_param_file"], "--output", 
+                    files[b, "outputNames"],
+                    "formula", "--profile", 
+                    profile, "--no-isotope-filter", "--no-isotope-score", "--candidates", 
+                    candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure",  "--database", 
+                    db ,"canopus")
+                    print(command2)
+                    print("command2")
+                    system2(command2)
                 }
                 if(SL){
-                    system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
-                             "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
-                             sep = " "))
+                    command3 = c("sirius", "--input", files[b, "sirius_param_file"], 
+                    "--output", files[b, "outputNamesSL"],
+                    "formula", "--profile", profile, "--no-isotope-filter", "--no-isotope-score", "--candidates", 
+                    candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure", "--database",  
+                    SL_path ,"canopus")
+                    
+                    print(command3)
+                    print("command3")
+                    system2(command3)
                 }
 
             }
             else if(files[b, "isotopes"] == "present"){
-                system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                             "formula --profile", profile, "--candidates", candidates, "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure --database", db ,"canopus",
-                             sep = " "))
+
+                command4 = c("sirius", "--input", files[b, "sirius_param_file"], "--output", 
+                files[b, "outputNames"],
+                "formula", "--profile", profile, "--candidates", candidates, 
+                "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure", "--database", db ,"canopus"
+                            )
+                print(command4)
+                print("command4")
+                system2(command4)
                 if(!file.exists(files[b, "outputNames"])){
-                     system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                                 "formula --profile", profile, "--candidates", candidates, "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure --database", db ,"canopus",
-                                 sep = " "))
+                    command5 = c("sirius",  "--input", files[b, "sirius_param_file"], 
+                    "--output", files[b, "outputNames"],
+                    "formula", "--profile", profile, "--candidates", candidates, 
+                    "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2, "structure", "--database", 
+                    db ,"canopus")
+                    print(command5)
+                    print("command5")
+                    system2(command5)
                 }
                 if(SL){
-                    system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
-                             "formula --profile", profile, "--candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
-                             sep = " "))
+                    command6 = c("sirius", "--input", files[b, "sirius_param_file"], 
+                    "--output", 
+                    files[b, "outputNamesSL"],
+                    "formula", "--profile", 
+                    profile, "--candidates", 
+                    candidates, "--ppm-max", 
+                    ppm_max, "--ppm-max-ms2",  
+                    ppm_max_ms2, "structure",  "--database",  SL_path ,"canopus")
+                    print(command6)
+                    print("command6")
+                    system2(command6)
                 }
             }
         }
         else{
-            system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                        "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database", db ,"canopus",
-                        sep = " "))
+            command7 = c("sirius", "--input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
+                        "formula", "--profile", profile, "--no-isotope-filter",
+                        "--no-isotope-score",
+                        "--candidates", 
+                        candidates, 
+                        "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,
+                        "structure", "--database", db ,"canopus")
+            print(command7)
+            print("command7")
+            system2(command7)
             if(!file.exists(files[b, "outputNames"])){
-                system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                             "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database", db ,"canopus",
-                             sep = " "))
+                command8 = c("sirius", 
+                "--input", 
+                files[b, "sirius_param_file"],
+                "--output", 
+                files[b, "outputNames"],
+                "formula",
+                "--profile", 
+                profile, "--no-isotope-filter", "--no-isotope-score", "--candidates", 
+                candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,
+                "structure", "--database", db ,"canopus")
+                print(command8)
+                print("command8")
+                system2(command8)
             }
             if(SL){
-                system(paste("sirius --input", files[b, "sirius_param_file"], "--output", files[b, "outputNamesSL"],
-                            "formula --profile", profile, "--no-isotope-filter --no-isotope-score --candidates", candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure --database",  SL_path ,"canopus",
-                            sep = " "))
+                command9 = c("sirius", "--input", files[b, "sirius_param_file"], 
+                "--output", files[b, "outputNamesSL"], "formula", "--profile", 
+                profile, "--no-isotope-filter", "--no-isotope-score", "--candidates", 
+                candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,
+                "structure", "--database ",  SL_path ,"canopus")
+                
+                print(command9)
+                print("command9")
+                system2(command9)
             }
         }
         Sys.sleep(5)
