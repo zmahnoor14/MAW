@@ -21,11 +21,13 @@ These files can be found on Zenodo: [![DOI](https://zenodo.org/badge/DOI/10.5281
 
 ## Run maw.cwl to collect provenance:
 
+#### (Optional if you are using M1 processor/(linux/arm64))
+
 Setup the linux/amd64 processor:
 ```shell
 $ export DOCKER_DEFAULT_PLATFORM=linux/amd64
 ```
-
+#### (for intel, directly run the following)
 To run the workflow without collecting provenance is:
 ```shell
 $ cwltool --relax-path-check --cachedir cache --outdir run12  maw.cwl --r_script Workflow_R_Script_all.r --python_script Workflow_Python_Script_all.py --mzml_files ./mzml_Files 2> run12.log
