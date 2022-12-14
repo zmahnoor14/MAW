@@ -17,15 +17,20 @@ inputs:
 #    inputBinding: 
 #      prefix: --input
   profile:
-    type: string #default orbitrap
+    type: string
+    default: "orbitrap"
   candidates:
-    type: int #default: 30
+    type: int
+    default: 30
   ppm-max:
-    type: int #default: 5
+    type: int
+    default: 5
   ppm-max-ms2:
-    type: int #default: 15
-  datbase:
-    type: string # default: ALL
+    type: int
+    default: 15
+  database:
+    type: string
+    default: "ALL"
 
 arguments:
     - --input
