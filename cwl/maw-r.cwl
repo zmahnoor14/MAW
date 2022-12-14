@@ -6,7 +6,9 @@ baseCommand: [ Rscript]
 
 requirements:
   DockerRequirement:
-    dockerPull: zmahnoor/maw-r:1.0.5
+    #dockerPull: biocrusoe/maw-r:1.0.6
+    dockerPull: zmahnoor/maw-r:1.0.7 #--platform=linux/amd64
+
 
   InitialWorkDirRequirement:
     listing:
@@ -24,7 +26,7 @@ outputs:
   results: 
     type: Directory
     outputBinding:
-       glob: .
+       glob: $(inputs.mzml_files.basename)
   # csv_output:
   #   type:
   #     type: array
