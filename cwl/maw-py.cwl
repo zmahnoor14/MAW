@@ -6,7 +6,7 @@ baseCommand: [python3]
 
 requirements:
   DockerRequirement:
-    dockerPull: docker.io/zmahnoor/maw-py:1.0.6
+    dockerPull: zmahnoor/maw-py:1.0.6
 
   InitialWorkDirRequirement:
     listing:
@@ -16,6 +16,8 @@ inputs:
   workflow_script: File
   mzml_files_results:
     type: Directory
+  sirius_results:
+    type: Directory[]
 
 arguments: 
     - $(inputs.workflow_script.path)
