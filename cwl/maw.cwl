@@ -23,6 +23,7 @@ steps:
             mzml_file: mzml_file
         out:
             - ms_files
+            - ms1_data
             #- parameters
     sirius:
         run: maw-sirius.cwl
@@ -38,7 +39,7 @@ steps:
         run: maw-py.cwl
         in: 
             workflow_script: python_script
-            mzml_file: mzml_file
+            ms1_data: dereplication/ms1_data
             sirius_results: sirius/results
         out: [results]
 
