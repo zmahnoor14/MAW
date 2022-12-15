@@ -26,13 +26,17 @@ arguments:
     - $(inputs.gnps_rda.path)
     - $(inputs.hmdb_rda.path)
     - $(inputs.mbank_rda.path)
-    - $(runtime.outdir)
+    - .
 outputs:
   results: 
     type: Directory
     outputBinding:
-       glob: $(runtime.outdir)
+      glob: .
   ms_files:
     type: File[]
     outputBinding:
-       glob: "*.ms"
+      glob: "insilico/SIRIUS/*.ms"
+  provenance:
+    type: Directory
+    outputBinding:
+      glob: "prov_console"
