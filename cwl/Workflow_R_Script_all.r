@@ -1,5 +1,5 @@
 library(rdtLite)
-options(prov.dir = "./prov")
+options(prov.dir = "./prov", snapshot.size = 10000)
 prov.init(prov.dir = ".")
 
 

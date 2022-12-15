@@ -43,8 +43,7 @@ steps:
         scatter:
             - spectrum
             #- parameter
-        out:
-            [results]
+        out: [results]
     cheminformatics:
         run: maw-py.cwl
         in: 
