@@ -2940,15 +2940,15 @@ for (i in 1:nrow(input_table)){
                                            input_dir,
                                            SL = FALSE)
         # Run sirius
-        run_sirius(files = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA_SiriusP.tsv', sep = ""), "."), sep =""),
-                   ppm_max = 5,
-                   ppm_max_ms2 = 15,
-                   QC = FALSE,
-                   SL = FALSE,
-                   SL_path = NA,
-                   candidates = 30,
-                  profile = "orbitrap", 
-                  db = "ALL")
+        #run_sirius(files = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA_SiriusP.tsv', sep = ""), "."), sep =""),
+        #           ppm_max = 5,
+        #           ppm_max_ms2 = 15,
+        #           QC = FALSE,
+        #           SL = FALSE,
+        #           SL_path = NA,
+        #           candidates = 30,
+        #          profile = "orbitrap", 
+        #          db = "ALL")
    }) #end input_table_idxs future
 }
 
