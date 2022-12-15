@@ -1,0 +1,11 @@
+blobstores:
+    disk:
+        type: disk
+        cachedir: provenance-intro-artifacts
+        read: True
+        write: True
+        delete: True
+artifact_repos:
+    local:
+        type: memory
+default_repo: local
