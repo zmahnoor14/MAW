@@ -57,9 +57,5 @@ outputs:
     type: Directory
     outputSource: cheminformatics/results
 
-  sirius_results:
-    type: Directory[]
-    outputSource: sirius/results
-
 requirements:
     ScatterFeatureRequirement: {}
