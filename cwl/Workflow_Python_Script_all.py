@@ -12,8 +12,23 @@ import time
 import provenance as p
 from yaml.loader import SafeLoader
 
-stream=open("provenance_config.yaml", "r")
-basic_config=yaml.load(stream, Loader=SafeLoader)
+basic_config = {
+    "blobstores": {
+        "disk": {
+            "type": "disk",
+            "cachedir": "provenance-intro-artifacts",
+            "read": True,
+            "write": True,
+            "delete": True,
+        }
+    },
+    "artifact_repos": {
+        "local": {
+            "type": "memory"
+        }
+    },
+    "default_repo": "local"
+}
 p.load_config(basic_config)
 
 import glob
@@ -23,17 +38,12 @@ import re
 import time
 import wget
 import urllib.parse
-
-
-# In[7]:
+import argparse
 
 
 import numpy as np
 import pandas as pd
 import pubchempy as pcp
-
-
-# In[8]:
 
 
 from pybatchclassyfire import *
@@ -44,16 +54,12 @@ from rdkit.Chem import AllChem
 from rdkit.Chem import rdFMCS
 from rdkit.Chem import PandasTools
 
-
-# In[9]:
-
+# def argparser()
 
 def isNaN(string):
     return string != string
 
 
-# In[10]:
-#import provenance as p
 
 
 def slist_sirius(input_dir, slist_csv, substring=None):
@@ -161,7 +167,7 @@ def slist_sirius(input_dir, slist_csv, substring=None):
 
 # In[7]:
 
-#@p.provenance()
+@p.provenance()
 def spec_postproc(entry, Source="all"):
 
 
@@ -692,16 +698,14 @@ def spec_postproc(entry, Source="all"):
 
 # # SIRIUS Post Processing
 
-# In[12]:
-
 #@p.provenance()
-def sirius_postproc(entry):
+def sirius_postproc(entry, sirius_dirs):
     if os.path.isdir(entry + "/insilico/SIRIUS/"):
         sub_dir = entry + "/insilico/SIRIUS/"
         msp_csv = entry + "/insilico/MS1DATA.csv"
         if os.path.exists(msp_csv) and os.path.exists(sub_dir):
             # output json files from SIRIUS
-            files_S = glob.glob(sub_dir + "/*.json")
+            files_S = sirius_dirs
             # list of precursor m/z
             msp = pd.read_csv(msp_csv)
 
@@ -3073,7 +3077,6 @@ def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
     return merged_df
 
 
-# In[ ]:
 
 
 def checkSMILES_validity(resultcsv):
@@ -5018,11 +5021,14 @@ def sunburst(input_dir):
 
 #Define input directory, keep all files in same directory and scripts so getwd works
 entry = sys.argv[1]
+sirius_dirs = sys.argv[2:]
 
-@p.provenance()
+
+
 provenance_result = spec_postproc(entry, Source = "all")
+
 MCSS_for_SpecDB(entry, Source = "all")
-sirius_postproc(entry)
+sirius_postproc(entry)  # use sirius_dirs
 MCSS_for_SIRIUS(entry)    
 CandidateSelection_SimilarityandIdentity(entry, standards = False)
 
@@ -5037,7 +5043,8 @@ with open("provenance_python.yaml", "w") as filehandle:
         { "fn_module": provenance_result.artifact.fn_module,
           "fn_name": provenance_result.artifact.fn_name,
           "run_info": provenance_result.artifact.run_info,
-          "inputs": provenance_result.artifact.inputs }
+          "inputs": provenance_result.artifact.inputs
+          },
         filehandle,
     )
 

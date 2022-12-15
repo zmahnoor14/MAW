@@ -17,12 +17,14 @@ inputs:
   mzml_files_results:
     type: Directory
   sirius_results:
-    type: Directory
+    type: Directory[]
+    inputBinding:
+      position: 3
+
 
 arguments: 
     - $(inputs.workflow_script.path)
     - $(inputs.mzml_files_results.path)
-    - $(inputs.sirius_results.path)
 outputs:
   results: 
     type: Directory
