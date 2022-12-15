@@ -2638,7 +2638,7 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
                         candidates, 
                         "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,
                         "structure", "--database", db ,"canopus")
-            #print(command7)
+            print(command7)
             print("command7")
             system2(command7)
             if(!file.exists(files[b, "outputNames"])){
@@ -2933,15 +2933,15 @@ sirius_param_files <- sirius_param(x = paste(mzml_result,'/insilico/MS1DATA.csv'
                        SL = FALSE, 
                        collision_info = FALSE)
 
-run_sirius(files = paste(mzml_result,'/insilico/MS1DATA_SiriusP.tsv', sep = ""),
-                   ppm_max = 5,
-                   ppm_max_ms2 = 15,
-                   QC = FALSE,
-                   SL = FALSE,
-                   SL_path = NA,
-                   candidates = 30,
-                  profile = "orbitrap", 
-                  db = "ALL")
+# run_sirius(files = paste(mzml_result,'/insilico/MS1DATA_SiriusP.tsv', sep = ""),
+#                    ppm_max = 5,
+#                    ppm_max_ms2 = 15,
+#                    QC = FALSE,
+#                    SL = FALSE,
+#                    SL_path = NA,
+#                    candidates = 30,
+#                   profile = "orbitrap", 
+#                   db = "ALL")
 # End time
 end.time <- Sys.time()
 

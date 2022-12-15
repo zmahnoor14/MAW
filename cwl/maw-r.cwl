@@ -12,6 +12,7 @@ inputs:
   workflow_script: File
   mzml_files:
     type: File
+    #format: http://edamontology.org/format_3244
   gnps_rda:
     type: File
   hmdb_rda:
@@ -31,3 +32,7 @@ outputs:
     type: Directory
     outputBinding:
        glob: $(runtime.outdir)
+  ms_files:
+    type: File[]
+    outputBinding:
+       glob: "*.ms"
