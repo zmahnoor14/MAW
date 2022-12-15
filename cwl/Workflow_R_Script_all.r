@@ -1,3 +1,8 @@
+library(rdtLite)
+options(prov.dir = "./prov")
+prov.init(prov.dir = ".")
+
+
 # ---------- Preparations ----------
 # Load Libraries
 library(Spectra)
@@ -2948,3 +2953,8 @@ end.time <- Sys.time()
 # Time taken to run the analysis for MAW-R
 time.taken <- end.time - start.time
 print(time.taken)
+
+
+
+prov.save()
+prov.quit()
