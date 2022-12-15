@@ -28,4 +28,13 @@ outputs:
     type: Directory
     outputBinding:
        glob: $(inputs.mzml_files_results.basename)
+  provenance:
+    type: Directory
+    outputBinding:
+       glob: "provenance-intro-artifacts"
+  provenance_yaml:
+    type: File
+    outputBinding:
+       glob: "provenance_python.yaml"
+
   
