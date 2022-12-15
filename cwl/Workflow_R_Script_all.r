@@ -148,7 +148,7 @@ norm_int <- function(y, ...) {
 ## Specifying a function for creating result directories for each input mzml
 # input for the function:
 # input directory
-ms2_rfilename<- function(input_dir){
+ms2_rfilename<- function(input_dir, output_dir){
     if (dir.exists(input_dir)){
         #list_ms2_files <- intersect(list.files(input_dir, pattern = "_PRM_"), list.files(input_dir, pattern = ".mzML"))
         list_ms2_files <- list.files(input_dir, pattern = ".mzML")
@@ -165,19 +165,24 @@ ms2_rfilename<- function(input_dir){
             # remove .mzML to extract just the names
             mzml_filex <- str_replace(mzml_file[i], input_dir, ".")
             name_mzmls <- str_remove(as.character(mzml_filex), ".mzML")
-            name_mzmlsd <- str_remove(mzml_file[i], ".mzML")
+
+            #mzml_filex2 <- str_replace(mzml_file[i], input_dir, "")
+        
+            name_mzmlsd <- paste(output_dir, str_remove(name_mzmls, "."), sep = "")
+        
+            #name_mzmlsd <- str_remove(mzml_file[i], ".mzML")
             #name_mzml <- str_replace(name_mzmls, input_dir, "./")
             #' for each file a subdirectory is created to store all results in that, add working directory
             if (!file.exists(name_mzmlsd)){
                 dir.create(name_mzmlsd) ##create folder
             }
-            ResultFileNames<- c(ResultFileNames, name_mzmls)
+            ResultFileNames<- c(ResultFileNames, name_mzmlsd)
             mzml_files <- c(mzml_files, mzml_filex)
             File_id <- c(File_id, paste("file_", nx, sep = ""))
         }
         input_table <- cbind(mzml_files, ResultFileNames, File_id)
 
-        write.csv(input_table, paste(input_dir, "/input_table.csv", sep = ""))
+        write.csv(input_table, paste(output_dir, "/input_table.csv", sep = ""))
         return(data.frame(input_table))
     }
     else{
@@ -190,42 +195,40 @@ ms2_rfilename<- function(input_dir){
 
 #' All spectra in mzML files preprocessing, return two outputs, pre-processed MS2 spectra and all precursor masses
 # x is one mzML file
-spec_Processing <- function(input_dir, x, result_dir){
+#' All spectra in mzML files preprocessing, return two outputs, pre-processed MS2 spectra and all precursor masses
+# x is one mzML file
+spec_Processing <- function(x, result_dir){
 
-    x <- paste(input_dir, str_remove(x, "."), sep = "")
+    #x <- paste(input_dir, str_remove(x, "."), sep = "")
 
-    result_dir <- paste(input_dir, str_remove(result_dir, "."), sep = "")
+    #result_dir <- paste(input_dir, str_remove(result_dir, "."), sep = "")
     if (file.exists(x) && substring(x, nchar(x)) == "L"){
-        if (dir.exists(result_dir)){
-            # read the spectra
-            sps_all <- Spectra(x, backend = MsBackendMzR())
-            #' Change backend to a MsBackendDataFrame: load data into memory
-            #sps_all <- setBackend(sps_all, MsBackendDataFrame())
-            #' Filter Empty Spectra
-            sps_all <- filterEmptySpectra(sps_all)
-            #' Extract Precursor m/z(s) in each file
-            pre_mz <- unique(precursorMz(sps_all))
-            #' Remove any NAs
-            pre_mz <- na.omit(pre_mz)
-            if (!file.exists(paste(result_dir, "/processedSpectra.mzML", sep = ""))){
-                export(sps_all, backend = MsBackendMzR(), file = paste(result_dir, "/processedSpectra.mzML", sep = ""))
-            }
-            if (!file.exists(paste(result_dir, "/premz_list.txt", sep = ""))){
-                write.table(pre_mz, file = paste(result_dir, "/premz_list.txt", sep = ""), sep = "/t",row.names = FALSE, col.names = FALSE)
-            }
+        # read the spectra
+        sps_all <- Spectra(x, backend = MsBackendMzR())
+        #' Change backend to a MsBackendDataFrame: load data into memory
+        #sps_all <- setBackend(sps_all, MsBackendDataFrame())
+        #' Filter Empty Spectra
+        sps_all <- filterEmptySpectra(sps_all)
+        #' Extract Precursor m/z(s) in each file
+        pre_mz <- unique(precursorMz(sps_all))
+        #' Remove any NAs
+        pre_mz <- na.omit(pre_mz)
+        if (!file.exists(paste(result_dir, "/processedSpectra.mzML", sep = ""))){
+            export(sps_all, backend = MsBackendMzR(), file = paste(result_dir, "/processedSpectra.mzML", sep = ""))
+        }
+        if (!file.exists(paste(result_dir, "/premz_list.txt", sep = ""))){
+            write.table(pre_mz, file = paste(result_dir, "/premz_list.txt", sep = ""), sep = "/t",row.names = FALSE, col.names = FALSE)
+        }
 
-            spsall_pmz <- list(sps_all, pre_mz)
-            return(spsall_pmz)
-        }
-        else{
-            stop("Seems like it is not the result directory of the input .mzML file which is provided as x. Please use the function ms2_rfilename to generate a result directory or create one yourself with the same name as the .mzML input file.")
-        }
+        spsall_pmz <- list(sps_all, pre_mz)
+        return(spsall_pmz)
     }
     else{
         stop("Are you sure x is an mzML input file?")
     }
 
 }
+
 
 
 
@@ -385,44 +388,50 @@ peakdf <- function(a, b, ppmx){
 #}
 
 
-spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_dir, file_id, input_dir, no_of_candidates = 30, ppmx, error = TRUE){
+spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_dir, file_id, no_of_candidates = 30, ppmx, error = TRUE){
     # if the database selected is HMDB or all
     # if the database selected is GNPS or all
+    
+    len_of_str = length(unlist(strsplit(mzml_file, "/")))
+    rem <- unlist(strsplit(mzml_file, "/"))[len_of_str]
+    input_dir <- str_remove(mzml_file, rem)
+    
     if (db == "all" || db =="gnps"){
-        if (file.exists(paste(input_dir,"/gnps.rda", sep = ""))){
-            # load the gnps spectral database
-            load(file = paste(input_dir,"/gnps.rda", sep = ""))
-        }
-        else if (file.exists("gnps.rda")){
-            # load the gnps spectral database
-            load("gnps.rda")
-        }
         
+        # if (file.exists(paste(input_dir,"gnps.rda", sep = ""))){
+        #     # load the gnps spectral database
+        #     load(file = paste(input_dir,"gnps.rda", sep = ""))
+        # }
+#         else if (file.exists("gnps.rda")){
+#             # load the gnps spectral database
+#             load("gnps.rda")
+#         }
+        load(args[2])
     }
     # if the database selected is HMDB or all
     if (db == "all" || db =="hmdb"){
         
-        if (file.exists(paste(input_dir,"/hmdb.rda", sep = ""))){
-            # load the hmdb spectral database
-            load(file = paste(input_dir,"/hmdb.rda", sep = ""))
-        }
-        else if (file.exists("hmdb.rda")){
-            # load the gnps spectral database
-            load("hmdb.rda")
-        }
-        
+        # if (file.exists(paste(input_dir,"hmdb.rda", sep = ""))){
+        #     # load the hmdb spectral database
+        #     load(file = paste(input_dir,"hmdb.rda", sep = ""))
+        # }
+#         else if (file.exists("hmdb.rda")){
+#             # load the gnps spectral database
+#             load("hmdb.rda")
+#         }
+        load(args[3])
     }
     # if the database selected is HMDB or all
     if (db == "all" || db == "mbank"){
-        if (file.exists(paste(input_dir,"/mbankNIST.rda", sep = ""))){
-            # load the mbank spectral database
-            load(file = paste(input_dir,"/mbankNIST.rda", sep = ""))
-        }
-        else if (file.exists("mbankNIST.rda")){
-            # load the gnps spectral database
-            load("mbankNIST.rda")
-        }
-        
+        # if (file.exists(paste(input_dir,"mbankNIST.rda", sep = ""))){
+        #     # load the mbank spectral database
+        #     load(file = paste(input_dir,"mbankNIST.rda", sep = ""))
+        # }
+#         else if (file.exists("mbankNIST.rda")){
+#             # load the gnps spectral database
+#             load("mbankNIST.rda")
+#         }
+        load(args[4])
     }
 
     # read spectra object
@@ -522,7 +531,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                 gnps_with_mz <- spec2_Processing(x, gnpsdb, spec = "gnps", ppmx) # change here later
 
                 # define the directoyr name to store all GNPS results
-                dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/GNPS/", sep = ""), "."), sep ="")
+                dir_name <- paste(result_dir, "/spectral_dereplication/GNPS/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
                 }
@@ -821,7 +830,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                 hmdb_with_mz <- spec2_Processing(x, hmdb, spec = "hmdb", ppmx) # change here later
 
                 # directory name for HMDB results
-                dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/HMDB/", sep = ""), "."), sep ="")
+                dir_name <- paste(result_dir, "/spectral_dereplication/HMDB/", sep = "")
                 if (!file.exists(dir_name)){
                     dir.create(dir_name, recursive = TRUE)
                 }
@@ -1072,7 +1081,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                     mbank_with_mz <- spec2_Processing(x, mbank, spec = "mbank", ppmx) # change here later
 
-                    dir_name <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication/MassBank/", sep = ""), "."), sep ="")
+                    dir_name <- paste(result_dir, "/spectral_dereplication/MassBank/", sep = "")
                     if (!file.exists(dir_name)){
                         dir.create(dir_name, recursive = TRUE)
                     }
@@ -1337,7 +1346,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
     }
     pre_mzs <- as.list(pre_mzs)
     v_pre_mzs <- future::value(pre_mzs)
-    result_dir_spectra <- paste(input_dir, str_remove(paste(result_dir, "/spectral_dereplication", sep = ""), "."), sep = "")
+    result_dir_spectra <- paste(result_dir, "/spectral_dereplication", sep = "")
     spectra_input <- data.frame(cbind(id_X, premz, rtmin,
                                       rtmax, rtmed, rtmean,
                                       col_eng, pol, int, source_file))
@@ -1349,7 +1358,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
     # the directory for csv file is input_dir + /insilico/MS2DATA.csv
 # input is from spec_Processing and result directory for each mzML input file
 
-ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
+ms2_peaks <- function(pre_tbl, proc_mzml, result_dir, file_id){
 
 
     sps_all <- Spectra(proc_mzml, backend = MsBackendMzR())
@@ -1437,7 +1446,7 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
             names <- c()
 
             # create a new directory to store all the peak list txt files
-            dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/peakfiles_ms2", sep =""), "."), sep = "")
+            dir_name <- paste(result_dir, "/insilico/peakfiles_ms2", sep ="")
             if (!file.exists(dir_name)){
                 dir.create(dir_name, recursive = TRUE)
             }
@@ -1456,8 +1465,8 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
                     #create separate folder for peaklists files
                     fileN <- paste(dir_name, '/Peaks_0', Y, '.txt', sep = '')
                     write.table(func, fileN, row.names = FALSE, col.names = FALSE)
-                    fileN1 <- str_replace(fileN, input_dir, ".")
-                    ms2Peaks <- c(ms2Peaks, fileN1)
+                    #fileN1 <- str_replace(fileN, input_dir, ".")
+                    ms2Peaks <- c(ms2Peaks, fileN)
                 }
             }
         }
@@ -1466,9 +1475,10 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
 
 
     first_list <- data.frame(cbind(id_X, premz, rtmed, rtmean, int ,col_eng, pol, ms2Peaks))
-    write.csv(first_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS2DATA.csv', sep = ""), "."), sep =""))
+    write.csv(first_list, file = paste(result_dir,'/insilico/MS2DATA.csv', sep = ""))
     return(first_list)
 }
+
 
 
 
@@ -1641,10 +1651,10 @@ ms2_peaks <- function(pre_tbl, proc_mzml, input_dir, result_dir, file_id){
 #}
 
 
-cam_func <- function(input_dir, f, ms2features){
+cam_func <- function(fl, ms2features){
     modes_file <- read_csv(ms2features)
     mode = unique(modes_file["pol"])
-    fl <- paste(input_dir, str_remove(f, "."), sep ="")
+
     if(mode == "pos"){
         library("CAMERA")
         xs <- xcmsSet(file = fl,profmethod = "bin",
@@ -1672,7 +1682,7 @@ cam_func <- function(input_dir, f, ms2features){
             peaklist[i,'istops'] = y[1]
         }
         name <- str_remove(f, ".mzML")
-        write.csv(peaklist, file = paste(input_dir, str_remove(name, "."), "/CAMERAResults",".csv", sep = ""))
+        write.csv(peaklist, file = paste(result_dir, "/CAMERAResults",".csv", sep = ""))
         unloadNamespace("CAMERA")
         unloadNamespace("xcms")
         unloadNamespace("MSnBase")
@@ -1705,7 +1715,7 @@ cam_func <- function(input_dir, f, ms2features){
             peaklist[i,'istops'] = y[1]
         }
         name <- str_remove(f, ".mzML")
-        write.csv(peaklist, file = paste(input_dir, str_remove(name, "."), "/CAMERAResults", ".csv", sep = ""))
+        write.csv(peaklist, file = paste(result_dir, "/CAMERAResults", ".csv", sep = ""))
         unloadNamespace("CAMERA")
         unloadNamespace("xcms")
         unloadNamespace("MSnBase")
@@ -1716,14 +1726,14 @@ cam_func <- function(input_dir, f, ms2features){
 # Extract isotopic peaks for each pre_mz
 # The input is x = first_list (from ms2peaks function) and y = camera results
 
-ms1_peaks <- function(x, y, result_dir, input_dir, QCfile){
+ms1_peaks <- function(x, y, result_dir, QCfile){
     # store the ms1_peak list path here
     ms1Peaks <- c()
     x = read.csv(x)
 
     if (QCfile){
 
-        dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/peakfiles_ms1", sep =""), "."), sep = "")
+        dir_name <- paste(result_dir, "/insilico/peakfiles_ms1", sep ="")
         # create a new directory to store all the peak list txt files
         if (!file.exists(dir_name)){
             dir.create(dir_name, recursive = TRUE)
@@ -1759,8 +1769,8 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile){
                     no_isotop <- cbind(mz, int) # save as table
                     name_file <- paste(dir_name, "/ms1_peaks_", x[i, 'premz'], "_no_isotopes.txt", sep = "") # save name of the peaklist
                     write.table(no_isotop, name_file, row.names = FALSE, col.names = FALSE) # save peak list
-                    name_file1 <- str_replace(name_file, input_dir, ".")
-                    ms1Peaks <- c(ms1Peaks, name_file1) # add the path of the peak list to a list
+                    #name_file1 <- str_replace(name_file, input_dir, ".")
+                    ms1Peaks <- c(ms1Peaks, name_file) # add the path of the peak list to a list
                 }
 
                 # if there was an isotope annotation
@@ -1773,8 +1783,8 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile){
                     no_isotop <- cbind(mz, int) # save as table
                     name_file <- paste(dir_name, "/ms1_peaksISOTOPE_", x[i, 'premz'], "_isotopeNum_", df_x[1, "istops"], ".txt", sep = "")
                     write.table(no_isotop, name_file, row.names = FALSE, col.names = FALSE)
-                    name_file1 <- str_replace(name_file, input_dir, ".")
-                    ms1Peaks <- c(ms1Peaks, name_file1)
+                    #name_file1 <- str_replace(name_file, input_dir, ".")
+                    ms1Peaks <- c(ms1Peaks, name_file)
                 }
             }
             # if there are more indices for df_y
@@ -1788,8 +1798,8 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile){
                     no_isotop <- cbind(mz, int) # save as table
                     name_file <- paste(dir_name, "/ms1_peaks_", x[i, 'premz'], "_no_isotopes.txt", sep = "") # save name of the peaklist
                     write.table(no_isotop, name_file, row.names = FALSE, col.names = FALSE) # save peak list
-                    name_file1 <- str_replace(name_file, input_dir, ".")
-                    ms1Peaks <- c(ms1Peaks, name_file1) # add the path of the peak list to a list
+                    #name_file1 <- str_replace(name_file, input_dir, ".")
+                    ms1Peaks <- c(ms1Peaks, name_file) # add the path of the peak list to a list
                 }
                 # if not all isotope annotations are NA
                 else if (!(all(is.na(df_y[, 'istops'])))){
@@ -1803,8 +1813,8 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile){
                     no_isotop <- cbind(mz, int) # save as table
                     name_file <- paste(dir_name, "/ms1_peaksISOTOPE_", x[i, 'premz'], "_isotopeNum_", df_z1[1, 'istops'],".txt", sep = "") # save name of the peaklist
                     write.table(no_isotop, name_file, row.names = FALSE, col.names = FALSE) # save peak list
-                    name_file1 <- str_replace(name_file, input_dir, ".")
-                    ms1Peaks <- c(ms1Peaks, name_file1) # add the path of the peak list to a list
+                    #name_file1 <- str_replace(name_file, input_dir, ".")
+                    ms1Peaks <- c(ms1Peaks, name_file) # add the path of the peak list to a list
                 }
             }
             else if (nrow(df_y)==0){
@@ -1812,14 +1822,14 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile){
             }
         }
         second_list <- data.frame(cbind(x, ms1Peaks))
-        write.csv(second_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA.csv', sep = ""), "."), sep =""))
+        write.csv(second_list, file = paste(result_dir,'/insilico/MS1DATA.csv', sep = ""))
         return(second_list)
     }
     else{
 
         ms1Peaks <- c(ms1Peaks, 'no ms1 peaks in QC')
         second_list <- data.frame(cbind(x, ms1Peaks))
-        write.csv(second_list, file = paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA.csv', sep = ""), "."), sep =""))
+        write.csv(second_list, file = paste(result_dir,'/insilico/MS1DATA.csv', sep = ""))
         return(second_list)
     }
 
@@ -2324,9 +2334,9 @@ ms1_peaks <- function(x, y, result_dir, input_dir, QCfile){
 # input x is result from either ms1_peaks
 # SL is if a suspect list is present
 
-sirius_param <- function(x, result_dir, input_dir, SL = FALSE, collision_info = FALSE){
+sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
 
-    dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/SIRIUS", sep =""), "."), sep = "")
+    dir_name <- paste(result_dir, "/insilico/SIRIUS", sep ="")
     if (!file.exists(dir_name)){
         dir.create(dir_name, recursive = TRUE) ##create folder
     }
@@ -2392,7 +2402,7 @@ sirius_param <- function(x, result_dir, input_dir, SL = FALSE, collision_info = 
                 writeLines(">ms2" ,con=file.conn)
             }
             
-            ms2pk <- paste(input_dir, str_remove(x[i,"ms2Peaks"], "."), sep ="")
+            ms2pk <- x[i,"ms2Peaks"]
 
             peak<- read.table(ms2pk)
             for (k in 1:length(peak[,1])){
@@ -2437,7 +2447,7 @@ sirius_param <- function(x, result_dir, input_dir, SL = FALSE, collision_info = 
             #ms1
             writeLines(">ms1",con=file.conn)
 
-            ms1pk <- paste(input_dir, str_remove(x[i,"ms1Peaks"], "."), sep ="")
+            ms1pk <- x[i,"ms1Peaks"]
             peakms1<- read.table(ms1pk)
 
             for (l in 1:length(peakms1[,1])){
@@ -2451,7 +2461,7 @@ sirius_param <- function(x, result_dir, input_dir, SL = FALSE, collision_info = 
                 writeLines(">ms2" ,con=file.conn)
             }
 
-            ms2pk <- paste(input_dir, str_remove(x[i,"ms2Peaks"], "."), sep ="")
+            ms2pk <- x[i,"ms2Peaks"]
 
             peakms2<- read.table(ms2pk)
 
@@ -2499,7 +2509,7 @@ sirius_param <- function(x, result_dir, input_dir, SL = FALSE, collision_info = 
             #ms1
             writeLines(">ms1",con=file.conn)
 
-            ms1pk <- paste(input_dir, str_remove(x[i,"ms1Peaks"], "."), sep ="")
+            ms1pk <- x[i,"ms1Peaks"]
             peakms1<- read.table(ms1pk)
 
             for (l in 1:length(peakms1[,1])){
@@ -2513,7 +2523,7 @@ sirius_param <- function(x, result_dir, input_dir, SL = FALSE, collision_info = 
                 writeLines(">ms2" ,con=file.conn)
             }
 
-            ms2pk <- paste(input_dir, str_remove(x[i,"ms2Peaks"], "."), sep ="")
+            ms2pk <- x[i,"ms2Peaks"]
 
             peakms2<- read.table(ms2pk)
 
@@ -2530,14 +2540,14 @@ sirius_param <- function(x, result_dir, input_dir, SL = FALSE, collision_info = 
 
         in_out_file <- data.frame(cbind(sirius_param_file, outputNames, outputNamesSL, isotopes))
 
-        write.table(in_out_file, paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA_SiriusPandSL.tsv', sep = ""), "."), sep =""), sep = "\t")
+        write.table(in_out_file, paste(result_dir,'/insilico/MS1DATA_SiriusPandSL.tsv', sep = ""), sep = "\t")
         return(in_out_file)
 
     }
     else{
         in_out_file <- data.frame(cbind(sirius_param_file, outputNames, isotopes))
 
-        write.table(in_out_file, paste(input_dir, str_remove(paste(result_dir,'/insilico/MS1DATA_SiriusP.tsv', sep = ""), "."), sep =""), sep = "\t")
+        write.table(in_out_file, paste(result_dir,'/insilico/MS1DATA_SiriusP.tsv', sep = ""), sep = "\t")
         return(in_out_file)
 
     }
@@ -2545,7 +2555,8 @@ sirius_param <- function(x, result_dir, input_dir, SL = FALSE, collision_info = 
 }
 
 
-run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, SL_path, candidates = 30, profile, db){
+
+run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, SL_path, candidates = 30, profile = "orbitrap", db = "ALL"){
     files <- read.csv(files, sep = "\t")
 
     for (b in 1:nrow(files)){
@@ -2557,7 +2568,7 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
                 "formula", "--profile", profile, "--no-isotope-filter",  "--no-isotope-score", "--candidates", 
                 candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2, "structure", "--database", 
                 db ,"canopus")
-                print(command1)
+                #print(command1)
                 print("command1")
                 system2(command1)
                 if(!file.exists(files[b, "outputNames"])){
@@ -2567,7 +2578,7 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
                     profile, "--no-isotope-filter", "--no-isotope-score", "--candidates", 
                     candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure",  "--database", 
                     db ,"canopus")
-                    print(command2)
+                    #print(command2)
                     print("command2")
                     system2(command2)
                 }
@@ -2578,7 +2589,7 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
                     candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure", "--database",  
                     SL_path ,"canopus")
                     
-                    print(command3)
+                    #print(command3)
                     print("command3")
                     system2(command3)
                 }
@@ -2600,7 +2611,7 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
                     "formula", "--profile", profile, "--candidates", candidates, 
                     "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2, "structure", "--database", 
                     db ,"canopus")
-                    print(command5)
+                    #print(command5)
                     print("command5")
                     system2(command5)
                 }
@@ -2613,7 +2624,7 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
                     candidates, "--ppm-max", 
                     ppm_max, "--ppm-max-ms2",  
                     ppm_max_ms2, "structure",  "--database",  SL_path ,"canopus")
-                    print(command6)
+                    #print(command6)
                     print("command6")
                     system2(command6)
                 }
@@ -2627,7 +2638,7 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
                         candidates, 
                         "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,
                         "structure", "--database", db ,"canopus")
-            print(command7)
+            #print(command7)
             print("command7")
             system2(command7)
             if(!file.exists(files[b, "outputNames"])){
@@ -2641,7 +2652,7 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
                 profile, "--no-isotope-filter", "--no-isotope-score", "--candidates", 
                 candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,
                 "structure", "--database", db ,"canopus")
-                print(command8)
+                #print(command8)
                 print("command8")
                 system2(command8)
             }
@@ -2652,7 +2663,7 @@ run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRU
                 candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,
                 "structure", "--database ",  SL_path ,"canopus")
                 
-                print(command9)
+                #print(command9)
                 print("command9")
                 system2(command9)
             }
@@ -2870,77 +2881,59 @@ plan(list(
   tweak(multisession, workers = 3)
 ))
 
+args = commandArgs(trailingOnly = TRUE)
+
+
 # Start time
 start.time <- Sys.time()
 
-args = commandArgs(trailingOnly = TRUE)
+
 
 
 
 # input directory
-input_dir <- args[1]
-#input_dir
+mzml_file <- args[1]
 
+gnps_file <- args[2]
+hmbd_file <- args[3]
+mbank_file <- args[4]
 
-# generate a table for all the input .mzML files, along with creating a result directory for all each.mzML file
-input_table <- data.frame(ms2_rfilename(input_dir))
-#input_table
+mzml_result <- args[5]
 
-# take the list of .mzML files as an environment and parallelizes the computation
-# for each .mzML file in the for loop below
-input_table_idxs <- listenv()
+print(mzml_file)
+print(mzml_result)
 
-# for loop, to compute MAW-R for all given input .mzML files
-for (i in 1:nrow(input_table)){
+spec_pr <- spec_Processing(mzml_file, mzml_result)
 
-    # for each index, taken as environment using the listenv library
-    input_table_idxs[[i]] <- future({
-        
-        ##Preprocess and Read the mzML files
-        spec_pr <- spec_Processing(input_dir,
-                                   input_table[i, "mzml_files"],
-                                   input_table[i, "ResultFileNames"])
+df_derep <- spec_dereplication_file(mzml_file = mzml_file,
+                                    pre_tbl = paste(mzml_result, "/premz_list.txt", sep = ""),
+                                    proc_mzml = paste(mzml_result, "/processedSpectra.mzML", sep = ""),
+                                    db = "all",
+                                    result_dir = mzml_result,
+                                    file_id = "any_id",
+                                    no_of_candidates = 50,
+                                    ppmx = 15)
 
-        #perform dereplication with all dbs (gnps, massbank, and hmdb)
-        df_derep <- spec_dereplication_file(mzml_file = input_table[i, "mzml_files"],
-                                            pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "."), sep =""),
-                                            proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "."), sep =""),
-                                            db = "all",
-                                            result_dir = input_table[i, "ResultFileNames"],
-                                            file_id = input_table[i, "File_id"],
-                                            input_dir,
-                                            no_of_candidates = 50,
-                                            ppmx = 15)
-        
-        #Extract MS2 peak lists
-        spec_pr2 <- ms2_peaks(pre_tbl = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/premz_list.txt", sep = ""), "."), sep =""),
-                              proc_mzml = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/processedSpectra.mzML", sep = ""), "."), sep =""),
-                              input_dir,
-                              result_dir = input_table[i, "ResultFileNames"],
-                             file_id = input_table[i, "File_id"])
-        
+spec_pr2 <- ms2_peaks(pre_tbl = paste(mzml_result, "/premz_list.txt", sep = ""),
+                      proc_mzml = paste(mzml_result, "/processedSpectra.mzML", sep = ""),
+                      result_dir = mzml_result,
+                      file_id = "any_id")
 
-        # camera results for isotopes
-        # cam_res <- cam_func(input_dir,
-                            # f = input_table[i, "mzml_files"], 
-                            # ms2features = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"], "/insilico/MS2DATA.csv", sep = ""), "."), sep = ""))
-        
+# cam_res <- cam_func(f = mzml_file, 
+#                     ms2features = paste(mzml_result, "/insilico/MS2DATA.csv", sep = ""))
 
-        # Extract MS1 peaks or isotopic peaks
-        ms1p <- ms1_peaks(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS2DATA.csv', sep = ""), "."), sep =""),
-                          y = NA, 
-                          input_table[i, "ResultFileNames"],
-                          input_dir,
-                          QCfile = FALSE)
+# Extract MS1 peaks or isotopic peaks
+ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
+                  y = NA, 
+                  result_dir = mzml_result,
+                  QCfile = FALSE)
 
+sirius_param_files <- sirius_param(x = paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""),
+                       result_dir = mzml_result,
+                       SL = FALSE, 
+                       collision_info = FALSE)
 
-        #prepare sirius parameter files
-        sirius_param_files <- sirius_param(x = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA.csv', sep = ""), "."), sep =""),
-                                           result_dir = input_table[i, 'ResultFileNames'],
-                                           input_dir,
-                                           SL = FALSE)
-        # Run sirius
-        run_sirius(files = paste(input_dir, str_remove(paste(input_table[i, "ResultFileNames"],'/insilico/MS1DATA_SiriusP.tsv', sep = ""), "."), sep =""),
+run_sirius(files = paste(mzml_result,'/insilico/MS1DATA_SiriusP.tsv', sep = ""),
                    ppm_max = 5,
                    ppm_max_ms2 = 15,
                    QC = FALSE,
@@ -2949,22 +2942,9 @@ for (i in 1:nrow(input_table)){
                    candidates = 30,
                   profile = "orbitrap", 
                   db = "ALL")
-   }) #end input_table_idxs future
-}
-
-
-
-# Run the workflow
-input_table_idxs <- as.list(input_table_idxs)
-v_input_table_idxs <- future::value(input_table_idxs)
-
 # End time
 end.time <- Sys.time()
 
 # Time taken to run the analysis for MAW-R
 time.taken <- end.time - start.time
 print(time.taken)
-
-
-
-
