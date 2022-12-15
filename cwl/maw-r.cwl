@@ -6,15 +6,7 @@ baseCommand: [ Rscript]
 
 requirements:
   DockerRequirement:
-<<<<<<< HEAD
-<<<<<<< HEAD
-    dockerPull: docker.io/zmahnoor/maw-r:1.0.7
-=======
     dockerPull: zmahnoor/maw-r:1.0.7
->>>>>>> 45425f6 (only for one mzML file)
-=======
-    dockerPull: zmahnoor/maw-r:1.0.7
->>>>>>> provenance
 
 inputs: 
   workflow_script: File
@@ -38,34 +30,4 @@ outputs:
   results: 
     type: Directory
     outputBinding:
-<<<<<<< HEAD
-<<<<<<< HEAD
-       glob: $(inputs.mzml_files.basename)
-  # csv_output:
-  #   type:
-  #     type: array
-  #     items: File
-  #   
-  # mzml_outputs:
-  #   type:
-  #     type: array
-  #     items: File
-  #   outputBinding:
-  #     glob: "*/*.mzML"
-  # txt_outputs:
-  #   type:
-  #     type: array
-  #     items: File
-  #   outputBinding:
-  #     glob: "*/*.txt"
-
-#  result_files:
-#    type:
-#      type: array
-#      items: File
-=======
        glob: $(runtime.outdir)
->>>>>>> 45425f6 (only for one mzML file)
-=======
-       glob: $(runtime.outdir)
->>>>>>> provenance
