@@ -22,10 +22,10 @@ inputs:
   candidates:
     type: int
     default: 30
-  ppm-max:
+  ppm_max:
     type: int
     default: 5
-  ppm-max-ms2:
+  ppm_max_ms2:
     type: int
     default: 15
   database:
@@ -45,9 +45,9 @@ arguments:
     - --candidates
     - $(inputs.candidates)
     - --ppm-max
-    - $(inputs.ppm-max)
+    - $(inputs.ppm_max)
     - --ppm-max-ms2
-    - $(inputs.ppm-max-ms2)
+    - $(inputs.ppm_max_ms2)
     - structure
     - --database
     - $(inputs.database)
