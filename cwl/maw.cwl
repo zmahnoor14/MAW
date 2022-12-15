@@ -21,7 +21,19 @@ steps:
         in:
             workflow_script: r_script
             mzml_files: mzml_files
-        out: [results]
+        out:
+            - ms_files
+            - [results]
+    sirius:
+        run: maw-sirius.cwl
+        in:
+            ms_file: dereplication/ms_files
+            #parameter: dereplication/parameters
+        scatter:
+            - ms_file
+            #- parameter
+        out:
+            [results]
     cheminformatics:
         run: maw-py.cwl
         in: 
