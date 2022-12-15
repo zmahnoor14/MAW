@@ -24,6 +24,7 @@ steps:
         out:
             - ms_files
             - ms1_data
+            - provenance
             #- parameters
     sirius:
         run: maw-sirius.cwl
@@ -41,7 +42,9 @@ steps:
             workflow_script: python_script
             ms1_data: dereplication/ms1_data
             sirius_results: sirius/results
-        out: [results]
+        out:
+            - [results]
+            - provenance
 
 outputs:
   results: 
