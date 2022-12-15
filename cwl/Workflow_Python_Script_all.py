@@ -7,6 +7,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import yaml
+import time
+import provenance as p
+from yaml.loader import SafeLoader
+
+stream=open("provenance_config.yaml", "r")
+basic_config=yaml.load(stream, Loader=SafeLoader)
+p.load_config(basic_config)
+
 import glob
 import json
 import os
@@ -5010,10 +5019,27 @@ def sunburst(input_dir):
 #Define input directory, keep all files in same directory and scripts so getwd works
 entry = sys.argv[1]
 
-spec_postproc(entry, Source = "all")
+@p.provenance()
+provenance_result = spec_postproc(entry, Source = "all")
 MCSS_for_SpecDB(entry, Source = "all")
 sirius_postproc(entry)
 MCSS_for_SIRIUS(entry)    
 CandidateSelection_SimilarityandIdentity(entry, standards = False)
 
+from ruamel.yaml.main import YAML
 
+with open("provenance_python.yaml", "w") as filehandle:
+    yaml = YAML()
+    yaml.default_flow_style = False
+    yaml.indent = 4
+    yaml.block_seq_indent = 2
+    yaml.dump(
+        { "fn_module": provenance_result.artifact.fn_module,
+          "fn_name": provenance_result.artifact.fn_name,
+          "run_info": provenance_result.artifact.run_info,
+          "inputs": provenance_result.artifact.inputs }
+        filehandle,
+    )
+
+import provenance.vis as vis
+plot = vis.visualize_lineage(provenance_result)
