@@ -5028,7 +5028,7 @@ sirius_dirs = sys.argv[2:]
 provenance_result = spec_postproc(entry, Source = "all")
 
 MCSS_for_SpecDB(entry, Source = "all")
-sirius_postproc(entry)  # use sirius_dirs
+sirius_postproc(entry, sirius_dirs)
 MCSS_for_SIRIUS(entry)    
 CandidateSelection_SimilarityandIdentity(entry, standards = False)
 
