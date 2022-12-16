@@ -31,3 +31,6 @@ COPY Workflow_Python_Functions.py .
 COPY Workflow_Python_Script.py .
 
 CMD sed -i -e "s/db\: postgresql\:\/\//db\: postgresql\:\/\/$POSTGRES_USER\:$POSTGRES_PASSWORD@database\/$POSTGRES_DB/" /etc/basic_config.yml
+
+COPY requirements2.txt .
+RUN pip3 install -r requirements2.txt

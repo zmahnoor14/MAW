@@ -6,7 +6,7 @@ baseCommand: [python3]
 
 requirements:
   DockerRequirement:
-    dockerPull: zmahnoor/maw-py:1.0.6
+    dockerPull: zmahnoor/maw-py:1.0.7
 
   InitialWorkDirRequirement:
     listing:
@@ -34,9 +34,6 @@ outputs:
     type: Directory
     outputBinding:
        glob: "provenance-intro-artifacts"
-  provenance_yaml:
-    type: File
-    outputBinding:
-       glob: "provenance_python.yaml"
+
 
   
