@@ -31,9 +31,9 @@ outputs:
     outputBinding:
        glob: $(inputs.mzml_files_results.basename)
   provenance:
-    type: Directory
+    type: File
     outputBinding:
-       glob: "provenance-intro-artifacts"
+       glob: provenance_python.yaml
 
 
   
