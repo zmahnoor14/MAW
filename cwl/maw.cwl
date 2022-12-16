@@ -50,12 +50,14 @@ steps:
             workflow_script: python_script
             mzml_files_results: dereplication/results
             sirius_results: sirius/results
-        out: [results]
+        out: [results, provenance]
 
 outputs:
   results: 
     type: Directory
     outputSource: cheminformatics/results
-
+  cheminformatics_prov:
+    type: File
+    outputSource: cheminformatics/provenance
 requirements:
     ScatterFeatureRequirement: {}
