@@ -70,7 +70,7 @@ This command will run the Workflow_Python_Script.py which is an example script f
 The results can be seen in the /data/final_candidates.csv <br>
 
 > **Note**
-> For details on using the workflow on Jupyter notebooks in a more interactive mode, please follow the Tutorial part on wiki page of this repository
+> For details on using the workflow on Jupyter notebooks in a more interactive mode, please follow the Tutorial part on wiki page of this repository.
 
 ## Citation
 Zulfiqar, M., Gadelha, L., Steinbeck, C., Sorokina, M., & Peters, K. (2022). Metabolome Annotation Workflow (MAW) (Version 1.0.0) [Computer software]. https://doi.org/10.5281/zenodo.7148450
