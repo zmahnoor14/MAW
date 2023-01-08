@@ -1,0 +1,2590 @@
+{
+    "@context": [
+        "https://w3id.org/ro/crate/1.1/context",
+        {
+            "ParameterConnection": "https://w3id.org/ro/terms/workflow-run#ParameterConnection",
+            "connection": "https://w3id.org/ro/terms/workflow-run#connection",
+            "sourceParameter": "https://w3id.org/ro/terms/workflow-run#sourceParameter",
+            "targetParameter": "https://w3id.org/ro/terms/workflow-run#targetParameter"
+        }
+    ],
+    "@graph": [
+        {
+            "@id": "./",
+            "@type": "Dataset",
+            "datePublished": "2022-12-23T15:09:11+00:00",
+            "hasPart": [
+                {
+                    "@id": "packed.cwl"
+                },
+                {
+                    "@id": "f90a8208bc3578fbd9019d7b90f49f0e5c310405"
+                },
+                {
+                    "@id": "8dc910ef9fe5208a3a036747cb5f37ed26f45a2e"
+                },
+                {
+                    "@id": "eea49673cee69bdb7cbb895ed07332d0e455ca05"
+                },
+                {
+                    "@id": "d3e8f203e88cc6750fb3bb04d772934de404f930"
+                },
+                {
+                    "@id": "d406d999f4b0b07581ea028d3ae8c21167ca0724"
+                },
+                {
+                    "@id": "6e2086f2b5b889ee7d27f7d5b65b4619c24e87b6"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/3a7247b565022eeba30738686800e0ddaac06d1f/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/3a7247b565022eeba30738686800e0ddaac06d1f/4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/3a7247b565022eeba30738686800e0ddaac06d1f/5e02499f715f3e970c3dc14fe25bb7eebd9e8e7a"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/9cf0704f2a283ce1de111cace3e8176a58f012bd"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/fb1412b65be97d3a6ae264b2fc616f6513af05d5"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/896081109a12f20863c06376260ede8803b89055"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/173275ea0ffb1261ea721992334fcc28f3658dbd"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/cbfbd133030a0ff1c1a42fc3618bebdff4db39cf"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/317f7451c1ea9352659d49ebb4757a11c43ad09a/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/317f7451c1ea9352659d49ebb4757a11c43ad09a/0ac77dc45fdfd9d442989b330e6ef2e4ae828c87"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/d41b00c2073d86c4ef48de33422810b81e272fa8"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/0dbab83bd089e8f41337052cf3e7fcc538021eb7/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/0dbab83bd089e8f41337052cf3e7fcc538021eb7/20b40ff2624a56b681d03737e2cfea7ed545726b"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/0dbab83bd089e8f41337052cf3e7fcc538021eb7/6755bf86903f41988995893b036bb94676f492cb"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/316df4fca6e66be3910790c1b68b27883ec36de2"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/26052de672fdad2bd7c86015405eb721e6958ded/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/26052de672fdad2bd7c86015405eb721e6958ded/4dd46dd5a42269feb7cf82d2dc01606c0f333d8e"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/26052de672fdad2bd7c86015405eb721e6958ded/d711cf7a1a3f548a8a1ca8d62a37900d466073da"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/b176cb9720b357d6885c00670760328163a6a965"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/8dc910ef9fe5208a3a036747cb5f37ed26f45a2e"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/9cf0704f2a283ce1de111cace3e8176a58f012bd"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f90a8208bc3578fbd9019d7b90f49f0e5c310405"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/eea49673cee69bdb7cbb895ed07332d0e455ca05"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f345f093209f54c0bee0e4dc7bb8514920960863"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/173275ea0ffb1261ea721992334fcc28f3658dbd"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/ebb09d32edd19d9769c264a89ef0a7ed3748df32"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/da39a3ee5e6b4b0d3255bfef95601890afd80709/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/74d5450707676b379d911aeec24bc197811c77ac/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734"
+                },
+                {
+                    "@id": "4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/ebb09d32edd19d9769c264a89ef0a7ed3748df32"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/da39a3ee5e6b4b0d3255bfef95601890afd80709/"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f345f093209f54c0bee0e4dc7bb8514920960863"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/173275ea0ffb1261ea721992334fcc28f3658dbd"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f90a8208bc3578fbd9019d7b90f49f0e5c310405"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/8dc910ef9fe5208a3a036747cb5f37ed26f45a2e"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/9cf0704f2a283ce1de111cace3e8176a58f012bd"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/eea49673cee69bdb7cbb895ed07332d0e455ca05"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/74d5450707676b379d911aeec24bc197811c77ac/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b176cb9720b357d6885c00670760328163a6a965"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/173275ea0ffb1261ea721992334fcc28f3658dbd"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/c155ab3ef1603d147130c7c548d2050ff4f5c2af"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f711b31215d02862c30dbd17b8c728044fa71228/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f711b31215d02862c30dbd17b8c728044fa71228/4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/9cf0704f2a283ce1de111cace3e8176a58f012bd"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/f345f093209f54c0bee0e4dc7bb8514920960863"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/843fa858eabfbc56c5957dd4ac76bb8467275033/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/843fa858eabfbc56c5957dd4ac76bb8467275033/20b40ff2624a56b681d03737e2cfea7ed545726b"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/c055ec61f0a96c4ffec7044103ed24716f11bd77/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/c055ec61f0a96c4ffec7044103ed24716f11bd77/d711cf7a1a3f548a8a1ca8d62a37900d466073da"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/da39a3ee5e6b4b0d3255bfef95601890afd80709/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f90a8208bc3578fbd9019d7b90f49f0e5c310405"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/eea49673cee69bdb7cbb895ed07332d0e455ca05"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/8dc910ef9fe5208a3a036747cb5f37ed26f45a2e"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/173275ea0ffb1261ea721992334fcc28f3658dbd"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/9cf0704f2a283ce1de111cace3e8176a58f012bd"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f345f093209f54c0bee0e4dc7bb8514920960863"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/ebb09d32edd19d9769c264a89ef0a7ed3748df32"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/a65b40000151f78f37f6bc71afb824307b788cdb"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/722685d2c8b17e080ed9318bc349c9ce336c3e8c"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/68adca59aa95cd781b2f88c62dbabf601fd3c851"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/80ddd3d2dea1a79e41413af70a7416ddde933953"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/cf94802d858a81cac066b4a3b5871c32c94904f8"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/1aa2c73c686d318d1464f5fcf1e36896c6fd0618"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/959b71b1b3391522c75deecb9061457465856790"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/19828e64dd913dda0f6cf4e84ad50124939a513d"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/ae14416d359fe88b6cb12d2a2549bb22a05a7f16"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/50ae172a6da553e1c724e5159ae39fc3ad437321"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/7134df14f5dd3b9bea9a8d94cbeba91008e12d35"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/c367eb63a482ecf6eea1b45c588e5064cda9ad90/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/c367eb63a482ecf6eea1b45c588e5064cda9ad90/65631abc7dfb2a2f4cf2cafdf5b1bcf855ed6810"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/c367eb63a482ecf6eea1b45c588e5064cda9ad90/7f210f6500d84aa5b00c18564570fd2069927473"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/e4031fb93576780177808c215e7bc7bb8403cc4c"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/4fa4a5b5d07bf5e685d6377d6208a3f1608d32a4/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/4fa4a5b5d07bf5e685d6377d6208a3f1608d32a4/0744d3def51a7d04d9e110280612da380725c960"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/068d29d4e2f20f1a0ba351897d92e869c653c98e"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/52ea11f50008899ebe3057a1c701a8c2be94d0a7"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/9d374657c62a3d0c0094907a12caf8e963b2384e"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/4e0e02031026e486d9d0e3681fe93faf7a5b0a54"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/38097f8a0df2fd6097b7c77bfee5c5f43da0a4db"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/51c02e50604994697a4f208e115072227b0b3e09"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/12a1c1b1672499bea2393e7ab14beb2e0fd53c98"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/ea50134a7e3da56f911a06dfd00c76e53f7b8aad"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/92aa9257ab13164838677f8065b094cc92d83181"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/db75a8a8541cfbacf3a29f93071701de791585df"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/dc37f6698ef815d517eee1e5c3d7039cb41e1686"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/3c04b3942086354710ec77df9226969699dc3ae6"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/b433b663fecc0e8a8dd10e1e9596cdae71af6c3c/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/b433b663fecc0e8a8dd10e1e9596cdae71af6c3c/7bf6b1b2bc1faa4aefd10fae00db4a4fe5e53ab0"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/fd7234709f7066c39992a9e987edd0966d54ba6f"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/54df04a75ba6f5f7650f9edf4fae3246f24924e2/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/54df04a75ba6f5f7650f9edf4fae3246f24924e2/10987fa25c3c59386b32e6fbbe24a3d8c1a1a752"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/b7a1342433f51a7b8952d819e2d6912a743329f8"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/00441472f4fc6d8b7261a71e370fe55cce509a56"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/6cf21f132f6a00f9240606b964b69c02065b76fc"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/f63c33970d3576890cae2f41e8077e85b930de9d"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/d77f45a0658bafb413efe4490805ed4baac99db4"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/d2e1f9e14bc69e867cff0a2d6b7d0cd2497c874a"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/0e1a20ec563a0286823a71570d46893f8186bb3d"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/4efe618bb35b21cc8e4aeb99f24ccc5a1a85b855"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/ad0e019e5592773b4eea27cacaf05db7ee8256b1"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/dbc75c9e2e449c05038a5bacb3acff95f37f65a4"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/e09e533495e416f0735b19761655edede64eec4c"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/de2592e9625981ee1bf3d7e33be9685aa574f27f"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/a2693cdffb32ca2c8b5ca0b61165c41eb22e4ca3"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/ed75361928b2a04aac7162e2ae0ee5ca4eb12825"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/24bafa390af1f63e2409aee3629a0961dcda21b3"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/1ab41355bfe5dfe64ea86444cbe704379dcf6eeb"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/afc5794875d9d40525ef2589f1c60b8ad5fb82c9"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/4696f3a6f30bdce9475997f35fb1ae5b126d9765"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/da9e6944845c4d273f37464e2a2c021c95ce0b91"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/dc2090fb573210c53d263aae26b934a88ea142d7"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/7970f54175730829f64233638b9dd09d69df2636"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/528c66f445917f7945f116924b91af0a5aeff814"
+                },
+                {
+                    "@id": "da39a3ee5e6b4b0d3255bfef95601890afd80709/"
+                }
+            ],
+            "mainEntity": {
+                "@id": "packed.cwl"
+            },
+            "mentions": [
+                {
+                    "@id": "#4dc14d9f-cd62-4955-94fa-58ddc282646c"
+                }
+            ]
+        },
+        {
+            "@id": "ro-crate-metadata.json",
+            "@type": "CreativeWork",
+            "about": {
+                "@id": "./"
+            },
+            "conformsTo": [
+                {
+                    "@id": "https://w3id.org/ro/crate/1.1"
+                },
+                {
+                    "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
+                }
+            ]
+        },
+        {
+            "@id": "packed.cwl",
+            "@type": [
+                "File",
+                "SoftwareSourceCode",
+                "ComputationalWorkflow",
+                "HowTo"
+            ],
+            "connection": [
+                {
+                    "@id": "#9b2d8d77-fe7c-45f9-8e3c-08604a0db453"
+                }
+            ],
+            "hasPart": [
+                {
+                    "@id": "packed.cwl#maw-py.cwl"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl"
+                },
+                {
+                    "@id": "packed.cwl#maw-sirius.cwl"
+                }
+            ],
+            "input": [
+                {
+                    "@id": "packed.cwl#main/gnps_rda"
+                },
+                {
+                    "@id": "packed.cwl#main/hmdb_rda"
+                },
+                {
+                    "@id": "packed.cwl#main/mbank_rda"
+                },
+                {
+                    "@id": "packed.cwl#main/mzml_files"
+                },
+                {
+                    "@id": "packed.cwl#main/python_script"
+                },
+                {
+                    "@id": "packed.cwl#main/r_script"
+                }
+            ],
+            "name": "packed.cwl",
+            "output": [
+                {
+                    "@id": "packed.cwl#main/results"
+                }
+            ],
+            "programmingLanguage": {
+                "@id": "https://w3id.org/workflowhub/workflow-ro-crate#cwl"
+            },
+            "step": [
+                {
+                    "@id": "packed.cwl#main/cheminformatics"
+                },
+                {
+                    "@id": "packed.cwl#main/dereplication"
+                },
+                {
+                    "@id": "packed.cwl#main/sirius"
+                }
+            ]
+        },
+        {
+            "@id": "https://w3id.org/workflowhub/workflow-ro-crate#cwl",
+            "@type": "ComputerLanguage",
+            "alternateName": "CWL",
+            "identifier": {
+                "@id": "https://w3id.org/cwl/v1.0/"
+            },
+            "name": "Common Workflow Language",
+            "url": {
+                "@id": "https://www.commonwl.org/"
+            },
+            "version": "v1.0"
+        },
+        {
+            "@id": "packed.cwl#main/gnps_rda",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "name": "main/gnps_rda"
+        },
+        {
+            "@id": "packed.cwl#main/hmdb_rda",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "name": "main/hmdb_rda"
+        },
+        {
+            "@id": "packed.cwl#main/mbank_rda",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "name": "main/mbank_rda"
+        },
+        {
+            "@id": "packed.cwl#main/mzml_files",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "name": "main/mzml_files"
+        },
+        {
+            "@id": "packed.cwl#main/python_script",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "defaultValue": "file:///mnt/tdm-dic/users/simleo/sandbox/MAW/cwl/Workflow_Python_Script_all.py",
+            "name": "main/python_script"
+        },
+        {
+            "@id": "packed.cwl#main/r_script",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "defaultValue": "file:///mnt/tdm-dic/users/simleo/sandbox/MAW/cwl/Workflow_R_Script_all.r",
+            "name": "main/r_script"
+        },
+        {
+            "@id": "packed.cwl#main/results",
+            "@type": "FormalParameter",
+            "additionalType": "Dataset",
+            "name": "main/results"
+        },
+        {
+            "@id": "packed.cwl#main/cheminformatics",
+            "@type": "HowToStep",
+            "connection": [
+                {
+                    "@id": "#51d36894-25d8-4744-b590-bcaa91238a35"
+                },
+                {
+                    "@id": "#e2e340a2-3e2c-4a1d-9e38-e9f5c1a170c7"
+                },
+                {
+                    "@id": "#fe8b2947-aaec-441b-bb80-862cde9847ab"
+                }
+            ],
+            "position": "2",
+            "workExample": {
+                "@id": "packed.cwl#maw-py.cwl"
+            }
+        },
+        {
+            "@id": "packed.cwl#maw-py.cwl",
+            "@type": "SoftwareApplication",
+            "input": [
+                {
+                    "@id": "packed.cwl#maw-py.cwl/mzml_files_results"
+                },
+                {
+                    "@id": "packed.cwl#maw-py.cwl/sirius_results"
+                },
+                {
+                    "@id": "packed.cwl#maw-py.cwl/workflow_script"
+                }
+            ],
+            "name": "maw-py.cwl",
+            "output": [
+                {
+                    "@id": "packed.cwl#maw-py.cwl/provenance"
+                },
+                {
+                    "@id": "packed.cwl#maw-py.cwl/results"
+                }
+            ]
+        },
+        {
+            "@id": "packed.cwl#maw-py.cwl/mzml_files_results",
+            "@type": "FormalParameter",
+            "additionalType": "Dataset",
+            "name": "maw-py.cwl/mzml_files_results"
+        },
+        {
+            "@id": "packed.cwl#maw-py.cwl/sirius_results",
+            "@type": "FormalParameter",
+            "additionalType": "Dataset",
+            "multipleValues": "True",
+            "name": "maw-py.cwl/sirius_results"
+        },
+        {
+            "@id": "packed.cwl#maw-py.cwl/workflow_script",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "name": "maw-py.cwl/workflow_script"
+        },
+        {
+            "@id": "packed.cwl#maw-py.cwl/provenance",
+            "@type": "FormalParameter",
+            "additionalType": "Dataset",
+            "name": "maw-py.cwl/provenance"
+        },
+        {
+            "@id": "packed.cwl#maw-py.cwl/results",
+            "@type": "FormalParameter",
+            "additionalType": "Dataset",
+            "name": "maw-py.cwl/results"
+        },
+        {
+            "@id": "packed.cwl#main/dereplication",
+            "@type": "HowToStep",
+            "connection": [
+                {
+                    "@id": "#146b13e6-6c42-42ac-a826-3f701d40f2a9"
+                },
+                {
+                    "@id": "#c5d512da-e100-4bae-b2cc-c114e12af138"
+                },
+                {
+                    "@id": "#287244f1-b347-4bdf-a566-8baf69210d24"
+                },
+                {
+                    "@id": "#a5e2eb69-8106-49fe-a418-f4600f7b1148"
+                },
+                {
+                    "@id": "#edde3514-cfc3-46cb-8421-158f5a4dd71a"
+                }
+            ],
+            "position": "0",
+            "workExample": {
+                "@id": "packed.cwl#maw-r.cwl"
+            }
+        },
+        {
+            "@id": "packed.cwl#maw-r.cwl",
+            "@type": "SoftwareApplication",
+            "input": [
+                {
+                    "@id": "packed.cwl#maw-r.cwl/gnps_rda"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl/hmdb_rda"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl/mbank_rda"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl/mzml_files"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl/workflow_script"
+                }
+            ],
+            "name": "maw-r.cwl",
+            "output": [
+                {
+                    "@id": "packed.cwl#maw-r.cwl/ms_files"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl/provenance"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl/results"
+                }
+            ]
+        },
+        {
+            "@id": "packed.cwl#maw-r.cwl/gnps_rda",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "name": "maw-r.cwl/gnps_rda"
+        },
+        {
+            "@id": "packed.cwl#maw-r.cwl/hmdb_rda",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "name": "maw-r.cwl/hmdb_rda"
+        },
+        {
+            "@id": "packed.cwl#maw-r.cwl/mbank_rda",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "name": "maw-r.cwl/mbank_rda"
+        },
+        {
+            "@id": "packed.cwl#maw-r.cwl/mzml_files",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "name": "maw-r.cwl/mzml_files"
+        },
+        {
+            "@id": "packed.cwl#maw-r.cwl/workflow_script",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "name": "maw-r.cwl/workflow_script"
+        },
+        {
+            "@id": "packed.cwl#maw-r.cwl/ms_files",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "multipleValues": "True",
+            "name": "maw-r.cwl/ms_files"
+        },
+        {
+            "@id": "packed.cwl#maw-r.cwl/provenance",
+            "@type": "FormalParameter",
+            "additionalType": "Dataset",
+            "name": "maw-r.cwl/provenance"
+        },
+        {
+            "@id": "packed.cwl#maw-r.cwl/results",
+            "@type": "FormalParameter",
+            "additionalType": "Dataset",
+            "name": "maw-r.cwl/results"
+        },
+        {
+            "@id": "packed.cwl#main/sirius",
+            "@type": "HowToStep",
+            "connection": [
+                {
+                    "@id": "#96221dcd-63e6-4383-86fc-da3be6bac70f"
+                }
+            ],
+            "position": "1",
+            "workExample": {
+                "@id": "packed.cwl#maw-sirius.cwl"
+            }
+        },
+        {
+            "@id": "packed.cwl#maw-sirius.cwl",
+            "@type": "SoftwareApplication",
+            "input": [
+                {
+                    "@id": "packed.cwl#maw-sirius.cwl/candidates"
+                },
+                {
+                    "@id": "packed.cwl#maw-sirius.cwl/database"
+                },
+                {
+                    "@id": "packed.cwl#maw-sirius.cwl/ppm_max"
+                },
+                {
+                    "@id": "packed.cwl#maw-sirius.cwl/ppm_max_ms2"
+                },
+                {
+                    "@id": "packed.cwl#maw-sirius.cwl/profile"
+                },
+                {
+                    "@id": "packed.cwl#maw-sirius.cwl/spectrum"
+                }
+            ],
+            "name": "maw-sirius.cwl",
+            "output": [
+                {
+                    "@id": "packed.cwl#maw-sirius.cwl/results"
+                }
+            ]
+        },
+        {
+            "@id": "packed.cwl#maw-sirius.cwl/candidates",
+            "@type": "FormalParameter",
+            "additionalType": "Integer",
+            "defaultValue": "30",
+            "name": "maw-sirius.cwl/candidates"
+        },
+        {
+            "@id": "packed.cwl#maw-sirius.cwl/database",
+            "@type": "FormalParameter",
+            "additionalType": "Text",
+            "defaultValue": "ALL",
+            "name": "maw-sirius.cwl/database"
+        },
+        {
+            "@id": "packed.cwl#maw-sirius.cwl/ppm_max",
+            "@type": "FormalParameter",
+            "additionalType": "Integer",
+            "defaultValue": "5",
+            "name": "maw-sirius.cwl/ppm_max"
+        },
+        {
+            "@id": "packed.cwl#maw-sirius.cwl/ppm_max_ms2",
+            "@type": "FormalParameter",
+            "additionalType": "Integer",
+            "defaultValue": "15",
+            "name": "maw-sirius.cwl/ppm_max_ms2"
+        },
+        {
+            "@id": "packed.cwl#maw-sirius.cwl/profile",
+            "@type": "FormalParameter",
+            "additionalType": "Text",
+            "defaultValue": "orbitrap",
+            "name": "maw-sirius.cwl/profile"
+        },
+        {
+            "@id": "packed.cwl#maw-sirius.cwl/spectrum",
+            "@type": "FormalParameter",
+            "additionalType": "File",
+            "name": "maw-sirius.cwl/spectrum"
+        },
+        {
+            "@id": "packed.cwl#maw-sirius.cwl/results",
+            "@type": "FormalParameter",
+            "additionalType": "Dataset",
+            "name": "maw-sirius.cwl/results"
+        },
+        {
+            "@id": "#51d36894-25d8-4744-b590-bcaa91238a35",
+            "@type": "ParameterConnection",
+            "sourceParameter": {
+                "@id": "packed.cwl#maw-r.cwl/results"
+            },
+            "targetParameter": {
+                "@id": "packed.cwl#maw-py.cwl/mzml_files_results"
+            }
+        },
+        {
+            "@id": "#e2e340a2-3e2c-4a1d-9e38-e9f5c1a170c7",
+            "@type": "ParameterConnection",
+            "sourceParameter": {
+                "@id": "packed.cwl#maw-sirius.cwl/results"
+            },
+            "targetParameter": {
+                "@id": "packed.cwl#maw-py.cwl/sirius_results"
+            }
+        },
+        {
+            "@id": "#fe8b2947-aaec-441b-bb80-862cde9847ab",
+            "@type": "ParameterConnection",
+            "sourceParameter": {
+                "@id": "packed.cwl#main/python_script"
+            },
+            "targetParameter": {
+                "@id": "packed.cwl#maw-py.cwl/workflow_script"
+            }
+        },
+        {
+            "@id": "#146b13e6-6c42-42ac-a826-3f701d40f2a9",
+            "@type": "ParameterConnection",
+            "sourceParameter": {
+                "@id": "packed.cwl#main/gnps_rda"
+            },
+            "targetParameter": {
+                "@id": "packed.cwl#maw-r.cwl/gnps_rda"
+            }
+        },
+        {
+            "@id": "#c5d512da-e100-4bae-b2cc-c114e12af138",
+            "@type": "ParameterConnection",
+            "sourceParameter": {
+                "@id": "packed.cwl#main/hmdb_rda"
+            },
+            "targetParameter": {
+                "@id": "packed.cwl#maw-r.cwl/hmdb_rda"
+            }
+        },
+        {
+            "@id": "#287244f1-b347-4bdf-a566-8baf69210d24",
+            "@type": "ParameterConnection",
+            "sourceParameter": {
+                "@id": "packed.cwl#main/mbank_rda"
+            },
+            "targetParameter": {
+                "@id": "packed.cwl#maw-r.cwl/mbank_rda"
+            }
+        },
+        {
+            "@id": "#a5e2eb69-8106-49fe-a418-f4600f7b1148",
+            "@type": "ParameterConnection",
+            "sourceParameter": {
+                "@id": "packed.cwl#main/mzml_files"
+            },
+            "targetParameter": {
+                "@id": "packed.cwl#maw-r.cwl/mzml_files"
+            }
+        },
+        {
+            "@id": "#edde3514-cfc3-46cb-8421-158f5a4dd71a",
+            "@type": "ParameterConnection",
+            "sourceParameter": {
+                "@id": "packed.cwl#main/r_script"
+            },
+            "targetParameter": {
+                "@id": "packed.cwl#maw-r.cwl/workflow_script"
+            }
+        },
+        {
+            "@id": "#96221dcd-63e6-4383-86fc-da3be6bac70f",
+            "@type": "ParameterConnection",
+            "sourceParameter": {
+                "@id": "packed.cwl#maw-r.cwl/ms_files"
+            },
+            "targetParameter": {
+                "@id": "packed.cwl#maw-sirius.cwl/spectrum"
+            }
+        },
+        {
+            "@id": "#9b2d8d77-fe7c-45f9-8e3c-08604a0db453",
+            "@type": "ParameterConnection",
+            "sourceParameter": {
+                "@id": "packed.cwl#maw-py.cwl/results"
+            },
+            "targetParameter": {
+                "@id": "packed.cwl#main/results"
+            }
+        },
+        {
+            "@id": "#056592aa-86d5-4cff-8a3c-89ba8ccd5d07",
+            "@type": "SoftwareApplication",
+            "name": "cwltool 3.1.20221201130942"
+        },
+        {
+            "@id": "#a075d75d-15b2-43ae-aabf-56b7b547688c",
+            "@type": "OrganizeAction",
+            "instrument": {
+                "@id": "#056592aa-86d5-4cff-8a3c-89ba8ccd5d07"
+            },
+            "name": "Run of cwltool 3.1.20221201130942",
+            "object": [
+                {
+                    "@id": "#74d2c325-bf94-4462-847a-bc276bec9455"
+                },
+                {
+                    "@id": "#baf94fbd-c01a-48a9-9452-729f57e87458"
+                },
+                {
+                    "@id": "#7227961d-c087-46d8-9252-aa34f1b47b9b"
+                }
+            ],
+            "result": {
+                "@id": "#4dc14d9f-cd62-4955-94fa-58ddc282646c"
+            },
+            "startTime": "2022-12-16T10:31:29.718478"
+        },
+        {
+            "@id": "#4dc14d9f-cd62-4955-94fa-58ddc282646c",
+            "@type": "CreateAction",
+            "endTime": "2022-12-16T10:43:55.230906",
+            "instrument": {
+                "@id": "packed.cwl"
+            },
+            "name": "Run of workflow/packed.cwl#main",
+            "object": [
+                {
+                    "@id": "f90a8208bc3578fbd9019d7b90f49f0e5c310405"
+                },
+                {
+                    "@id": "8dc910ef9fe5208a3a036747cb5f37ed26f45a2e"
+                },
+                {
+                    "@id": "eea49673cee69bdb7cbb895ed07332d0e455ca05"
+                },
+                {
+                    "@id": "d3e8f203e88cc6750fb3bb04d772934de404f930"
+                },
+                {
+                    "@id": "d406d999f4b0b07581ea028d3ae8c21167ca0724"
+                },
+                {
+                    "@id": "6e2086f2b5b889ee7d27f7d5b65b4619c24e87b6"
+                }
+            ],
+            "result": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/"
+                }
+            ],
+            "startTime": "2022-12-16T10:31:29.718594"
+        },
+        {
+            "@id": "f90a8208bc3578fbd9019d7b90f49f0e5c310405",
+            "@type": "File",
+            "exampleOfWork": [
+                {
+                    "@id": "packed.cwl#main/gnps_rda"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl/gnps_rda"
+                }
+            ]
+        },
+        {
+            "@id": "8dc910ef9fe5208a3a036747cb5f37ed26f45a2e",
+            "@type": "File",
+            "exampleOfWork": [
+                {
+                    "@id": "packed.cwl#main/hmdb_rda"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl/hmdb_rda"
+                }
+            ]
+        },
+        {
+            "@id": "eea49673cee69bdb7cbb895ed07332d0e455ca05",
+            "@type": "File",
+            "exampleOfWork": [
+                {
+                    "@id": "packed.cwl#main/mbank_rda"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl/mbank_rda"
+                }
+            ]
+        },
+        {
+            "@id": "d3e8f203e88cc6750fb3bb04d772934de404f930",
+            "@type": "File",
+            "exampleOfWork": [
+                {
+                    "@id": "packed.cwl#main/mzml_files"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl/mzml_files"
+                }
+            ]
+        },
+        {
+            "@id": "d406d999f4b0b07581ea028d3ae8c21167ca0724",
+            "@type": "File",
+            "exampleOfWork": [
+                {
+                    "@id": "packed.cwl#main/python_script"
+                },
+                {
+                    "@id": "packed.cwl#maw-py.cwl/workflow_script"
+                }
+            ]
+        },
+        {
+            "@id": "6e2086f2b5b889ee7d27f7d5b65b4619c24e87b6",
+            "@type": "File",
+            "exampleOfWork": [
+                {
+                    "@id": "packed.cwl#main/r_script"
+                },
+                {
+                    "@id": "packed.cwl#maw-r.cwl/workflow_script"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/",
+            "@type": "Dataset",
+            "exampleOfWork": [
+                {
+                    "@id": "packed.cwl#main/results"
+                },
+                {
+                    "@id": "packed.cwl#maw-py.cwl/results"
+                }
+            ],
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/896081109a12f20863c06376260ede8803b89055"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/173275ea0ffb1261ea721992334fcc28f3658dbd"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/cbfbd133030a0ff1c1a42fc3618bebdff4db39cf"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/317f7451c1ea9352659d49ebb4757a11c43ad09a/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/d41b00c2073d86c4ef48de33422810b81e272fa8"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/b176cb9720b357d6885c00670760328163a6a965"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/74d5450707676b379d911aeec24bc197811c77ac/"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/3a7247b565022eeba30738686800e0ddaac06d1f/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/9cf0704f2a283ce1de111cace3e8176a58f012bd"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/fb1412b65be97d3a6ae264b2fc616f6513af05d5"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/3a7247b565022eeba30738686800e0ddaac06d1f/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/3a7247b565022eeba30738686800e0ddaac06d1f/4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/3a7247b565022eeba30738686800e0ddaac06d1f/5e02499f715f3e970c3dc14fe25bb7eebd9e8e7a"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/3a7247b565022eeba30738686800e0ddaac06d1f/4bf7c18a30714cb1d124b03a15934b8358de8d8d",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/3a7247b565022eeba30738686800e0ddaac06d1f/5e02499f715f3e970c3dc14fe25bb7eebd9e8e7a",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/9cf0704f2a283ce1de111cace3e8176a58f012bd",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/fb1412b65be97d3a6ae264b2fc616f6513af05d5",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/6428564c3cc58b7a7f057aa9ce42b4093dee8d8d/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/dfbe2215e673c60d0872c034cbc3e784a6a70b64",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/896081109a12f20863c06376260ede8803b89055",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/173275ea0ffb1261ea721992334fcc28f3658dbd",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/cbfbd133030a0ff1c1a42fc3618bebdff4db39cf",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/317f7451c1ea9352659d49ebb4757a11c43ad09a/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/317f7451c1ea9352659d49ebb4757a11c43ad09a/0ac77dc45fdfd9d442989b330e6ef2e4ae828c87"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/317f7451c1ea9352659d49ebb4757a11c43ad09a/0ac77dc45fdfd9d442989b330e6ef2e4ae828c87",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/d41b00c2073d86c4ef48de33422810b81e272fa8",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/0dbab83bd089e8f41337052cf3e7fcc538021eb7/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/316df4fca6e66be3910790c1b68b27883ec36de2"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/26052de672fdad2bd7c86015405eb721e6958ded/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/0dbab83bd089e8f41337052cf3e7fcc538021eb7/"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/0dbab83bd089e8f41337052cf3e7fcc538021eb7/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/0dbab83bd089e8f41337052cf3e7fcc538021eb7/20b40ff2624a56b681d03737e2cfea7ed545726b"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/0dbab83bd089e8f41337052cf3e7fcc538021eb7/6755bf86903f41988995893b036bb94676f492cb"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/0dbab83bd089e8f41337052cf3e7fcc538021eb7/20b40ff2624a56b681d03737e2cfea7ed545726b",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/0dbab83bd089e8f41337052cf3e7fcc538021eb7/6755bf86903f41988995893b036bb94676f492cb",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/316df4fca6e66be3910790c1b68b27883ec36de2",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/26052de672fdad2bd7c86015405eb721e6958ded/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/26052de672fdad2bd7c86015405eb721e6958ded/4dd46dd5a42269feb7cf82d2dc01606c0f333d8e"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/26052de672fdad2bd7c86015405eb721e6958ded/d711cf7a1a3f548a8a1ca8d62a37900d466073da"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/26052de672fdad2bd7c86015405eb721e6958ded/4dd46dd5a42269feb7cf82d2dc01606c0f333d8e",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/22a868547e58910de90da963c68f306292a7aac5/26052de672fdad2bd7c86015405eb721e6958ded/d711cf7a1a3f548a8a1ca8d62a37900d466073da",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/b176cb9720b357d6885c00670760328163a6a965",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/ebb09d32edd19d9769c264a89ef0a7ed3748df32"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/da39a3ee5e6b4b0d3255bfef95601890afd80709/"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/8dc910ef9fe5208a3a036747cb5f37ed26f45a2e"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/9cf0704f2a283ce1de111cace3e8176a58f012bd"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f90a8208bc3578fbd9019d7b90f49f0e5c310405"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/eea49673cee69bdb7cbb895ed07332d0e455ca05"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f345f093209f54c0bee0e4dc7bb8514920960863"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/173275ea0ffb1261ea721992334fcc28f3658dbd"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/4bf7c18a30714cb1d124b03a15934b8358de8d8d",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/8dc910ef9fe5208a3a036747cb5f37ed26f45a2e",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/9cf0704f2a283ce1de111cace3e8176a58f012bd",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f90a8208bc3578fbd9019d7b90f49f0e5c310405",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/eea49673cee69bdb7cbb895ed07332d0e455ca05",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f345f093209f54c0bee0e4dc7bb8514920960863",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/173275ea0ffb1261ea721992334fcc28f3658dbd",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/ebb09d32edd19d9769c264a89ef0a7ed3748df32",
+            "@type": "File"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/73d54a785d257aa6a618797d530933d6db1d29e2/da39a3ee5e6b4b0d3255bfef95601890afd80709/",
+            "@type": "Dataset"
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/74d5450707676b379d911aeec24bc197811c77ac/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734"
+                }
+            ]
+        },
+        {
+            "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734",
+            "@type": "File"
+        },
+        {
+            "@id": "#1719b5dd-99f7-462d-a769-c1178eb74b8f",
+            "@type": "CreateAction",
+            "endTime": "2022-12-16T10:34:11.691638",
+            "instrument": {
+                "@id": "packed.cwl#maw-r.cwl"
+            },
+            "name": "Run of workflow/packed.cwl#main/dereplication",
+            "object": [
+                {
+                    "@id": "f90a8208bc3578fbd9019d7b90f49f0e5c310405"
+                },
+                {
+                    "@id": "8dc910ef9fe5208a3a036747cb5f37ed26f45a2e"
+                },
+                {
+                    "@id": "eea49673cee69bdb7cbb895ed07332d0e455ca05"
+                },
+                {
+                    "@id": "d3e8f203e88cc6750fb3bb04d772934de404f930"
+                },
+                {
+                    "@id": "6e2086f2b5b889ee7d27f7d5b65b4619c24e87b6"
+                }
+            ],
+            "result": [
+                {
+                    "@id": "#pv-main/dereplication/ms_files"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/"
+                }
+            ],
+            "startTime": "2022-12-16T10:31:33.783151"
+        },
+        {
+            "@id": "#74d2c325-bf94-4462-847a-bc276bec9455",
+            "@type": "ControlAction",
+            "instrument": {
+                "@id": "packed.cwl#main/dereplication"
+            },
+            "name": "orchestrate maw-r.cwl",
+            "object": {
+                "@id": "#1719b5dd-99f7-462d-a769-c1178eb74b8f"
+            }
+        },
+        {
+            "@id": "4bf7c18a30714cb1d124b03a15934b8358de8d8d",
+            "@type": "File",
+            "exampleOfWork": {
+                "@id": "packed.cwl#maw-sirius.cwl/spectrum"
+            }
+        },
+        {
+            "@id": "#pv-main/dereplication/ms_files",
+            "@type": "PropertyValue",
+            "exampleOfWork": {
+                "@id": "packed.cwl#maw-r.cwl/ms_files"
+            },
+            "name": "main/dereplication/ms_files",
+            "value": [
+                {
+                    "@id": "4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                }
+            ]
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/",
+            "@type": "Dataset",
+            "exampleOfWork": {
+                "@id": "packed.cwl#maw-r.cwl/provenance"
+            },
+            "hasPart": [
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/ebb09d32edd19d9769c264a89ef0a7ed3748df32"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/da39a3ee5e6b4b0d3255bfef95601890afd80709/"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/"
+                }
+            ]
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734"
+                }
+            ]
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734",
+            "@type": "File"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/ebb09d32edd19d9769c264a89ef0a7ed3748df32",
+            "@type": "File"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/da39a3ee5e6b4b0d3255bfef95601890afd80709/",
+            "@type": "Dataset"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f345f093209f54c0bee0e4dc7bb8514920960863"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/173275ea0ffb1261ea721992334fcc28f3658dbd"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f90a8208bc3578fbd9019d7b90f49f0e5c310405"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/8dc910ef9fe5208a3a036747cb5f37ed26f45a2e"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/9cf0704f2a283ce1de111cace3e8176a58f012bd"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/eea49673cee69bdb7cbb895ed07332d0e455ca05"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af"
+                },
+                {
+                    "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af"
+                }
+            ]
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c",
+            "@type": "File"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f345f093209f54c0bee0e4dc7bb8514920960863",
+            "@type": "File"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64",
+            "@type": "File"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/173275ea0ffb1261ea721992334fcc28f3658dbd",
+            "@type": "File"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f90a8208bc3578fbd9019d7b90f49f0e5c310405",
+            "@type": "File"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/8dc910ef9fe5208a3a036747cb5f37ed26f45a2e",
+            "@type": "File"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/4bf7c18a30714cb1d124b03a15934b8358de8d8d",
+            "@type": "File"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/9cf0704f2a283ce1de111cace3e8176a58f012bd",
+            "@type": "File"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/eea49673cee69bdb7cbb895ed07332d0e455ca05",
+            "@type": "File"
+        },
+        {
+            "@id": "73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/",
+            "@type": "Dataset",
+            "exampleOfWork": [
+                {
+                    "@id": "packed.cwl#maw-r.cwl/results"
+                },
+                {
+                    "@id": "packed.cwl#maw-py.cwl/mzml_files_results"
+                }
+            ],
+            "hasPart": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/74d5450707676b379d911aeec24bc197811c77ac/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b176cb9720b357d6885c00670760328163a6a965"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/173275ea0ffb1261ea721992334fcc28f3658dbd"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/"
+                }
+            ]
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/74d5450707676b379d911aeec24bc197811c77ac/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734"
+                }
+            ]
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b176cb9720b357d6885c00670760328163a6a965",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/173275ea0ffb1261ea721992334fcc28f3658dbd",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/c155ab3ef1603d147130c7c548d2050ff4f5c2af"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f711b31215d02862c30dbd17b8c728044fa71228/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/9cf0704f2a283ce1de111cace3e8176a58f012bd"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                }
+            ]
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/c155ab3ef1603d147130c7c548d2050ff4f5c2af",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f711b31215d02862c30dbd17b8c728044fa71228/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f711b31215d02862c30dbd17b8c728044fa71228/4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                }
+            ]
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f711b31215d02862c30dbd17b8c728044fa71228/4bf7c18a30714cb1d124b03a15934b8358de8d8d",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/9cf0704f2a283ce1de111cace3e8176a58f012bd",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                }
+            ]
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/f6da6c22f5c2b774ed499bf7c74d41a132a1be34/dfbe2215e673c60d0872c034cbc3e784a6a70b64",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/a7da6c55b37c9f6c534373381d01fb90c95ef1bc/04e84d5809c9dc31a14b2714b9f7d6c66f48399c",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/f345f093209f54c0bee0e4dc7bb8514920960863"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/843fa858eabfbc56c5957dd4ac76bb8467275033/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/843fa858eabfbc56c5957dd4ac76bb8467275033/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/c055ec61f0a96c4ffec7044103ed24716f11bd77/"
+                }
+            ]
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/f345f093209f54c0bee0e4dc7bb8514920960863",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/843fa858eabfbc56c5957dd4ac76bb8467275033/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/843fa858eabfbc56c5957dd4ac76bb8467275033/20b40ff2624a56b681d03737e2cfea7ed545726b"
+                }
+            ]
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/843fa858eabfbc56c5957dd4ac76bb8467275033/20b40ff2624a56b681d03737e2cfea7ed545726b",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/c055ec61f0a96c4ffec7044103ed24716f11bd77/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/c055ec61f0a96c4ffec7044103ed24716f11bd77/d711cf7a1a3f548a8a1ca8d62a37900d466073da"
+                }
+            ]
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/b1b64b86d8823ac45ca249d5902e409a11527434/c055ec61f0a96c4ffec7044103ed24716f11bd77/d711cf7a1a3f548a8a1ca8d62a37900d466073da",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/da39a3ee5e6b4b0d3255bfef95601890afd80709/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/ebb09d32edd19d9769c264a89ef0a7ed3748df32"
+                }
+            ]
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/da39a3ee5e6b4b0d3255bfef95601890afd80709/",
+            "@type": "Dataset"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f90a8208bc3578fbd9019d7b90f49f0e5c310405"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/eea49673cee69bdb7cbb895ed07332d0e455ca05"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/8dc910ef9fe5208a3a036747cb5f37ed26f45a2e"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/173275ea0ffb1261ea721992334fcc28f3658dbd"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/9cf0704f2a283ce1de111cace3e8176a58f012bd"
+                },
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f345f093209f54c0bee0e4dc7bb8514920960863"
+                }
+            ]
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/c155ab3ef1603d147130c7c548d2050ff4f5c2af",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/4bf7c18a30714cb1d124b03a15934b8358de8d8d",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f90a8208bc3578fbd9019d7b90f49f0e5c310405",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/dfbe2215e673c60d0872c034cbc3e784a6a70b64",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/04e84d5809c9dc31a14b2714b9f7d6c66f48399c",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/eea49673cee69bdb7cbb895ed07332d0e455ca05",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/8dc910ef9fe5208a3a036747cb5f37ed26f45a2e",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/173275ea0ffb1261ea721992334fcc28f3658dbd",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/9cf0704f2a283ce1de111cace3e8176a58f012bd",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/8484b38fc0ffdef6e3307d6361fc315ae07a858d/f345f093209f54c0bee0e4dc7bb8514920960863",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734"
+                }
+            ]
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/74d5450707676b379d911aeec24bc197811c77ac/092f456b600148981938377202cce31c4e7dd734",
+            "@type": "File"
+        },
+        {
+            "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/73d54a785d257aa6a618797d530933d6db1d29e2/ebb09d32edd19d9769c264a89ef0a7ed3748df32",
+            "@type": "File"
+        },
+        {
+            "@id": "#490f62b0-f8c1-4f3a-b27d-9bcbcb9b969e",
+            "@type": "CreateAction",
+            "endTime": "2022-12-16T10:34:51.198523",
+            "instrument": {
+                "@id": "packed.cwl#maw-sirius.cwl"
+            },
+            "name": "Run of workflow/packed.cwl#main/sirius",
+            "object": [
+                {
+                    "@id": "4bf7c18a30714cb1d124b03a15934b8358de8d8d"
+                },
+                {
+                    "@id": "#pv-main/sirius/candidates"
+                },
+                {
+                    "@id": "#pv-main/sirius/database"
+                },
+                {
+                    "@id": "#pv-main/sirius/ppm_max"
+                },
+                {
+                    "@id": "#pv-main/sirius/ppm_max_ms2"
+                },
+                {
+                    "@id": "#pv-main/sirius/profile"
+                }
+            ],
+            "result": [
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/"
+                }
+            ],
+            "startTime": "2022-12-16T10:34:15.950147"
+        },
+        {
+            "@id": "#baf94fbd-c01a-48a9-9452-729f57e87458",
+            "@type": "ControlAction",
+            "instrument": {
+                "@id": "packed.cwl#main/sirius"
+            },
+            "name": "orchestrate maw-sirius.cwl",
+            "object": {
+                "@id": "#490f62b0-f8c1-4f3a-b27d-9bcbcb9b969e"
+            }
+        },
+        {
+            "@id": "#pv-main/sirius/candidates",
+            "@type": "PropertyValue",
+            "exampleOfWork": {
+                "@id": "packed.cwl#maw-sirius.cwl/candidates"
+            },
+            "name": "main/sirius/candidates",
+            "value": "30"
+        },
+        {
+            "@id": "#pv-main/sirius/database",
+            "@type": "PropertyValue",
+            "exampleOfWork": {
+                "@id": "packed.cwl#maw-sirius.cwl/database"
+            },
+            "name": "main/sirius/database",
+            "value": "ALL"
+        },
+        {
+            "@id": "#pv-main/sirius/ppm_max",
+            "@type": "PropertyValue",
+            "exampleOfWork": {
+                "@id": "packed.cwl#maw-sirius.cwl/ppm_max"
+            },
+            "name": "main/sirius/ppm_max",
+            "value": "5"
+        },
+        {
+            "@id": "#pv-main/sirius/ppm_max_ms2",
+            "@type": "PropertyValue",
+            "exampleOfWork": {
+                "@id": "packed.cwl#maw-sirius.cwl/ppm_max_ms2"
+            },
+            "name": "main/sirius/ppm_max_ms2",
+            "value": "15"
+        },
+        {
+            "@id": "#pv-main/sirius/profile",
+            "@type": "PropertyValue",
+            "exampleOfWork": {
+                "@id": "packed.cwl#maw-sirius.cwl/profile"
+            },
+            "name": "main/sirius/profile",
+            "value": "orbitrap"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/",
+            "@type": "Dataset",
+            "exampleOfWork": {
+                "@id": "packed.cwl#maw-sirius.cwl/results"
+            },
+            "hasPart": [
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/ed75361928b2a04aac7162e2ae0ee5ca4eb12825"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/24bafa390af1f63e2409aee3629a0961dcda21b3"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/1ab41355bfe5dfe64ea86444cbe704379dcf6eeb"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/afc5794875d9d40525ef2589f1c60b8ad5fb82c9"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/4696f3a6f30bdce9475997f35fb1ae5b126d9765"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/da9e6944845c4d273f37464e2a2c021c95ce0b91"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/dc2090fb573210c53d263aae26b934a88ea142d7"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/24bafa390af1f63e2409aee3629a0961dcda21b3"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/da9e6944845c4d273f37464e2a2c021c95ce0b91"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/7970f54175730829f64233638b9dd09d69df2636"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/7970f54175730829f64233638b9dd09d69df2636"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/528c66f445917f7945f116924b91af0a5aeff814"
+                }
+            ]
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/c367eb63a482ecf6eea1b45c588e5064cda9ad90/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/e4031fb93576780177808c215e7bc7bb8403cc4c"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/4fa4a5b5d07bf5e685d6377d6208a3f1608d32a4/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/3c04b3942086354710ec77df9226969699dc3ae6"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/b433b663fecc0e8a8dd10e1e9596cdae71af6c3c/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/fd7234709f7066c39992a9e987edd0966d54ba6f"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/54df04a75ba6f5f7650f9edf4fae3246f24924e2/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/b7a1342433f51a7b8952d819e2d6912a743329f8"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/a2693cdffb32ca2c8b5ca0b61165c41eb22e4ca3"
+                }
+            ]
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/a65b40000151f78f37f6bc71afb824307b788cdb"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/722685d2c8b17e080ed9318bc349c9ce336c3e8c"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/68adca59aa95cd781b2f88c62dbabf601fd3c851"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/80ddd3d2dea1a79e41413af70a7416ddde933953"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/cf94802d858a81cac066b4a3b5871c32c94904f8"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/1aa2c73c686d318d1464f5fcf1e36896c6fd0618"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/959b71b1b3391522c75deecb9061457465856790"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/19828e64dd913dda0f6cf4e84ad50124939a513d"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/ae14416d359fe88b6cb12d2a2549bb22a05a7f16"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/50ae172a6da553e1c724e5159ae39fc3ad437321"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/7134df14f5dd3b9bea9a8d94cbeba91008e12d35"
+                }
+            ]
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/a65b40000151f78f37f6bc71afb824307b788cdb",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/722685d2c8b17e080ed9318bc349c9ce336c3e8c",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/68adca59aa95cd781b2f88c62dbabf601fd3c851",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/80ddd3d2dea1a79e41413af70a7416ddde933953",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/cf94802d858a81cac066b4a3b5871c32c94904f8",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/1aa2c73c686d318d1464f5fcf1e36896c6fd0618",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/959b71b1b3391522c75deecb9061457465856790",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/19828e64dd913dda0f6cf4e84ad50124939a513d",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/ae14416d359fe88b6cb12d2a2549bb22a05a7f16",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/50ae172a6da553e1c724e5159ae39fc3ad437321",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/2a4579893026330d112f5351b356e27213b0ac94/7134df14f5dd3b9bea9a8d94cbeba91008e12d35",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/c367eb63a482ecf6eea1b45c588e5064cda9ad90/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/c367eb63a482ecf6eea1b45c588e5064cda9ad90/65631abc7dfb2a2f4cf2cafdf5b1bcf855ed6810"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/c367eb63a482ecf6eea1b45c588e5064cda9ad90/7f210f6500d84aa5b00c18564570fd2069927473"
+                }
+            ]
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/c367eb63a482ecf6eea1b45c588e5064cda9ad90/65631abc7dfb2a2f4cf2cafdf5b1bcf855ed6810",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/c367eb63a482ecf6eea1b45c588e5064cda9ad90/7f210f6500d84aa5b00c18564570fd2069927473",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/e4031fb93576780177808c215e7bc7bb8403cc4c",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/4fa4a5b5d07bf5e685d6377d6208a3f1608d32a4/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/4fa4a5b5d07bf5e685d6377d6208a3f1608d32a4/0744d3def51a7d04d9e110280612da380725c960"
+                }
+            ]
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/4fa4a5b5d07bf5e685d6377d6208a3f1608d32a4/0744d3def51a7d04d9e110280612da380725c960",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/068d29d4e2f20f1a0ba351897d92e869c653c98e"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/52ea11f50008899ebe3057a1c701a8c2be94d0a7"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/9d374657c62a3d0c0094907a12caf8e963b2384e"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/4e0e02031026e486d9d0e3681fe93faf7a5b0a54"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/38097f8a0df2fd6097b7c77bfee5c5f43da0a4db"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/51c02e50604994697a4f208e115072227b0b3e09"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/12a1c1b1672499bea2393e7ab14beb2e0fd53c98"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/ea50134a7e3da56f911a06dfd00c76e53f7b8aad"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/92aa9257ab13164838677f8065b094cc92d83181"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/db75a8a8541cfbacf3a29f93071701de791585df"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/dc37f6698ef815d517eee1e5c3d7039cb41e1686"
+                }
+            ]
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/068d29d4e2f20f1a0ba351897d92e869c653c98e",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/52ea11f50008899ebe3057a1c701a8c2be94d0a7",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/9d374657c62a3d0c0094907a12caf8e963b2384e",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/4e0e02031026e486d9d0e3681fe93faf7a5b0a54",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/38097f8a0df2fd6097b7c77bfee5c5f43da0a4db",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/51c02e50604994697a4f208e115072227b0b3e09",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/12a1c1b1672499bea2393e7ab14beb2e0fd53c98",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/ea50134a7e3da56f911a06dfd00c76e53f7b8aad",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/92aa9257ab13164838677f8065b094cc92d83181",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/db75a8a8541cfbacf3a29f93071701de791585df",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/da321835c55943b391091e99d7ab024e92bb4d5e/dc37f6698ef815d517eee1e5c3d7039cb41e1686",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/3c04b3942086354710ec77df9226969699dc3ae6",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/b433b663fecc0e8a8dd10e1e9596cdae71af6c3c/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/b433b663fecc0e8a8dd10e1e9596cdae71af6c3c/7bf6b1b2bc1faa4aefd10fae00db4a4fe5e53ab0"
+                }
+            ]
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/b433b663fecc0e8a8dd10e1e9596cdae71af6c3c/7bf6b1b2bc1faa4aefd10fae00db4a4fe5e53ab0",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/fd7234709f7066c39992a9e987edd0966d54ba6f",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/54df04a75ba6f5f7650f9edf4fae3246f24924e2/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/54df04a75ba6f5f7650f9edf4fae3246f24924e2/10987fa25c3c59386b32e6fbbe24a3d8c1a1a752"
+                }
+            ]
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/54df04a75ba6f5f7650f9edf4fae3246f24924e2/10987fa25c3c59386b32e6fbbe24a3d8c1a1a752",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/b7a1342433f51a7b8952d819e2d6912a743329f8",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/",
+            "@type": "Dataset",
+            "hasPart": [
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/00441472f4fc6d8b7261a71e370fe55cce509a56"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/6cf21f132f6a00f9240606b964b69c02065b76fc"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/f63c33970d3576890cae2f41e8077e85b930de9d"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/d77f45a0658bafb413efe4490805ed4baac99db4"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/d2e1f9e14bc69e867cff0a2d6b7d0cd2497c874a"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/0e1a20ec563a0286823a71570d46893f8186bb3d"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/4efe618bb35b21cc8e4aeb99f24ccc5a1a85b855"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/ad0e019e5592773b4eea27cacaf05db7ee8256b1"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/dbc75c9e2e449c05038a5bacb3acff95f37f65a4"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/e09e533495e416f0735b19761655edede64eec4c"
+                },
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/de2592e9625981ee1bf3d7e33be9685aa574f27f"
+                }
+            ]
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/00441472f4fc6d8b7261a71e370fe55cce509a56",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/6cf21f132f6a00f9240606b964b69c02065b76fc",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/f63c33970d3576890cae2f41e8077e85b930de9d",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/d77f45a0658bafb413efe4490805ed4baac99db4",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/d2e1f9e14bc69e867cff0a2d6b7d0cd2497c874a",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/0e1a20ec563a0286823a71570d46893f8186bb3d",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/4efe618bb35b21cc8e4aeb99f24ccc5a1a85b855",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/ad0e019e5592773b4eea27cacaf05db7ee8256b1",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/dbc75c9e2e449c05038a5bacb3acff95f37f65a4",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/e09e533495e416f0735b19761655edede64eec4c",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/baf6ab125b7c2a162b5c9851c96c06194bed6b79/de2592e9625981ee1bf3d7e33be9685aa574f27f",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/bf3b41b500db42a4cdd9f2ee25b276a79e4c78d3/a2693cdffb32ca2c8b5ca0b61165c41eb22e4ca3",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/ed75361928b2a04aac7162e2ae0ee5ca4eb12825",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/24bafa390af1f63e2409aee3629a0961dcda21b3",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/1ab41355bfe5dfe64ea86444cbe704379dcf6eeb",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/afc5794875d9d40525ef2589f1c60b8ad5fb82c9",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/4696f3a6f30bdce9475997f35fb1ae5b126d9765",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/da9e6944845c4d273f37464e2a2c021c95ce0b91",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/dc2090fb573210c53d263aae26b934a88ea142d7",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/7970f54175730829f64233638b9dd09d69df2636",
+            "@type": "File"
+        },
+        {
+            "@id": "89e1b1edf3073d927fa409ba432725b70364b153/528c66f445917f7945f116924b91af0a5aeff814",
+            "@type": "File"
+        },
+        {
+            "@id": "#600a45b0-6a0c-483f-ae36-303fab6e8c59",
+            "@type": "CreateAction",
+            "endTime": "2022-12-16T10:43:43.486681",
+            "instrument": {
+                "@id": "packed.cwl#maw-py.cwl"
+            },
+            "name": "Run of workflow/packed.cwl#main/cheminformatics",
+            "object": [
+                {
+                    "@id": "5db9c60f33e14ef5a65bc8733901075ec6219a2f/"
+                },
+                {
+                    "@id": "#pv-main/cheminformatics/sirius_results"
+                },
+                {
+                    "@id": "d406d999f4b0b07581ea028d3ae8c21167ca0724"
+                }
+            ],
+            "result": [
+                {
+                    "@id": "da39a3ee5e6b4b0d3255bfef95601890afd80709/"
+                },
+                {
+                    "@id": "2ee9c8bd964a97bbbdfbc57aef497099d1ec2fef/"
+                }
+            ],
+            "startTime": "2022-12-16T10:34:51.602948"
+        },
+        {
+            "@id": "#7227961d-c087-46d8-9252-aa34f1b47b9b",
+            "@type": "ControlAction",
+            "instrument": {
+                "@id": "packed.cwl#main/cheminformatics"
+            },
+            "name": "orchestrate maw-py.cwl",
+            "object": {
+                "@id": "#600a45b0-6a0c-483f-ae36-303fab6e8c59"
+            }
+        },
+        {
+            "@id": "#pv-main/cheminformatics/sirius_results",
+            "@type": "PropertyValue",
+            "exampleOfWork": {
+                "@id": "packed.cwl#maw-py.cwl/sirius_results"
+            },
+            "name": "main/cheminformatics/sirius_results",
+            "value": [
+                {
+                    "@id": "89e1b1edf3073d927fa409ba432725b70364b153/"
+                }
+            ]
+        },
+        {
+            "@id": "da39a3ee5e6b4b0d3255bfef95601890afd80709/",
+            "@type": "Dataset",
+            "exampleOfWork": {
+                "@id": "packed.cwl#maw-py.cwl/provenance"
+            }
+        }
+    ]
+}
