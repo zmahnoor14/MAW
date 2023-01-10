@@ -531,6 +531,8 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                 #GNPSspectrumID <- c() # spectrum id of gnps candidate
                 GNPScompound_name <- c() # compound name of gnps candidate
                 #GNPSmirrorSpec <- c() # path for mirror spectra between gnps candidate and input of gnps candidate
+                GNPSinstrument <- c()
+                GNPSformula <- c()
                 Source <- c() # GNPS as source of result
                 #### GNPS spec with pre_mz
                 gnps_with_mz <- spec2_Processing(x, gnpsdb, spec = "gnps", ppmx) # change here later
@@ -606,6 +608,13 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                         GNPSname <- gnps_with_mz[idv[[2]]]$name
                                         GNPScompound_name <- c(GNPScompound_name, GNPSname)
+                                        
+                                        GNPSinstru <- gnps_with_mz[idv[[2]]]$INSTRUMENTTYPE
+                                        GNPSinstrument <- c(GNPSinstrument, GNPSinstru)
+                                        
+                                        GNPSfor <- gnps_with_mz[idv[[2]]]$formula
+                                        GNPSformula <- c(GNPSformula, GNPSfor)
+                                        
                                         Src <- "GNPS"
                                         Source <- c(Source, Src)
 
@@ -677,6 +686,12 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                         GNPSname <- gnps_with_mz[idv[[1]]]$name
                                         GNPScompound_name <- c(GNPScompound_name, GNPSname)
+                                        
+                                        GNPSinstru <- gnps_with_mz[idv[[1]]]$INSTRUMENTTYPE
+                                        GNPSinstrument <- c(GNPSinstrument, GNPSinstru)
+                                        
+                                        GNPSfor <- gnps_with_mz[idv[[1]]]$formula
+                                        GNPSformula <- c(GNPSformula, GNPSfor)
 
                                         Src <- "GNPS"
                                         Source <- c(Source, Src)
@@ -750,6 +765,12 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                         GNPSname <- gnps_with_mz$name
                                         GNPScompound_name <- c(GNPScompound_name, GNPSname)
+                                        
+                                        GNPSinstru <- gnps_with_mz$INSTRUMENTTYPE
+                                        GNPSinstrument <- c(GNPSinstrument, GNPSinstru)
+                                        
+                                        GNPSfor <- gnps_with_mz$formula
+                                        GNPSformula <- c(GNPSformula, GNPSfor)
 
                                         Src <- "GNPS"
                                         Source <- c(Source, Src)
@@ -794,6 +815,12 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                 GNPSname <- gnps_best_match$name
                                 GNPScompound_name <- c(GNPScompound_name, GNPSname)
+                                
+                                GNPSinstru <- gnps_best_match$INSTRUMENTTYPE
+                                GNPSinstrument <- c(GNPSinstrument, GNPSinstru)
+                                        
+                                GNPSfor <- gnps_best_match$formula
+                                GNPSformula <- c(GNPSformula, GNPSfor)
 
 
                                 #GNPSID <- gnps_best_match$SPECTRUMID
@@ -810,7 +837,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                 gnps_x <- data.frame(cbind(GNPSmax_similarity, GNPSmzScore,
                                        GNPSintScore, GQMatchingPeaks,
                                        GNPSTotalPeaks, gQueryTotalPeaks,
-                                       GNPSSMILES, GNPScompound_name, Source))
+                                       GNPSSMILES, GNPScompound_name, GNPSformula, GNPSinstrument, Source))
                 write.csv(gnps_x, file = paste(dir_name, "/gnps_results_for_", id_Xx, ".csv", sep = ""))
             })# gnps ends
 
@@ -829,6 +856,11 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                 HMDBTotalPeaks <- c()
                 hQueryTotalPeaks<- c()
                 HMDBcompoundID <- c()
+                HMDBinstrument <- c()
+                HMDBSMILES <- c()
+                HMDBformula <- c()
+                HMDBcompound_name<- c()
+                HMDBcollision <- c()
                 Source <- c()
 
                 #### HMDB spec with pre_mz
@@ -894,6 +926,22 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                         HMDBID <- hmdb_with_mz[idv[[2]]]$compound_id
                                         HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
+                                        
+                                        HMDBinstru <- hmdb_with_mz[idv[[2]]]$instrument_type
+                                        HMDBinstrument <- c(HMDBinstrument, HMDBinstru)
+                                        
+                                        hsmiles <- hmdb_with_mz[idv[[2]]]$smiles
+                                        HMDBSMILES <- c(HMDBSMILES, hsmiles)
+                                        
+                                        HMDBfor <- hmdb_with_mz[idv[[2]]]$formula
+                                        HMDBformula <- c(HMDBformula, HMDBfor)
+                                        
+                                        HMDBname <- hmdb_with_mz[idv[[2]]]$name
+                                        HMDBcompound_name<- c(HMDBcompound_name, HMDBname)
+                                        
+                                        HMDBcol <- hmdb_with_mz[idv[[2]]]$collisionEnergy
+                                        HMDBcollision <- c(HMDBcollision, HMDBcol)
+                                        
 
                                         Src <- "HMDB"
                                         Source <- c(Source, Src)
@@ -953,6 +1001,22 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                         HMDBID <- hmdb_with_mz[idv[[1]]]$compound_id
                                         HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
+                                        
+                                        HMDBinstru <- hmdb_with_mz[idv[[1]]]$instrument_type
+                                        HMDBinstrument <- c(HMDBinstrument, HMDBinstru)
+                                        
+                                        hsmiles <- hmdb_with_mz[idv[[1]]]$smiles
+                                        HMDBSMILES <- c(HMDBSMILES, hsmiles)
+                                        
+                                        HMDBfor <- hmdb_with_mz[idv[[1]]]$formula
+                                        HMDBformula <- c(HMDBformula, HMDBfor)
+                                        
+                                        HMDBname <- hmdb_with_mz[idv[[1]]]$name
+                                        HMDBcompound_name<- c(HMDBcompound_name, HMDBname)
+                                        
+                                        HMDBcol <- hmdb_with_mz[idv[[1]]]$collisionEnergy
+                                        HMDBcollision <- c(HMDBcollision, HMDBcol)
+                                        
 
                                         Src <- "HMDB"
                                         Source <- c(Source, Src)
@@ -1013,6 +1077,22 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                         HMDBID <- hmdb_with_mz$compound_id
                                         HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
+                                        
+                                        HMDBinstru <- hmdb_with_mz$instrument_type
+                                        HMDBinstrument <- c(HMDBinstrument, HMDBinstru)
+                                        
+                                        hsmiles <- hmdb_with_mz$smiles
+                                        HMDBSMILES <- c(HMDBSMILES, hsmiles)
+                                        
+                                        HMDBfor <- hmdb_with_mz$formula
+                                        HMDBformula <- c(HMDBformula, HMDBfor)
+                                        
+                                        HMDBname <- hmdb_with_mz$name
+                                        HMDBcompound_name<- c(HMDBcompound_name, HMDBname)
+                                        
+                                        HMDBcol <- hmdb_with_mz$collisionEnergy
+                                        HMDBcollision <- c(HMDBcollision, HMDBcol)
+                                        
 
                                         Src <- "HMDB"
                                         Source <- c(Source, Src)
@@ -1049,7 +1129,23 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                 HMDBID <- hmdb_best_match$compound_id
                                 HMDBcompoundID <- c(HMDBcompoundID, HMDBID)
-                                 Src <- "HMDB"
+                                
+                                HMDBinstru <- hmdb_best_match$instrument_type
+                                HMDBinstrument <- c(HMDBinstrument, HMDBinstru)
+                                        
+                                hsmiles <- hmdb_best_match$smiles
+                                HMDBSMILES <- c(HMDBSMILES, hsmiles)
+                                        
+                                HMDBfor <- hmdb_best_match$formula
+                                HMDBformula <- c(HMDBformula, HMDBfor)
+                                        
+                                HMDBname <- hmdb_best_match$name
+                                HMDBcompound_name<- c(HMDBcompound_name, HMDBname)
+                                
+                                HMDBcol <- hmdb_best_match$collisionEnergy
+                                HMDBcollision <- c(HMDBcollision, HMDBcol)
+                                
+                                Src <- "HMDB"
                                 Source <- c(Source, Src)
                             }
                         }
@@ -1058,7 +1154,9 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                 hmdb_x <- data.frame(cbind(HMDBmax_similarity, HMDBmzScore,
                                        HMDBintScore, HQMatchingPeaks,
                                        HMDBTotalPeaks, hQueryTotalPeaks,
-                                       HMDBcompoundID, Source))
+                                       HMDBcompoundID, HMDBformula, HMDBSMILES, HMDBcompound_name, HMDBinstrument,
+                                           HMDBcollision,
+                                           Source))
                 write.csv(hmdb_x, file = paste(dir_name, "/hmdb_results_for_", id_Xx, ".csv", sep = ""))
             })#hmdb ends here
 
@@ -1082,6 +1180,8 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                     MBSMILES <- c()
                     MBspectrumID <- c()
                     MBcompound_name <- c()
+                    MBinstrument <- c()
+                    MBcollision<- c()
                     Source <- c()
 
                     mbank_with_mz <- spec2_Processing(x, mbank, spec = "mbank", ppmx) # change here later
@@ -1149,6 +1249,12 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                             MBname <- mbank_with_mz[idv[[2]]]$Name
                                             MBcompound_name <- c(MBcompound_name, MBname)
+                                            
+                                            MBinstru <- mbank_with_mz[idv[[2]]]$Instrument_type
+                                            MBinstrument <- c(MBinstrument, MBinstru)
+                                            
+                                            MBcol <- mbank_with_mz[idv[[2]]]$Collision_energy
+                                            MBcollision<- c(MBcollision, MBcol)
 
                                             Src <- "MassBank"
                                             Source <- c(Source, Src)
@@ -1218,6 +1324,12 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                             MBname <- mbank_with_mz[idv[[1]]]$Name
                                             MBcompound_name <- c(MBcompound_name, MBname)
+                                            
+                                            MBinstru <- mbank_with_mz[idv[[1]]]$Instrument_type
+                                            MBinstrument <- c(MBinstrument, MBinstru)
+                                            
+                                            MBcol <- mbank_with_mz[idv[[1]]]$Collision_energy
+                                            MBcollision<- c(MBcollision, MBcol)
 
                                             Src <- "MassBank"
                                             Source <- c(Source, Src)
@@ -1285,6 +1397,12 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                             MBname <- mbank_with_mz$Name
                                             MBcompound_name <- c(MBcompound_name, MBname)
+                                            
+                                            MBinstru <- mbank_with_mz$Instrument_type
+                                            MBinstrument <- c(MBinstrument, MBinstru)
+                                            
+                                            MBcol <- mbank_with_mz$Collision_energy
+                                            MBcollision<- c(MBcollision, MBcol)
 
                                             Src <- "MassBank"
                                             Source <- c(Source, Src)
@@ -1328,6 +1446,13 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 
                                     MBname <- mbank_with_mz$Name
                                     MBcompound_name <- c(MBcompound_name, MBname)
+                                    
+                                    
+                                    MBinstru <- mbank_with_mz$Instrument_type
+                                    MBinstrument <- c(MBinstrument, MBinstru)
+                                            
+                                    MBcol <- mbank_with_mz$Collision_energy
+                                    MBcollision<- c(MBcollision, MBcol)
 
                                     Src <- "MassBank"
                                     Source <- c(Source, Src)
@@ -1340,7 +1465,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                                             MBintScore, MQMatchingPeaks,
                                             MBTotalPeaks, mQueryTotalPeaks,
                                             MBformula, MBSMILES, MBspectrumID,
-                                            MBcompound_name, Source))
+                                            MBcompound_name, MBcollision, MBinstrument, Source))
                     write.csv(mbank_x, file = paste(dir_name, "/mbank_results_for_", id_Xx, ".csv", sep = ""))
 
                 }
