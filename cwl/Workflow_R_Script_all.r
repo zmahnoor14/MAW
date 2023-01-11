@@ -1781,7 +1781,7 @@ ms2_peaks <- function(pre_tbl, proc_mzml, result_dir, file_id){
 #}
 
 
-cam_func <- function(fl, ms2features){
+cam_func <- function(fl, ms2features, result_dir){
     modes_file <- read_csv(ms2features)
     mode = unique(modes_file["pol"])
 
@@ -1811,7 +1811,7 @@ cam_func <- function(fl, ms2features){
             y <- as.numeric(unlist(nm_po[i]))
             peaklist[i,'istops'] = y[1]
         }
-        name <- str_remove(f, ".mzML")
+        name <- str_remove(fl, ".mzML")
         write.csv(peaklist, file = paste(result_dir, "/CAMERAResults",".csv", sep = ""))
         unloadNamespace("CAMERA")
         unloadNamespace("xcms")
@@ -1844,7 +1844,7 @@ cam_func <- function(fl, ms2features){
             y <- as.numeric(unlist(nm_ne[i]))
             peaklist[i,'istops'] = y[1]
         }
-        name <- str_remove(f, ".mzML")
+        name <- str_remove(fl, ".mzML")
         write.csv(peaklist, file = paste(result_dir, "/CAMERAResults", ".csv", sep = ""))
         unloadNamespace("CAMERA")
         unloadNamespace("xcms")
@@ -1852,6 +1852,7 @@ cam_func <- function(fl, ms2features){
     }
     return(peaklist)
 }
+
 
 # Extract isotopic peaks for each pre_mz
 # The input is x = first_list (from ms2peaks function) and y = camera results
@@ -2991,7 +2992,7 @@ run_metfrag <- function(met_param){
 
 }
 
-
+##### SCRIPT #####
 
 library(parallel)
 library(doParallel)
@@ -3035,33 +3036,36 @@ print(mzml_result)
 
 spec_pr <- spec_Processing(mzml_file, mzml_result)
 
+file_id <- "File1_neg_Smarinoi"
+
 df_derep <- spec_dereplication_file(mzml_file = mzml_file,
                                     pre_tbl = paste(mzml_result, "/premz_list.txt", sep = ""),
                                     proc_mzml = paste(mzml_result, "/processedSpectra.mzML", sep = ""),
                                     db = "all",
                                     result_dir = mzml_result,
-                                    file_id = "any_id",
+                                    file_id,
                                     no_of_candidates = 50,
                                     ppmx = 15)
 
 spec_pr2 <- ms2_peaks(pre_tbl = paste(mzml_result, "/premz_list.txt", sep = ""),
                       proc_mzml = paste(mzml_result, "/processedSpectra.mzML", sep = ""),
                       result_dir = mzml_result,
-                      file_id = "any_id")
+                      file_id)
 
-# cam_res <- cam_func(f = mzml_file, 
-#                     ms2features = paste(mzml_result, "/insilico/MS2DATA.csv", sep = ""))
+cam_res <- cam_func(fl = mzml_file, 
+                    ms2features = paste(mzml_result, "/insilico/MS2DATA.csv", sep = ""),
+                   result_dir = mzml_result)
 
 # Extract MS1 peaks or isotopic peaks
 ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
-                  y = NA, 
+                  y = paste(mzml_result,'/CAMERAResults.csv', sep = ""), 
                   result_dir = mzml_result,
-                  QCfile = FALSE)
+                  QCfile = TRUE)
 
 sirius_param_files <- sirius_param(x = paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""),
                        result_dir = mzml_result,
-                       SL = FALSE, 
-                       collision_info = FALSE)
+                       SL = TRUE, 
+                       collision_info = TRUE)
 
 # run_sirius(files = paste(mzml_result,'/insilico/MS1DATA_SiriusP.tsv', sep = ""),
 #                    ppm_max = 5,
