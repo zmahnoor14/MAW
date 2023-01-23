@@ -69,6 +69,8 @@ This command will run the Workflow_Python_Script.py which is an example script f
 
 The results can be seen in the /data/final_candidates.csv <br>
 
+For further information on the scripts used for the Bechmark datasets to validate results from MAW, please refer to the [MAW-Benchmark repository](https://github.com/zmahnoor14/MAW-Benchmark).
+
 > **Note**
 > For details on using the workflow on Jupyter notebooks in a more interactive mode, please follow the Tutorial part on wiki page of this repository.
 
