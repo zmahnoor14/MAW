@@ -226,7 +226,8 @@ def spec_postproc(entry, Source="all"):
                     "[M",
                     "M-",
                     "2M",
-                    "M*" "20.0",
+                    "M*", 
+                    "20.0",
                     "50.0",
                     "30.0",
                     "40.0",
@@ -490,50 +491,50 @@ def spec_postproc(entry, Source="all"):
             # HMDB Results
             if Source == "hmdb" or Source == "all":
 
-                if not os.path.exists(entry + "/hmdb_dframe_str.csv"):
+#                 if not os.path.exists(entry + "/hmdb_dframe_str.csv"):
 
-                    # download SDF structures
-                    os.system(
-                        "wget -P "
-                        + entry
-                        + " https://hmdb.ca/system/downloads/current/structures.zip"
-                    )
-                    os.system(
-                        "unzip "
-                        + entry
-                        + "/structures.zip"
-                        + " -d "
-                        + entry
-                    )
+#                     # download SDF structures
+#                     os.system(
+#                         "wget -P "
+#                         + entry
+#                         + " https://hmdb.ca/system/downloads/current/structures.zip"
+#                     )
+#                     os.system(
+#                         "unzip "
+#                         + entry
+#                         + "/structures.zip"
+#                         + " -d "
+#                         + entry
+#                     )
 
-                    # Load the sdf
-                    dframe = PandasTools.LoadSDF(
-                        (entry + "/structures.sdf"),
-                        idName="HMDB_ID",
-                        smilesName="SMILES",
-                        molColName="Molecule",
-                        includeFingerprints=False,
-                    )
+#                     # Load the sdf
+#                     dframe = PandasTools.LoadSDF(
+#                         (entry + "/structures.sdf"),
+#                         idName="HMDB_ID",
+#                         smilesName="SMILES",
+#                         molColName="Molecule",
+#                         includeFingerprints=False,
+#                     )
 
-                    dframe = dframe[
-                        [
-                            "DATABASE_ID",
-                            "SMILES",
-                            "INCHI_IDENTIFIER",
-                            "INCHI_KEY",
-                            "FORMULA",
-                            "MOLECULAR_WEIGHT",
-                            "EXACT_MASS",
-                            "GENERIC_NAME",
-                            "SYNONYMS",
-                        ]
-                    ]
+#                     dframe = dframe[
+#                         [
+#                             "DATABASE_ID",
+#                             "SMILES",
+#                             "INCHI_IDENTIFIER",
+#                             "INCHI_KEY",
+#                             "FORMULA",
+#                             "MOLECULAR_WEIGHT",
+#                             "EXACT_MASS",
+#                             "GENERIC_NAME",
+#                             "SYNONYMS",
+#                         ]
+#                     ]
 
-                elif os.path.exists(entry + "/hmdb_dframe_str.csv"):
+#                 elif os.path.exists(entry + "/hmdb_dframe_str.csv"):
 
-                    dframe = pd.read_csv(
-                        entry + "/hmdb_dframe_str.csv", low_memory=False
-                    )
+#                     dframe = pd.read_csv(
+#                         entry + "/hmdb_dframe_str.csv", low_memory=False
+#                     )
 
                 # HMDBcsvfiles2 = []
                 # print(entry)
@@ -553,53 +554,53 @@ def spec_postproc(entry, Source="all"):
                             if msp["id_X"][mz] in fls_h:
                                 hmdb_df = pd.read_csv(fls_h)
                                 hmdb_df = hmdb_df.drop_duplicates(
-                                    subset=["HMDBcompoundID"]
+                                    subset=["HMDBSMILES"]
                                 )
 
-                                if len(hmdb_df) > 0:
-                                    print(entry)
-                                    # merge on basis of id, frame and hmdb result files
-                                    SmilesHM = pd.merge(
-                                        hmdb_df,
-                                        dframe,
-                                        left_on=hmdb_df.HMDBcompoundID,
-                                        right_on=dframe.DATABASE_ID,
-                                    )
+#                                 if len(hmdb_df) > 0:
+#                                     print(entry)
+#                                     # merge on basis of id, frame and hmdb result files
+#                                     SmilesHM = pd.merge(
+#                                         hmdb_df,
+#                                         dframe,
+#                                         left_on=hmdb_df.HMDBcompoundID,
+#                                         right_on=dframe.DATABASE_ID,
+#                                     )
 
-                                    for i, row in hmdb_df.iterrows():
-                                        if HMDB_Scoring(hmdb_df, i):
+#                                     for i, row in hmdb_df.iterrows():
+#                                         if HMDB_Scoring(hmdb_df, i):
 
-                                            for j, row in SmilesHM.iterrows():
+#                                             for j, row in SmilesHM.iterrows():
 
-                                                # where index for both match, add the name and SMILES
-                                                if (
-                                                    hmdb_df["HMDBcompoundID"][i]
-                                                    == SmilesHM[
-                                                        "HMDBcompoundID"
-                                                    ][j]
-                                                ):
-                                                    hmdb_df.loc[
-                                                        i, "HMDBSMILES"
-                                                    ] = SmilesHM["SMILES"][
-                                                        j
-                                                    ]  # add SMILES
-                                                    hmdb_df.loc[
-                                                        i, "HMDBcompound_name"
-                                                    ] = SmilesHM[
-                                                        "GENERIC_NAME"
-                                                    ][
-                                                        j
-                                                    ]  # add name
-                                                    hmdb_df.loc[
-                                                        i, "HMDBformula"
-                                                    ] = SmilesHM["FORMULA"][
-                                                        j
-                                                    ]  # add formula
-                                                    # hmdb_df.loc[i, 'HMDBinchi'] = Chem.MolToInchi(Chem.MolFromSmiles(SmilesHM['SMILES'][j]))
-                                        else:
-                                            hmdb_df.drop(
-                                                [i], axis=0, inplace=True
-                                            )
+#                                                 # where index for both match, add the name and SMILES
+#                                                 if (
+#                                                     hmdb_df["HMDBcompoundID"][i]
+#                                                     == SmilesHM[
+#                                                         "HMDBcompoundID"
+#                                                     ][j]
+#                                                 ):
+#                                                     hmdb_df.loc[
+#                                                         i, "HMDBSMILES"
+#                                                     ] = SmilesHM["SMILES"][
+#                                                         j
+#                                                     ]  # add SMILES
+#                                                     hmdb_df.loc[
+#                                                         i, "HMDBcompound_name"
+#                                                     ] = SmilesHM[
+#                                                         "GENERIC_NAME"
+#                                                     ][
+#                                                         j
+#                                                     ]  # add name
+#                                                     hmdb_df.loc[
+#                                                         i, "HMDBformula"
+#                                                     ] = SmilesHM["FORMULA"][
+#                                                         j
+#                                                     ]  # add formula
+#                                                     # hmdb_df.loc[i, 'HMDBinchi'] = Chem.MolToInchi(Chem.MolFromSmiles(SmilesHM['SMILES'][j]))
+#                                         else:
+#                                             hmdb_df.drop(
+#                                                 [i], axis=0, inplace=True
+#                                             )
 
                                 csvname = (
                                     (os.path.splitext(fls_h)[0])
