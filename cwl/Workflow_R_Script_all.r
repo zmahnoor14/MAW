@@ -2609,7 +2609,7 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
         else if (grepl("_isotopeNum_", x[i, "ms1Peaks"], fixed=TRUE)){
 
             #INPUT FILE NAME
-            fileR <- paste(dir_name, "/", para, "_iso_MS1p_", as.character(x[i, "premz"]), "_SIRIUS_param.ms", sep = "")
+            fileR <- paste(dir_name, "/", para, "_isotopeNum_MS1p_", as.character(x[i, "premz"]), "_SIRIUS_param.ms", sep = "")
             sirius_param_file <- c(sirius_param_file, fileR)
             #ISOTOPE Information
             isotopes <- c(isotopes, "present")
