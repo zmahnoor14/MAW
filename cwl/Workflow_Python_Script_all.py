@@ -171,6 +171,36 @@ def slist_sirius(input_dir, slist_csv, substring=None):
 def spec_postproc(entry, Source="all"):
 
 
+def spec_postproc(entry, Source="all"):
+    # currently only these subsets are removed from the names from GNPS
+    matches = [
+        "M+",
+        "[M",
+        "M-",
+        "2M",
+        "M*", 
+        "20.0",
+        "50.0",
+        "30.0",
+        "40.0",
+        "60.0",
+        "70.0",
+        "eV",
+        "Massbank",
+        "Spectral",
+        "Match",
+        "to",
+        "from",
+        "NIST14",
+        "MoNA",
+        "[IIN-based:",
+        "[IIN-based",
+        "on:",
+        "CCMSLIB00003136269]",
+        "CollisionEnergy:"
+    ]
+
+
     # Define scoring for all DBs
     def HMDB_Scoring(db, i):
         if (
@@ -206,8 +236,6 @@ def spec_postproc(entry, Source="all"):
     msp_file = glob.glob(
         entry + "/spectral_dereplication" + "/*.csv"
     )
-    # print(msp_file)
-
     if len(msp_file) > 0:
 
         if os.path.exists(msp_file[0]):
@@ -220,37 +248,6 @@ def spec_postproc(entry, Source="all"):
             if Source == "gnps" or Source == "all":
                 msp["gnps_results_csv"] = np.nan
 
-                # currently only these subsets are removed from the names from GNPS
-                matches = [
-                    "M+",
-                    "[M",
-                    "M-",
-                    "2M",
-                    "M*", 
-                    "20.0",
-                    "50.0",
-                    "30.0",
-                    "40.0",
-                    "60.0",
-                    "70.0",
-                    "eV",
-                    "Massbank",
-                    "Spectral",
-                    "Match",
-                    "to",
-                    "from",
-                    "NIST14",
-                    "MoNA",
-                    "[IIN-based:",
-                    "[IIN-based",
-                    "on:",
-                    "CCMSLIB00003136269]",
-                ]
-
-                # open another csv path holding empty list, which will be filled
-                # with post processed csv results
-                # GNPScsvfiles2 = []
-
                 # print(entry)
                 # enter the directory with /spectral_dereplication/ results
                 sub_dir = (
@@ -260,26 +257,21 @@ def spec_postproc(entry, Source="all"):
                 if os.path.exists(sub_dir):
                     files = glob.glob(sub_dir + "/*.csv")
                     # print(files)
+                    files = [item for item in files if 'proc' not in item]
 
                     for mz, row in msp.iterrows():
-                        # print(msp["id_X"][mz])
-
                         for fls_g in files:
 
                             if msp["id_X"][mz] in fls_g:
-
+                                
                                 gnps_df = pd.read_csv(fls_g)
-                                gnps_df = gnps_df.drop_duplicates(
-                                    subset=["GNPSSMILES"]
-                                )
-
                                 if len(gnps_df) > 0:
 
                                     for i, row in gnps_df.iterrows():
                                         # if compound name is present
 
                                         if GNPS_Scoring(gnps_df, i):
-
+                                            
                                             if not isNaN(
                                                 gnps_df["GNPScompound_name"][i]
                                             ):
@@ -376,7 +368,9 @@ def spec_postproc(entry, Source="all"):
                                             gnps_df.drop(
                                                 [i], axis=0, inplace=True
                                             )
-
+                                    gnps_df = gnps_df.drop_duplicates(
+                                        subset=["GNPSSMILES"]
+                                    )
                                     for k, row in gnps_df.iterrows():
 
                                         if isNaN(gnps_df["GNPSSMILES"][k]):
@@ -474,162 +468,65 @@ def spec_postproc(entry, Source="all"):
                                     + "proc"
                                     + ".csv"
                                 )
-#                                 gnps_results_csv = csvname.replace(
-#                                     input_dir, "."
-#                                 )
+
                                 msp.loc[
                                     mz, "gnps_results_csv"
                                 ] = csvname
-                                gnps_df.to_csv(csvname)
-                                # GNPScsvfiles2.append(csvname)
-                            # dict1 = {'GNPSr': GNPScsvfiles2}
-                            # df = pd.DataFrame(dict1)
-                            # return(df)
+                                
+                                if not os.path.exists(csvname):
+                                    #print("this is wrong?")
+                                    #print(csvname)
+                                    #print(os.path.splitext(fls_g)[0])
+                                    gnps_df.to_csv(csvname)
+
 
             msp.to_csv(msp_file[0])
-
             # HMDB Results
             if Source == "hmdb" or Source == "all":
-
-#                 if not os.path.exists(entry + "/hmdb_dframe_str.csv"):
-
-#                     # download SDF structures
-#                     os.system(
-#                         "wget -P "
-#                         + entry
-#                         + " https://hmdb.ca/system/downloads/current/structures.zip"
-#                     )
-#                     os.system(
-#                         "unzip "
-#                         + entry
-#                         + "/structures.zip"
-#                         + " -d "
-#                         + entry
-#                     )
-
-#                     # Load the sdf
-#                     dframe = PandasTools.LoadSDF(
-#                         (entry + "/structures.sdf"),
-#                         idName="HMDB_ID",
-#                         smilesName="SMILES",
-#                         molColName="Molecule",
-#                         includeFingerprints=False,
-#                     )
-
-#                     dframe = dframe[
-#                         [
-#                             "DATABASE_ID",
-#                             "SMILES",
-#                             "INCHI_IDENTIFIER",
-#                             "INCHI_KEY",
-#                             "FORMULA",
-#                             "MOLECULAR_WEIGHT",
-#                             "EXACT_MASS",
-#                             "GENERIC_NAME",
-#                             "SYNONYMS",
-#                         ]
-#                     ]
-
-#                 elif os.path.exists(entry + "/hmdb_dframe_str.csv"):
-
-#                     dframe = pd.read_csv(
-#                         entry + "/hmdb_dframe_str.csv", low_memory=False
-#                     )
-
-                # HMDBcsvfiles2 = []
-                # print(entry)
-                # enter the directory with /spectral_dereplication/ results
                 sub_dir = (
                     entry + "/spectral_dereplication/HMDB/"
                 )
-
                 if os.path.exists(sub_dir):
-
                     # print(sub_dir)
                     files = glob.glob(sub_dir + "/*.csv")
-                    # print(files)
-                    for mz, row in msp.iterrows():
-                        # print(msp["id_X"][mz])
-                        for fls_h in files:
-                            if msp["id_X"][mz] in fls_h:
-                                hmdb_df = pd.read_csv(fls_h)
-                                hmdb_df = hmdb_df.drop_duplicates(
-                                    subset=["HMDBSMILES"]
-                                )
+                    files = [item for item in files if 'proc' not in item]
+                    if os.path.exists(sub_dir):
 
-#                                 if len(hmdb_df) > 0:
-#                                     print(entry)
-#                                     # merge on basis of id, frame and hmdb result files
-#                                     SmilesHM = pd.merge(
-#                                         hmdb_df,
-#                                         dframe,
-#                                         left_on=hmdb_df.HMDBcompoundID,
-#                                         right_on=dframe.DATABASE_ID,
-#                                     )
+                    
+                        # print(files)
+                        for mz, row in msp.iterrows():
+                            # print(msp["id_X"][mz])
+                            for fls_h in files:
+                                if msp["id_X"][mz] in fls_h:
+                                    hmdb_df = pd.read_csv(fls_h)
+                                    if len(hmdb_df) > 0:
 
-#                                     for i, row in hmdb_df.iterrows():
-#                                         if HMDB_Scoring(hmdb_df, i):
+                                        for i, row in hmdb_df.iterrows():
+                                            # if compound name is present
+                                             if not HMDB_Scoring(hmdb_df, i):
+                                                hmdb_df.drop(i, inplace=True)
+                                    hmdb_df = hmdb_df.drop_duplicates(
+                                        subset=["HMDBSMILES"]
+                                    )
 
-#                                             for j, row in SmilesHM.iterrows():
 
-#                                                 # where index for both match, add the name and SMILES
-#                                                 if (
-#                                                     hmdb_df["HMDBcompoundID"][i]
-#                                                     == SmilesHM[
-#                                                         "HMDBcompoundID"
-#                                                     ][j]
-#                                                 ):
-#                                                     hmdb_df.loc[
-#                                                         i, "HMDBSMILES"
-#                                                     ] = SmilesHM["SMILES"][
-#                                                         j
-#                                                     ]  # add SMILES
-#                                                     hmdb_df.loc[
-#                                                         i, "HMDBcompound_name"
-#                                                     ] = SmilesHM[
-#                                                         "GENERIC_NAME"
-#                                                     ][
-#                                                         j
-#                                                     ]  # add name
-#                                                     hmdb_df.loc[
-#                                                         i, "HMDBformula"
-#                                                     ] = SmilesHM["FORMULA"][
-#                                                         j
-#                                                     ]  # add formula
-#                                                     # hmdb_df.loc[i, 'HMDBinchi'] = Chem.MolToInchi(Chem.MolFromSmiles(SmilesHM['SMILES'][j]))
-#                                         else:
-#                                             hmdb_df.drop(
-#                                                 [i], axis=0, inplace=True
-#                                             )
+                                    csvname = (
+                                        (os.path.splitext(fls_h)[0])
+                                        + "proc"
+                                        + ".csv"
+                                    )  
+                                    msp.loc[
+                                        mz, "hmdb_results_csv"
+                                    ] = csvname
 
-                                csvname = (
-                                    (os.path.splitext(fls_h)[0])
-                                    + "proc"
-                                    + ".csv"
-                                )  # name for writing it in a new file
-#                                 hmdb_results_csv = csvname.replace(
-#                                     input_dir, "."
-#                                 )
-                                msp.loc[
-                                    mz, "hmdb_results_csv"
-                                ] = csvname
-                                hmdb_df.to_csv(csvname)  # write
-                                # HMDBcsvfiles2.append(csvname)# add to a list
-                            # dict1 = {'HMDBr': HMDBcsvfiles2}
-                            # df = pd.DataFrame(dict1)
-                            # return(df)
-
+                                    if not os.path.exists(csvname):
+                                        hmdb_df.to_csv(csvname) 
             msp.to_csv(msp_file[0])
-
             # MASSBANK Results
 
             # enter the directory with /spectral_dereplication/ results
             if Source == "mbank" or Source == "all":
-                # open another csv path holding empty list, which will be filled
-                # with post processed csv results
-                # MassBankcsvfiles2 = []
-                # print(entry)
-                # enter the directory with /spectral_dereplication/ results
+
                 sub_dir = (
                     
                     entry
@@ -637,62 +534,34 @@ def spec_postproc(entry, Source="all"):
                 )
                 if os.path.exists(sub_dir):
                     files = glob.glob(sub_dir + "/*.csv")
-                    # print(files)
+                    files = [item for item in files if 'proc' not in item]
                     for mz, row in msp.iterrows():
                         # print(msp["id_X"][mz])
                         for fls_m in files:
                             if msp["id_X"][mz] in fls_m:
-                                print(fls_m)
                                 mbank_df = pd.read_csv(fls_m)
+                                if len(mbank_df) > 0:
+
+                                    for i, row in mbank_df.iterrows():
+                                        # if compound name is present
+                                         if not MB_Scoring(mbank_df, i):
+                                            mbank_df.drop(i, inplace=True)
                                 mbank_df = mbank_df.drop_duplicates(
                                     subset=["MBSMILES"]
                                 )
-#                                         if len(mbank_df) > 0:
-
-#                                             for i, row in mbank_df.iterrows():
-#                                                 if MB_Scoring(mbank_df, i):
-
-#                                                     inchiK = str(
-#                                                         mbank_df["MBinchiKEY"][i]
-#                                                     )
-
-#                                                     # extract inchikeys
-#                                                     y = pcp.get_compounds(
-#                                                         inchiK, "inchikey"
-#                                                     )  # compound based on inchikey
-
-#                                                     for compound in y:
-
-#                                                         # add smiles
-#                                                         smles = compound.isomeric_smiles
-#                                                         mbank_df.loc[
-#                                                             i, "MBSMILES"
-#                                                         ] = smles
-#                                                         # mbank_df.loc[i, 'MBinchi'] =Chem.MolToInchi(Chem.MolFromSmiles(smles))
-#                                                 else:
-#                                                     mbank_df.drop(
-#                                                         [i], axis=0, inplace=True
-#                                                     )
-
                                 csvname = (
                                     (os.path.splitext(fls_m)[0])
                                     + "proc"
                                     + ".csv"
                                 )
-#                                 mbank_results_csv = csvname.replace(
-#                                     input_dir, "."
-#                                 )
+
                                 msp.loc[
                                     mz, "mbank_results_csv"
                                 ] = csvname
-            
-                                mbank_df.to_csv(csvname)
-                                # MassBankcsvfiles2.append(csvname)
 
-                            # dict1 = {'MBr': MassBankcsvfiles2}
-                            # df = pd.DataFrame(dict1)
-                            # return(df)
+                                if not os.path.exists(csvname):
 
+                                    mbank_df.to_csv(csvname)
             msp.to_csv(msp_file[0])
 
 
