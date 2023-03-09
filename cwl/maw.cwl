@@ -22,6 +22,9 @@ inputs:
         type: File
     mbank_rda:
         type: File
+    isotope:
+        type: boolean
+        default: False
   
 steps:
     dereplication:
@@ -35,21 +38,39 @@ steps:
         out:
             - ms_files
             - results
-    sirius:
-        run: maw-sirius.cwl
+    sirius_isotope:
+        run: sirius-new.cwl
         in:
             spectrum: dereplication/ms_files
+            isotope: 
+                default: False
             #parameter: dereplication/parameters
         scatter:
             - spectrum
             #- parameter
         out: [results]
+
+    sirius_no_isotope:
+        run: sirius-new.cwl
+        in:
+            spectrum: dereplication/ms_files
+            isotope: 
+                default: True
+            #parameter: dereplication/parameters
+        scatter:
+            - spectrum
+            #- parameter
+        out: [results]
+
     cheminformatics:
         run: maw-py.cwl
         in: 
             workflow_script: python_script
             mzml_files_results: dereplication/results
-            sirius_results: sirius/results
+            sirius_results: 
+                source: [sirius_no_isotope/results, sirius_isotope/results]
+                linkMerge: True
+            
         out: [results, provenance]
 
 outputs:

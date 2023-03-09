@@ -32,10 +32,14 @@ outputs:
     type: Directory
     outputBinding:
       glob: .
-  ms_files:
+  ms_files_isotope:
     type: File[]
     outputBinding:
-      glob: "insilico/SIRIUS/*.ms"
+      glob: "insilico/SIRIUS/isotope/*.ms"
+  ms_files_no_isotope:
+    type: File[]
+    outputBinding:
+      glob: "insilico/SIRIUS/no_isotope/*.ms"   
   provenance:
     type: Directory
     outputBinding:

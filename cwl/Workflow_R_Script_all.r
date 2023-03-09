@@ -207,6 +207,9 @@ spec_Processing <- function(x, result_dir){
     #x <- paste(input_dir, str_remove(x, "."), sep = "")
 
     #result_dir <- paste(input_dir, str_remove(result_dir, "."), sep = "")
+    if (!dir.exists(result_dir)){
+        dir.create(result_dir)
+    }
     if (file.exists(x) && substring(x, nchar(x)) == "L"){
         # read the spectra
         sps_all <- Spectra(x, backend = MsBackendMzR())
@@ -2465,11 +2468,17 @@ ms1_peaks <- function(x, y, result_dir, QCfile){
 # input x is result from either ms1_peaks
 # SL is if a suspect list is present
 
-sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
+# 
 
-    dir_name <- paste(result_dir, "/insilico/SIRIUS", sep ="")
-    if (!file.exists(dir_name)){
-        dir.create(dir_name, recursive = TRUE) ##create folder
+sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE) {
+
+    dir_name_isotope <- paste(result_dir, "/insilico/SIRIUS/isotope", sep = "")
+    if (!file.exists(dir_name_isotope)) {
+        dir.create(dir_name_isotope, recursive = TRUE) ##create folder
+    }
+    dir_name_no_isotope <- paste(result_dir, "/insilico/SIRIUS/no_isotope", sep = "")
+    if (!file.exists(dir_name_no_isotope)) {
+        dir.create(dir_name_no_isotope, recursive = TRUE) ##create folder
     }
     isotopes <- c() #NA or isotope group number
     sirius_param_file <- c() #input for SIRIUS
@@ -2494,7 +2503,7 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
         if (x[i, "ms1Peaks"] == 'no ms1 peaks in QC'){
 
             #INPUT FILE NAME
-            fileR <- paste(dir_name, "/" ,para, "_NA_iso_NA_MS1p_", x[i, "premz"], "_SIRIUS_param.ms", sep = "")
+            fileR <- paste(dir_name_no_isotope, "/" ,para, "_NA_iso_NA_MS1p_", x[i, "premz"], "_SIRIUS_param.ms", sep = "")
 
             sirius_param_file <- c(sirius_param_file, fileR)
             #ISOTOPE Information
@@ -2533,8 +2542,8 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
                 writeLines(">ms2" ,con=file.conn)
             }
             
-            ms2pk <- x[i,"ms2Peaks"]
-
+            ms2pk_name <- x[i,"ms2Peaks"]
+            ms2pk <- str_replace(ms2pk_name, ".", mzml_result)
             peak<- read.table(ms2pk)
             for (k in 1:length(peak[,1])){
                 writeLines(paste(as.character(peak[k,1]),as.character(peak[k,2]), sep =" "), con=file.conn)
@@ -2548,7 +2557,7 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
         else if (grepl("_no_isotopes.txt", x[i, "ms1Peaks"], fixed=TRUE)){
 
             #INPUT FILE NAME
-            fileR <- paste(dir_name, "/", para, "_NA_iso_MS1p_", x[i, "premz"], "_SIRIUS_param.ms", sep = "")
+            fileR <- paste(dir_name_no_isotope, "/", para, "_NA_iso_MS1p_", x[i, "premz"], "_SIRIUS_param.ms", sep = "")
             sirius_param_file <- c(sirius_param_file, fileR)
             #ISOTOPE Information
             isotopes <- c(isotopes, NA)
@@ -2578,7 +2587,8 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
             #ms1
             writeLines(">ms1",con=file.conn)
 
-            ms1pk <- x[i,"ms1Peaks"]
+            ms1pk_name <- x[i,"ms1Peaks"]
+            ms1pk <- str_replace(ms1pk_name, ".", mzml_result)
             peakms1<- read.table(ms1pk)
 
             for (l in 1:length(peakms1[,1])){
@@ -2592,7 +2602,8 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
                 writeLines(">ms2" ,con=file.conn)
             }
 
-            ms2pk <- x[i,"ms2Peaks"]
+            ms2pk_name <- x[i,"ms2Peaks"]
+            ms2pk <- str_replace(ms2pk_name, ".", mzml_result)
 
             peakms2<- read.table(ms2pk)
 
@@ -2609,7 +2620,7 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
         else if (grepl("_isotopeNum_", x[i, "ms1Peaks"], fixed=TRUE)){
 
             #INPUT FILE NAME
-            fileR <- paste(dir_name, "/", para, "_isotopeNum_MS1p_", as.character(x[i, "premz"]), "_SIRIUS_param.ms", sep = "")
+            fileR <- paste(dir_name_isotope, "/", para, "_isotopeNum_MS1p_", as.character(x[i, "premz"]), "_SIRIUS_param.ms", sep = "")
             sirius_param_file <- c(sirius_param_file, fileR)
             #ISOTOPE Information
             isotopes <- c(isotopes, "present")
@@ -2640,7 +2651,8 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
             #ms1
             writeLines(">ms1",con=file.conn)
 
-            ms1pk <- x[i,"ms1Peaks"]
+            ms1pk_name <- x[i,"ms1Peaks"]
+            ms1pk <- str_replace(ms1pk_name, ".", mzml_result)
             peakms1<- read.table(ms1pk)
 
             for (l in 1:length(peakms1[,1])){
@@ -2654,7 +2666,8 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
                 writeLines(">ms2" ,con=file.conn)
             }
 
-            ms2pk <- x[i,"ms2Peaks"]
+            ms2pk_name <- x[i,"ms2Peaks"]
+            ms2pk <- str_replace(ms2pk_name, ".", mzml_result)
 
             peakms2<- read.table(ms2pk)
 
@@ -2667,7 +2680,7 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
 
         }
     }
-    if (SL){
+    if (SL) {
 
         in_out_file <- data.frame(cbind(sirius_param_file, outputNames, outputNamesSL, isotopes))
 
@@ -2675,7 +2688,7 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
         return(in_out_file)
 
     }
-    else{
+    else {
         in_out_file <- data.frame(cbind(sirius_param_file, outputNames, isotopes))
 
         write.table(in_out_file, paste(result_dir,'/insilico/MS1DATA_SiriusP.tsv', sep = ""), sep = "\t")
@@ -2684,7 +2697,6 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE){
     }
 
 }
-
 
 
 run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, SL_path, candidates = 30, profile = "orbitrap", db = "ALL"){
