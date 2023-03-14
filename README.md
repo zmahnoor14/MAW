@@ -75,7 +75,7 @@ For further information on the scripts used for the Bechmark datasets to validat
 > For details on using the workflow on Jupyter notebooks in a more interactive mode, please follow the Tutorial part on wiki page of this repository.
 
 ## Citation
-Zulfiqar, M., Gadelha, L., Steinbeck, C., Sorokina, M., & Peters, K. (2022). Metabolome Annotation Workflow (MAW) (Version 1.0.0) [Computer software]. https://doi.org/10.5281/zenodo.7148450
+Zulfiqar, M., Gadelha, L., Steinbeck, C. et al. MAW: the reproducible Metabolome Annotation Workflow for untargeted tandem mass spectrometry. J Cheminform 15, 32 (2023). https://doi.org/10.1186/s13321-023-00695-y
 
 ## More information about our research group
 
