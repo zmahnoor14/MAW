@@ -87,7 +87,7 @@ run_sirius(files= './insilico/MS1DATA_SiriusP.tsv',
 
 Please check the R script and make the changes in the parameters above according to your data needs. SL means suspect list but this function is currently being updated by SIRIUS5 and shoulbe kept ```FALSE```. profile can be the mass spectrometer used, either "orbitrap" or "qtof". db can be "ALL", "bio", "coconut" or any relevant database that is already provided by SIRIUS5. Also, for files, provide the full path of your './insilico/MS1DATA_SiriusP.tsv'. Run the function for each of your input files.
 
-3. Run maw-py
+### 3. Run maw-py
 ```
 docker run --name example_maw-py -i -t zmahnoor/maw-py:1.0.0 /bin/bash
 ```
