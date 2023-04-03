@@ -31,7 +31,7 @@ This will creat a R-Docker image on your system. This image contains /opt/workdi
 7. Workflow_R_Script.r (R example script)
 
 
-### Pull maw-sirius5 Docker Image
+### [NEW]Pull maw-sirius5 Docker Image
 To pull MAW-SIRIU5 R-docker image, run the following command on your terminal:
 ```
 docker pull zmahnoor/maw-sirius5-old --platform=linux/amd64
