@@ -16,7 +16,7 @@ Install Docker on your [MAC OS](https://www.docker.com/get-started/) OR on [Linu
 Since MAW is implemented in R and Python so we have two separate Docker images. 
 
 ### Pull maw-r Docker Image
-To pull MAW-R a R-docker image, run the following command on your terminal:
+To pull MAW-R R-docker image, run the following command on your terminal:
 ```
 docker pull zmahnoor/maw-r:1.0.0
 ```
@@ -29,7 +29,22 @@ This will creat a R-Docker image on your system. This image contains /opt/workdi
 5. /data/mbankNIST.rda
 6. Workflow_R_Functions.r (R function script)
 7. Workflow_R_Script.r (R example script)
-8. install_packages.R (R package installation script, these pacakges are already installed the docker container) <br>
+8. install_packages.R (R package installation script, these packages are already installed the docker container) <br>
+
+### Pull maw-sirius5 Docker Image
+To pull MAW-SIRIU5 R-docker image, run the following command on your terminal:
+```
+docker pull zmahnoor/maw-sirius5-old --platform=linux/amd64
+```
+This will creat a R-Docker image on your system. This image contains /opt/workdir as the working directory which contains the following files and folders:
+<br>
+1. /data (folder)
+2. /data/example_Tyrosine.mzML
+3. /data/hmdb.rda
+4. /data/gnps.rda
+5. /data/mbankNIST.rda
+6. Workflow_R_Functions.r (R function script)
+7. Workflow_R_Script.r (R example script)
 
 ### Pull maw-py Docker Image
 To pull MAW-Py Python-docker image, run the following command on your terminal:
@@ -73,7 +88,7 @@ run_sirius(files= './insilico/MS1DATA_SiriusP.tsv',
            db = "coconut")
 ```
 
-Please check the R script and make the changes in the parameters above according to your data needs. SL means suspect list but this function is currently being updated by SIRIUS5 and shoulbe kept ```FALSE```. profile can be the mass spectrometer used, either "orbitrap" or "qtof". db can be "ALL", "bio", "coconut" or any relevant database that is already provided by SIRIUS5.
+Please check the R script and make the changes in the parameters above according to your data needs. SL means suspect list but this function is currently being updated by SIRIUS5 and shoulbe kept ```FALSE```. profile can be the mass spectrometer used, either "orbitrap" or "qtof". db can be "ALL", "bio", "coconut" or any relevant database that is already provided by SIRIUS5. Also, for files, provide the full path of your './insilico/MS1DATA_SiriusP.tsv'. Run the function for each of your input files.
 
 3. Run maw-py
 ```
