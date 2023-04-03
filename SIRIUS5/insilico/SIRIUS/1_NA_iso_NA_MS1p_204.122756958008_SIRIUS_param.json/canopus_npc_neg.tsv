@@ -1,0 +1,772 @@
+relativeIndex	absoluteIndex	id	name	level	levelName	description
+0	0	0	Alkaloids	0	Pathway	Pathway: Alkaloids
+1	1	1	Amino acids and Peptides	0	Pathway	Pathway: Amino acids and Peptides
+2	2	2	Carbohydrates	0	Pathway	Pathway: Carbohydrates
+3	3	3	Fatty acids	0	Pathway	Pathway: Fatty acids
+4	4	4	Polyketides	0	Pathway	Pathway: Polyketides
+5	5	5	Shikimates and Phenylpropanoids	0	Pathway	Pathway: Shikimates and Phenylpropanoids
+6	6	6	Terpenoids	0	Pathway	Pathway: Terpenoids
+7	7	0	Alkylresorcinols	1	Superclass	Superclass: Alkylresorcinols
+8	8	1	Amino acid glycosides	1	Superclass	Superclass: Amino acid glycosides
+9	9	2	Aminosugars and aminoglycosides	1	Superclass	Superclass: Aminosugars and aminoglycosides
+10	10	3	Anthranilic acid alkaloids	1	Superclass	Superclass: Anthranilic acid alkaloids
+11	11	4	Apocarotenoids	1	Superclass	Superclass: Apocarotenoids
+12	12	5	Aromatic polyketides	1	Superclass	Superclass: Aromatic polyketides
+13	13	6	Carotenoids (C40)	1	Superclass	Superclass: Carotenoids (C40)
+14	14	7	Carotenoids (C45)	1	Superclass	Superclass: Carotenoids (C45)
+15	15	8	Carotenoids (C50)	1	Superclass	Superclass: Carotenoids (C50)
+16	16	9	Chromanes	1	Superclass	Superclass: Chromanes
+17	17	10	Coumarins	1	Superclass	Superclass: Coumarins
+18	18	11	Cyclic polyketides	1	Superclass	Superclass: Cyclic polyketides
+19	19	12	Diarylheptanoids	1	Superclass	Superclass: Diarylheptanoids
+20	20	13	Diazotetronic acids and derivatives	1	Superclass	Superclass: Diazotetronic acids and derivatives
+21	21	14	Diphenyl ethers (DPEs)	1	Superclass	Superclass: Diphenyl ethers (DPEs)
+22	22	15	Diterpenoids	1	Superclass	Superclass: Diterpenoids
+23	23	16	Docosanoids	1	Superclass	Superclass: Docosanoids
+24	24	17	Eicosanoids	1	Superclass	Superclass: Eicosanoids
+25	25	18	Fatty Acids and Conjugates	1	Superclass	Superclass: Fatty Acids and Conjugates
+26	26	19	Fatty acyl glycosides	1	Superclass	Superclass: Fatty acyl glycosides
+27	27	20	Fatty acyls	1	Superclass	Superclass: Fatty acyls
+28	28	21	Fatty amides	1	Superclass	Superclass: Fatty amides
+29	29	22	Fatty esters	1	Superclass	Superclass: Fatty esters
+30	30	23	Flavonoids	1	Superclass	Superclass: Flavonoids
+31	31	24	Fluorenes	1	Superclass	Superclass: Fluorenes
+32	32	25	Glycerolipids	1	Superclass	Superclass: Glycerolipids
+33	33	26	Glycerophospholipids	1	Superclass	Superclass: Glycerophospholipids
+34	34	27	Guanidine alkaloids	1	Superclass	Superclass: Guanidine alkaloids
+35	35	28	Histidine alkaloids	1	Superclass	Superclass: Histidine alkaloids
+36	36	29	Isoflavonoids	1	Superclass	Superclass: Isoflavonoids
+37	37	30	Lignans	1	Superclass	Superclass: Lignans
+38	38	31	Linear polyketides	1	Superclass	Superclass: Linear polyketides
+39	39	32	Lysine alkaloids	1	Superclass	Superclass: Lysine alkaloids
+40	40	33	Macrolides	1	Superclass	Superclass: Macrolides
+41	41	34	Meroterpenoids	1	Superclass	Superclass: Meroterpenoids
+42	42	35	Miscellaneous alkaloids	1	Superclass	Superclass: Miscellaneous alkaloids
+43	43	36	Miscellaneous polyketides	1	Superclass	Superclass: Miscellaneous polyketides
+44	44	37	Mitomycin derivatives	1	Superclass	Superclass: Mitomycin derivatives
+45	45	38	Monoterpenoids	1	Superclass	Superclass: Monoterpenoids
+46	46	39	Mycosporine derivatives	1	Superclass	Superclass: Mycosporine derivatives
+47	47	40	Naphthalenes	1	Superclass	Superclass: Naphthalenes
+48	48	41	Nicotinic acid alkaloids	1	Superclass	Superclass: Nicotinic acid alkaloids
+49	49	42	Nucleosides	1	Superclass	Superclass: Nucleosides
+50	50	43	Octadecanoids	1	Superclass	Superclass: Octadecanoids
+51	51	44	Oligopeptides	1	Superclass	Superclass: Oligopeptides
+52	52	45	Ornithine alkaloids	1	Superclass	Superclass: Ornithine alkaloids
+53	53	46	Peptide alkaloids	1	Superclass	Superclass: Peptide alkaloids
+54	54	47	Phenanthrenoids	1	Superclass	Superclass: Phenanthrenoids
+55	55	48	Phenolic acids (C6-C1)	1	Superclass	Superclass: Phenolic acids (C6-C1)
+56	56	49	Phenylethanoids (C6-C2)	1	Superclass	Superclass: Phenylethanoids (C6-C2)
+57	57	50	Phenylpropanoids (C6-C3)	1	Superclass	Superclass: Phenylpropanoids (C6-C3)
+58	58	51	Phloroglucinols	1	Superclass	Superclass: Phloroglucinols
+59	59	52	Polycyclic aromatic polyketides	1	Superclass	Superclass: Polycyclic aromatic polyketides
+60	60	53	Polyethers	1	Superclass	Superclass: Polyethers
+61	61	54	Polyols	1	Superclass	Superclass: Polyols
+62	62	55	Polyprenols	1	Superclass	Superclass: Polyprenols
+63	63	56	Proline alkaloids	1	Superclass	Superclass: Proline alkaloids
+64	64	57	Pseudoalkaloids	1	Superclass	Superclass: Pseudoalkaloids
+65	65	58	Pseudoalkaloids (transamidation)	1	Superclass	Superclass: Pseudoalkaloids (transamidation)
+66	66	59	Saccharides	1	Superclass	Superclass: Saccharides
+67	67	60	Serine alkaloids	1	Superclass	Superclass: Serine alkaloids
+68	68	61	Sesquiterpenoids	1	Superclass	Superclass: Sesquiterpenoids
+69	69	62	Sesterterpenoids	1	Superclass	Superclass: Sesterterpenoids
+70	70	63	Small peptides	1	Superclass	Superclass: Small peptides
+71	71	64	Sphingolipids	1	Superclass	Superclass: Sphingolipids
+72	72	65	Steroids	1	Superclass	Superclass: Steroids
+73	73	66	Stilbenoids	1	Superclass	Superclass: Stilbenoids
+74	74	67	Styrylpyrones	1	Superclass	Superclass: Styrylpyrones
+75	75	68	Terphenyls	1	Superclass	Superclass: Terphenyls
+76	76	69	Tetramate alkaloids	1	Superclass	Superclass: Tetramate alkaloids
+77	77	70	Triterpenoids	1	Superclass	Superclass: Triterpenoids
+78	78	71	Tropolones	1	Superclass	Superclass: Tropolones
+79	79	72	Tryptophan alkaloids	1	Superclass	Superclass: Tryptophan alkaloids
+80	80	73	Tyrosine alkaloids	1	Superclass	Superclass: Tyrosine alkaloids
+81	81	74	Xanthones	1	Superclass	Superclass: Xanthones
+82	82	75	β-lactams	1	Superclass	Superclass: β-lactams
+83	83	76	γ-lactam-β-lactones	1	Superclass	Superclass: γ-lactam-β-lactones
+84	84	0	12-oxophytodienoic acid metabolites	2	class	class: 12-oxophytodienoic acid metabolites
+85	85	1	2-arylbenzofurans	2	class	class: 2-arylbenzofurans
+86	86	2	2-pyrone derivatives	2	class	class: 2-pyrone derivatives
+87	87	3	3-Decalinoyltetramic acids	2	class	class: 3-Decalinoyltetramic acids
+88	88	4	3-Spirotetramic acids	2	class	class: 3-Spirotetramic acids
+89	89	5	3-acyl tetramic acids	2	class	class: 3-acyl tetramic acids
+90	90	6	3-oligoenoyltetramic acids	2	class	class: 3-oligoenoyltetramic acids
+91	91	7	4-pyrone derivatives	2	class	class: 4-pyrone derivatives
+92	92	8	Abeoabietane diterpenoids	2	class	class: Abeoabietane diterpenoids
+93	93	9	Abeolupane triterpenoids	2	class	class: Abeolupane triterpenoids
+94	94	10	Abeotaxane diterpenoids	2	class	class: Abeotaxane diterpenoids
+95	95	11	Abietane diterpenoids	2	class	class: Abietane diterpenoids
+96	96	12	Acetate-derived alkaloids	2	class	class: Acetate-derived alkaloids
+97	97	13	Acetogenins	2	class	class: Acetogenins
+98	98	14	Acidic glycosphingolipids	2	class	class: Acidic glycosphingolipids
+99	99	15	Acorane sesquiterpenoids	2	class	class: Acorane sesquiterpenoids
+100	100	16	Acridone alkaloids	2	class	class: Acridone alkaloids
+101	101	17	Actinomycins	2	class	class: Actinomycins
+102	102	18	Acutumine alkaloids	2	class	class: Acutumine alkaloids
+103	103	19	Acyclic guanidine alkaloids	2	class	class: Acyclic guanidine alkaloids
+104	104	20	Acyclic monoterpenoids	2	class	class: Acyclic monoterpenoids
+105	105	21	Acyclic triterpenoids	2	class	class: Acyclic triterpenoids
+106	106	22	Acyl phloroglucinols	2	class	class: Acyl phloroglucinols
+107	107	23	Adianane triterpenoids	2	class	class: Adianane triterpenoids
+108	108	24	Aeruginosins	2	class	class: Aeruginosins
+109	109	25	Aflatoxins	2	class	class: Aflatoxins
+110	110	26	Africanane sesquiterpenoids	2	class	class: Africanane sesquiterpenoids
+111	111	27	Agarofuran sesquiterpenoids	2	class	class: Agarofuran sesquiterpenoids
+112	112	28	Ahp-containing cyclodepsipeptides	2	class	class: Ahp-containing cyclodepsipeptides
+113	113	29	Alliacane sesquiterpenoids	2	class	class: Alliacane sesquiterpenoids
+114	114	30	Allohimachalane sesquiterpenoids	2	class	class: Allohimachalane sesquiterpenoids
+115	115	31	Amarylidaceae alkaloids	2	class	class: Amarylidaceae alkaloids
+116	116	32	Amino cyclitols	2	class	class: Amino cyclitols
+117	117	33	Amino fatty acids	2	class	class: Amino fatty acids
+118	118	34	Aminoacids	2	class	class: Aminoacids
+119	119	35	Aminoglycosides	2	class	class: Aminoglycosides
+120	120	36	Aminosugars	2	class	class: Aminosugars
+121	121	37	Amphilectane diterpenoids	2	class	class: Amphilectane diterpenoids
+122	122	38	Anabaenopeptins	2	class	class: Anabaenopeptins
+123	123	39	Androstane steroids	2	class	class: Androstane steroids
+124	124	40	Angucyclines	2	class	class: Angucyclines
+125	125	41	Ansa macrolides	2	class	class: Ansa macrolides
+126	126	42	Ansa peptide alkaloids	2	class	class: Ansa peptide alkaloids
+127	127	43	Anthocyanidins	2	class	class: Anthocyanidins
+128	128	44	Anthracyclines	2	class	class: Anthracyclines
+129	129	45	Anthranillic acid derivatives	2	class	class: Anthranillic acid derivatives
+130	130	46	Anthraquinones and anthrones	2	class	class: Anthraquinones and anthrones
+131	131	47	Antimycins	2	class	class: Antimycins
+132	132	48	Aphidicolane diterpenoids	2	class	class: Aphidicolane diterpenoids
+133	133	49	Aplysiatoxins	2	class	class: Aplysiatoxins
+134	134	50	Apocarotenoids (C30, Ψ-Ψ)	2	class	class: Apocarotenoids (C30, Ψ-Ψ)
+135	135	51	Apocarotenoids (Ψ-)	2	class	class: Apocarotenoids (Ψ-)
+136	136	52	Apocarotenoids (β-)	2	class	class: Apocarotenoids (β-)
+137	137	53	Apocarotenoids(ε-)	2	class	class: Apocarotenoids(ε-)
+138	138	54	Aporphine alkaloids	2	class	class: Aporphine alkaloids
+139	139	55	Apotirucallane triterpenoids	2	class	class: Apotirucallane triterpenoids
+140	140	56	Aristolane sesquiterpenoids	2	class	class: Aristolane sesquiterpenoids
+141	141	57	Aromadendrane sesquiterpenoids	2	class	class: Aromadendrane sesquiterpenoids
+142	142	58	Aromatic polyketides with side chains	2	class	class: Aromatic polyketides with side chains
+143	143	59	Arteminisin	2	class	class: Arteminisin
+144	144	60	Arylnaphthalene and aryltetralin lignans	2	class	class: Arylnaphthalene and aryltetralin lignans
+145	145	61	Asbestinane diterpenoids	2	class	class: Asbestinane diterpenoids
+146	146	62	Ascarosides	2	class	class: Ascarosides
+147	147	63	Ascomycins and Rapamycins	2	class	class: Ascomycins and Rapamycins
+148	148	64	Asperane sesterterpenoids	2	class	class: Asperane sesterterpenoids
+149	149	65	Aspidosperma type	2	class	class: Aspidosperma type
+150	150	66	Aspidosperma-Iboga hybrid type (Vinca alkaloids)	2	class	class: Aspidosperma-Iboga hybrid type (Vinca alkaloids)
+151	151	67	Asteriscane sesquiterpenoids	2	class	class: Asteriscane sesquiterpenoids
+152	152	68	Atisane diterpenoids	2	class	class: Atisane diterpenoids
+153	153	69	Aurones	2	class	class: Aurones
+154	154	70	Avermectins	2	class	class: Avermectins
+155	155	71	Azaphilones	2	class	class: Azaphilones
+156	156	72	Azo and Azoxy alkaloids	2	class	class: Azo and Azoxy alkaloids
+157	157	73	Baccharane triterpenoids	2	class	class: Baccharane triterpenoids
+158	158	74	Bactoprenols	2	class	class: Bactoprenols
+159	159	75	Bafilomycins	2	class	class: Bafilomycins
+160	160	76	Bagremycins	2	class	class: Bagremycins
+161	161	77	Bauerane triterpenoids	2	class	class: Bauerane triterpenoids
+162	162	78	Benastatins and derivatives	2	class	class: Benastatins and derivatives
+163	163	79	Benzodiazepine alkaloids	2	class	class: Benzodiazepine alkaloids
+164	164	80	Benzophenones	2	class	class: Benzophenones
+165	165	81	Benzoquinones	2	class	class: Benzoquinones
+166	166	82	Bergamotane sesquiterpenoids	2	class	class: Bergamotane sesquiterpenoids
+167	167	83	Betaestacin-type sesterterpenoids	2	class	class: Betaestacin-type sesterterpenoids
+168	168	84	Betalain alkaloids	2	class	class: Betalain alkaloids
+169	169	85	Beyerane diterpenoids	2	class	class: Beyerane diterpenoids
+170	170	86	Biaryl type diarylheptanoids	2	class	class: Biaryl type diarylheptanoids
+171	171	87	Bicyclic guanidine alkaloids	2	class	class: Bicyclic guanidine alkaloids
+172	172	88	Bicyclogermacrane sesquiterpenoids	2	class	class: Bicyclogermacrane sesquiterpenoids
+173	173	89	Bicyclohumulane sesquiterpenoids	2	class	class: Bicyclohumulane sesquiterpenoids
+174	174	90	Bisabolane sesquiterpenoids	2	class	class: Bisabolane sesquiterpenoids
+175	175	91	Bisnaphthalenes	2	class	class: Bisnaphthalenes
+176	176	92	Bleomycins	2	class	class: Bleomycins
+177	177	93	Boromycins	2	class	class: Boromycins
+178	178	94	Botryane sesquiterpenoids	2	class	class: Botryane sesquiterpenoids
+179	179	95	Bourbonane sesquiterpenoids	2	class	class: Bourbonane sesquiterpenoids
+180	180	96	Branched fatty acids	2	class	class: Branched fatty acids
+181	181	97	Brasilane sesquiterpenoids	2	class	class: Brasilane sesquiterpenoids
+182	182	98	Breviane diterpenoids	2	class	class: Breviane diterpenoids
+183	183	99	Briarane diterpenoids	2	class	class: Briarane diterpenoids
+184	184	100	Bryostatins	2	class	class: Bryostatins
+185	185	101	Bufadienolides	2	class	class: Bufadienolides
+186	186	102	CDP-Glycerols	2	class	class: CDP-Glycerols
+187	187	103	Cadinane sesquiterpenoids	2	class	class: Cadinane sesquiterpenoids
+188	188	104	Camphane monoterpenoids	2	class	class: Camphane monoterpenoids
+189	189	105	Campherenane sesquiterpenoids	2	class	class: Campherenane sesquiterpenoids
+190	190	106	Cannabinoids	2	class	class: Cannabinoids
+191	191	107	Capnellane sesquiterpenoids	2	class	class: Capnellane sesquiterpenoids
+192	192	108	Capsaicins and Capsaicinoids	2	class	class: Capsaicins and Capsaicinoids
+193	193	109	Carabrane sesquiterpenoids	2	class	class: Carabrane sesquiterpenoids
+194	194	110	Carane monoterpenoids	2	class	class: Carane monoterpenoids
+195	195	111	Carbapenems	2	class	class: Carbapenems
+196	196	112	Carbazole alkaloids	2	class	class: Carbazole alkaloids
+197	197	113	Carbocyclic fatty acids	2	class	class: Carbocyclic fatty acids
+198	198	114	Carboline alkaloids	2	class	class: Carboline alkaloids
+199	199	115	Cardenolides	2	class	class: Cardenolides
+200	200	116	Carotenoids (C40, Χ-Χ)	2	class	class: Carotenoids (C40, Χ-Χ)
+201	201	117	Carotenoids (C40, Χ-Ψ)	2	class	class: Carotenoids (C40, Χ-Ψ)
+202	202	118	Carotenoids (C40, Ψ-Ψ)	2	class	class: Carotenoids (C40, Ψ-Ψ)
+203	203	119	Carotenoids (C40, β-Χ)	2	class	class: Carotenoids (C40, β-Χ)
+204	204	120	Carotenoids (C40, β-Ψ)	2	class	class: Carotenoids (C40, β-Ψ)
+205	205	121	Carotenoids (C40, β-β)	2	class	class: Carotenoids (C40, β-β)
+206	206	122	Carotenoids (C40, β-γ)	2	class	class: Carotenoids (C40, β-γ)
+207	207	123	Carotenoids (C40, β-ε)	2	class	class: Carotenoids (C40, β-ε)
+208	208	124	Carotenoids (C40, β-κ)	2	class	class: Carotenoids (C40, β-κ)
+209	209	125	Carotenoids (C40, β-π)	2	class	class: Carotenoids (C40, β-π)
+210	210	126	Carotenoids (C40, γ-Ψ)	2	class	class: Carotenoids (C40, γ-Ψ)
+211	211	127	Carotenoids (C40, γ-ε)	2	class	class: Carotenoids (C40, γ-ε)
+212	212	128	Carotenoids (C40, ε-Ψ)	2	class	class: Carotenoids (C40, ε-Ψ)
+213	213	129	Carotenoids (C40, ε-ε)	2	class	class: Carotenoids (C40, ε-ε)
+214	214	130	Carotenoids (C40, κ-Χ)	2	class	class: Carotenoids (C40, κ-Χ)
+215	215	131	Carotenoids (C40, κ-κ)	2	class	class: Carotenoids (C40, κ-κ)
+216	216	132	Carotenoids (C40, π-Χ)	2	class	class: Carotenoids (C40, π-Χ)
+217	217	133	Carotenoids (C40, π-Ψ)	2	class	class: Carotenoids (C40, π-Ψ)
+218	218	134	Carotenoids (C40, π-π)	2	class	class: Carotenoids (C40, π-π)
+219	219	135	Carotenoids (C45, Ψ-Ψ)	2	class	class: Carotenoids (C45, Ψ-Ψ)
+220	220	136	Carotenoids (C45, β-Ψ)	2	class	class: Carotenoids (C45, β-Ψ)
+221	221	137	Carotenoids (C45, ε-Ψ)	2	class	class: Carotenoids (C45, ε-Ψ)
+222	222	138	Carotenoids (C50, Ψ-Ψ)	2	class	class: Carotenoids (C50, Ψ-Ψ)
+223	223	139	Carotenoids (C50, β-Ψ)	2	class	class: Carotenoids (C50, β-Ψ)
+224	224	140	Carotenoids (C50, β-β)	2	class	class: Carotenoids (C50, β-β)
+225	225	141	Carotenoids (C50, γ-γ)	2	class	class: Carotenoids (C50, γ-γ)
+226	226	142	Carotenoids (C50, ε-ε)	2	class	class: Carotenoids (C50, ε-ε)
+227	227	143	Caryolane sesquiterpenoids	2	class	class: Caryolane sesquiterpenoids
+228	228	144	Caryophyllane sesquiterpenoids	2	class	class: Caryophyllane sesquiterpenoids
+229	229	145	Casbane diterpenoids	2	class	class: Casbane diterpenoids
+230	230	146	Cassane diterpenoids	2	class	class: Cassane diterpenoids
+231	231	147	Catechols with side chains	2	class	class: Catechols with side chains
+232	232	148	Cedrane and Isocedrane sesquiterpenoids	2	class	class: Cedrane and Isocedrane sesquiterpenoids
+233	233	149	Cembrane diterpenoids	2	class	class: Cembrane diterpenoids
+234	234	150	Cephalosporins	2	class	class: Cephalosporins
+235	235	151	Cephalotaxus alkaloids	2	class	class: Cephalotaxus alkaloids
+236	236	152	Cephamycins	2	class	class: Cephamycins
+237	237	153	Ceramides	2	class	class: Ceramides
+238	238	154	Cericerane sesterterpenoids	2	class	class: Cericerane sesterterpenoids
+239	239	155	Chalcones	2	class	class: Chalcones
+240	240	156	Chamigrane sesquiterpenoids	2	class	class: Chamigrane sesquiterpenoids
+241	241	157	Cheilanthane sesterterpenoids	2	class	class: Cheilanthane sesterterpenoids
+242	242	158	Chiloscyphane sesquiterpenoids	2	class	class: Chiloscyphane sesquiterpenoids
+243	243	159	Cholane steroids	2	class	class: Cholane steroids
+244	244	160	Cholestane steroids	2	class	class: Cholestane steroids
+245	245	161	Chromones	2	class	class: Chromones
+246	246	162	Cinnamic acid amides	2	class	class: Cinnamic acid amides
+247	247	163	Cinnamic acids and derivatives	2	class	class: Cinnamic acids and derivatives
+248	248	164	Cinnamoyl phenols	2	class	class: Cinnamoyl phenols
+249	249	165	Clavams	2	class	class: Clavams
+250	250	166	Clavulones	2	class	class: Clavulones
+251	251	167	Cleistanthane diterpenoids	2	class	class: Cleistanthane diterpenoids
+252	252	168	Clovane sesquiterpenoids	2	class	class: Clovane sesquiterpenoids
+253	253	169	Colensane and Clerodane diterpenoids	2	class	class: Colensane and Clerodane diterpenoids
+254	254	170	Coloratane sesquiterpenoids	2	class	class: Coloratane sesquiterpenoids
+255	255	171	Copaane sesquiterpenoids	2	class	class: Copaane sesquiterpenoids
+256	256	172	Copacamphane sesquiterpenoids	2	class	class: Copacamphane sesquiterpenoids
+257	257	173	Corynanthe type	2	class	class: Corynanthe type
+258	258	174	Coumarinolignans	2	class	class: Coumarinolignans
+259	259	175	Coumaronochromones	2	class	class: Coumaronochromones
+260	260	176	Coumestan	2	class	class: Coumestan
+261	261	177	Cryptophycins	2	class	class: Cryptophycins
+262	262	178	Cubebane sesquiterpenoids	2	class	class: Cubebane sesquiterpenoids
+263	263	179	Cucurbitane triterpenoids	2	class	class: Cucurbitane triterpenoids
+264	264	180	Cuparane sesquiterpenoids	2	class	class: Cuparane sesquiterpenoids
+265	265	181	Cyano esters	2	class	class: Cyano esters
+266	266	182	Cyanogenic glycosides	2	class	class: Cyanogenic glycosides
+267	267	183	Cyathane diterpenoids	2	class	class: Cyathane diterpenoids
+268	268	184	Cyclic peptides	2	class	class: Cyclic peptides
+269	269	185	Cyclitols	2	class	class: Cyclitols
+270	270	186	Cycloabietane diterpenoids	2	class	class: Cycloabietane diterpenoids
+271	271	187	Cycloamphilectane diterpenoids	2	class	class: Cycloamphilectane diterpenoids
+272	272	188	Cycloapotirucallane triterpenoids	2	class	class: Cycloapotirucallane triterpenoids
+273	273	189	Cycloartane triterpenoids	2	class	class: Cycloartane triterpenoids
+274	274	190	Cyclobisabolane sesquiterpenoids	2	class	class: Cyclobisabolane sesquiterpenoids
+275	275	191	Cycloeudesmane sesquiterpenoids	2	class	class: Cycloeudesmane sesquiterpenoids
+276	276	192	Cyclofarnesane sesquiterpenoids	2	class	class: Cyclofarnesane sesquiterpenoids
+277	277	193	Cyclogermacrane sesquiterpenoids	2	class	class: Cyclogermacrane sesquiterpenoids
+278	278	194	Cyclolaurane sesquiterpenoids	2	class	class: Cyclolaurane sesquiterpenoids
+279	279	195	Cyclonerane sesquiterpenoids	2	class	class: Cyclonerane sesquiterpenoids
+280	280	196	Cyclophytane diterpenoids	2	class	class: Cyclophytane diterpenoids
+281	281	197	Cyclopiane diterpenoids	2	class	class: Cyclopiane diterpenoids
+282	282	198	Cyclopiazonic acid-tpye tetramate alkaloids	2	class	class: Cyclopiazonic acid-tpye tetramate alkaloids
+283	283	199	Cytochalasan alkaloids	2	class	class: Cytochalasan alkaloids
+284	284	200	Cytosporins	2	class	class: Cytosporins
+285	285	201	DKXanthenes and derivatives	2	class	class: DKXanthenes and derivatives
+286	286	202	Dactylomelane diterpenoids	2	class	class: Dactylomelane diterpenoids
+287	287	203	Dammarane and Protostane triterpenoids	2	class	class: Dammarane and Protostane triterpenoids
+288	288	204	Daphnane diterpenoids	2	class	class: Daphnane diterpenoids
+289	289	205	Daucane sesquiterpenoids	2	class	class: Daucane sesquiterpenoids
+290	290	206	Decalins with 2-pyrones	2	class	class: Decalins with 2-pyrones
+291	291	207	Decalins with side chains	2	class	class: Decalins with side chains
+292	292	208	Decipiane diterpenoids	2	class	class: Decipiane diterpenoids
+293	293	209	Depsides	2	class	class: Depsides
+294	294	210	Depsidones	2	class	class: Depsidones
+295	295	211	Depsipeptides	2	class	class: Depsipeptides
+296	296	212	Devadarane diterpenoids	2	class	class: Devadarane diterpenoids
+297	297	213	Diacylglycerols	2	class	class: Diacylglycerols
+298	298	214	Dialkylresorcinols	2	class	class: Dialkylresorcinols
+299	299	215	Diarylether type diarylheptanoids	2	class	class: Diarylether type diarylheptanoids
+300	300	216	Dibenzocyclooctadienes lignans	2	class	class: Dibenzocyclooctadienes lignans
+301	301	217	Dibenzylbutane lignans	2	class	class: Dibenzylbutane lignans
+302	302	218	Dibenzylbutyrolactone lignans	2	class	class: Dibenzylbutyrolactone lignans
+303	303	219	Dicarboxylic acids	2	class	class: Dicarboxylic acids
+304	304	220	Dihydroflavonols	2	class	class: Dihydroflavonols
+305	305	221	Dimeric phloroglucinols	2	class	class: Dimeric phloroglucinols
+306	306	222	Dipeptides	2	class	class: Dipeptides
+307	307	223	Disaccharides	2	class	class: Disaccharides
+308	308	224	Docosa-1,2-dioxolanes	2	class	class: Docosa-1,2-dioxolanes
+309	309	225	Dolabellane diterpenoids	2	class	class: Dolabellane diterpenoids
+310	310	226	Dolastane diterpenoids	2	class	class: Dolastane diterpenoids
+311	311	227	Dolichols	2	class	class: Dolichols
+312	312	228	Drimane sesquiterpenoids	2	class	class: Drimane sesquiterpenoids
+313	313	229	Duclauxin and derivatives	2	class	class: Duclauxin and derivatives
+314	314	230	Dunniane sesquiterpenoids	2	class	class: Dunniane sesquiterpenoids
+315	315	231	Ecdysteroids	2	class	class: Ecdysteroids
+316	316	232	Eicosa-1,2-dioxolanes	2	class	class: Eicosa-1,2-dioxolanes
+317	317	233	Elemane sesquiterpenoids	2	class	class: Elemane sesquiterpenoids
+318	318	234	Elfamycins	2	class	class: Elfamycins
+319	319	235	Enediynes	2	class	class: Enediynes
+320	320	236	Epothilones	2	class	class: Epothilones
+321	321	237	Epoxy fatty acids	2	class	class: Epoxy fatty acids
+322	322	238	Epoxyeicosatrienoic acids	2	class	class: Epoxyeicosatrienoic acids
+323	323	239	Eremane diterpenoids	2	class	class: Eremane diterpenoids
+324	324	240	Eremophilane sesquiterpenoids	2	class	class: Eremophilane sesquiterpenoids
+325	325	241	Ergostane steroids	2	class	class: Ergostane steroids
+326	326	242	Ergot alkaloids	2	class	class: Ergot alkaloids
+327	327	243	Ericamycins	2	class	class: Ericamycins
+328	328	244	Erythromycins	2	class	class: Erythromycins
+329	329	245	Erythroxylane diterpenoids	2	class	class: Erythroxylane diterpenoids
+330	330	246	Estrane steroids	2	class	class: Estrane steroids
+331	331	247	Eudesmane sesquiterpenoids	2	class	class: Eudesmane sesquiterpenoids
+332	332	248	Eunicellane diterpenoids	2	class	class: Eunicellane diterpenoids
+333	333	249	Farnesane sesquiterpenoids	2	class	class: Farnesane sesquiterpenoids
+334	334	250	Fasamycins and derivatives	2	class	class: Fasamycins and derivatives
+335	335	251	Fatty acid estolides	2	class	class: Fatty acid estolides
+336	336	252	Fatty acyl CoAs	2	class	class: Fatty acyl CoAs
+337	337	253	Fatty acyl carnitines	2	class	class: Fatty acyl carnitines
+338	338	254	Fatty acyl glycosides of mono- and disaccharides	2	class	class: Fatty acyl glycosides of mono- and disaccharides
+339	339	255	Fatty acyl homoserine lactones	2	class	class: Fatty acyl homoserine lactones
+340	340	256	Fatty alcohols	2	class	class: Fatty alcohols
+341	341	257	Fatty aldehydes	2	class	class: Fatty aldehydes
+342	342	258	Fatty ethers	2	class	class: Fatty ethers
+343	343	259	Fatty nitriles	2	class	class: Fatty nitriles
+344	344	260	Fenchane monoterpenoids	2	class	class: Fenchane monoterpenoids
+345	345	261	Fernane and Arborinane triterpenoids	2	class	class: Fernane and Arborinane triterpenoids
+346	346	262	Filicane triterpenoids	2	class	class: Filicane triterpenoids
+347	347	263	Flavan-3-ols	2	class	class: Flavan-3-ols
+348	348	264	Flavandiols (Leucoanthocyanidins)	2	class	class: Flavandiols (Leucoanthocyanidins)
+349	349	265	Flavanones	2	class	class: Flavanones
+350	350	266	Flavans	2	class	class: Flavans
+351	351	267	Flavones	2	class	class: Flavones
+352	352	268	Flavonolignans	2	class	class: Flavonolignans
+353	353	269	Flavonols	2	class	class: Flavonols
+354	354	270	Flavonostilbenes	2	class	class: Flavonostilbenes
+355	355	271	Friedelane triterpenoids	2	class	class: Friedelane triterpenoids
+356	356	272	Fukinane sesquiterpenoids	2	class	class: Fukinane sesquiterpenoids
+357	357	273	Fungal DPEs	2	class	class: Fungal DPEs
+358	358	274	Fungal cyclic polyketides (Miscellaneous)	2	class	class: Fungal cyclic polyketides (Miscellaneous)
+359	359	275	Furanoabietane diterpenoids	2	class	class: Furanoabietane diterpenoids
+360	360	276	Furanoid lignans	2	class	class: Furanoid lignans
+361	361	277	Furans	2	class	class: Furans
+362	362	278	Furocoumarins	2	class	class: Furocoumarins
+363	363	279	Furofuranoid lignans	2	class	class: Furofuranoid lignans
+364	364	280	Furostane steroids	2	class	class: Furostane steroids
+365	365	281	Fusicoccane diterpenoids	2	class	class: Fusicoccane diterpenoids
+366	366	282	Fusidane triterpenoids	2	class	class: Fusidane triterpenoids
+367	367	283	Gallotannins	2	class	class: Gallotannins
+368	368	284	Gammacerane triterpenoids	2	class	class: Gammacerane triterpenoids
+369	369	285	Germacrane sesquiterpenoids	2	class	class: Germacrane sesquiterpenoids
+370	370	286	Gersemiane diterpenoids	2	class	class: Gersemiane diterpenoids
+371	371	287	Gibberellins	2	class	class: Gibberellins
+372	372	288	Glucosinolates	2	class	class: Glucosinolates
+373	373	289	Glutinane triterpenoids	2	class	class: Glutinane triterpenoids
+374	374	290	Glycerophosphates	2	class	class: Glycerophosphates
+375	375	291	Glycerophosphocholines	2	class	class: Glycerophosphocholines
+376	376	292	Glycerophosphoethanolamines	2	class	class: Glycerophosphoethanolamines
+377	377	293	Glycerophosphoglycerols	2	class	class: Glycerophosphoglycerols
+378	378	294	Glycerophosphoglycerophosphates	2	class	class: Glycerophosphoglycerophosphates
+379	379	295	Glycerophosphoglycerophosphoglycerols	2	class	class: Glycerophosphoglycerophosphoglycerols
+380	380	296	Glycerophosphoinositol phosphates	2	class	class: Glycerophosphoinositol phosphates
+381	381	297	Glycerophosphoinositolglycans	2	class	class: Glycerophosphoinositolglycans
+382	382	298	Glycerophosphoinositols	2	class	class: Glycerophosphoinositols
+383	383	299	Glycerophosphoserines	2	class	class: Glycerophosphoserines
+384	384	300	Glycosyldiacylglycerols	2	class	class: Glycosyldiacylglycerols
+385	385	301	Glycosylglycerophospholipids	2	class	class: Glycosylglycerophospholipids
+386	386	302	Glycosylmonoacylglycerols	2	class	class: Glycosylmonoacylglycerols
+387	387	303	Gorgonane sesquiterpenoids	2	class	class: Gorgonane sesquiterpenoids
+388	388	304	Grayanotoxane diterpenoids	2	class	class: Grayanotoxane diterpenoids
+389	389	305	Griseofulvins	2	class	class: Griseofulvins
+390	390	306	Guaiane sesquiterpenoids	2	class	class: Guaiane sesquiterpenoids
+391	391	307	Guanacastane diterpenoids	2	class	class: Guanacastane diterpenoids
+392	392	308	Gymnomitrane sesquiterpenoids	2	class	class: Gymnomitrane sesquiterpenoids
+393	393	309	Halimane diterpenoids	2	class	class: Halimane diterpenoids
+394	394	310	Halogenated hydrocarbons	2	class	class: Halogenated hydrocarbons
+395	395	311	Hamigerane sesquiterpenoids	2	class	class: Hamigerane sesquiterpenoids
+396	396	312	Hapalindole alkaloids	2	class	class: Hapalindole alkaloids
+397	397	313	Hasubanan alkaloids	2	class	class: Hasubanan alkaloids
+398	398	314	Hepoxilins	2	class	class: Hepoxilins
+399	399	315	Herbertane sesquiterpenoids	2	class	class: Herbertane sesquiterpenoids
+400	400	316	Heterocyclic fatty acids	2	class	class: Heterocyclic fatty acids
+401	401	317	Himachalane sesquiterpenoids	2	class	class: Himachalane sesquiterpenoids
+402	402	318	Hirsutane sesquiterpenoids	2	class	class: Hirsutane sesquiterpenoids
+403	403	319	Homoerythrina alkaloids	2	class	class: Homoerythrina alkaloids
+404	404	320	Homofarnesane sesquiterpenoids	2	class	class: Homofarnesane sesquiterpenoids
+405	405	321	Hopane and Moretane triterpenoids	2	class	class: Hopane and Moretane triterpenoids
+406	406	322	Humbertiane sesquiterpenoids	2	class	class: Humbertiane sesquiterpenoids
+407	407	323	Humulane sesquiterpenoids	2	class	class: Humulane sesquiterpenoids
+408	408	324	Hydrocarbons	2	class	class: Hydrocarbons
+409	409	325	Hydroperoxy fatty acids	2	class	class: Hydroperoxy fatty acids
+410	410	326	Hydroxy fatty acids	2	class	class: Hydroxy fatty acids
+411	411	327	Hydroxy-hydroperoxyeicosapentaenoic acids	2	class	class: Hydroxy-hydroperoxyeicosapentaenoic acids
+412	412	328	Hydroxy-hydroperoxyeicosatetraenoic acids	2	class	class: Hydroxy-hydroperoxyeicosatetraenoic acids
+413	413	329	Hydroxy-hydroperoxyeicosatrienoic acids	2	class	class: Hydroxy-hydroperoxyeicosatrienoic acids
+414	414	330	Iboga type	2	class	class: Iboga type
+415	415	331	Icetexane diterpenoids	2	class	class: Icetexane diterpenoids
+416	416	332	Illudalane sesquiterpenoids	2	class	class: Illudalane sesquiterpenoids
+417	417	333	Illudane sesquiterpenoids	2	class	class: Illudane sesquiterpenoids
+418	418	334	Imidazole alkaloids	2	class	class: Imidazole alkaloids
+419	419	335	Indole diketopiperazine alkaloids (L-Trp, L-Ala)	2	class	class: Indole diketopiperazine alkaloids (L-Trp, L-Ala)
+420	420	336	Indole diketopiperazine alkaloids (L-Trp, L-Pro)	2	class	class: Indole diketopiperazine alkaloids (L-Trp, L-Pro)
+421	421	337	Indole diketopiperazine alkaloids (L-Trp, L-Trp)	2	class	class: Indole diketopiperazine alkaloids (L-Trp, L-Trp)
+422	422	338	Indole-Diterpenoid alkaloids (Penitrems)	2	class	class: Indole-Diterpenoid alkaloids (Penitrems)
+423	423	339	Indolizidine alkaloids	2	class	class: Indolizidine alkaloids
+424	424	340	Ingenane diterpenoids	2	class	class: Ingenane diterpenoids
+425	425	341	Iphionane sesquiterpenoids	2	class	class: Iphionane sesquiterpenoids
+426	426	342	Iridoids monoterpenoids	2	class	class: Iridoids monoterpenoids
+427	427	343	Irregular monoterpenoids	2	class	class: Irregular monoterpenoids
+428	428	344	Isariotin alkaloids	2	class	class: Isariotin alkaloids
+429	429	345	Ishwarane sesquiterpenoids	2	class	class: Ishwarane sesquiterpenoids
+430	430	346	Isoaurones	2	class	class: Isoaurones
+431	431	347	Isocomane sesquiterpenoids	2	class	class: Isocomane sesquiterpenoids
+432	432	348	Isocoumarins	2	class	class: Isocoumarins
+433	433	349	Isodaucane sesquiterpenoids	2	class	class: Isodaucane sesquiterpenoids
+434	434	350	Isoflavanones	2	class	class: Isoflavanones
+435	435	351	Isoflavones	2	class	class: Isoflavones
+436	436	352	Isofurans	2	class	class: Isofurans
+437	437	353	Isoindole alkaloids	2	class	class: Isoindole alkaloids
+438	438	354	Isolactarane sesquiterpenoids	2	class	class: Isolactarane sesquiterpenoids
+439	439	355	Isoprostanes	2	class	class: Isoprostanes
+440	440	356	Isoquinoline alkaloids	2	class	class: Isoquinoline alkaloids
+441	441	357	Ivaxillarane sesquiterpenoids	2	class	class: Ivaxillarane sesquiterpenoids
+442	442	358	Jasmonic acids	2	class	class: Jasmonic acids
+443	443	359	Jatrophane diterpenoids	2	class	class: Jatrophane diterpenoids
+444	444	360	Jatropholane diterpenoids	2	class	class: Jatropholane diterpenoids
+445	445	361	Kaurane and Phyllocladane diterpenoids	2	class	class: Kaurane and Phyllocladane diterpenoids
+446	446	362	Kavalactones and derivatives	2	class	class: Kavalactones and derivatives
+447	447	363	Kempane diterpenoids	2	class	class: Kempane diterpenoids
+448	448	364	Labdane diterpenoids	2	class	class: Labdane diterpenoids
+449	449	365	Lactam bearing macrolide lactones	2	class	class: Lactam bearing macrolide lactones
+450	450	366	Lactarane sesquiterpenoids	2	class	class: Lactarane sesquiterpenoids
+451	451	367	Lactones	2	class	class: Lactones
+452	452	368	Ladder polyethers	2	class	class: Ladder polyethers
+453	453	369	Lanostane, Tirucallane and Euphane triterpenoids	2	class	class: Lanostane, Tirucallane and Euphane triterpenoids
+454	454	370	Lathyrane diterpenoids	2	class	class: Lathyrane diterpenoids
+455	455	371	Laurane sesquiterpenoids	2	class	class: Laurane sesquiterpenoids
+456	456	372	Leukotrienes	2	class	class: Leukotrienes
+457	457	373	Levuglandins	2	class	class: Levuglandins
+458	458	374	Limonoids	2	class	class: Limonoids
+459	459	375	Linear diarylheptanoids	2	class	class: Linear diarylheptanoids
+460	460	376	Linear peptides	2	class	class: Linear peptides
+461	461	377	Linear polyenes	2	class	class: Linear polyenes
+462	462	378	Linear sesterterpenoids	2	class	class: Linear sesterterpenoids
+463	463	379	Linear tetronates	2	class	class: Linear tetronates
+464	464	380	Lipopeptides	2	class	class: Lipopeptides
+465	465	381	Lipoxins	2	class	class: Lipoxins
+466	466	382	Lippifoliane sesquiterpenoids	2	class	class: Lippifoliane sesquiterpenoids
+467	467	383	Lobane diterpenoids	2	class	class: Lobane diterpenoids
+468	468	384	Long-Chain Bicyclic Phosphotriester	2	class	class: Long-Chain Bicyclic Phosphotriester
+469	469	385	Longibornane sesquiterpenoids	2	class	class: Longibornane sesquiterpenoids
+470	470	386	Longifolane sesquiterpenoids	2	class	class: Longifolane sesquiterpenoids
+471	471	387	Longipinane sesquiterpenoids	2	class	class: Longipinane sesquiterpenoids
+472	472	388	Luminacins and derivatives	2	class	class: Luminacins and derivatives
+473	473	389	Lupane triterpenoids	2	class	class: Lupane triterpenoids
+474	474	390	Macrocyclic tetramic acids	2	class	class: Macrocyclic tetramic acids
+475	475	391	Macrolide lactams	2	class	class: Macrolide lactams
+476	476	392	Macrolide lactones	2	class	class: Macrolide lactones
+477	477	393	Macrotetrolides	2	class	class: Macrotetrolides
+478	478	394	Malabaricane triterpenoids	2	class	class: Malabaricane triterpenoids
+479	479	395	Mangicol-type sesterterpenoids	2	class	class: Mangicol-type sesterterpenoids
+480	480	396	Marasmane sesquiterpenoids	2	class	class: Marasmane sesquiterpenoids
+481	481	397	Maresins	2	class	class: Maresins
+482	482	398	Marine-bacterial DPEs	2	class	class: Marine-bacterial DPEs
+483	483	399	Megastigmanes	2	class	class: Megastigmanes
+484	484	400	Melithiazole and Myxothiazole derivatives	2	class	class: Melithiazole and Myxothiazole derivatives
+485	485	401	Menthane monoterpenoids	2	class	class: Menthane monoterpenoids
+486	486	402	Merohemiterpenoids	2	class	class: Merohemiterpenoids
+487	487	403	Meromonoterpenoids	2	class	class: Meromonoterpenoids
+488	488	404	Merosesquiterpenoids	2	class	class: Merosesquiterpenoids
+489	489	405	Meroterpenoids with 5- or 6-membered ring	2	class	class: Meroterpenoids with 5- or 6-membered ring
+490	490	406	Meroterpenoids with bridged ring	2	class	class: Meroterpenoids with bridged ring
+491	491	407	Methoxy fatty acids	2	class	class: Methoxy fatty acids
+492	492	408	Methyl xanthones	2	class	class: Methyl xanthones
+493	493	409	Microcolins and mirabimids	2	class	class: Microcolins and mirabimids
+494	494	410	Microcystins	2	class	class: Microcystins
+495	495	411	Microginins	2	class	class: Microginins
+496	496	412	Minor lignans	2	class	class: Minor lignans
+497	497	413	Miscellaneous alkaloids	2	class	class: Miscellaneous alkaloids
+498	498	414	Miscellaneous apocarotenoids	2	class	class: Miscellaneous apocarotenoids
+499	499	415	Miscellaneous meroterpenoids	2	class	class: Miscellaneous meroterpenoids
+500	500	416	Miscellaneous polyketides	2	class	class: Miscellaneous polyketides
+501	501	417	Mitomycins	2	class	class: Mitomycins
+502	502	418	Monacolins and Monacolin derivatives	2	class	class: Monacolins and Monacolin derivatives
+503	503	419	Monoacylglycerols	2	class	class: Monoacylglycerols
+504	504	420	Monoalkylresorcinols	2	class	class: Monoalkylresorcinols
+505	505	421	Monocarbocyclic sesterterpenoids	2	class	class: Monocarbocyclic sesterterpenoids
+506	506	422	Monocyclic guanidine alkaloids	2	class	class: Monocyclic guanidine alkaloids
+507	507	423	Monocyclic monoterpenoids	2	class	class: Monocyclic monoterpenoids
+508	508	424	Monocyclic β-lactams	2	class	class: Monocyclic β-lactams
+509	509	425	Monomeric stilbenes	2	class	class: Monomeric stilbenes
+510	510	426	Monosaccharides	2	class	class: Monosaccharides
+511	511	427	Morphinan alkaloids	2	class	class: Morphinan alkaloids
+512	512	428	Mulinane diterpenoids	2	class	class: Mulinane diterpenoids
+513	513	429	Multiflorane triterpenoids	2	class	class: Multiflorane triterpenoids
+514	514	430	Mycolic acids	2	class	class: Mycolic acids
+515	515	431	Mycosporine and Mycosporine-like amino acids	2	class	class: Mycosporine and Mycosporine-like amino acids
+516	516	432	Myrsinane diterpenoids	2	class	class: Myrsinane diterpenoids
+517	517	433	N-acyl amines	2	class	class: N-acyl amines
+518	518	434	N-acyl ethanolamines (endocannabinoids)	2	class	class: N-acyl ethanolamines (endocannabinoids)
+519	519	435	Nagilactone diterpenoids	2	class	class: Nagilactone diterpenoids
+520	520	436	Naphthalenes and derivatives	2	class	class: Naphthalenes and derivatives
+521	521	437	Naphthalenones	2	class	class: Naphthalenones
+522	522	438	Naphthoquinones	2	class	class: Naphthoquinones
+523	523	439	Nardosinane sesquiterpenoids	2	class	class: Nardosinane sesquiterpenoids
+524	524	440	Neoflavonoids	2	class	class: Neoflavonoids
+525	525	441	Neohopane triterpenoids	2	class	class: Neohopane triterpenoids
+526	526	442	Neolignans	2	class	class: Neolignans
+527	527	443	Neurofurans	2	class	class: Neurofurans
+528	528	444	Neuroprostanes	2	class	class: Neuroprostanes
+529	529	445	Neutral glycosphingolipids	2	class	class: Neutral glycosphingolipids
+530	530	446	Nitro fatty acids	2	class	class: Nitro fatty acids
+531	531	447	Nonadrides	2	class	class: Nonadrides
+532	532	448	Norcembrane diterpenoids	2	class	class: Norcembrane diterpenoids
+533	533	449	Noreremophilane sesquiterpenoids	2	class	class: Noreremophilane sesquiterpenoids
+534	534	450	Noreudesmane sesquiterpenoids	2	class	class: Noreudesmane sesquiterpenoids
+535	535	451	Norkaurane diterpenoids	2	class	class: Norkaurane diterpenoids
+536	536	452	Norlabdane diterpenoids	2	class	class: Norlabdane diterpenoids
+537	537	453	Norpimarane and Norisopimarane diterpenoids	2	class	class: Norpimarane and Norisopimarane diterpenoids
+538	538	454	Norsesterterpenoids	2	class	class: Norsesterterpenoids
+539	539	455	Oblogolides	2	class	class: Oblogolides
+540	540	456	Obtusane diterpenoids	2	class	class: Obtusane diterpenoids
+541	541	457	Oleanane triterpenoids	2	class	class: Oleanane triterpenoids
+542	542	458	Oligomeric phloroglucinols (phlorotannins)	2	class	class: Oligomeric phloroglucinols (phlorotannins)
+543	543	459	Oligomeric stibenes	2	class	class: Oligomeric stibenes
+544	544	460	Oligomycins	2	class	class: Oligomycins
+545	545	461	Onocerane triterpenoids	2	class	class: Onocerane triterpenoids
+546	546	462	Open-chain polyketides	2	class	class: Open-chain polyketides
+547	547	463	Open-chained neoflavonoids	2	class	class: Open-chained neoflavonoids
+548	548	464	Ophiobolane sesterterpenoids	2	class	class: Ophiobolane sesterterpenoids
+549	549	465	Oplopane sesquiterpenoids	2	class	class: Oplopane sesquiterpenoids
+550	550	466	Oppositane sesquiterpenoids	2	class	class: Oppositane sesquiterpenoids
+551	551	467	Orthosomycins	2	class	class: Orthosomycins
+552	552	468	Other Docosanoids	2	class	class: Other Docosanoids
+553	553	469	Other Eicosanoids	2	class	class: Other Eicosanoids
+554	554	470	Other Octadecanoids	2	class	class: Other Octadecanoids
+555	555	471	Other indole diketopiperazine alkaloids	2	class	class: Other indole diketopiperazine alkaloids
+556	556	472	Other polyketide meroterpenoids	2	class	class: Other polyketide meroterpenoids
+557	557	473	Oxa-Bridged Macrolides	2	class	class: Oxa-Bridged Macrolides
+558	558	474	Oxasqualenoids	2	class	class: Oxasqualenoids
+559	559	475	Oxazole alkaloids	2	class	class: Oxazole alkaloids
+560	560	476	Oxidized glycerophospholipids	2	class	class: Oxidized glycerophospholipids
+561	561	477	Oxo fatty acids	2	class	class: Oxo fatty acids
+562	562	478	Oxygenated hydrocarbons	2	class	class: Oxygenated hydrocarbons
+563	563	479	Pachydictyane diterpenoids	2	class	class: Pachydictyane diterpenoids
+564	564	480	Pachysanane triterpenoids	2	class	class: Pachysanane triterpenoids
+565	565	481	Pacifigorgiane sesquiterpenoids	2	class	class: Pacifigorgiane sesquiterpenoids
+566	566	482	Panasinsane sesquiterpenoids	2	class	class: Panasinsane sesquiterpenoids
+567	567	483	Paraconic acids and derivatives	2	class	class: Paraconic acids and derivatives
+568	568	484	Paraliane diterpenoids	2	class	class: Paraliane diterpenoids
+569	569	485	Parguerane diterpenoids	2	class	class: Parguerane diterpenoids
+570	570	486	Patchoulane sesquiterpenoids	2	class	class: Patchoulane sesquiterpenoids
+571	571	487	Paulomycins and derivatives	2	class	class: Paulomycins and derivatives
+572	572	488	Penicillins	2	class	class: Penicillins
+573	573	489	Pentacyclic guanidine alkaloids	2	class	class: Pentacyclic guanidine alkaloids
+574	574	490	Pentalenane sesquiterpenoids	2	class	class: Pentalenane sesquiterpenoids
+575	575	491	Pepluane diterpenoids	2	class	class: Pepluane diterpenoids
+576	576	492	Peptaibols	2	class	class: Peptaibols
+577	577	493	Perforane sesquiterpenoids	2	class	class: Perforane sesquiterpenoids
+578	578	494	Phenalens	2	class	class: Phenalens
+579	579	495	Phenanthrenes	2	class	class: Phenanthrenes
+580	580	496	Phenazine alkaloids	2	class	class: Phenazine alkaloids
+581	581	497	Phenethylisoquinoline alkaloids	2	class	class: Phenethylisoquinoline alkaloids
+582	582	498	Phenoxazine alkaloids	2	class	class: Phenoxazine alkaloids
+583	583	499	Phenylalanine-derived alkaloids	2	class	class: Phenylalanine-derived alkaloids
+584	584	500	Phenylethanoids	2	class	class: Phenylethanoids
+585	585	501	Phenylethylamines	2	class	class: Phenylethylamines
+586	586	502	Phloroglucinol-terpene hybrids	2	class	class: Phloroglucinol-terpene hybrids
+587	587	503	Phoslactomycins or Phosphazomycins	2	class	class: Phoslactomycins or Phosphazomycins
+588	588	504	Phosphosphingolipids	2	class	class: Phosphosphingolipids
+589	589	505	Phthalide derivatives	2	class	class: Phthalide derivatives
+590	590	506	Phytane diterpenoids	2	class	class: Phytane diterpenoids
+591	591	507	Phytofurans	2	class	class: Phytofurans
+592	592	508	Phytoprostanes	2	class	class: Phytoprostanes
+593	593	509	Picrotoxane sesquiterpenoids	2	class	class: Picrotoxane sesquiterpenoids
+594	594	510	Pimarane and Isopimarane diterpenoids	2	class	class: Pimarane and Isopimarane diterpenoids
+595	595	511	Pimprinine alkaloids	2	class	class: Pimprinine alkaloids
+596	596	512	Pinane monoterpenoids	2	class	class: Pinane monoterpenoids
+597	597	513	Pinguisane sesquiterpenoids	2	class	class: Pinguisane sesquiterpenoids
+598	598	514	Piperidine alkaloids	2	class	class: Piperidine alkaloids
+599	599	515	Plant xanthones	2	class	class: Plant xanthones
+600	600	516	Platensimycin and Platencins	2	class	class: Platensimycin and Platencins
+601	601	517	Podocarpane diterpenoids	2	class	class: Podocarpane diterpenoids
+602	602	518	Polyamines	2	class	class: Polyamines
+603	603	519	Polyene macrolides	2	class	class: Polyene macrolides
+604	604	520	Polyesters	2	class	class: Polyesters
+605	605	521	Polyether ionophores	2	class	class: Polyether ionophores
+606	606	522	Polypodane triterpenoids	2	class	class: Polypodane triterpenoids
+607	607	523	Polyprenol derivatives	2	class	class: Polyprenol derivatives
+608	608	524	Polyprenylated cyclic polyketides (Hop meroterpenoids)	2	class	class: Polyprenylated cyclic polyketides (Hop meroterpenoids)
+609	609	525	Polysaccharides	2	class	class: Polysaccharides
+610	610	526	Pradimicins	2	class	class: Pradimicins
+611	611	527	Pregnane steroids	2	class	class: Pregnane steroids
+612	612	528	Premyrsinane diterpenoids	2	class	class: Premyrsinane diterpenoids
+613	613	529	Prenyl quinone meroterpenoids	2	class	class: Prenyl quinone meroterpenoids
+614	614	530	Prenylated,geranylated phloroglucinols	2	class	class: Prenylated,geranylated phloroglucinols
+615	615	531	Prenylbisabolane diterpenoids	2	class	class: Prenylbisabolane diterpenoids
+616	616	532	Prenyleudesmane diterpenoids	2	class	class: Prenyleudesmane diterpenoids
+617	617	533	Presilphiperfolane and Probotryane sesquiterpenoids	2	class	class: Presilphiperfolane and Probotryane sesquiterpenoids
+618	618	534	Prezizaane sesquiterpenoids	2	class	class: Prezizaane sesquiterpenoids
+619	619	535	Primary amides	2	class	class: Primary amides
+620	620	536	Proanthocyanins	2	class	class: Proanthocyanins
+621	621	537	Prodigiosins	2	class	class: Prodigiosins
+622	622	538	Prostaglandins	2	class	class: Prostaglandins
+623	623	539	Protoberberine alkaloids	2	class	class: Protoberberine alkaloids
+624	624	540	Protoilludane sesquiterpenoids	2	class	class: Protoilludane sesquiterpenoids
+625	625	541	Protopine alkaloids	2	class	class: Protopine alkaloids
+626	626	542	Pseudoguaiane sesquiterpenoids	2	class	class: Pseudoguaiane sesquiterpenoids
+627	627	543	Pseudopterane diterpenoids	2	class	class: Pseudopterane diterpenoids
+628	628	544	Pterocarpan	2	class	class: Pterocarpan
+629	629	545	Pulvinones	2	class	class: Pulvinones
+630	630	546	Purine alkaloids	2	class	class: Purine alkaloids
+631	631	547	Purine nucleos(t)ides	2	class	class: Purine nucleos(t)ides
+632	632	548	Pyranocoumarins	2	class	class: Pyranocoumarins
+633	633	549	Pyrazine and Piperazine alkaloids	2	class	class: Pyrazine and Piperazine alkaloids
+634	634	550	Pyridine alkaloids	2	class	class: Pyridine alkaloids
+635	635	551	Pyrimidine nucleos(t)ides	2	class	class: Pyrimidine nucleos(t)ides
+636	636	552	Pyrrocidine tetramate alkaloids	2	class	class: Pyrrocidine tetramate alkaloids
+637	637	553	Pyrrole alkaloids	2	class	class: Pyrrole alkaloids
+638	638	554	Pyrrolidine alkaloids	2	class	class: Pyrrolidine alkaloids
+639	639	555	Pyrrolizidine alkaloids	2	class	class: Pyrrolizidine alkaloids
+640	640	556	Pyrroloindole alkaloids	2	class	class: Pyrroloindole alkaloids
+641	641	557	Pyrroloquinoline alkaloids	2	class	class: Pyrroloquinoline alkaloids
+642	642	558	Quadrane sesquiterpenoids	2	class	class: Quadrane sesquiterpenoids
+643	643	559	Quassinoids	2	class	class: Quassinoids
+644	644	560	Quinazoline alkaloids	2	class	class: Quinazoline alkaloids
+645	645	561	Quinoline alkaloids	2	class	class: Quinoline alkaloids
+646	646	562	Quinolizidine alkaloids	2	class	class: Quinolizidine alkaloids
+647	647	563	Resin glycosides	2	class	class: Resin glycosides
+648	648	564	Resolvin Ds	2	class	class: Resolvin Ds
+649	649	565	Resolvin Es	2	class	class: Resolvin Es
+650	650	566	Rhamnofolane diterpenoids	2	class	class: Rhamnofolane diterpenoids
+651	651	567	Rhamnolipids	2	class	class: Rhamnolipids
+652	652	568	Rhizoxins	2	class	class: Rhizoxins
+653	653	569	RiPPs-Amatoxins and Phallotoxins	2	class	class: RiPPs-Amatoxins and Phallotoxins
+654	654	570	RiPPs-Bottromycins	2	class	class: RiPPs-Bottromycins
+655	655	571	RiPPs-Cyanobactins	2	class	class: RiPPs-Cyanobactins
+656	656	572	RiPPs-Lanthipeptides	2	class	class: RiPPs-Lanthipeptides
+657	657	573	RiPPs-Lasso peptides	2	class	class: RiPPs-Lasso peptides
+658	658	574	RiPPs-Microcins	2	class	class: RiPPs-Microcins
+659	659	575	RiPPs-Thiopeptides	2	class	class: RiPPs-Thiopeptides
+660	660	576	Rotenoids	2	class	class: Rotenoids
+661	661	577	Rotundane sesquiterpenoids	2	class	class: Rotundane sesquiterpenoids
+662	662	578	Sacculatane diterpenoids	2	class	class: Sacculatane diterpenoids
+663	663	579	Salinosporamides	2	class	class: Salinosporamides
+664	664	580	Santalane sesquiterpenoids	2	class	class: Santalane sesquiterpenoids
+665	665	581	Saponaceolide triterpenoids	2	class	class: Saponaceolide triterpenoids
+666	666	582	Sativane sesquiterpenoids	2	class	class: Sativane sesquiterpenoids
+667	667	583	Saxitoxins	2	class	class: Saxitoxins
+668	668	584	Scalarane sesterterpenoids	2	class	class: Scalarane sesterterpenoids
+669	669	585	Secoabietane diterpenoids	2	class	class: Secoabietane diterpenoids
+670	670	586	Secochamigrane sesquiterpenoids	2	class	class: Secochamigrane sesquiterpenoids
+671	671	587	Secoeudesmane sesquiterpenoids	2	class	class: Secoeudesmane sesquiterpenoids
+672	672	588	Secogermacrane sesquiterpenoids	2	class	class: Secogermacrane sesquiterpenoids
+673	673	589	Secoiridoid monoterpenoids	2	class	class: Secoiridoid monoterpenoids
+674	674	590	Secokaurane diterpenoids	2	class	class: Secokaurane diterpenoids
+675	675	591	Secolabdane diterpenoids	2	class	class: Secolabdane diterpenoids
+676	676	592	Segetane diterpenoids	2	class	class: Segetane diterpenoids
+677	677	593	Selaginellins	2	class	class: Selaginellins
+678	678	594	Serratane triterpenoids	2	class	class: Serratane triterpenoids
+679	679	595	Serrulatane and Biflorane diterpenoids	2	class	class: Serrulatane and Biflorane diterpenoids
+680	680	596	Shikimic acids and derivatives	2	class	class: Shikimic acids and derivatives
+681	681	597	Shionane triterpenoids	2	class	class: Shionane triterpenoids
+682	682	598	Silphinane sesquiterpenoids	2	class	class: Silphinane sesquiterpenoids
+683	683	599	Silphiperfolane sesquiterpenoids	2	class	class: Silphiperfolane sesquiterpenoids
+684	684	600	Simple amide alkaloids	2	class	class: Simple amide alkaloids
+685	685	601	Simple aromatic polyketides	2	class	class: Simple aromatic polyketides
+686	686	602	Simple coumarins	2	class	class: Simple coumarins
+687	687	603	Simple cyclic polyketides	2	class	class: Simple cyclic polyketides
+688	688	604	Simple diketopiperazine alkaloids	2	class	class: Simple diketopiperazine alkaloids
+689	689	605	Simple indole alkaloids	2	class	class: Simple indole alkaloids
+690	690	606	Simple oxindole alkaloids	2	class	class: Simple oxindole alkaloids
+691	691	607	Simple phenolic acids	2	class	class: Simple phenolic acids
+692	692	608	Simple tetramate alkaloids	2	class	class: Simple tetramate alkaloids
+693	693	609	Sinularane sesquiterpenoids	2	class	class: Sinularane sesquiterpenoids
+694	694	610	Sophorolipids	2	class	class: Sophorolipids
+695	695	611	Sorbicilinoids	2	class	class: Sorbicilinoids
+696	696	612	Sphaerane diterpenoids	2	class	class: Sphaerane diterpenoids
+697	697	613	Sphaeroane diterpenoids	2	class	class: Sphaeroane diterpenoids
+698	698	614	Sphenolobane diterpenoids	2	class	class: Sphenolobane diterpenoids
+699	699	615	Sphingoid bases	2	class	class: Sphingoid bases
+700	700	616	Spiroaxane sesquiterpenoids	2	class	class: Spiroaxane sesquiterpenoids
+701	701	617	Spirodioxynaphthalenes	2	class	class: Spirodioxynaphthalenes
+702	702	618	Spirostane steroids	2	class	class: Spirostane steroids
+703	703	619	Spirotetronate macrolides	2	class	class: Spirotetronate macrolides
+704	704	620	Spirovetivane sesquiterpenoids	2	class	class: Spirovetivane sesquiterpenoids
+705	705	621	Spongiane diterpenoids	2	class	class: Spongiane diterpenoids
+706	706	622	Spriromeroterpenoids	2	class	class: Spriromeroterpenoids
+707	707	623	Stemona alkaloids	2	class	class: Stemona alkaloids
+708	708	624	Steroidal alkaloids	2	class	class: Steroidal alkaloids
+709	709	625	Sterpurane sesquiterpenoids	2	class	class: Sterpurane sesquiterpenoids
+710	710	626	Stictane triterpenoids	2	class	class: Stictane triterpenoids
+711	711	627	Stigmastane steroids	2	class	class: Stigmastane steroids
+712	712	628	Stilbenolignans	2	class	class: Stilbenolignans
+713	713	629	Streptogramins	2	class	class: Streptogramins
+714	714	630	Streptothricins and derivatives	2	class	class: Streptothricins and derivatives
+715	715	631	Strobilurins and derivatives	2	class	class: Strobilurins and derivatives
+716	716	632	Strychnos type	2	class	class: Strychnos type
+717	717	633	Tantazoles and mirabazoles	2	class	class: Tantazoles and mirabazoles
+718	718	634	Taraxerane triterpenoids	2	class	class: Taraxerane triterpenoids
+719	719	635	Taxane diterpenoids	2	class	class: Taxane diterpenoids
+720	720	636	Terpenoid alkaloids	2	class	class: Terpenoid alkaloids
+721	721	637	Terpenoid tetrahydroisoquinoline alkaloids	2	class	class: Terpenoid tetrahydroisoquinoline alkaloids
+722	722	638	Tetracyclic diterpenoids	2	class	class: Tetracyclic diterpenoids
+723	723	639	Tetracyclines	2	class	class: Tetracyclines
+724	724	640	Tetrahydroisoquinoline alkaloids	2	class	class: Tetrahydroisoquinoline alkaloids
+725	725	641	Tetraketide meroterpenoids	2	class	class: Tetraketide meroterpenoids
+726	726	642	Tetrodotoxins	2	class	class: Tetrodotoxins
+727	727	643	Thapsane sesquiterpenoids	2	class	class: Thapsane sesquiterpenoids
+728	728	644	Thia fatty acids	2	class	class: Thia fatty acids
+729	729	645	Thiazole alkaloids	2	class	class: Thiazole alkaloids
+730	730	646	Thiodiketopiperazine alkaloids	2	class	class: Thiodiketopiperazine alkaloids
+731	731	647	Thromboxanes	2	class	class: Thromboxanes
+732	732	648	Thujane monoterpenoids	2	class	class: Thujane monoterpenoids
+733	733	649	Thujopsane sesquiterpenoids	2	class	class: Thujopsane sesquiterpenoids
+734	734	650	Tigliane diterpenoids	2	class	class: Tigliane diterpenoids
+735	735	651	Totarane diterpenoids	2	class	class: Totarane diterpenoids
+736	736	652	Trachylobane diterpenoids	2	class	class: Trachylobane diterpenoids
+737	737	653	Tremulane sesquiterpenoids	2	class	class: Tremulane sesquiterpenoids
+738	738	654	Triacylglycerols	2	class	class: Triacylglycerols
+739	739	655	Trichothecane sesquiterpenoids	2	class	class: Trichothecane sesquiterpenoids
+740	740	656	Tricyclic guanidine alkaloids	2	class	class: Tricyclic guanidine alkaloids
+741	741	657	Triketide meroterpenoids	2	class	class: Triketide meroterpenoids
+742	742	658	Trinervitane diterpenoids	2	class	class: Trinervitane diterpenoids
+743	743	659	Tripeptides	2	class	class: Tripeptides
+744	744	660	Tropane alkaloids	2	class	class: Tropane alkaloids
+745	745	661	Tropolones and derivatives (PKS)	2	class	class: Tropolones and derivatives (PKS)
+746	746	662	Tropolones and derivatives (Shikimate)	2	class	class: Tropolones and derivatives (Shikimate)
+747	747	663	Tylosins	2	class	class: Tylosins
+748	748	664	Unsaturated fatty acids	2	class	class: Unsaturated fatty acids
+749	749	665	Ursane and Taraxastane triterpenoids	2	class	class: Ursane and Taraxastane triterpenoids
+750	750	666	Usnic acid and derivatives	2	class	class: Usnic acid and derivatives
+751	751	667	Valerane sesquiterpenoids	2	class	class: Valerane sesquiterpenoids
+752	752	668	Valerenane sesquiterpenoids	2	class	class: Valerenane sesquiterpenoids
+753	753	669	Valparane diterpenoids	2	class	class: Valparane diterpenoids
+754	754	670	Vancomycins and Teicoplanins	2	class	class: Vancomycins and Teicoplanins
+755	755	671	Verrucosane diterpenoids	2	class	class: Verrucosane diterpenoids
+756	756	672	Verticillane diterpenoids	2	class	class: Verticillane diterpenoids
+757	757	673	Villanovane diterpenoids	2	class	class: Villanovane diterpenoids
+758	758	674	Viscidane diterpenoids	2	class	class: Viscidane diterpenoids
+759	759	675	Vitamin D2 and derivatives	2	class	class: Vitamin D2 and derivatives
+760	760	676	Vitamin D3 and derivatives	2	class	class: Vitamin D3 and derivatives
+761	761	677	Wax diesters	2	class	class: Wax diesters
+762	762	678	Wax monoesters	2	class	class: Wax monoesters
+763	763	679	Xeniaphyllane diterpenoids	2	class	class: Xeniaphyllane diterpenoids
+764	764	680	Xenicane diterpenoids	2	class	class: Xenicane diterpenoids
+765	765	681	Yohimbine-like alkaloids	2	class	class: Yohimbine-like alkaloids
+766	766	682	Zearalenones	2	class	class: Zearalenones
+767	767	683	Zizaane sesquiterpenoids	2	class	class: Zizaane sesquiterpenoids
+768	768	684	m-Terphenyls	2	class	class: m-Terphenyls
+769	769	685	p-Terphenyls	2	class	class: p-Terphenyls
+770	770	686	pteridine alkaloids	2	class	class: pteridine alkaloids

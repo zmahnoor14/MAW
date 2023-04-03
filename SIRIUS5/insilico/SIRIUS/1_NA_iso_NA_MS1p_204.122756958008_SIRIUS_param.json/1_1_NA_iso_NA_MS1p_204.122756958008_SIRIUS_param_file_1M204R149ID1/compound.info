@@ -1,0 +1,8 @@
+index	1
+name	1_NA_iso_NA_MS1p_204.122756958008_SIRIUS_param_file_1M204R149ID1
+ionMass	204.122756958008
+ionType	[M + ?]+
+detectedAdducts	MS1_PREPROCESSOR:{}
+rt	148.997391:NaN,NaN
+confidenceScore	0.994769342266122
+rankingScoreType	sirius.scores.SiriusScore
