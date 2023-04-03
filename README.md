@@ -18,7 +18,7 @@ Since MAW is implemented in R and Python so we have two separate Docker images.
 ### Pull maw-r Docker Image
 To pull MAW-R R-docker image, run the following command on your terminal:
 ```
-docker pull zmahnoor/maw-r:1.0.0
+docker pull zmahnoor/maw-r:1.0.1
 ```
 This will creat a R-Docker image on your system. This image contains /opt/workdir as the working directory which contains the following files and folders:
 <br>
