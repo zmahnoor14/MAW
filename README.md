@@ -23,13 +23,9 @@ docker pull zmahnoor/maw-r:1.0.0
 This will creat a R-Docker image on your system. This image contains /opt/workdir as the working directory which contains the following files and folders:
 <br>
 1. /data (folder)
-2. /data/example_Tyrosine.mzML
-3. /data/hmdb.rda
-4. /data/gnps.rda
-5. /data/mbankNIST.rda
-6. Workflow_R_Functions.r (R function script)
-7. Workflow_R_Script.r (R example script)
-8. install_packages.R (R package installation script, these packages are already installed the docker container) <br>
+2. /data/MS1DATA_SiriusP.tsv (example file containing list of ms inputs and json output file paths)
+3. /data/insilico/SIRIUS/1_NA_iso_NA_MS1p_204.122756958008_SIRIUS_param.ms (example file for .ms input file for SIRIUS)
+4. /data/Run_SIRIUS5.r (running Sirius5 script) <br>
 
 ### Pull maw-sirius5 Docker Image
 To pull MAW-SIRIU5 R-docker image, run the following command on your terminal:
