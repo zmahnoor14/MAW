@@ -100,6 +100,7 @@ sirius login -u user@email.com -p --show
 Th prompt will ask for your password, so enter the pssowrd and hit enter.
 
 ```
+cd /data
 Rscript --no-save --no-restore --verbose Run_SIRIUS5.r >outputFile.txt 2>&1
 ```
 
