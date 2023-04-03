@@ -39,9 +39,9 @@ docker pull zmahnoor/maw-sirius5-old --platform=linux/amd64
 This will creat a R-Docker image on your system. This image contains /opt/workdir as the working directory which contains the following files and folders:
 <br>
 1. /data (folder)
-2. /MS1DATA_SiriusP.tsv (example file containing list of ms inputs and json output file paths)
-3. /insilico/SIRIUS/1_NA_iso_NA_MS1p_204.122756958008_SIRIUS_param.ms (example file for .ms input file for SIRIUS)
-4. /Run_SIRIUS5.r (running Sirius5 script) <br>
+2. /data/insilico/MS1DATA_SiriusP.tsv (example file containing list of ms inputs and json output file paths)
+3. /data/insilico/SIRIUS/1_NA_iso_NA_MS1p_204.122756958008_SIRIUS_param.ms (example file for .ms input file for SIRIUS)
+4. /data/Run_SIRIUS5.r (running Sirius5 script) <br>
 
 ### Pull maw-py Docker Image
 To pull MAW-Py Python-docker image, run the following command on your terminal:
