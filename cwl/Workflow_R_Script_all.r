@@ -1,9 +1,11 @@
+
+# ---------- Preparations ----------
+
+# provenance library rdtLite integration
 library(rdtLite)
 options(prov.dir = "./prov", snapshot.size = 10000)
 prov.init(prov.dir = ".")
 
-
-# ---------- Preparations ----------
 # Load Libraries
 library(Spectra)
 library(MsBackendMgf)
@@ -12,15 +14,13 @@ library(MsCoreUtils)
 library(MsBackendMsp)
 library(readr)
 library(dplyr)
-# 3 dependencies for latest MassBank version
 library(rvest)
 library(stringr)
 library(xml2)
 options(warn=-1)
 library("mzR")
-#' Download the CompDb database using curl
 library(curl)
-#library(CompoundDb)
+library(CompoundDb)
 
 download_specDB_new <- function(input_dir, db = "all"){
 
@@ -414,7 +414,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 #             # load the gnps spectral database
 #             load("gnps.rda")
 #         }
-        load(args[2])
+        load(gnps_file)
     }
     # if the database selected is HMDB or all
     if (db == "all" || db =="hmdb"){
@@ -427,7 +427,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 #             # load the gnps spectral database
 #             load("hmdb.rda")
 #         }
-        load(args[3])
+        load(hmdb_file)
     }
     # if the database selected is HMDB or all
     if (db == "all" || db == "mbank"){
@@ -439,7 +439,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
 #             # load the gnps spectral database
 #             load("mbankNIST.rda")
 #         }
-        load(args[4])
+        load(mbank_file)
     }
 
     # read spectra object
@@ -1613,177 +1613,6 @@ ms2_peaks <- function(pre_tbl, proc_mzml, result_dir, file_id){
 }
 
 
-
-
-#cam_funcMode <- function(path, pattern = ".mzML"){
-    #library("CAMERA")
-    # List all files present in QC folder
-    #files_QC_N <- list.files(path, pattern = pattern ,full.names=TRUE)
-
-    #for (i in 1:length(files_QC_N)){
-
-        # read each file using Spectra
-        #sps_all <- Spectra(files_QC_N[i], backend = MsBackendMzR())
-
-
-        #if (length(unique(sps_all$polarity)) == 1){
-            #if(unique(sps_all$polarity) == 1){
-                #Read the same file with MS1 information; note CAMERA reads xcmsSet object
-                #xs <- xcmsSet(file = as.character(files_QC_N[i]),
-                              #profmethod = "bin", profparam = list(), lockMassFreq=FALSE,
-                              #mslevel= 1, progressCallback=NULL, polarity="positive",
-                              #scanrange = NULL, BPPARAM = bpparam(),
-                              #stopOnError = TRUE)
-                # Create an xsAnnotate object
-                #an <- xsAnnotate(xs)
-                # Group based on RT
-                #anF <- groupFWHM(an, perfwhm = 0.6)
-                # Annotate isotopes
-                #anI <- findIsotopes(anF, mzabs = 0.01)
-                # Verify grouping
-                #anIC <- groupCorr(anI, cor_eic_th = 0.75)
-                #Annotate adducts
-                #anFA <- findAdducts(anIC, polarity="positive")
-                #get a feature list
-                #peaklist <- getPeaklist(anFA)
-                # add file_origin information
-                #peaklist$file_origin <- as.character(files_QC_N[i])
-                #file_name <- paste(path,"/posCAMERA_Results_", i, ".csv", sep = "")
-                # write individual QC files which are in pos mode (later code will combine them)
-                #write.csv(peaklist, file = file_name)
-            #}else if (unique(sps_all$polarity) == 0){
-                #Read the same file with MS1 information; note CAMERA reads xcmsSet object
-                #xs <- xcmsSet(file = as.character(files_QC_N[i]),
-                              #profmethod = "bin", profparam = list(), lockMassFreq=FALSE,
-                              #mslevel= 1, progressCallback=NULL, polarity="negative",
-                              #scanrange = NULL, BPPARAM = bpparam(),
-                              #stopOnError = TRUE)
-                # Create an xsAnnotate object
-                #an <- xsAnnotate(xs)
-                # Group based on RT
-                #anF <- groupFWHM(an, perfwhm = 0.6)
-                # Annotate isotopes
-                #anI <- findIsotopes(anF, mzabs = 0.01)
-                # Verify grouping
-                #anIC <- groupCorr(anI, cor_eic_th = 0.75)
-                #Annotate adducts
-                #anFA <- findAdducts(anIC, polarity="negative")
-                #get a feature list
-                #peaklist <- getPeaklist(anFA)
-                # add file_origin information
-                #peaklist$file_origin <- as.character(files_QC_N[i])
-                #file_name <- paste(path, "/negCAMERA_Results_", i, ".csv", sep = "")
-                # write individual QC files which are in pos mode (later code will combine them)
-                #write.csv(peaklist, file = file_name)
-            #}
-        #}
-    #else{
-        #pos <- sps_all[sps_all$polarity == 1]
-        #neg <- sps_all[sps_all$polarity == 0]
-        #file_p <- paste(path, "/QC_280k_pos", i, ".mzML", sep = "")
-        #file_n <- paste(path, "/QC_280k_neg", i, ".mzML", sep = "")
-
-        # create new mzML QC files for pos and neg modes from each common QC file
-        #export(pos, backend = MsBackendMzR(), file = file_p)
-        #export(neg, backend = MsBackendMzR(), file = file_n)
-        #Read the same file with MS1 information; note CAMERA reads xcmsSet object
-        #xs <- xcmsSet(file = as.character(file_p),
-                        #profmethod = "bin", profparam = list(), lockMassFreq=FALSE,
-                        #mslevel= 1, progressCallback=NULL, polarity="positive",
-                        #scanrange = NULL, BPPARAM = bpparam(),
-                        #stopOnError = TRUE)
-        # Create an xsAnnotate object
-        #an <- xsAnnotate(xs)
-        # Group based on RT
-        #anF <- groupFWHM(an, perfwhm = 0.6)
-        # Annotate isotopes
-        #anI <- findIsotopes(anF, mzabs = 0.01)
-        # Verify grouping
-        #anIC <- groupCorr(anI, cor_eic_th = 0.75)
-        #Annotate adducts
-        #anFA <- findAdducts(anIC, polarity="positive")
-        #get a feature list
-        #peaklist <- getPeaklist(anFA)
-        # add file_origin information
-        #peaklist$file_origin <- as.character(files_QC_N[i])
-        #file_name <- paste(path, "/posCAMERA_Results_", i, ".csv", sep = "")
-        # write individual QC files which are in pos mode (later code will combine them)
-        #write.csv(peaklist, file = file_name)
-
-        #Read the same file with MS1 information; note CAMERA reads xcmsSet object
-        #xs <- xcmsSet(file = as.character(file_n),
-                        #profmethod = "bin", profparam = list(), lockMassFreq=FALSE,
-                        #mslevel= 1, progressCallback=NULL, polarity="negative",
-                        #scanrange = NULL, BPPARAM = bpparam(),
-                        #stopOnError = TRUE)
-        # Create an xsAnnotate object
-        #an <- xsAnnotate(xs)
-        # Group based on RT
-        #anF <- groupFWHM(an, perfwhm = 0.6)
-        # Annotate isotopes
-        #anI <- findIsotopes(anF, mzabs = 0.01)
-        # Verify grouping
-        #anIC <- groupCorr(anI, cor_eic_th = 0.75)
-        #Annotate adducts
-        #anFA <- findAdducts(anIC, polarity="negative")
-        #get a feature list
-        #peaklist <- getPeaklist(anFA)
-        # add file_origin information
-        #peaklist$file_origin <- as.character(files_QC_N[i])
-        #file_name <- paste(path, "/negCAMERA_Results_", i, ".csv", sep = "")
-        # write individual QC files which are in pos mode (later code will combine them)
-        #write.csv(peaklist, file = file_name)
-    #}
-
-    #}
-
-    #detach("package:CAMERA", unload=TRUE)
-#}
-
-# ---------- merge_qc ----------
-
-#merge_qc<- function(path){
-    # combine all QC which are in positive mode
-    #df_pos <- list.files(path, pattern = "posCAMERA_Results_", full.names = TRUE) %>%
-        #lapply(read_csv) %>%
-        #bind_rows
-    # remove any duplicated rows
-    #df_pos <- as.data.frame(df_pos[!duplicated(df_pos), ])
-
-    #extract isotope column numbers, the numbers represent the group of isotope
-    #nm_p <- regmatches(df_pos[, "isotopes"],gregexpr("[[:digit:]]+\\.*[[:digit:]]*",df_pos[, "isotopes"]))
-
-    # for all the numbers, extract only first number, since it is the group number,
-    # second number can be charge
-    #for (i in 1:length(nm_p)){
-       # y <- as.numeric(unlist(nm_p[i]))
-        #df_pos[i,'istops'] = y[1]
-    #}
-
-    # write csv for the combined_camera_pos results
-    #write.csv(df_pos, paste(path, "/Combined_Camera_pos.csv", sep = ""))
-
-    # combine all QC which are in negative mode
-    #df_neg <- list.files(path, pattern = "negCAMERA_Results_", full.names = TRUE) %>%
-        #lapply(read_csv) %>%
-        #bind_rows
-    # remove any duplicated rows based on mz
-    #df_neg <- as.data.frame(df_neg[!duplicated(df_neg), ])
-
-    #extract isotope column numbers, the numbers represent the group of isotope
-    #nm_n <- regmatches(df_neg[, "isotopes"],gregexpr("[[:digit:]]+\\.*[[:digit:]]*",df_neg[, "isotopes"]))
-
-    # for all the numbers, extract only first number, since it is the group number,
-    # second number can be charge
-    #for (i in 1:length(nm_n)){
-        #y <- as.numeric(unlist(nm_n[i]))
-        #df_neg[i,'istops'] = y[1]
-    #}
-    # write csv for the combined_camera_neg results
-    #write.csv(df_neg, paste(path, "/Combined_Camera_neg.csv", sep = ""))
-#}
-
-
 cam_func <- function(fl, ms2features, result_dir){
     modes_file <- read_csv(ms2features)
     mode = unique(modes_file["pol"])
@@ -1856,13 +1685,53 @@ cam_func <- function(fl, ms2features, result_dir){
     return(peaklist)
 }
 
+extract_cam_adducts <- function(cam_res){
+    ## add empty columns for just adducts, just neutral mass and isotope number
+    final_file1 <- read.csv(cam_res)
+    final_file1[,'newaddcts'] <- NA
+    final_file1[,'neu_mass'] <- NA
+    # for every row in final_file1
+    for (i in 1:length(final_file1[,'adduct'])){
+        #print(i)
+        #split on basis of space 
+        a_info <- unlist(strsplit(final_file1[i, 'adduct'], split= ' '))
+        #print(a_info)
+        adcts <- c()
+        neum <- c()
 
+        # for every element of the a_info separated by space
+        for (j in 1:length(a_info)){
+            #print(j)
+            #condition1: extract adduct which is at odd position
+            if((j %% 2) != 0){
+                adc <- a_info[j]
+                adcts <- c(adcts, adc)
+            }
+            #condition1: extract neutral masses which is at even position
+            if ((j %% 2) ==0){
+                ndc <- a_info[j]
+                neum <- c(neum, ndc)
+            }
+            #if it is at the end of the a_info, then add information to the final_file1
+            if (j == length(a_info)){
+                newaddcts <- paste(adcts, collapse = ', ')
+                neu_mass <- paste(neum, collapse = ', ')
+                final_file1[i,'newaddcts'] = newaddcts
+                final_file1[i,'neu_mass'] = neu_mass
+            }
+        }
+    }
+    write.csv(final_file1, file = paste(result_dir, "/CAMERAResults", ".csv", sep = ""))
+    return(final_file1)
+}
 # Extract isotopic peaks for each pre_mz
 # The input is x = first_list (from ms2peaks function) and y = camera results
 
 ms1_peaks <- function(x, y, result_dir, QCfile){
     # store the ms1_peak list path here
     ms1Peaks <- c()
+    # store neutralmass
+    neutral_mass <- c()
     x = read.csv(x)
 
     if (QCfile){
@@ -1894,7 +1763,7 @@ ms1_peaks <- function(x, y, result_dir, QCfile){
 
             #if there was only one index
             if (nrow(df_y) == 1){
-
+                # -----------------ISOTOPES-------------------
                 # if there was no isotope annotation for that one index
                 if (is.na(df_y[1, "istops"])){
 
@@ -1906,9 +1775,11 @@ ms1_peaks <- function(x, y, result_dir, QCfile){
                     #name_file1 <- str_replace(name_file, input_dir, ".")
                     ms1Peaks <- c(ms1Peaks, name_file) # add the path of the peak list to a list
                 }
-
+                if (is.na(df_y[1, "neu_mass"])){
+                    neutral_mass<- c(neutral_mass, "no mass from CAMERA")
+                }
                 # if there was an isotope annotation
-                else{
+                if(!(is.na(df_y[1, "istops"]))){
 
                     df_x <- y[which(y[, "file_origin"] ==df_y[1, "file_origin"]), ] # extract camera results from one file origin
                     df_x <- df_x[which(df_x[, 'istops'] == df_y[1, 'istops']), ] # extract only certain isotope annotation group
@@ -1919,6 +1790,11 @@ ms1_peaks <- function(x, y, result_dir, QCfile){
                     write.table(no_isotop, name_file, row.names = FALSE, col.names = FALSE)
                     #name_file1 <- str_replace(name_file, input_dir, ".")
                     ms1Peaks <- c(ms1Peaks, name_file)
+                }
+                
+                if (!(is.na(df_y[1, "neu_mass"]))){
+                    n_mass <- df_y[1, "neu_mass"]
+                    neutral_mass<- c(neutral_mass, n_mass)
                 }
             }
             # if there are more indices for df_y
@@ -1936,7 +1812,7 @@ ms1_peaks <- function(x, y, result_dir, QCfile){
                     ms1Peaks <- c(ms1Peaks, name_file) # add the path of the peak list to a list
                 }
                 # if not all isotope annotations are NA
-                else if (!(all(is.na(df_y[, 'istops'])))){
+                if (!(all(is.na(df_y[, 'istops'])))){
 
                     df_y <- df_y[!is.na(df_y$'istops'),] # Remove the NA isotope annotations
                     df_z <- df_y[which(df_y[,"into"] == max(df_y[,"into"])), ] # Select the MS1 peak with highest intensity
@@ -1950,525 +1826,34 @@ ms1_peaks <- function(x, y, result_dir, QCfile){
                     #name_file1 <- str_replace(name_file, input_dir, ".")
                     ms1Peaks <- c(ms1Peaks, name_file) # add the path of the peak list to a list
                 }
+                #--------------------NeutralMass--------------------------
+                if(all(is.na(df_y[, 'neu_mass']))){
+                    neutral_mass<- c(neutral_mass, "no mass from CAMERA")
+                }
+                if (!(all(is.na(df_y[, 'neu_mass'])))){
+                    n_mass <- df_y[1, "neu_mass"]
+                    neutral_mass<- c(neutral_mass, n_mass)
+                }
             }
             else if (nrow(df_y)==0){
                 ms1Peaks <- c(ms1Peaks, 'no ms1 peaks in QC')
+                neutral_mass<- c(neutral_mass, "no mass from CAMERA")
             }
         }
-        second_list <- data.frame(cbind(x, ms1Peaks))
+        second_list <- data.frame(cbind(x, ms1Peaks, neutral_mass))
         write.csv(second_list, file = paste(result_dir,'/insilico/MS1DATA.csv', sep = ""))
         return(second_list)
     }
     else{
 
         ms1Peaks <- c(ms1Peaks, 'no ms1 peaks in QC')
-        second_list <- data.frame(cbind(x, ms1Peaks))
+        neutral_mass<- c(neutral_mass, "no mass from CAMERA")
+        second_list <- data.frame(cbind(x, ms1Peaks, neutral_mass))
         write.csv(second_list, file = paste(result_dir,'/insilico/MS1DATA.csv', sep = ""))
         return(second_list)
     }
 
 }
-
-
-# sirius_postprocess <- function(x, SL = TRUE){
-#     feat_scale <- function(p) {
-#     (p - min(p)) / (max(p) - min(p))
-#     }
-#     #the result directory name for each file
-#     dir_name <- paste(x, "/insilico/SIRIUS", sep = '')
-#     ##result json files in each result directory
-#     #for suspect list
-#     SL_Param <- list.files(dir_name, pattern = 'SList.json', full.names = TRUE)
-#     #for all DB
-#     Param <- list.files(dir_name, pattern = 'param.json', full.names = TRUE)
-#     #DATA FRAME of both directories for each feature
-#     parameter_json <- cbind(SL_Param, Param)
-#     #read the msdata csv file that contains all features and their data
-#     msdata <- as.data.frame(read.csv(paste(x, "/insilico/MS1DATA.csv", sep = '')))
-#     #add new empty columns to store information from SIRIUS results
-#     msdata$Adducts <- NA           #adducts
-#     msdata$name <- NA              #name of compound
-#     msdata$PubChemIDs <- NA        #all pubchem ids
-#     msdata$SMILES <- NA            #smiles of compound
-#     msdata$Formula <- NA           #formula of compound
-#     msdata$FormulaRank <- NA       #formula rank
-#     msdata$SIRIUSscore <- NA       #Formula score
-#     msdata$CSIFingerIDscore <- NA  #Structure score
-#     msdata$SMILESforMCSS <- NA   #SMILES of top scoring candidates; to calculate their tanimoto later
-#     msdata$exp_int <- NA           #explained intensity of formula
-#     msdata$dir <- NA               #directory for results either the strcuture or formula candidates
-#     msdata$Result <- NA             #the type of candidate, either from Suspect list, strcuture command or formula command
-#     # for all entries in the json result files for each each feature
-#     for (i in 1:nrow(parameter_json)){
-
-#         # find the number of the row corresponding to the row in msdata that has the same precursor m/z as json result files
-#         rowMS <- msdata[grepl(str_match(as.character(parameter_json[i, 'Param']), "MS1p_\\s*(.*?)\\s*_SIRIUS")[2] ,msdata$premz), ]
-
-#         if (SL){
-
-#             # file path for strcuture candidate from Suspect List json folder
-#             str_canS <- paste(list.dirs(parameter_json[i,'SL_Param'])[2], '/structure_candidates.tsv', sep = '')
-#             # file path for formula candidate from Param json folder
-#             for_canS <- paste(list.dirs(parameter_json[i,'SL_Param'])[2], '/formula_candidates.tsv', sep = '')
-#             # file path for strcuture candidate from Suspect List json folder
-#             str_can <- paste(list.dirs(parameter_json[i,'Param'])[2], '/structure_candidates.tsv', sep = '')
-#             # file path for formula candidate from Param json folder
-#             for_can <- paste(list.dirs(parameter_json[i,'Param'])[2], '/formula_candidates.tsv', sep = '')
-
-#             # if the strcuture candidate file exists
-#             if (file.exists(str_canS) && file.exists(str_can)){
-
-#                 # read the corresponding structure and formula candidate files
-#                 str_canSL <- as.data.frame(read_tsv(str_canS))
-#                 for_canSL <- as.data.frame(read_tsv(for_canS))
-
-#                 # read the corresponding structure and formula candidate files
-#                 str_canP <- as.data.frame(read_tsv(str_can))
-#                 for_canP <- as.data.frame(read_tsv(for_can))
-
-#                 # if the strcuture candidate file contains 1 or more rows, it has detected a candidate from suspect list, add relevant info
-
-#                 if (nrow(str_canSL) >= 1){
-
-#                     if (str_canSL[1, 'CSI:FingerIDScore'] > str_canP[1, 'CSI:FingerIDScore']){
-#                         # information from structure candidate file
-#                         msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canSL[1, 'adduct']
-#                         msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canSL[1, 'name']
-#                         msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canSL[1, 'pubchemids']
-#                         msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canSL[1, 'smiles']
-#                         msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canSL[1, 'molecularFormula']
-#                         msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canSL[1, 'formulaRank']
-#                         msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canSL[1, 'CSI:FingerIDScore']
-
-#                         # information from formula candidate file
-#                         formulaRow <- which(for_canSL[,'rank'] == str_canSL[1, 'formulaRank'])
-#                         msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canSL[formulaRow, 'SiriusScore']
-#                         msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canSL[formulaRow, 'explainedIntensity']
-
-#                         # other info
-#                         msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_SL'
-#                         msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_canS
-#                     }
-#                     else{
-
-#                         # if the structure candidate file contains 1 row, it has detected a candidate from all DBs, add relevant info
-#                         if (nrow(str_canP) == 1){
-
-#                             # information from structure candidate file
-#                             msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP[1, 'adduct']
-#                             msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP[1, 'name']
-#                             msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP[1, 'pubchemids']
-#                             msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP[1, 'smiles']
-#                             msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP[1, 'molecularFormula']
-#                             msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP[1, 'formulaRank']
-#                             msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP[1, 'CSI:FingerIDScore']
-
-#                             # information from formula candidate file
-#                             formulaRow1 <- which(for_canP[,'rank'] == str_canP[1, 'formulaRank'])
-#                             msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[formulaRow1, 'SiriusScore']
-#                             msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[formulaRow1, 'explainedIntensity']
-
-#                             # other info
-#                             msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
-#                             msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can
-#                         }
-#                         # if the structure candidate file contains more rows, extract SMILES of top candidates and check their similarity later
-#                         else if (nrow(str_canP) > 1){
-
-#                             # information from structure candidate file
-#                             msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP[1, 'adduct']
-#                             msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP[1, 'name']
-#                             msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP[1, 'pubchemids']
-#                             msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP[1, 'smiles']
-#                             msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP[1, 'molecularFormula']
-#                             msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP[1, 'formulaRank']
-#                             msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP[1, 'CSI:FingerIDScore']
-
-#                             # information from formula candidate file, take info from the formula rank that corresponds to the formula rank with the top strcuture candidate
-#                             formulaRow2 <- which(for_canP[,'rank'] == str_canP[1, 'formulaRank'])
-#                             msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[formulaRow2, 'SiriusScore']
-#                             msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[formulaRow2, 'explainedIntensity']
-
-#                             # other info
-#                             msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
-#                             msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can
-
-#                             # normalize the CSI:FingerIDScores
-#                             norm_score <- feat_scale(str_canP[,"CSI:FingerIDScore"])
-#                             # store the upper quartile
-#                             upper_quartile <- str_canP[which(norm_score > as.numeric(quantile(norm_score)[4])), "smiles"]
-
-#                             # if the upper quartile has more than 5 candidates, then just take the top 5 candidates
-#                             if (length(upper_quartile) > 5){
-#                                 upper_quartile <- upper_quartile[1:5]
-#                             }
-#                             # save the top candidates SMILES, to check similarity later with rdkit in Python
-#                             msdata[as.numeric(rownames(rowMS)), 'SMILESforMCSS'] <- paste(upper_quartile, collapse = '|')
-
-#                         }
-#                         # if the structure candidate file is empty, take information from just the formula candidate file
-#                         else if (nrow(str_canP) == 0){
-
-#                             # if formula candidate file is not empty
-#                             if (nrow(for_canP) >= 1){
-
-#                                 # information from formula candidate file
-#                                 msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canP[1, 'adduct']
-#                                 msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canP[1, 'molecularFormula']
-#                                 msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canP[1, 'rank']
-#                                 msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[1, 'explainedIntensity']
-#                                 msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[1, 'SiriusScore']
-#                                 # other info
-#                                 msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
-#                                 msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can
-
-#                             }
-#                         }
-
-#                         # if the structure candidate from all DBs does not exist
-#                         else{
-#                             # check if the formula candidate file exists
-#                             if (file.exists(for_can)){
-#                                 for_canF1 <- as.data.frame(read_tsv(for_can))
-
-#                                 # if formula candidate file is not empty
-#                                 if (nrow(for_canF1)>= 1){
-
-#                                     # information from formula candidate file
-#                                     msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canF1[1, 'adduct']
-#                                     msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canF1[1, 'molecularFormula']
-#                                     msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canF1[1, 'rank']
-#                                     msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canF1[1, 'explainedIntensity']
-#                                     msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canF1[1, 'SiriusScore']
-#                                     # other info
-#                                     msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
-#                                     msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can
-#                                 }
-#                             }
-#                         }
-#                     }
-#                 }
-#                 # if it's empty, move onto the All DB result folder called PARAM here
-#                 else{
-
-#                     # if the structure candidate file contains 1 row, it has detected a candidate from all DBs, add relevant info
-#                     if (nrow(str_canP) == 1){
-
-#                         # information from structure candidate file
-#                         msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP[1, 'adduct']
-#                         msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP[1, 'name']
-#                         msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP[1, 'pubchemids']
-#                         msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP[1, 'smiles']
-#                         msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP[1, 'molecularFormula']
-#                         msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP[1, 'formulaRank']
-#                         msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP[1, 'CSI:FingerIDScore']
-
-#                         # information from formula candidate file
-#                         formulaRow1 <- which(for_canP[,'rank'] == str_canP[1, 'formulaRank'])
-#                         msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[formulaRow1, 'SiriusScore']
-#                         msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[formulaRow1, 'explainedIntensity']
-
-#                         # other info
-#                         msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
-#                         msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can
-#                     }
-#                     # if the structure candidate file contains more rows, extract SMILES of top candidates and check their similarity later
-#                     else if (nrow(str_canP) > 1){
-
-#                         # information from structure candidate file
-#                         msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP[1, 'adduct']
-#                         msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP[1, 'name']
-#                         msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP[1, 'pubchemids']
-#                         msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP[1, 'smiles']
-#                         msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP[1, 'molecularFormula']
-#                         msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP[1, 'formulaRank']
-#                         msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP[1, 'CSI:FingerIDScore']
-
-#                         # information from formula candidate file, take info from the formula rank that corresponds to the formula rank with the top strcuture candidate
-#                         formulaRow2 <- which(for_canP[,'rank'] == str_canP[1, 'formulaRank'])
-#                         msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[formulaRow2, 'SiriusScore']
-#                         msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[formulaRow2, 'explainedIntensity']
-
-#                         # other info
-#                         msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
-#                         msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can
-
-#                         # normalize the CSI:FingerIDScores
-#                         norm_score <- feat_scale(str_canP[,"CSI:FingerIDScore"])
-#                         # store the upper quartile
-#                         upper_quartile <- str_canP[which(norm_score > as.numeric(quantile(norm_score)[4])), "smiles"]
-
-#                         # if the upper quartile has more than 5 candidates, then just take the top 5 candidates
-#                         if (length(upper_quartile) > 5){
-#                             upper_quartile <- upper_quartile[1:5]
-#                         }
-#                         # save the top candidates SMILES, to check similarity later with rdkit in Python
-#                         msdata[as.numeric(rownames(rowMS)), 'SMILESforMCSS'] <- paste(upper_quartile, collapse = '|')
-
-#                     }
-#                     # if the structure candidate file is empty, take information from just the formula candidate file
-#                     else if (nrow(str_canP) == 0){
-
-#                         # if formula candidate file is not empty
-#                         if (nrow(for_canP) >= 1){
-
-#                             # information from formula candidate file
-#                             msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canP[1, 'adduct']
-#                             msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canP[1, 'molecularFormula']
-#                             msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canP[1, 'rank']
-#                             msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP[1, 'explainedIntensity']
-#                             msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP[1, 'SiriusScore']
-#                             # other info
-#                             msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
-#                             msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can
-
-#                         }
-#                     }
-
-#                     # if the structure candidate from all DBs does not exist
-#                     else{
-#                         # check if the formula candidate file exists
-#                         if (file.exists(for_can)){
-#                             for_canF1 <- as.data.frame(read_tsv(for_can))
-
-#                             # if formula candidate file is not empty
-#                             if (nrow(for_canF1)>= 1){
-
-#                                 # information from formula candidate file
-#                                 msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canF1[1, 'adduct']
-#                                 msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canF1[1, 'molecularFormula']
-#                                 msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canF1[1, 'rank']
-#                                 msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canF1[1, 'explainedIntensity']
-#                                 msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canF1[1, 'SiriusScore']
-#                                 # other info
-#                                 msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
-#                                 msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can
-#                             }
-#                         }
-#                     }
-#                 }
-#             }
-#             else{
-#                 # directory for structure candidate file
-#                 str_can1 <- paste(list.dirs(parameter_json[i,'Param'])[2], '/structure_candidates.tsv', sep = '')
-#                 # directory for formula candidate file
-#                 for_can1 <- paste(list.dirs(parameter_json[i,'Param'])[2], '/formula_candidates.tsv', sep = '')
-
-#                 # if the structure candidate file exists
-#                 if (file.exists(str_can1)){
-
-#                     # read the structure file from All Dbs (PARAM) json file
-#                     str_canP1 <- as.data.frame(read_tsv(str_can1))
-#                     # read the formula file from All Dbs (PARAM) json file
-#                     for_canP1 <- as.data.frame(read_tsv(for_can1))
-
-#                     #if the structure candidate file has one candidate, it has detected a candidate from all DBs, add relevant info
-#                     if (nrow(str_canP1) == 1){
-
-#                         # information from structure candidate file
-#                         msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP1[1, 'adduct']
-#                         msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP1[1, 'adduct']
-#                         msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP1[1, 'name']
-#                         msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP1[1, 'pubchemids']
-#                         msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP1[1, 'smiles']
-#                         msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP1[1, 'molecularFormula']
-#                         msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP1[1, 'formulaRank']
-#                         msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP1[1, 'CSI:FingerIDScore']
-#                         # information from formula candidate file
-#                         formulaRow3 <- which(for_canP1[,'rank'] == str_canP1[1, 'formulaRank'])
-#                         msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP1[formulaRow3, 'SiriusScore']
-#                         msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP1[formulaRow3, 'explainedIntensity']
-#                         # other info
-#                         msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
-#                         msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can1
-
-#                     }
-#                     # if the strcuture cabdidate file has more than 1 candidates, it has detected candidates from all DBs, add relevant info
-#                     else if (nrow(str_canP1) > 1){
-
-#                         # information from structure candidate file
-#                         msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP1[1, 'adduct']
-#                         msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP1[1, 'name']
-#                         msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP1[1, 'pubchemids']
-#                         msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP1[1, 'smiles']
-#                         msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP1[1, 'molecularFormula']
-#                         msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP1[1, 'formulaRank']
-#                         msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP1[1, 'CSI:FingerIDScore']
-#                         # information from formula candidate file
-#                         formulaRow4 <- which(for_canP1[,'rank'] == str_canP1[1, 'formulaRank'])
-#                         msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP1[formulaRow4, 'SiriusScore']
-#                         msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP1[formulaRow4, 'explainedIntensity']
-#                         # other info
-#                         msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
-#                         msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can1
-
-#                         # normalize the CSI:FingerIDScores
-#                         norm_score1 <- feat_scale(str_canP1[,"CSI:FingerIDScore"])
-#                         # store the upper quartile
-#                         upper_quartile1 <- str_canP1[which(norm_score1 > as.numeric(quantile(norm_score1)[4])), "smiles"]
-#                         # if the upper quartile has more than 5 candidates, then just take the top 5 candidates
-#                         if (length(upper_quartile1) > 5){
-#                             upper_quartile1 <- upper_quartile1[1:5]
-#                         }
-#                         # save the top candidates SMILES, to check similarity later with rdkit in Python
-#                         msdata[as.numeric(rownames(rowMS)), 'SMILESforMCSS'] <- paste(upper_quartile1, collapse = '|')
-#                     }
-#                     #
-#                     else if (nrow(str_canP1) == 0){
-#                         if (file.exists(for_can1)){
-#                             for_canP2 <- as.data.frame(read_tsv(for_can1))
-#                             if (nrow(for_canP2)>= 1){
-
-#                                 # information from formula candidate file
-#                                 msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canP2[1, 'adduct']
-#                                 msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canP2[1, 'molecularFormula']
-#                                 msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canP2[1, 'rank']
-#                                 msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP2[1, 'explainedIntensity']
-#                                 msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP2[1, 'SiriusScore']
-#                                 # other info
-#                                 msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
-#                                 msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can1
-#                             }
-#                         }
-#                     }
-#                 }
-
-#                 # if the structure candidate file doesn't exists (and no str_sl exists)
-#                 else{
-#                     # if formula candidate file exists
-#                     if (file.exists(for_can1)){
-#                         for_canP3 <- as.data.frame(read_tsv(for_can1))
-#                         if (nrow(for_canP3) >= 1){
-#                             # information from formula candidate file
-#                             msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canP3[1, 'adduct']
-#                             msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canP3[1, 'molecularFormula']
-#                             msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canP3[1, 'rank']
-#                             msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP3[1, 'explainedIntensity']
-#                             msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP3[1, 'SiriusScore']
-#                             # other info
-#                             msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
-#                             msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can1
-#                         }
-#                     }
-#                 }
-#             }
-#         }# SL IS false
-#         else{
-#             # directory for structure candidate file
-#             str_can1 <- paste(list.dirs(parameter_json[i,'Param'])[2], '/structure_candidates.tsv', sep = '')
-#             # directory for formula candidate file
-#             for_can1 <- paste(list.dirs(parameter_json[i,'Param'])[2], '/formula_candidates.tsv', sep = '')
-
-#             # if the structure candidate file exists
-#             if (file.exists(str_can1)){
-
-#                 # read the structure file from All Dbs (PARAM) json file
-#                 str_canP1 <- as.data.frame(read_tsv(str_can1))
-#                 # read the formula file from All Dbs (PARAM) json file
-#                 for_canP1 <- as.data.frame(read_tsv(for_can1))
-
-#                 #if the structure candidate file has one candidate, it has detected a candidate from all DBs, add relevant info
-#                 if (nrow(str_canP1) == 1){
-
-#                     # information from structure candidate file
-#                     msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP1[1, 'adduct']
-#                     msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP1[1, 'adduct']
-#                     msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP1[1, 'name']
-#                     msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP1[1, 'pubchemids']
-#                     msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP1[1, 'smiles']
-#                     msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP1[1, 'molecularFormula']
-#                     msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP1[1, 'formulaRank']
-#                     msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP1[1, 'CSI:FingerIDScore']
-#                     # information from formula candidate file
-#                     formulaRow3 <- which(for_canP1[,'rank'] == str_canP1[1, 'formulaRank'])
-#                     msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP1[formulaRow3, 'SiriusScore']
-#                     msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP1[formulaRow3, 'explainedIntensity']
-#                     # other info
-#                     msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
-#                     msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can1
-
-#                 }
-#                 # if the strcuture cabdidate file has more than 1 candidates, it has detected candidates from all DBs, add relevant info
-#                 else if (nrow(str_canP1) > 1){
-
-#                     # information from structure candidate file
-#                     msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- str_canP1[1, 'adduct']
-#                     msdata[as.numeric(rownames(rowMS)), 'name'] <- str_canP1[1, 'name']
-#                     msdata[as.numeric(rownames(rowMS)), 'PubChemIDs'] <- str_canP1[1, 'pubchemids']
-#                     msdata[as.numeric(rownames(rowMS)), 'SMILES'] <- str_canP1[1, 'smiles']
-#                     msdata[as.numeric(rownames(rowMS)), 'Formula'] <- str_canP1[1, 'molecularFormula']
-#                     msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- str_canP1[1, 'formulaRank']
-#                     msdata[as.numeric(rownames(rowMS)), 'CSIFingerIDscore'] <- str_canP1[1, 'CSI:FingerIDScore']
-#                     # information from formula candidate file
-#                     formulaRow4 <- which(for_canP1[,'rank'] == str_canP1[1, 'formulaRank'])
-#                     msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP1[formulaRow4, 'SiriusScore']
-#                     msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP1[formulaRow4, 'explainedIntensity']
-#                     # other info
-#                     msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_STR'
-#                     msdata[as.numeric(rownames(rowMS)), 'dir'] <- str_can1
-
-#                     # normalize the CSI:FingerIDScores
-#                     norm_score1 <- feat_scale(str_canP1[,"CSI:FingerIDScore"])
-#                     # store the upper quartile
-#                     upper_quartile1 <- str_canP1[which(norm_score1 > as.numeric(quantile(norm_score1)[4])), "smiles"]
-#                     # if the upper quartile has more than 5 candidates, then just take the top 5 candidates
-#                     if (length(upper_quartile1) > 5){
-#                         upper_quartile1 <- upper_quartile1[1:5]
-#                     }
-#                     # save the top candidates SMILES, to check similarity later with rdkit in Python
-#                     msdata[as.numeric(rownames(rowMS)), 'SMILESforMCSS'] <- paste(upper_quartile1, collapse = '|')
-#                 }
-#                 #
-#                 else if (nrow(str_canP1) == 0){
-#                     if (file.exists(for_can1)){
-#                         for_canP2 <- as.data.frame(read_tsv(for_can1))
-#                         if (nrow(for_canP2)>= 1){
-
-#                             # information from formula candidate file
-#                             msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canP2[1, 'adduct']
-#                             msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canP2[1, 'molecularFormula']
-#                             msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canP2[1, 'rank']
-#                             msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP2[1, 'explainedIntensity']
-#                             msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP2[1, 'SiriusScore']
-#                             # other info
-#                             msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
-#                             msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can1
-#                         }
-#                     }
-#                 }
-#             }
-
-#             # if the structure candidate file doesn't exists (and no str_sl exists)
-#             else{
-#                 # if formula candidate file exists
-#                 if (file.exists(for_can1)){
-#                     for_canP3 <- as.data.frame(read_tsv(for_can1))
-#                     if (nrow(for_canP3) >= 1){
-#                         # information from formula candidate file
-#                         msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canP3[1, 'adduct']
-#                         msdata[as.numeric(rownames(rowMS)), 'Formula'] <- for_canP3[1, 'molecularFormula']
-#                         msdata[as.numeric(rownames(rowMS)), 'FormulaRank'] <- for_canP3[1, 'rank']
-#                         msdata[as.numeric(rownames(rowMS)), 'exp_int'] <- for_canP3[1, 'explainedIntensity']
-#                         msdata[as.numeric(rownames(rowMS)), 'SIRIUSscore'] <- for_canP3[1, 'SiriusScore']
-#                         # other info
-#                         msdata[as.numeric(rownames(rowMS)), 'Result'] <- 'SIRIUS_FOR'
-#                         msdata[as.numeric(rownames(rowMS)), 'dir'] <- for_can1
-#                     }
-#                 }
-#             }
-#         }
-#     }
-#     write.csv(msdata, paste(x, "/insilico/MS1DATAsirius.csv", sep = ''))
-#     return(msdata)
-# }
-
-
-
-
-# input x is result from either ms1_peaks
-# SL is if a suspect list is present
-
-# 
 
 sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE) {
 
@@ -2543,8 +1928,8 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE) {
             }
             
             ms2pk_name <- x[i,"ms2Peaks"]
-            ms2pk <- str_replace(ms2pk_name, ".", mzml_result)
-            peak<- read.table(ms2pk)
+            #ms2pk <- str_replace(ms2pk_name, ".", mzml_result)
+            peak<- read.table(ms2pk_name)
             for (k in 1:length(peak[,1])){
                 writeLines(paste(as.character(peak[k,1]),as.character(peak[k,2]), sep =" "), con=file.conn)
             }
@@ -2588,8 +1973,8 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE) {
             writeLines(">ms1",con=file.conn)
 
             ms1pk_name <- x[i,"ms1Peaks"]
-            ms1pk <- str_replace(ms1pk_name, ".", mzml_result)
-            peakms1<- read.table(ms1pk)
+            #ms1pk <- str_replace(ms1pk_name, ".", mzml_result)
+            peakms1<- read.table(ms1pk_name)
 
             for (l in 1:length(peakms1[,1])){
                 writeLines(paste(as.character(peakms1[l,1]),as.character(peakms1[l,2]), sep =" "), con=file.conn)
@@ -2603,9 +1988,9 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE) {
             }
 
             ms2pk_name <- x[i,"ms2Peaks"]
-            ms2pk <- str_replace(ms2pk_name, ".", mzml_result)
+            #ms2pk <- str_replace(ms2pk_name, ".", mzml_result)
 
-            peakms2<- read.table(ms2pk)
+            peakms2<- read.table(ms2pk_name)
 
             for (k in 1:length(peakms2[,1])){
                 writeLines(paste(as.character(peakms2[k,1]),as.character(peakms2[k,2]), sep =" "), con=file.conn)
@@ -2652,8 +2037,8 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE) {
             writeLines(">ms1",con=file.conn)
 
             ms1pk_name <- x[i,"ms1Peaks"]
-            ms1pk <- str_replace(ms1pk_name, ".", mzml_result)
-            peakms1<- read.table(ms1pk)
+            #ms1pk <- str_replace(ms1pk_name, ".", mzml_result)
+            peakms1<- read.table(ms1pk_name)
 
             for (l in 1:length(peakms1[,1])){
                 writeLines(paste(as.character(peakms1[l,1]),as.character(peakms1[l,2]), sep =" "), con=file.conn)
@@ -2667,9 +2052,9 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE) {
             }
 
             ms2pk_name <- x[i,"ms2Peaks"]
-            ms2pk <- str_replace(ms2pk_name, ".", mzml_result)
+            #ms2pk <- str_replace(ms2pk_name, ".", mzml_result)
 
-            peakms2<- read.table(ms2pk)
+            peakms2<- read.table(ms2pk_name)
 
             for (k in 1:length(peakms2[,1])){
                 writeLines(paste(as.character(peakms2[k,1]),as.character(peakms2[k,2]), sep =" "), con=file.conn)
@@ -2698,314 +2083,78 @@ sirius_param <- function(x, result_dir, SL = FALSE, collision_info = FALSE) {
 
 }
 
-
-run_sirius <- function(files, ppm_max = 5, ppm_max_ms2 = 15, QC = TRUE, SL = TRUE, SL_path, candidates = 30, profile = "orbitrap", db = "ALL"){
-    files <- read.csv(files, sep = "\t")
-
-    for (b in 1:nrow(files)){
-
-        if (QC){
-            if (is.na(files[b, "isotopes"])){
-                command1 = c("sirius",  "--input", files[b, "sirius_param_file"], 
-                "--output", files[b, "outputNames"],
-                "formula", "--profile", profile, "--no-isotope-filter",  "--no-isotope-score", "--candidates", 
-                candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2, "structure", "--database", 
-                db ,"canopus")
-                #print(command1)
-                print("command1")
-                system2(command1)
-                if(!file.exists(files[b, "outputNames"])){
-                    command2 = c("sirius", "--input", files[b, "sirius_param_file"], "--output", 
-                    files[b, "outputNames"],
-                    "formula", "--profile", 
-                    profile, "--no-isotope-filter", "--no-isotope-score", "--candidates", 
-                    candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure",  "--database", 
-                    db ,"canopus")
-                    #print(command2)
-                    print("command2")
-                    system2(command2)
-                }
-                if(SL){
-                    command3 = c("sirius", "--input", files[b, "sirius_param_file"], 
-                    "--output", files[b, "outputNamesSL"],
-                    "formula", "--profile", profile, "--no-isotope-filter", "--no-isotope-score", "--candidates", 
-                    candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,"structure", "--database",  
-                    SL_path ,"canopus")
-                    
-                    #print(command3)
-                    print("command3")
-                    system2(command3)
-                }
-
-            }
-            else if(files[b, "isotopes"] == "present"){
-
-                command4 = c("sirius", "--input", files[b, "sirius_param_file"], "--output", 
-                files[b, "outputNames"],
-                "formula", "--profile", profile, "--candidates", candidates, 
-                "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2,"structure", "--database", db ,"canopus"
-                            )
-                print(command4)
-                print("command4")
-                system2(command4)
-                if(!file.exists(files[b, "outputNames"])){
-                    command5 = c("sirius",  "--input", files[b, "sirius_param_file"], 
-                    "--output", files[b, "outputNames"],
-                    "formula", "--profile", profile, "--candidates", candidates, 
-                    "--ppm-max", ppm_max,"--ppm-max-ms2", ppm_max_ms2, "structure", "--database", 
-                    db ,"canopus")
-                    #print(command5)
-                    print("command5")
-                    system2(command5)
-                }
-                if(SL){
-                    command6 = c("sirius", "--input", files[b, "sirius_param_file"], 
-                    "--output", 
-                    files[b, "outputNamesSL"],
-                    "formula", "--profile", 
-                    profile, "--candidates", 
-                    candidates, "--ppm-max", 
-                    ppm_max, "--ppm-max-ms2",  
-                    ppm_max_ms2, "structure",  "--database",  SL_path ,"canopus")
-                    #print(command6)
-                    print("command6")
-                    system2(command6)
-                }
-            }
-        }
-        else{
-            command7 = c("sirius", "--input", files[b, "sirius_param_file"], "--output", files[b, "outputNames"],
-                        "formula", "--profile", profile, "--no-isotope-filter",
-                        "--no-isotope-score",
-                        "--candidates", 
-                        candidates, 
-                        "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,
-                        "structure", "--database", db ,"canopus")
-            print(command7)
-            print("command7")
-            system2(command7)
-            if(!file.exists(files[b, "outputNames"])){
-                command8 = c("sirius", 
-                "--input", 
-                files[b, "sirius_param_file"],
-                "--output", 
-                files[b, "outputNames"],
-                "formula",
-                "--profile", 
-                profile, "--no-isotope-filter", "--no-isotope-score", "--candidates", 
-                candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,
-                "structure", "--database", db ,"canopus")
-                #print(command8)
-                print("command8")
-                system2(command8)
-            }
-            if(SL){
-                command9 = c("sirius", "--input", files[b, "sirius_param_file"], 
-                "--output", files[b, "outputNamesSL"], "formula", "--profile", 
-                profile, "--no-isotope-filter", "--no-isotope-score", "--candidates", 
-                candidates, "--ppm-max", ppm_max, "--ppm-max-ms2",  ppm_max_ms2,
-                "structure", "--database ",  SL_path ,"canopus")
-                
-                #print(command9)
-                print("command9")
-                system2(command9)
-            }
-        }
-        Sys.sleep(5)
-
-    }
-
-
-}
-
-
-
-
-sirius_adduct <- function(input_dir, x, SL = TRUE){
-
-    feat_scale <- function(p) {
-    (p - min(p)) / (max(p) - min(p))
-    }
-
-    #the result directory name for each file
-    dir_name <- paste(input_dir, str_remove(x, "."),'/insilico/SIRIUS', sep ="")
-
-    #for all DB
-    Param <- list.files(dir_name, pattern = 'param.json', full.names = TRUE)
-    #read the msdata csv file that contains all features and their data
-    msdatacsv <- read.csv(paste(input_dir, str_remove(x, "."), "/insilico/MS1DATA.csv", sep = ''))
-    msdata <- as.data.frame(msdatacsv)
-    #add new empty columns to store information from SIRIUS results
-    msdata$Adducts <- NA           #adducts
-
-    # for all entries in the json result files for each each feature
-    for (i in Param){
-
-        # find the number of the row corresponding to the row in msdata that has the same precursor m/z as json result files
-        rowMS <- msdata[grepl(str_match(as.character(i), "MS1p_\\s*(.*?)\\s*_SIRIUS")[2] ,msdata$premz), ]
-
-        # directory for formula candidate file
-        for_can1 <- paste(list.dirs(i)[2], '/formula_candidates.tsv', sep = '')
-        if (file.exists(for_can1)){
-            # read the formula file from All Dbs (PARAM) json file
-            for_canP1 <- as.data.frame(read_tsv(for_can1))
-
-            if (nrow(for_canP1)>= 1){
-
-                # information from formula candidate file
-                msdata[as.numeric(rownames(rowMS)), 'Adducts'] <- for_canP1[1, 'adduct']
-            }
-        }
-    }
-    write.csv(msdata, paste(input_dir, str_remove(x, "."), "/insilico/MS1DATAsirius.csv", sep = ''))
-    return(msdata)
-}
-
-
-
-metfrag_param <- function(x, result_dir, input_dir, sl_mtfrag, SL = TRUE, ppm_max = 5, ppm_max_ms2= 15){
-
-
-
-    if (file.exists(paste(input_dir, "/MetFrag_AdductTypes.csv", sep = ""))){
-        adducts <- paste(input_dir, "/MetFrag_AdductTypes.csv", sep = "")
-    }
-    else{
-        system(paste("wget -P",
-                    input_dir,
-                    "https://github.com/schymane/ReSOLUTION/raw/master/inst/extdata/MetFrag_AdductTypes.csv",
-                    sep = " "))
-        adducts <- paste(input_dir, "/MetFrag_AdductTypes.csv", sep = "")
-    }
-
+metfrag_param <- function(x, result_dir, db_name, db_path, ppm_max = 5, ppm_max_ms2= 15){
+    
     x <- read.csv(x)
-
-    dir_name <- paste(input_dir, str_remove(paste(result_dir, "/insilico/MetFrag", sep =""), "."), sep = "")
-
+    
+    dir_name <- paste(result_dir, "/insilico/MetFrag/", db_name, sep ="")
     if (!file.exists(dir_name)){
         dir.create(dir_name, recursive = TRUE) ##create folder
     }
-
-    db <- "PubChem"
-
+    
     parameter_file <- c()
     par <- 0
     metfrag_param_file <- c()
-
-    AdductsMF <- data.frame(read.csv(adducts))
-
+    
     for (j in 1:nrow(x)){
-        if (!(is.na(x[j, 'Adducts']))){
-            for (k in db){
-                par <- par+1
-                para <- as.character(par)
-                fileR <- paste(dir_name, "/", para, "_id_", x[j, 'id_X'], "_mz_", x[j, 'premz'], "_rt_", x[j, 'rtmed'], "_db_", k, ".txt", sep = '')
-                metfrag_param_file <- c(metfrag_param_file, fileR)
+        par <- par+1
+        para <- as.character(par)
+        fileR <- paste(dir_name, "/", para, "_id_", x[j, 'id_X'], "_mz_", x[j, 'premz'], "_rt_", x[j, 'rtmed'], ".txt", 
+                       sep = '')
+        
+        metfrag_param_file <- c(metfrag_param_file, fileR)
 
-                file.create(fileR, recursive = TRUE)
-                file.conn <- file(fileR)
-                open(file.conn, open = "at")
-
-
-                peakspath <- str_replace(x[j, "ms2Peaks"], ".", input_dir)
+        file.create(fileR, recursive = TRUE)
+        file.conn <- file(fileR)
+        open(file.conn, open = "at")
+        peakspath <- x[j, "ms2Peaks"]
 
 
-                #writeLines(paste("PeakListPath = ",as.character(peakspath),sep=""),con=file.conn)
-                writeLines(paste("PeakListPath = ",peakspath, sep=""),con=file.conn)
-                writeLines(paste("IonizedPrecursorMass = ", x[j, "premz"]),con = file.conn)
-
-                # write code here
-
-
-                PrecursorIonMode <- AdductsMF[which(AdductsMF[, "PrecursorIonType"] == gsub("[[:blank:]]", "", x[j, 'Adducts'])), "PrecursorIonMode"]
-                IsPositiveIonMode <- AdductsMF[which(AdductsMF[, "PrecursorIonType"] == gsub("[[:blank:]]", "", x[j, 'Adducts'])), "IsPositiveIonMode"]
-
-
-                writeLines(paste("PrecursorIonMode = ", PrecursorIonMode, sep = ''), con = file.conn)
-                writeLines(paste("IsPositiveIonMode = ", IsPositiveIonMode, sep = ''), con = file.conn)
-
-                writeLines(paste("MetFragDatabaseType = ", k),con = file.conn)
-
-                writeLines(paste("DatabaseSearchRelativeMassDeviation = ", ppm_max, sep = ''),con=file.conn)
-                writeLines("FragmentPeakMatchAbsoluteMassDeviation = 0.001",con=file.conn)
-                writeLines(paste("FragmentPeakMatchRelativeMassDeviation = ", ppm_max_ms2, sep = ''),con=file.conn)
-
-                if (SL){
-                    writeLines(paste("ScoreSuspectLists = ", sl_mtfrag),con=file.conn)
-
-                    writeLines("MetFragScoreTypes = FragmenterScore, SuspectListScore",con=file.conn)
-                    writeLines("MetFragScoreWeights = 1.0, 1.0", con=file.conn)
-                }
-                else{
-                    writeLines("MetFragScoreTypes = FragmenterScore", con=file.conn)
-                    writeLines("MetFragScoreWeights = 1.0", con=file.conn)
-                }
-
-
-                writeLines("MetFragCandidateWriter = CSV",con=file.conn)
-
-                writeLines(paste("SampleName = ", para, "_id_", x[j, 'id_X'], "_mz_", x[j, 'premz'], "_rt_", x[j, 'rtmed'], "_db_", k, sep = ''),con=file.conn)
-                resultspath <- str_replace(result_dir, ".", input_dir)
-                writeLines(paste("ResultsPath = ", resultspath, "/insilico/MetFrag/", sep = ''),con=file.conn)
-
-                writeLines("MetFragPreProcessingCandidateFilter = UnconnectedCompoundFilter",con=file.conn)
-                writeLines("MetFragPostProcessingCandidateFilter = InChIKeyFilter",con=file.conn)
-                writeLines("#MaximumTreeDepth = 2",con=file.conn)
-                writeLines("#NumberThreads = 1",con=file.conn)
-
-                close(file.conn)
-                parameter_file <- c(parameter_file,file.conn)
-
+        #writeLines(paste("PeakListPath = ",as.character(peakspath),sep=""),con=file.conn)
+        writeLines(paste("PeakListPath = ",peakspath, sep=""),con=file.conn)
+        
+        
+        if (x[j, 'neutral_mass'] == "no mass from CAMERA"){
+            writeLines(paste("IonizedPrecursorMass = ", x[j, "premz"]), con = file.conn)
+            
+            if (x[j, 'pol'] == "neg"){
+                writeLines("PrecursorIonMode = -1", con = file.conn)
+                writeLines("IsPositiveIonMode = False", con = file.conn) 
+            }
+            else{
+                writeLines("PrecursorIonMode = 1", con = file.conn)
+                writeLines("IsPositiveIonMode = True", con = file.conn)
             }
         }
-    }
-
-    write.table(metfrag_param_file, file = paste(input_dir, str_remove(paste(result_dir, "/insilico/metparam_list.txt", sep =""), "."), sep = ""), sep = "/t", row.names = FALSE, col.names = FALSE)
-    return(metfrag_param_file)
-}
-
-run_metfrag <- function(met_param){
-    #line <- system.time({
-
-        if (file.exists(paste(input_dir, "/MetFragCommandLine-2.5.0.jar", sep = ""))){
-            MetFragjarFile <- paste(input_dir, "/MetFragCommandLine-2.5.0.jar", sep = "")
-        }
         else{
-            system(paste("wget -P",
-                        input_dir,
-                        "https://github.com/ipb-halle/MetFragRelaunched/releases/download/v.2.5.0/MetFragCommandLine-2.5.0.jar",
-                        sep = " "))
-            MetFragjarFile <- paste(input_dir, "/MetFragCommandLine-2.5.0.jar", sep = "")
+            writeLines(paste("NeutralPrecursorMass = ", x[j, 'neutral_mass'], sep = ''), con = file.conn)
         }
 
-        start_time <- Sys.time()
+        writeLines("MetFragDatabaseType = LocalCSV",con = file.conn)
+        writeLines(paste("LocalDatabasePath = ", db_path, sep = ''), con = file.conn)
+        writeLines(paste("DatabaseSearchRelativeMassDeviation = ", ppm_max, sep = ''),con=file.conn)
+        writeLines("FragmentPeakMatchAbsoluteMassDeviation = 0.001",con=file.conn)
+        writeLines(paste("FragmentPeakMatchRelativeMassDeviation = ", ppm_max_ms2, sep = ''),con=file.conn)
+        writeLines("MetFragCandidateWriter = CSV",con=file.conn)
+        writeLines(paste("SampleName = ", para, "_id_", x[j, 'id_X'], "_mz_", x[j, 'premz'], "_rt_", x[j, 'rtmed'], sep = ''),con=file.conn)
+        writeLines(paste("ResultsPath = ", result_dir, "/insilico/MetFrag/", db_name, "/", sep = ''),con=file.conn)
+        writeLines("MetFragPreProcessingCandidateFilter = UnconnectedCompoundFilter",con=file.conn)
+        writeLines("MetFragPostProcessingCandidateFilter = InChIKeyFilter",con=file.conn)
+        writeLines("MaximumTreeDepth = 2",con=file.conn)
+        writeLines("NumberThreads = 1",con=file.conn)
 
-        filesmet_param <- read.table(met_param)
+        close(file.conn)
+        parameter_file <- c(parameter_file,file.conn)
 
-        for (files in filesmet_param[[1]]){
-            system(paste("java -jar",  MetFragjarFile , files))
-            Sys.sleep(5)
-        }
-    #})
-
-#     if (file.exists(paste(input_dir, "/summaryFile.txt", sep = ""))){
-
-#         line1 = paste("Compound Database Dereplication with MetFrag took", line[1], "of seconds.", sep = " ")
-#         write(line1 ,file=paste(input_dir, "/summaryFile.txt", sep = ""),append=TRUE)
-
-#     }
-#     else{
-#         fileConn<-file(paste(input_dir, "/summaryFile.txt", sep = ""))
-
-#         writeLines(paste("Compound Database Dereplication with Metfrag took", line[1], "of seconds.", sep = " "), fileConn)
-
-#         close(fileConn)
-#     }
-
+    }
+    write.table(metfrag_param_file, 
+                file = paste(result_dir, "/insilico/metparam_list.txt", sep = ""), sep = "/t", row.names = FALSE, col.names = FALSE)
+    return(metfrag_param_file)
 }
 
 ##### SCRIPT #####
 
+#libraries for parallelization od specdb function
 library(parallel)
 library(doParallel)
 library(future)
@@ -3024,32 +2173,34 @@ plan(list(
   tweak(multisession, workers = 3)
 ))
 
+#define arguments
 args = commandArgs(trailingOnly = TRUE)
-
 
 # Start time
 start.time <- Sys.time()
 
-
-
-
-
 # input directory
 mzml_file <- args[1]
-
 gnps_file <- args[2]
-hmbd_file <- args[3]
+hmdb_file <- args[3]
 mbank_file <- args[4]
-
 mzml_result <- args[5]
+file_id <- args[6]
+ppmx = as.numeric(args[7])
+runCamera = as.logical(args[8])
+SL = as.logical(args[9])
+collision_info = as.logical(args[10])
+db_name = args[11]
+db_path = args[12]
+
 
 print(mzml_file)
 print(mzml_result)
 
+# read mzML file and create output directory
 spec_pr <- spec_Processing(mzml_file, mzml_result)
 
-file_id <- "File1_neg_Smarinoi"
-
+# perform spectral database dereplication with HMDB, GNPS and MassBank
 df_derep <- spec_dereplication_file(mzml_file = mzml_file,
                                     pre_tbl = paste(mzml_result, "/premz_list.txt", sep = ""),
                                     proc_mzml = paste(mzml_result, "/processedSpectra.mzML", sep = ""),
@@ -3057,45 +2208,52 @@ df_derep <- spec_dereplication_file(mzml_file = mzml_file,
                                     result_dir = mzml_result,
                                     file_id,
                                     no_of_candidates = 50,
-                                    ppmx = 15)
-
+                                    ppmx)
+# Extract MS2 peaks
 spec_pr2 <- ms2_peaks(pre_tbl = paste(mzml_result, "/premz_list.txt", sep = ""),
                       proc_mzml = paste(mzml_result, "/processedSpectra.mzML", sep = ""),
                       result_dir = mzml_result,
                       file_id)
 
-cam_res <- cam_func(fl = mzml_file, 
+# Extract information on MS1 peaks and isotopics peaks if present
+if (runCamera){
+    cam_res <- cam_func(fl = mzml_file, 
                     ms2features = paste(mzml_result, "/insilico/MS2DATA.csv", sep = ""),
                    result_dir = mzml_result)
+    adducts <- extract_cam_adducts(cam_res= paste(mzml_result,'/CAMERAResults.csv', sep = ""))
+    # Extract MS1 peaks or isotopic peaks
+    ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
+                    y = paste(mzml_result,'/CAMERAResults.csv', sep = ""), 
+                    result_dir = mzml_result,
+                    QCfile = TRUE)
+}else{
+    ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
+                    y = NA, 
+                    result_dir = mzml_result,
+                    QCfile = FALSE)
+}
 
-# Extract MS1 peaks or isotopic peaks
-ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
-                  y = paste(mzml_result,'/CAMERAResults.csv', sep = ""), 
-                  result_dir = mzml_result,
-                  QCfile = TRUE)
-
+# write ms files for SIRIUS5
 sirius_param_files <- sirius_param(x = paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""),
                        result_dir = mzml_result,
-                       SL = TRUE, 
-                       collision_info = TRUE)
+                       SL, 
+                       collision_info)
 
-# run_sirius(files = paste(mzml_result,'/insilico/MS1DATA_SiriusP.tsv', sep = ""),
-#                    ppm_max = 5,
-#                    ppm_max_ms2 = 15,
-#                    QC = FALSE,
-#                    SL = FALSE,
-#                    SL_path = NA,
-#                    candidates = 30,
-#                   profile = "orbitrap", 
-#                   db = "ALL")
-# End time
+#write txt files for MetFrag
+metfrag_param(x= paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""), 
+                result_dir = mzml_result, 
+                db_name,
+                db_path, 
+                ppm_max = 5, 
+                ppm_max_ms2= 15)
+
+
 end.time <- Sys.time()
 
 # Time taken to run the analysis for MAW-R
 time.taken <- end.time - start.time
 print(time.taken)
 
-
-
 prov.save()
 prov.quit()
+
