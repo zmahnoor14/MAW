@@ -16,9 +16,9 @@ Install Docker on your [MAC OS](https://www.docker.com/get-started/) OR on [Linu
 Since MAW is implemented in R and Python so we have two separate Docker images. 
 
 ### Pull maw-r Docker Image
-To pull MAW-R a R-docker image, run the following command on your terminal:
+To pull MAW-R R-docker image, run the following command on your terminal:
 ```
-docker pull zmahnoor/maw-r:1.0.0
+docker pull zmahnoor/maw-r:1.0.1
 ```
 This will creat a R-Docker image on your system. This image contains /opt/workdir as the working directory which contains the following files and folders:
 <br>
@@ -29,7 +29,19 @@ This will creat a R-Docker image on your system. This image contains /opt/workdi
 5. /data/mbankNIST.rda
 6. Workflow_R_Functions.r (R function script)
 7. Workflow_R_Script.r (R example script)
-8. install_packages.R (R package installation script, these pacakges are already installed the docker container) <br>
+
+
+### [NEW]Pull maw-sirius5 Docker Image
+To pull MAW-SIRIU5 R-docker image, run the following command on your terminal:
+```
+docker pull zmahnoor/maw-sirius5-old --platform=linux/amd64
+```
+This will creat a R-Docker image on your system. This image contains /opt/workdir as the working directory which contains the following files and folders:
+<br>
+1. /data (folder)
+2. /data/insilico/MS1DATA_SiriusP.tsv (example file containing list of ms inputs and json output file paths)
+3. /data/insilico/SIRIUS/1_NA_iso_NA_MS1p_204.122756958008_SIRIUS_param.ms (example file for .ms input file for SIRIUS)
+4. /data/Run_SIRIUS5.r (running Sirius5 script) <br>
 
 ### Pull maw-py Docker Image
 To pull MAW-Py Python-docker image, run the following command on your terminal:
@@ -46,7 +58,7 @@ This will creat a R-Docker image on your system. This image contains /opt/workdi
 
 ## Use Case
 
-1. First Run maw-r:
+### 1. First Run maw-r:
 
 ```
 docker run --name example_maw-r -i -t zmahnoor/maw-r:1.0.0 /bin/bash
@@ -57,7 +69,42 @@ Rscript --no-save --no-restore --verbose Workflow_R_Script.r >outputFile.txt 2>&
 ```
 This command will run the Workflow_R_Script.r which is an example script for /data/example_Tyrosine.mzML. The calculation takes about 2 minutes on an Ubuntu system with 64GB RAM.
 
-2. Run maw-py
+### [NEW] 2. Updated with SIRIUS5
+
+SIRIUS version 5 can be used using another docker container made for SIRIUS5. to run this, it is important athat you alsready have .md files in the SIRIUS folder generated from the MAW-R part of the workflow in the correct order of directory. Also, you would need to add your SIRIUS credentials after you enter the docker container. THere is an R script called Run_SIRIUS5.r which contains the libraries, the function to run SIRIUS5 from R and a function call with your data. 
+
+```R
+run_sirius(files= './insilico/MS1DATA_SiriusP.tsv',
+           ppm_max = 5, 
+           ppm_max_ms2 = 15, 
+           QC = FALSE, 
+           SL = FALSE, 
+           SL_path = NA, 
+           candidates = 30, 
+           profile = "orbitrap", 
+           db = "coconut")
+```
+
+Please check the R script and make the changes in the parameters above according to your data needs. SL means suspect list but this function is currently being updated by SIRIUS5 and shoulbe kept ```FALSE```. profile can be the mass spectrometer used, either "orbitrap" or "qtof". db can be "ALL", "bio", "coconut" or any relevant database that is already provided by SIRIUS5. Also, for files, provide the full path of your './insilico/MS1DATA_SiriusP.tsv'. Run the function for each of your input files.
+
+Enter docker container:
+```
+docker run --platform linux/x86_64 -i -t zmahnoor/maw-sirius5-old /bin/bash
+```
+
+Enter login info:
+
+```
+sirius login -u user@email.com -p --show
+```
+Th prompt will ask for your password, so enter the pssowrd and hit enter.
+
+```
+cd /data
+Rscript --no-save --no-restore --verbose Run_SIRIUS5.r >outputFile.txt 2>&1
+```
+
+### 3. Run maw-py
 ```
 docker run --name example_maw-py -i -t zmahnoor/maw-py:1.0.0 /bin/bash
 ```
