@@ -27,20 +27,20 @@ arguments:
     - $(inputs.hmdb_rda.path)
     - $(inputs.mbank_rda.path)
     - .
+# the no output binidng needed bceause the output.json will provide output
 outputs:
   results: 
     type: Directory
-    outputBinding:
-      glob: .
+
   ms_files_isotope:
-    type: File[]
-    outputBinding:
-      glob: "insilico/SIRIUS/isotope/*.ms"
+    type: File[]?
+
   ms_files_no_isotope:
     type: File[]
-    outputBinding:
-      glob: "insilico/SIRIUS/no_isotope/*.ms"   
+  
   provenance:
     type: Directory
-    outputBinding:
-      glob: "prov_console"
+
+  peaks_and_parameters:
+    type: Any[]
+
