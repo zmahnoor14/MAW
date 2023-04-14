@@ -2248,6 +2248,11 @@ metfrag_param(x= paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""),
                 ppm_max_ms2= 15)
 
 
+# create JSON file and looks simsilar to cwl object
+# outpuyts from MAW_R
+
+
+
 end.time <- Sys.time()
 
 # Time taken to run the analysis for MAW-R
