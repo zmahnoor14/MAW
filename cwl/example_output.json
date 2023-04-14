@@ -1,0 +1,54 @@
+
+{
+    "results":{ 
+    "class": "Directory",
+    "path":"/Users/mahnoorzulfiqar/Downloads/New_ms2_spectra_endo_pos"
+    },
+    "ms_files_no_isotope":[{
+        "class": "File",
+        "path": "/Users/mahnoorzulfiqar/Downloads/New_ms2_spectra_endo_pos/insilico/SIRIUS/no_isotope/1_NA_iso_NA_MS1p_446.230465650658_SIRIUS_param.ms"
+    },
+    {
+        "class": "File",
+        "path": "/Users/mahnoorzulfiqar/Downloads/New_ms2_spectra_endo_pos/insilico/SIRIUS/no_isotope/2_NA_iso_NA_MS1p_446.220764939992_SIRIUS_param.ms"        
+    }
+    
+],
+         
+    "provenance":{
+        "class": "Directory",
+        "path": "/Users/mahnoorzulfiqar/Downloads/New_ms2_spectra_endo_pos/prov_console"
+    },
+
+        "peaks_and_parameters":[{
+            "PeakList":{
+                "class": "File",
+                "path":"/Users/mahnoorzulfiqar/Downloads/New_ms2_spectra_endo_pos/insilico/peakfiles_ms2/Peaks_01.txt"
+            },
+            "IonizedPrecursorMass":"446.230465650658",
+            "PrecursorIonMode":1,
+            "IsPositiveIonMode":"True",
+            "LocalDatabase":{
+                "class": "File",
+                "path":"/Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/COCONUT_Jan2022.csv"
+            },
+            "SampleName":"1_id_coculture_endo_posM446R332ID1_mz_446.230465650658_rt_331.587642208529"
+        },
+        {
+            "PeakList":{
+                "class": "File",
+                "path":"/Users/mahnoorzulfiqar/Downloads/New_ms2_spectra_endo_pos/insilico/peakfiles_ms2/Peaks_02.txt"
+            },
+            "IonizedPrecursorMass":"446.230465650658",
+            "PrecursorIonMode":1,
+            "IsPositiveIonMode":"True",
+            "LocalDatabase":{
+                "class": "File",
+                "path":"/Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/COCONUT_Jan2022.csv"
+            },
+            "SampleName":"1_id_coculture_endo_posM446R332ID1_mz_446.230465650658_rt_331.587642208529"
+        }
+            
+    ]
+            
+}
