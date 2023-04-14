@@ -38,6 +38,38 @@ steps:
         out:
             - ms_files
             - results
+            - peaks_and_parameters
+    metfrag:
+        run: maw-metfrag-param.cwl
+        scatter:
+            - PeakList
+            - IonizedPrecursorMass
+            - PrecursorIonMode
+            - IsPositiveIonMode
+            - LocalDatabase
+            - SampleName
+        scatterMethod: dotproduct
+        in:
+            PeakList: 
+                source: dereplication/peaks_and_parameters
+                valueFrom: $(self.PeakList)
+            IonizedPrecursorMass:
+                source: dereplication/peaks_and_parameters
+                valueFrom: $(self.IonizedPrecursorMass)
+            PrecursorIonMode:
+                source: dereplication/peaks_and_parameters
+                valueFrom: $(self.PrecursorIonMode)
+            IsPositiveIonMode:
+                source: dereplication/peaks_and_parameters
+                valueFrom: $(self.IsPositiveIonMode)
+            LocalDatabase:
+                source: dereplication/peaks_and_parameters
+                valueFrom: $(self.LocalDatabase)
+            SampleName:
+                source: dereplication/peaks_and_parameters
+                valueFrom: $(self.SampleName)
+        out: [candidate_list]
+
     sirius_isotope:
         run: sirius-new.cwl
         in:
@@ -70,6 +102,8 @@ steps:
             sirius_results: 
                 source: [sirius_no_isotope/results, sirius_isotope/results]
                 linkMerge: True
+            candidate_list: metfrag/candidate_list
+ 
             
         out: [results, provenance]
 
