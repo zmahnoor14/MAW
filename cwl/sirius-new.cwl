@@ -1,14 +1,29 @@
 cwlVersion: v1.0 
 class: CommandLineTool
 
-baseCommand: [sirius]
+$namespaces:
+  cwltool: http://commonwl.org/cwltool#
+hints:
+  "cwltool:Secrets":
+    secrets:
+      - sirius_user
+      - sirius_password
 
 requirements:
   DockerRequirement:
-    dockerPull: docker.io/zmahnoor/run-sirius4
+    dockerPull: docker.io/zmahnoor/maw-sirius5:dev
   InlineJavascriptRequirement: {}
+  ShellCommandRequirement: {}
+  EnvVarRequirement:
+    envDef:
+      SIRIUS_USER: $(inputs.sirius_user)
+      SIRIUS_PASSWORD: $(inputs.sirius_password)
 
 inputs: 
+  sirius_user:
+    type: string
+  sirius_password:
+    type: string
   spectrum:
     type: File
 #    inputBinding: 
@@ -34,6 +49,15 @@ inputs:
 
 
 arguments:
+    - sirius
+    - login
+    - --user-env 
+    - SIRIUS_USER
+    - --password-env 
+    - SIRIUS_PASSWORD 
+    - shellQuote: False
+      valueFrom: ";"
+    - sirius
     - --input
     - $(inputs.spectrum.path)
     - --output
