@@ -21,6 +21,8 @@ options(warn=-1)
 library("mzR")
 library(curl)
 library(CompoundDb)
+library(rjson)
+
 
 download_specDB_new <- function(input_dir, db = "all"){
 
@@ -195,9 +197,6 @@ ms2_rfilename<- function(input_dir, output_dir){
     }
 }
 
-
-
-
 #' All spectra in mzML files preprocessing, return two outputs, pre-processed MS2 spectra and all precursor masses
 # x is one mzML file
 #' All spectra in mzML files preprocessing, return two outputs, pre-processed MS2 spectra and all precursor masses
@@ -236,9 +235,6 @@ spec_Processing <- function(x, result_dir){
     }
 
 }
-
-
-
 
 spec2_Processing <- function(z, obj, spec = "spec_all", ppmx = 15){
     if (spec == "spec_all"){
@@ -309,8 +305,6 @@ spec2_Processing <- function(z, obj, spec = "spec_all", ppmx = 15){
         return(sps)
     }
 }
-
-
 
 ##-----------------------------------------------------------------
 ## Extract peaksdata in a dataframe
@@ -394,7 +388,6 @@ peakdf <- function(a, b, ppmx){
     #mzs[ints < 5] <- ""
     #mzs
 #}
-
 
 spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_dir, file_id, no_of_candidates = 30, ppmx, error = TRUE){
     # if the database selected is HMDB or all
@@ -2249,9 +2242,60 @@ metfrag_param(x= paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""),
 
 
 # create JSON file and looks simsilar to cwl object
-# outpuyts from MAW_R
+# outputs from MAW_R
+#create empty json_data
+json_data <- list()
+
+json_data$results <- list(
+  class = "Directory",
+  path = mzml_result
+)
 
 
+library(jsonlite)
+
+# Create a list of file paths
+mzml_result <- "/Users/mahnoorzulfiqar/Downloads/New_ms2_spectra_endo_pos"
+sirius_paths <- read.csv(paste(mzml_result, "/insilico/MS1DATA_SiriusP.tsv", sep = ""), sep = "\t")
+sirius_paths
+files_list <- sirius_paths["sirius_param_file"]
+files_list
+# Loop over file paths and create file objects
+files <- list()
+for (path in files_list) {
+  file_obj <- list(
+    class = "File",
+    path = path
+  )
+  files <- c(files, file_obj)
+}
+files
+# Append the list of file objects to ms_files_no_isotope list in json_data
+json_data$ms_files_no_isotope <- c(json_data$ms_files_no_isotope, files)
+toJSON(json_data)
+# Convert json_data to JSON string
+json_string <- toJSON(json_data)
+json_string
+# Write JSON string to file
+writeLines(json_string, "output.json")
+
+
+
+
+
+
+
+
+
+
+
+json_data$provenance <- list(
+  class = "Directory",
+  path = paste(mzml_result, "/prov_console", sep = "")
+)
+json_string_pretty <- jsonlite::prettify(json_string)
+json_string_pretty
+writeLines(json_string_pretty, paste(mzml_result, "/cwl.output.json", sep = ""))
 
 end.time <- Sys.time()
 
