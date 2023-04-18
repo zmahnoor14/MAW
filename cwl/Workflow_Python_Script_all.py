@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[6]:
-
-
-#!/usr/bin/env python
-# coding: utf-8
-
 # import yaml
 # import time
 # import provenance as p
@@ -61,8 +55,8 @@ import plotly.express as px
 def isNaN(string):
     return string != string
 
-# In[7]:
 
+# # SpecDB Post Processing
 #@p.provenance()
 def spec_postproc(entry, Source="all"):
     # currently only these subsets are removed from the names from GNPS
@@ -704,196 +698,6 @@ def sirius_postproc(entry, sirius_dirs, db):
                             print("no file for structure or formula")
             msp.to_csv(msp_csv)
 
-# In[ ]:
-
-
-# def str_can_score(db, i):
-#     if (
-#         db["explainedIntensity"][i] >= exp_int
-#         #and db["CSI:FingerIDScore"][i] >= csi_score
-#     ):
-#         return True
-#     else:
-#         return False
-
-# # entry is all files and folders in input_dir
-# for entry in os.listdir(input_dir):
-#     # if the entry is also a directory
-#     if os.path.isdir(os.path.join(input_dir, entry)):
-#         sub_dir = input_dir + "/" + entry + "/insilico/SIRIUS/"
-#         msp_csv = input_dir + "/" + entry + "/insilico/MS1DATA.csv"
-#         if os.path.exists(msp_csv) and os.path.exists(sub_dir):
-#             # output json files from SIRIUS
-#             files_S = glob.glob(sub_dir + "/*.json")
-#             # list of precursor m/z
-#             msp = pd.read_csv(msp_csv)
-
-#             # for each mz
-#             for mz, row in msp.iterrows():
-#                 # make a list of files with this mz
-#                 #print(mz)
-#                 files_for_mz = []
-
-#                 for file in files_S:
-#                     if str(msp["premz"][mz]) in file:
-#                         files_for_mz.append(file)
-
-#                 # extract the formula and structure files
-#                 json_dirALL = next(os.walk(files_for_mz[0]))[1]
-#                 if len(json_dirALL)>0:
-#                     sub_sub_dirALL_structure_can = (
-#                         files_for_mz[0]
-#                         + "/"
-#                         + json_dirALL[0]
-#                         + "/structure_candidates.tsv"
-#                     )
-#                     sub_sub_dirALL_formula_can = (
-#                         files_for_mz[0]
-#                         + "/"
-#                         + json_dirALL[0]
-#                         + "/formula_candidates.tsv"
-#                     )
-#                     ALL_Canopus_csv = files_for_mz[0] + "/canopus_summary.tsv"
-
-#                     # if both structure files exist
-#                     if (
-#                         os.path.exists(sub_sub_dirALL_structure_can)
-#                         and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t")) > 0
-#                     ):
-#                         if (
-#                             os.path.exists(sub_sub_dirALL_formula_can)
-#                             and len(pd.read_csv(sub_sub_dirALL_formula_can, sep="\t"))
-#                             > 0
-#                         ):
-#                             ALL_structure_csv = pd.read_csv(
-#                                 sub_sub_dirALL_structure_can, sep="\t"
-#                             )
-#                             ALL_formula_csv = pd.read_csv(
-#                                 sub_sub_dirALL_formula_can, sep="\t"
-#                             )
-#                             ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
-#                             # Add the structure and formula files together
-#                             for structure, rows in ALL_structure_csv.iterrows():
-#                                 for formula, rows in ALL_formula_csv.iterrows():
-#                                     if (
-#                                         ALL_structure_csv["formulaRank"][structure]
-#                                         == ALL_formula_csv["rank"][formula]
-#                                     ):
-#                                         ALL_structure_csv.loc[
-#                                             structure, "SiriusScore"
-#                                         ] = ALL_formula_csv["SiriusScore"][formula]
-#                                         ALL_structure_csv.loc[
-#                                             structure, "numExplainedPeaks"
-#                                         ] = ALL_formula_csv["numExplainedPeaks"][
-#                                             formula
-#                                         ]
-#                                         ALL_structure_csv.loc[
-#                                             structure, "explainedIntensity"
-#                                         ] = ALL_formula_csv["explainedIntensity"][
-#                                             formula
-#                                         ]
-#                                         # ALL_structure_csv.loc[structure, "SuspectListEntry"] = "FALSE"
-#                                         if len(ALL_Canopus) > 0:
-#                                             if (
-#                                                 ALL_formula_csv["molecularFormula"][
-#                                                     formula
-#                                                 ]
-#                                                 == ALL_Canopus["molecularFormula"][0]
-#                                             ):
-#                                                 ALL_structure_csv.loc[
-#                                                     structure, "superclass"
-#                                                 ] = ALL_Canopus["superclass"][0]
-#                                                 ALL_structure_csv.loc[
-#                                                     structure, "class"
-#                                                 ] = ALL_Canopus["class"][0]
-#                                                 ALL_structure_csv.loc[
-#                                                     structure, "subclass"
-#                                                 ] = ALL_Canopus["subclass"][0]
-
-#                             for str_siriusA, row in ALL_structure_csv.iterrows():
-#                                 if not str_can_score(ALL_structure_csv, str_siriusA):
-#                                     ALL_structure_csv = ALL_structure_csv.drop(
-#                                         str_siriusA, inplace=False
-#                                     )
-
-#                         result_sirius_name = (
-#                             sub_dir
-#                             + "results_for_"
-#                             + json_dirALL[0].split("_")[-1]
-#                             + "_"
-#                             + "structure.csv"
-#                         )
-#                         msp.loc[mz, "sirius_result_dir"] = result_sirius_name.replace(
-#                             input_dir, "."
-#                         )
-
-#                         ALL_structure_csv.to_csv(result_sirius_name)
-
-#                     elif not (
-#                         os.path.exists(sub_sub_dirALL_structure_can)
-#                         and len(pd.read_csv(sub_sub_dirALL_structure_can, sep="\t")) > 0
-#                     ):
-#                         if (
-#                             os.path.exists(sub_sub_dirALL_formula_can)
-#                             and len(pd.read_csv(sub_sub_dirALL_formula_can, sep="\t"))
-#                             > 0
-#                         ):
-#                             ALL_formula_csv = pd.read_csv(
-#                                 sub_sub_dirALL_formula_can, sep="\t"
-#                             )
-#                             ALL_Canopus = pd.read_csv(ALL_Canopus_csv, sep="\t")
-#                             if len(ALL_Canopus) > 0:
-#                                 for formula, rows in ALL_formula_csv.iterrows():
-#                                     ALL_formula_csv.loc[
-#                                         formula, "superclass"
-#                                     ] = ALL_Canopus["superclass"][0]
-#                                     ALL_formula_csv.loc[formula, "class"] = ALL_Canopus[
-#                                         "class"
-#                                     ][0]
-#                                     ALL_formula_csv.loc[
-#                                         formula, "subclass"
-#                                     ] = ALL_Canopus["subclass"][0]
-
-#                             for for_siriusA, row in ALL_formula_csv.iterrows():
-#                                 if (
-#                                     not ALL_formula_csv["explainedIntensity"][
-#                                         for_siriusA
-#                                     ]
-#                                     >= exp_int
-#                                 ):
-#                                     ALL_formula_csv = ALL_formula_csv.drop(
-#                                         for_siriusA, inplace=False
-#                                     )
-
-#                             result_sirius_name = (
-#                                 sub_dir
-#                                 + "results_for_"
-#                                 + json_dirALL[0].split("_")[-1]
-#                                 + "_"
-#                                 + "formula.csv"
-#                             )
-#                             msp.loc[
-#                                 mz, "sirius_result_dir"
-#                             ] = result_sirius_name.replace(input_dir, ".")
-
-#                             ALL_formula_csv.to_csv(
-#                                 sub_dir
-#                                 + "results_for_"
-#                                 + json_dirALL[0].split("_")[-1]
-#                                 + "_"
-#                                 + "formula.csv"
-#                             )
-
-#                         else:
-#                             print("no file for formula")
-#                     else:
-#                         print("no file for structure or formula")
-#         msp.to_csv(msp_csv)
-
-
-
-# In[8]:
-
 #@p.provenance()
 def MCSS_for_SpecDB(entry, Source = "all"):
     # Describe the heavy atoms to be considered for MCSS
@@ -1053,8 +857,6 @@ def MCSS_for_SpecDB(entry, Source = "all"):
             spec_msp.to_csv(specdb_msp_file[0])
 
 
-# In[9]:
-
 #@p.provenance()
 def MCSS_for_SIRIUS(entry):
 
@@ -1108,9 +910,6 @@ def MCSS_for_SIRIUS(entry):
                                         Chem.MolFromSmarts(res.smartsString)
                                     )
         sirius_msp.to_csv(sirius_msp_csv)
-
-
-# In[10]:
 
 
 def SuspectListScreening(input_dir, SuspectListPath, tanimoto, Source):
@@ -1265,11 +1064,6 @@ def SuspectListScreening(input_dir, SuspectListPath, tanimoto, Source):
                         mbankproc.to_csv(file)
                         return mbankproc
 
-
-# In[11]:
-
-
-# Candidate Selection
 def chemMN_CandidateSelection(df, tn_sim=0.85):
 
     """chemMN_CandidateSelection function is used to generate a Cytoscape readable tsv file.
@@ -1390,10 +1184,43 @@ def chemMN_CandidateSelection(df, tn_sim=0.85):
 
         return df_edge
 
+def checkSMILES_validity(resultcsv):
+    
 
-# In[12]:
+    """checkSMILES_validity does exactly as the name says, using
+    RDKit, whether the SMILES are invalid or have invalid
+    chemistry
 
+    Parameters:
+    input_dir (str): This is the input directory where all the .mzML
+    files and their respective result directories are stored.
 
+    results: df from combine_CuratedR
+
+    Returns:
+    dataframe: with valid SMILES
+    csv: "MetabolomicsResults/final_curation_with_validSMILES.csv"
+
+    Usage:
+    checkSMILES_validity(input_dir = "usr/project/", results)
+
+    """
+    results = pd.read_csv(resultcsv)
+    # check validity of SMILES
+    for i, row in results.iterrows():
+        if not isNaN(results["SMILES"][i]):
+            m = Chem.MolFromSmiles(results["SMILES"][i], sanitize=False)
+            if m is None:
+                results["SMILES"][i] = "invalid_SMILES"
+            else:
+                try:
+                    Chem.SanitizeMol(m)
+                except Exception:
+                    results["SMILES"][i] = "invalid_chemistry"
+
+    return results
+
+# Candidate Selection with SIRIUS
 def one_candidate_selection(
     df,
     Source="SGHM",
@@ -1640,10 +1467,6 @@ def one_candidate_selection(
                     pass
     return df
 
-
-# In[13]:
-
-
 def add_count_column(df_one_candidate):
     df_one_candidate = df_one_candidate.dropna(axis=0, how="all", subset = ['SIRIUS', 'GNPS', 'MassBank', 'HMDB'])
     # create new df only with the Sources column
@@ -1719,10 +1542,6 @@ def add_count_column(df_one_candidate):
             by=["Count", "rank_num", "rank_db"], ascending=[False, True, True],
             inplace=True)
         return sorted_count_one_candidate
-
-
-# In[2]:
-
 
 def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
     """if only 1 source has confirmed the presence of a certain SMILES.
@@ -1853,8 +1672,6 @@ def sources_1(candidates_with_counts, merged_df, mer, sirius_df):
         merged_df.loc[mer, "MSILevel"] = 3
             
     return merged_df
-# In[1]:
-
 
 def sources_2(candidates_with_counts, merged_df, mer, sirius_df):
 
@@ -1944,8 +1761,6 @@ def sources_2(candidates_with_counts, merged_df, mer, sirius_df):
     
     
     return merged_df
-# In[29]:
-
 
 def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
 
@@ -2064,9 +1879,6 @@ def sources_3(candidates_with_counts, merged_df, mer, sirius_df):
     
     return merged_df
 
-# In[30]:
-
-
 def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
 
     """if only 3 sources have confirmed the presence of a certain SMILES.
@@ -2180,48 +1992,6 @@ def sources_4(candidates_with_counts, merged_df, mer, sirius_df):
         merged_df["ClassificationSource"][mer] = np.nan  
      
     return merged_df
-
-def checkSMILES_validity(resultcsv):
-    
-
-    """checkSMILES_validity does exactly as the name says, using
-    RDKit, whether the SMILES are invalid or have invalid
-    chemistry
-
-    Parameters:
-    input_dir (str): This is the input directory where all the .mzML
-    files and their respective result directories are stored.
-
-    results: df from combine_CuratedR
-
-    Returns:
-    dataframe: with valid SMILES
-    csv: "MetabolomicsResults/final_curation_with_validSMILES.csv"
-
-    Usage:
-    checkSMILES_validity(input_dir = "usr/project/", results)
-
-    """
-    results = pd.read_csv(resultcsv)
-    # check validity of SMILES
-    for i, row in results.iterrows():
-        if not isNaN(results["SMILES"][i]):
-            m = Chem.MolFromSmiles(results["SMILES"][i], sanitize=False)
-            if m is None:
-                results["SMILES"][i] = "invalid_SMILES"
-            else:
-                try:
-                    Chem.SanitizeMol(m)
-                except Exception:
-                    results["SMILES"][i] = "invalid_chemistry"
-#     results.to_csv(
-#         input_dir + "MetabolomicsResults/final_curation_with_validSMILES.csv"
-#     )
-    return results
-
-
-
-# In[5]:
 
 #@p.provenance()
 def CandidateSelection_SimilarityandIdentity(entry, standards = False):
@@ -3504,15 +3274,2010 @@ def CandidateSelection_SimilarityandIdentity(entry, standards = False):
                 + "mergedResults-with-one-Candidates.csv"
             )
 
+# candidate selection for MetFrag; The naming convention is kept same as SIRIUS so dont be confused; 
+# in the results you will see the name metfrag
+
+def metfrag_postproc(entry, db, score_thresh):
+    sub_dir = entry + "/insilico/MetFrag/" + db 
+    msp_csv = entry + "/insilico/MS1DATA.csv"
+    if os.path.exists(msp_csv) and os.path.exists(sub_dir):
+
+        files_M = [x for x in os.listdir(sub_dir) if x.endswith('.csv')]
+        # list of precursor m/z
+        msp = pd.read_csv(msp_csv)
+        msp["MetFragCSV"] = np.nan
+        # for each mz
+        for mz, row in msp.iterrows():
+            # make a list of files with this mz
+            files_for_mz = []
+            for file in files_M:
+                if str(msp["premz"][mz]) in file:
+                    files_for_mz.append(file)
+                    msp["MetFragCSV"][mz] = sub_dir + "/"+ file
+                    if os.path.exists(msp["MetFragCSV"][mz]):
+                        metfrag_res = pd.read_csv(msp["MetFragCSV"][mz])
+                        if len(metfrag_res)>0:
+                            metfrag_res = metfrag_res[metfrag_res['Score'] >= score_thresh]
+                            #print(metfrag_res['Score'])
+                            metfrag_res.to_csv(msp["MetFragCSV"][mz])
+        msp.to_csv(msp_csv)   
+
+def one_candidate_selection_metfrag(
+    df,
+    Source="SGHM",
+    tn_ident=0.99,
+    sirius_df=None,
+    mbank_df=None,
+    gnps_df=None,
+    hmdb_df=None,
+):
+
+    """one_candidate_selection function is used to generate a dataframe that tells,
+    for each candidate SMILES, what was the source or how many sources had the same
+    candidate. The idea is to merge all candidate SMILES into one list, preserving
+    the rank and source, and then checking whether these SMILES come from SIRIUS or
+    any spectral DB. If a SMILE is repeated in more sources, its confidence score
+    increases and is considered the most likely candidate structure. This function
+    is not stand-alone and is part of the function CandidateSelection_SimilarityandIdentity
 
 
+    Parameters:
+    df: dataframe that contains "SMILES", "ranks", "Source". This function is
+    specifically for candidate selection and so these columns are necessary.
+    Source: this depends on how many sources were used. Possiblilities are:
+    1. SGHM (all)
+    2. SGM (Metfrag, GNPS, MassBank)
+    3. SHM (Metfrag, HMDB, MassBank)
+    4. SGH (Metfrag, GNPS, HMDB)
+    5. GHM (GNPS, HMDB, MassBank)
+    6. SG (Metfrag, GNPS)
+    7. SH (Metfrag, HMDB)
+    8. SM (Metfrag, MassBank)
+    9. GM (GNPS, MassBank)
+    10. GH (GNPS, HMDB)
+    11. HM (HMDB, MassBank)
+    12. S
+    13. G
+    14. H
+    15. M
+
+    Returns:
+    dataframe: it returns a df with follwoing columns which can be used to
+    prioritize a database for the final candidate selection.
+    1. Source, contains name of the source (SIRIUS, GNPS, HMDB or MassBank)
+    2. ranks, contains first letter of the source and a rank number seperated
+    by _ e.g: G_1(GNPS, 1st rank)
+    3. SMILES
+    4. SIRIUS, the rank again but only when the corresponding row SMILES is
+    also part of SIRIUS results
+    5. GNPS , same as SIRIUS but for GNPS
+    5. MassBank
+    6. HMDB
 
 
+    Usage:
+    chemMN_CandidateSelection(df, Source = "SGHM")
+
+    """
+
+    # define empty columns for each Source to only fill if the corresponding
+    # SMILES is also present in the source
+
+    df["MetFrag"] = np.nan
+    df["GNPS"] = np.nan
+    df["MassBank"] = np.nan
+    df["HMDB"] = np.nan
+
+    # for each SMILES in df
+    for smiles, rows in df.iterrows():
+
+        # If the source contains SIRIUS
+        if (
+            Source == "SGHM"
+            or Source == "SGM"
+            or Source == "SGH"
+            or Source == "SHM"
+            or Source == "SG"
+            or Source == "SM"
+            or Source == "SH"
+            or Source == "S"
+        ):
+            # sirius_df comes from within the function CandidateSelection_SimilarityandIdentity
+            for sirius_i, row in sirius_df.iterrows():
+                # calculate tanimoto
+                try:
+                    ms = [
+                        Chem.MolFromSmiles(df["SMILES"][smiles]),
+                        Chem.MolFromSmiles(sirius_df["SMILES"][sirius_i]),
+                    ]
+                    fps = [
+                        AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048)
+                        for x in ms
+                    ]
+                    tn = DataStructs.FingerprintSimilarity(fps[0], fps[1])
+                    # since we are dealing with idenity here so tanimoto of 0.99 is appropriate
+                    if tn >= tn_ident:
+
+                        # if SIRIUS is blank, add the SIRIUS id
+                        if isNaN(df["MetFrag"][smiles]):#changed
+
+                            df.loc[smiles, "MetFrag"] = sirius_df["rank_ids"][sirius_i]#changed
+                        # if not empty, add SIRIUS id, with a comma
+                        else:
+                            df.loc[smiles, "MetFrag"] = (
+                                str(df["MetFrag"][smiles])
+                                + ", "
+                                + sirius_df["rank_ids"][sirius_i]
+                            )
+
+                except Exception:
+                    # print(e.string)
+                    pass
+
+        # If the Source contains GNPS
+        if (
+            Source == "SGHM"
+            or Source == "SGM"
+            or Source == "SGH"
+            or Source == "GHM"
+            or Source == "SG"
+            or Source == "GM"
+            or Source == "GH"
+            or Source == "G"
+        ):
+
+            # gnps_df comes from within the function CandidateSelection_SimilarityandIdentity
+            for gnps_i, row in gnps_df.iterrows():
+                try:
+                    # calculate tanimoto
+                    ms = [
+                        Chem.MolFromSmiles(df["SMILES"][smiles]),
+                        Chem.MolFromSmiles(gnps_df["GNPSSMILES"][gnps_i]),
+                    ]
+                    fps = [
+                        AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048)
+                        for x in ms
+                    ]
+                    tn = DataStructs.FingerprintSimilarity(fps[0], fps[1])
+
+                    # since we are dealing with idenity here so tanimoto of 0.99 is appropriate
+                    if tn >= tn_ident:
+
+                        # if GNPS is blank, add the GNPS id
+                        if isNaN(df["GNPS"][smiles]):
+
+                            df.loc[smiles, "GNPS"] = gnps_df["rank_ids"][gnps_i]
+                        # if not empty, add GNPS id, with a comma
+                        else:
+                            df.loc[smiles, "GNPS"] = (
+                                str(df["GNPS"][smiles])
+                                + ", "
+                                + gnps_df["rank_ids"][gnps_i]
+                            )
+
+                except Exception:
+                    # print(e.string)
+                    pass
+
+        # If the source contains HMDB
+        if (
+            Source == "SGHM"
+            or Source == "SGH"
+            or Source == "SHM"
+            or Source == "GHM"
+            or Source == "SH"
+            or Source == "GH"
+            or Source == "HM"
+            or Source == "H"
+        ):
+            for hmdb_i, row in hmdb_df.iterrows():
+                try:
+                    # calculate tanimoto
+                    ms = [
+                        Chem.MolFromSmiles(df["SMILES"][smiles]),
+                        Chem.MolFromSmiles(hmdb_df["HMDBSMILES"][hmdb_i]),
+                    ]
+                    fps = [
+                        AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048)
+                        for x in ms
+                    ]
+                    tn = DataStructs.FingerprintSimilarity(fps[0], fps[1])
+
+                    # since we are dealing with idenity here so tanimoto of 0.99 is appropriate
+                    if tn >= tn_ident:
+
+                        # if HMDB is blank, add the HMDB id
+                        if isNaN(df["HMDB"][smiles]):
+
+                            df.loc[smiles, "HMDB"] = hmdb_df["rank_ids"][hmdb_i]
+                        # if not empty, add HMDB id, with a comma
+                        else:
+                            df.loc[smiles, "HMDB"] = (
+                                str(df["HMDB"][smiles])
+                                + ", "
+                                + hmdb_df["rank_ids"][hmdb_i]
+                            )
+
+                except Exception:
+                    # print(e.string)
+                    pass
 
 
+        # If the source contains MassBank
+        if (
+            Source == "SGHM"
+            or Source == "SGM"
+            or Source == "SHM"
+            or Source == "GHM"
+            or Source == "SM"
+            or Source == "GM"
+            or Source == "HM"
+            or Source == "M"
+        ):
+            # mbank_df comes from within the function CandidateSelection_SimilarityandIdentity
+            for mbank_i, row in mbank_df.iterrows():
+                try:
+                    # calculate tanimoto
+                    ms = [
+                        Chem.MolFromSmiles(df["SMILES"][smiles]),
+                        Chem.MolFromSmiles(mbank_df["MBSMILES"][mbank_i]),
+                    ]
+                    fps = [
+                        AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048)
+                        for x in ms
+                    ]
+                    tn = DataStructs.FingerprintSimilarity(fps[0], fps[1])
 
-# In[32]:
+                    # since we are dealing with idenity here so tanimoto of 0.99 is appropriate
+                    if tn >= tn_ident:
 
+                        # if MassBank is blank, add the MassBank id
+                        if isNaN(df["MassBank"][smiles]):
+
+                            df.loc[smiles, "MassBank"] = mbank_df["rank_ids"][mbank_i]
+                        # if not empty, add MassBank id, with a comma
+                        else:
+                            df.loc[smiles, "MassBank"] = (
+                                str(df["MassBank"][smiles])
+                                + ", "
+                                + mbank_df["rank_ids"][mbank_i]
+                            )
+
+                except Exception:
+                    # print(e.string)
+                    pass
+    return df
+
+def add_count_column_metfrag(df_one_candidate):
+    df_one_candidate = df_one_candidate.dropna(axis=0, how="all", subset = ['MetFrag', 'GNPS', 'MassBank', 'HMDB'])
+    # create new df only with the Sources column
+    df = pd.DataFrame(
+        {
+            "MetFrag": df_one_candidate["MetFrag"],
+            "GNPS": df_one_candidate["GNPS"],
+            "MassBank": df_one_candidate["MassBank"],
+            "HMDB": df_one_candidate["HMDB"],
+        }
+    )
+
+    # df_one_candidate = df_one_candidate.dropna(subset=["SIRIUS", "GNPS", "HMDB", "MassBank"], how='all', inplace=True)
+
+    index_SIRIUS = [x for x, row in df.iterrows() if not isNaN(df["MetFrag"][x])]
+    index_GNPS = [x for x, row in df.iterrows() if not isNaN(df["GNPS"][x])]
+    index_MassBank = [x for x, row in df.iterrows() if not isNaN(df["MassBank"][x])]
+    index_HMDB = [x for x, row in df.iterrows() if not isNaN(df["HMDB"][x])]
+
+    # make a list of the rows
+    list_of_indices = [index_SIRIUS] + [index_GNPS] + [index_MassBank] + [index_HMDB]
+    length_of_list = len([idx for idx, x in enumerate(list_of_indices)  if x])
+    if length_of_list == 1:
+        #print("1 is correct")
+        # change number of counts, since its 1 source, so all counts should be 1
+        df_one_candidate["Count"] = 1
+        # extract ranks numbers from ranks
+        df_one_candidate["rank_num"] = [counts.split("_")[1] for counts in df_one_candidate["ranks"]]
+        # convert any str to int
+        df_one_candidate["rank_num"] = [int(x) for x in df_one_candidate["rank_num"]]
+        #Sort by ranknum
+        df_one_candidate = df_one_candidate.sort_values(
+            by="rank_num", ascending=False
+        )
+        for r, rows in df_one_candidate.iterrows():
+            if df_one_candidate["Source"][r]=="GNPS":
+                df_one_candidate.loc[r, "rank_db"] = 1
+            if df_one_candidate["Source"][r]=="MetFrag":
+                df_one_candidate.loc[r, "rank_db"] = 2
+            if df_one_candidate["Source"][r]=="MassBank":
+                df_one_candidate.loc[r, "rank_db"] = 3
+            if df_one_candidate["Source"][r]=="HMDB":
+                df_one_candidate.loc[r, "rank_db"] = 4
+        df_one_candidate.sort_values(
+            by=["rank_num", "rank_db"], ascending=[True, True],
+            inplace=True)
+
+        return df_one_candidate
+    elif length_of_list > 1:
+        # make a list of the rows
+        list_of_indices = index_SIRIUS + index_GNPS + index_MassBank + index_HMDB
+        # count how many times one of the rows is appearing and add count
+        count_list = [[x, list_of_indices.count(x)] for x in set(list_of_indices)]
+        # add this info to one_can
+        df_one_candidate["Count"] = [count_list[x][1] for x in range(len(count_list))]
+        # sort the list by count in descending order
+        sorted_count_one_candidate = df_one_candidate.sort_values(
+            by="Count", ascending=False
+        )
+        sorted_count_one_candidate["rank_num"] = [counts.split("_")[1] for counts in sorted_count_one_candidate["ranks"]]
+        sorted_count_one_candidate["rank_num"] = [int(x) for x in sorted_count_one_candidate["rank_num"]]
+        for r, rows in sorted_count_one_candidate.iterrows():
+            if sorted_count_one_candidate["Source"][r]=="GNPS":
+                sorted_count_one_candidate.loc[r, "rank_db"] = 1
+            if sorted_count_one_candidate["Source"][r]=="MetFrag":
+                sorted_count_one_candidate.loc[r, "rank_db"] = 2
+            if sorted_count_one_candidate["Source"][r]=="MassBank":
+                sorted_count_one_candidate.loc[r, "rank_db"] = 3
+            if sorted_count_one_candidate["Source"][r]=="HMDB":
+                sorted_count_one_candidate.loc[r, "rank_db"] = 4
+
+        sorted_count_one_candidate.sort_values(
+            by=["Count", "rank_num", "rank_db"], ascending=[False, True, True],
+            inplace=True)
+        return sorted_count_one_candidate
+
+def sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df):
+    """if only 1 source has confirmed the presence of a certain SMILES.
+    This holds true when each candidate SMILES has only one source. The
+    function selects the best candidate
+
+    Parameters:
+    candidates_with_counts: this is the result from the function add_count_column
+    and contains a ordered dataframe, with the most sourced SMILES at top.
+    merged_df: dataframe that contains all features from the input mzML file
+
+    Returns:
+    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and
+    MSI-Level
+
+    Usage:
+    sources_1(candidates_with_counts, merged_df)
+
+    """
+
+    df_count_1 = candidates_with_counts[candidates_with_counts["Count"] == 1]
+
+
+    df_count_1 = df_count_1[df_count_1["rank_num"] == min(df_count_1["rank_num"])]
+
+    df_count_1["count_min"] = [
+        str(df_count_1["MetFrag"][x])
+        + str(df_count_1["GNPS"][x])
+        + str(df_count_1["MassBank"][x])
+        + str(df_count_1["HMDB"][x])
+        for x, row in df_count_1.iterrows()
+    ]
+
+    df_count_1["count_max"] = [x.count("_") for x in df_count_1["count_min"]]
+
+    df_count_1 = df_count_1.sort_values(by="count_max", ascending=False)
+
+    df_count_1.reset_index(drop=True, inplace=True)
+
+    merged_df.loc[mer, "AnnotationCount"] = df_count_1["Count"][0]
+
+    gnps_indices = list(df_count_1[(df_count_1["GNPS"].notnull())].index)
+    mbank_indices = list(df_count_1[(df_count_1["MassBank"].notnull())].index)
+    hmdb_indices = list(df_count_1[(df_count_1["HMDB"].notnull())].index)
+    sirius_indices = list(df_count_1[(df_count_1["MetFrag"].notnull())].index)
+
+    if 0 in sirius_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|MetFrag"
+        )
+    if 0 in mbank_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|MassBank"
+        )
+        # print("mbank")
+    if 0 in hmdb_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|HMDB"
+        )
+        # print("hmdb")
+    if 0 in gnps_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|GNPS"
+        )
+        # print("gnps")
+
+    
+
+    merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][
+        mer
+    ].replace("nan|", "")
+    
+    merged_df.loc[mer, "SMILES"] = df_count_1["SMILES"][0]
+    if df_count_1["SMILES"][0] != "CC[S](=O)(O)O":
+        try:
+            comp = pcp.get_compounds(df_count_1["SMILES"][0], 'smiles')
+            try:
+                if comp:
+                    for c in comp:
+                        if c.cid:
+                            merged_df["synonyms"][mer] = c.synonyms
+                            merged_df.loc[mer, "IUPAC"] = c.iupac_name
+                            merged_df.loc[mer, "Formula"] = c.molecular_formula
+                            merged_df.loc[mer, "PubChemID"] = c.cid
+                        else:
+                            merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
+                            merged_df.loc[mer, "PubChemID"] = sirius_df["pubchemids"][0]
+
+                    
+            except Exception:
+                if "MetFrag" == merged_df["AnnotationSources"][mer]:
+
+                    comp = pcp.get_compounds(sirius_df["pubchemids"][0], 'cid')
+                    try:
+                        if comp:
+                            for c in comp:
+                                if c.cid:
+                                    merged_df["synonyms"][mer] = c.synonyms
+                                    merged_df.loc[mer, "IUPAC"] = c.iupac_name
+                                    merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
+                                    merged_df.loc[mer, "PubChemID"] = sirius_df["pubchemids"][0]
+                                else:
+
+                                    merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
+                                    merged_df.loc[mer, "PubChemID"] = sirius_df["pubchemids"][0]
+                        else:
+                            merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
+                            merged_df["synonyms"][mer] = sirius_df["name"][0]
+                            merged_df.loc[mer, "PubChemID"] = sirius_df["pubchemids"][0]
+                    except Exception:
+                        merged_df.loc[mer, "Formula"] = sirius_df["molecularFormula"][0]
+                        merged_df["synonyms"][mer] = sirius_df["name"][0]
+                        merged_df.loc[mer, "PubChemID"] = sirius_df["pubchemids"][0]
+                else:
+                    pass
+        except:
+            pass
+    if "MetFrag" not in merged_df["AnnotationSources"][mer]:
+        merged_df["superclass"][mer] = np.nan
+        merged_df["class"][mer] = np.nan
+        merged_df["subclass"][mer] = np.nan
+        merged_df["ClassificationSource"][mer] = np.nan
+
+    if (
+        "HMDB" in merged_df["AnnotationSources"][mer]
+        or "GNPS" in merged_df["AnnotationSources"][mer]
+        or "MassBank" in merged_df["AnnotationSources"][mer]
+    ):
+        merged_df.loc[mer, "MSILevel"] = 2
+    elif "MetFrag" == merged_df["AnnotationSources"][mer]:
+        merged_df.loc[mer, "MSILevel"] = 3
+            
+    return merged_df
+
+def sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df):
+
+    """if only 2 sources have confirmed the presence of a certain SMILES.
+    This holds true when each candidate SMILES has only two sources. The
+    function selects the best candidate and adds the two sources as
+    annotation sources
+
+    Parameters:
+    candidates_with_counts: this is the result from the function add_count_column
+    and contains a ordered dataframe, with the most sourced SMILES at top.
+    merged_df: dataframe that contains all features from the input mzML file
+
+    Returns:
+    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and
+    MSI-Level
+
+    Usage:
+    sources_2(candidates_with_counts, merged_df, mer)
+
+    """
+
+    df_count_2 = candidates_with_counts[candidates_with_counts["Count"] == 2]
+
+    df_countnew = df_count_2[df_count_2["rank_num"] == min(df_count_2["rank_num"])]
+    df_countnew["count_min"] = [
+        str(df_countnew["MetFrag"][x])
+        + str(df_countnew["GNPS"][x])
+        + str(df_countnew["MassBank"][x])
+        + str(df_countnew["HMDB"][x])
+        for x, row in df_countnew.iterrows()
+    ]
+    df_countnew["count_max"] = [x.count("_") for x in df_countnew["count_min"]]
+    df_countnew = df_countnew.sort_values(by="count_max", ascending=False)
+
+    df_countnew.reset_index(drop=True, inplace=True)
+
+    gnps_indices = list(df_countnew[(df_countnew["GNPS"].notnull())].index)
+    mbank_indices = list(df_countnew[(df_countnew["MassBank"].notnull())].index)
+    hmdb_indices = list(df_countnew[(df_countnew["HMDB"].notnull())].index)
+    sirius_indices = list(df_countnew[(df_countnew["MetFrag"].notnull())].index)
+
+    if 0 in sirius_indices:
+        # print("sirius")
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|MetFrag"
+        )
+    if 0 in mbank_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|MassBank"
+        )
+        # print("mbank")
+    if 0 in hmdb_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|HMDB"
+        )
+        # print("hmdb")
+    if 0 in gnps_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|GNPS"
+        )
+
+    merged_df.loc[mer, "MSILevel"] = 2
+
+
+    merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][mer].replace(
+        "nan|", ""
+    )
+    merged_df.loc[mer, "AnnotationCount"] = df_countnew["Count"][0]
+    
+    merged_df.loc[mer, "SMILES"] = df_countnew["SMILES"][0]
+    try:
+        comp = pcp.get_compounds(df_countnew["SMILES"][0], 'smiles')
+        try:
+            if comp:
+                for c in comp:
+                    merged_df["synonyms"][mer] = c.synonyms
+                    merged_df.loc[mer, "IUPAC"] = c.iupac_name
+                    merged_df.loc[mer, "Formula"] = c.molecular_formula
+                    merged_df.loc[mer, "PubChemID"] = c.cid
+        except Exception:
+            pass
+    except:
+        pass
+    if "MetFrag" not in merged_df["AnnotationSources"][mer]:
+        merged_df["superclass"][mer] = np.nan
+        merged_df["class"][mer] = np.nan
+        merged_df["subclass"][mer] = np.nan
+        merged_df["ClassificationSource"][mer] = np.nan
+    
+    
+    return merged_df
+
+def sources_3_metfrag(candidates_with_counts, merged_df, mer, sirius_df):
+
+    """if only 3 sources have confirmed the presence of a certain SMILES.
+    This holds true when each candidate SMILES has only 3 sources. The
+    function selects the best candidate and adds the 3 sources as
+    annotation sources
+
+    Parameters:
+    candidates_with_counts: this is the result from the function add_count_column
+    and contains a ordered dataframe, with the most sourced SMILES at top.
+    merged_df: dataframe that contains all features from the input mzML file
+
+    Returns:
+    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and
+    MSI-Level
+
+    Usage:
+    sources_2(candidates_with_counts, merged_df, mer)
+
+    """
+    # if the count is 3
+    df_count_3 = candidates_with_counts[candidates_with_counts["Count"] == 3]
+    # extracts the ranks again
+    #df_count_3["rank_num"] = [counts.split("_")[1] for counts in df_count_3["ranks"]]
+    #df_count_3["rank_num"] = [int(x) for x in df_count_3["rank_num"]]
+
+    #df_count_3 = df_count_3.sort_values(by="rank_num")
+    df_count_3 = df_count_3[df_count_3["rank_num"] == min(df_count_3["rank_num"])]
+    df_count_3["count_min"] = [
+        str(df_count_3["MetFrag"][x])
+        + str(df_count_3["GNPS"][x])
+        + str(df_count_3["MassBank"][x])
+        + str(df_count_3["HMDB"][x])
+        for x, row in df_count_3.iterrows()
+    ]
+
+    df_count_3["count_max"] = [x.count("_") for x in df_count_3["count_min"]]
+    df_count_3 = df_count_3.sort_values(by="count_max", ascending=False)
+
+    df_count_3.reset_index(drop=True, inplace=True)
+
+    merged_df.loc[mer, "AnnotationCount"] = df_count_3["Count"][0]
+    
+    heavy_atoms = ["C", "N", "P", "O", "S"]
+
+    Mol = []
+
+    for j in list(df_count_3["SMILES"]):
+        if not isNaN(j):
+            # print(type(j))
+            mol2 = Chem.MolFromSmiles(j)
+            Mol.append(mol2)
+
+    if len(Mol) >= 2:
+        res = rdFMCS.FindMCS(Mol, timeout=60)
+        sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+        # if there are atleast 3 heavy atoms in the MCSS, then add it to the result file
+        elem = [ele for ele in heavy_atoms if (ele in sm_res)]
+        if elem and len(sm_res) >= 3:
+            merged_df.loc[mer, "MCSS"] = Chem.MolToSmiles(
+                Chem.MolFromSmarts(res.smartsString)
+            )
+
+    gnps_indices = list(df_count_3[(df_count_3["GNPS"].notnull())].index)
+    mbank_indices = list(df_count_3[(df_count_3["MassBank"].notnull())].index)
+    hmdb_indices = list(df_count_3[(df_count_3["HMDB"].notnull())].index)
+    sirius_indices = list(df_count_3[(df_count_3["MetFrag"].notnull())].index)
+
+    if 0 in sirius_indices:
+        # print("sirius")
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|MetFrag"
+        )
+    if 0 in mbank_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|MassBank"
+        )
+        # print("mbank")
+    if 0 in hmdb_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|HMDB"
+        )
+        # print("hmdb")
+    if 0 in gnps_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|GNPS"
+        )
+        # print("gnps")
+    if "nan|SIRIUS" == merged_df["AnnotationSources"][mer]:
+        merged_df.loc[mer, "MSILevel"] = 3
+
+    merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][mer].replace(
+        "nan|", ""
+    )
+
+    merged_df.loc[mer, "MSILevel"] = 2
+    merged_df.loc[mer, "SMILES"] = df_count_3["SMILES"][0]
+    
+    try: 
+        comp = pcp.get_compounds(df_count_3["SMILES"][0], 'smiles')
+        try:
+            if comp:
+                for c in comp:
+                    merged_df["synonyms"][mer] = c.synonyms
+                    merged_df.loc[mer, "IUPAC"] = c.iupac_name
+                    merged_df.loc[mer, "Formula"] = c.molecular_formula
+                    merged_df.loc[mer, "PubChemID"] = c.cid
+        except Exception:
+            pass
+    except:
+        pass
+    if "MetFrag" not in merged_df["AnnotationSources"][mer]:
+        merged_df["superclass"][mer] = np.nan
+        merged_df["class"][mer] = np.nan
+        merged_df["subclass"][mer] = np.nan
+        merged_df["ClassificationSource"][mer] = np.nan
+       
+
+    
+    return merged_df
+
+def sources_4_metfrag(candidates_with_counts, merged_df, mer, sirius_df):
+
+    """if only 3 sources have confirmed the presence of a certain SMILES.
+    This holds true when each candidate SMILES has only 3 sources. The
+    function selects the best candidate and adds the 3 sources as
+    annotation sources
+
+    Parameters:
+    candidates_with_counts: this is the result from the function add_count_column
+    and contains a ordered dataframe, with the most sourced SMILES at top.
+    merged_df: dataframe that contains all features from the input mzML file
+
+    Returns:
+    merged_df: with added top SMILES, Annotation Sources, Annotation Count, and
+    MSI-Level
+
+    Usage:
+    sources_2(candidates_with_counts, merged_df, mer)
+
+    """
+
+    df_count_4 = candidates_with_counts[candidates_with_counts["Count"] == 4]
+    #df_count_4["rank_num"] = [counts.split("_")[1] for counts in df_count_4["ranks"]]
+    #df_count_4["rank_num"] = [int(x) for x in df_count_4["rank_num"]]
+    #df_count_4 = df_count_4.sort_values(by="rank_num")
+    df_count_4 = df_count_4[df_count_4["rank_num"] == min(df_count_4["rank_num"])]
+    df_count_4["count_min"] = [
+        str(df_count_4["MetFrag"][x])
+        + str(df_count_4["GNPS"][x])
+        + str(df_count_4["MassBank"][x])
+        + str(df_count_4["HMDB"][x])
+        for x, row in df_count_4.iterrows()
+    ]
+    df_count_4["count_max"] = [x.count("_") for x in df_count_4["count_min"]]
+    df_count_4 = df_count_4.sort_values(by="count_max", ascending=False)
+
+    df_count_4.reset_index(drop=True, inplace=True)
+
+    merged_df.loc[mer, "AnnotationCount"] = df_count_4["Count"][0]
+    
+    heavy_atoms = ["C", "N", "P", "O", "S"]
+    
+    Mol = []
+
+    for j in list(df_count_4["SMILES"]):
+        if not isNaN(j):
+            # print(type(j))
+            mol2 = Chem.MolFromSmiles(j)
+            Mol.append(mol2)
+
+    if len(Mol) >= 2:
+        res = rdFMCS.FindMCS(Mol, timeout=60)
+        sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+        # if there are atleast 3 heavy atoms in the MCSS, then add it to the result file
+        elem = [ele for ele in heavy_atoms if (ele in sm_res)]
+        if elem and len(sm_res) >= 3:
+            merged_df.loc[mer, "MCSS"] = Chem.MolToSmiles(
+                Chem.MolFromSmarts(res.smartsString)
+            )
+
+    gnps_indices = list(df_count_4[(df_count_4["GNPS"].notnull())].index)
+    mbank_indices = list(df_count_4[(df_count_4["MassBank"].notnull())].index)
+    hmdb_indices = list(df_count_4[(df_count_4["HMDB"].notnull())].index)
+    sirius_indices = list(df_count_4[(df_count_4["MetFrag"].notnull())].index)
+
+    if 0 in sirius_indices:
+        # print("sirius")
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|MetFrag"
+        )
+    if 0 in mbank_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|Massbank"
+        )
+        # print("mbank")
+    if 0 in hmdb_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|HMDB"
+        )
+        # print("hmdb")
+    if 0 in gnps_indices:
+        merged_df.loc[mer, "AnnotationSources"] = (
+            str(merged_df["AnnotationSources"][mer]) + "|GNPS"
+        )
+        # print("gnps")
+    
+    if "nan|SIRIUS" == merged_df["AnnotationSources"][mer]:
+        merged_df.loc[mer, "MSILevel"] = 3
+
+    merged_df["AnnotationSources"][mer] = merged_df["AnnotationSources"][mer].replace(
+        "nan|", ""
+    )
+    
+    merged_df.loc[mer, "MSILevel"] = 2
+    
+    merged_df.loc[mer, "SMILES"] = df_count_4["SMILES"][0]
+    try:
+        comp = pcp.get_compounds(df_count_4["SMILES"][0], 'smiles')
+        try:
+            if comp:
+                for c in comp:
+                    merged_df["synonyms"][mer] = c.synonyms
+                    merged_df.loc[mer, "IUPAC"] = c.iupac_name
+                    merged_df.loc[mer, "Formula"] = c.molecular_formula
+                    merged_df.loc[mer, "PubChemID"] = c.cid
+        except Exception:
+            pass
+    except:
+        pass
+    if "MetFrag" not in merged_df["AnnotationSources"][mer]:
+        merged_df["superclass"][mer] = np.nan
+        merged_df["class"][mer] = np.nan
+        merged_df["subclass"][mer] = np.nan
+        merged_df["ClassificationSource"][mer] = np.nan  
+     
+    return merged_df
+
+#@p.provenance()
+def CandidateSelection_SimilarityandIdentity_Metfrag(entry, standards = False):
+
+    sub_dir_spec = entry + "/spectral_dereplication/"
+    sub_dir_sir = entry + "/insilico/MetFrag/" # change
+    if os.path.exists(sub_dir_spec) and os.path.exists(sub_dir_sir):
+        spec_msp_csv = glob.glob(entry + "/spectral_dereplication" + "/*.csv"
+        )
+        sir_msp_csv =  entry + "/insilico/MS1DATA.csv"
+        if os.path.exists(sir_msp_csv) and os.path.exists(spec_msp_csv[0]):
+            # read both csv files
+            spec_msv = pd.read_csv(spec_msp_csv[0])
+            sir_msv = pd.read_csv(sir_msp_csv)
+            spec_msv = spec_msv[
+                [
+                    "id_X",
+                    "premz",
+                    "rtmin",
+                    "rtmax",
+                    "rtmed",
+                    "rtmean",
+                    "col_eng",
+                    "pol",
+                    "int",
+                    "source_file",
+                    "mbank_results_csv",
+                    "gnps_results_csv",
+                    "hmdb_results_csv"
+                ]
+            ]
+            sir_msv = sir_msv[
+                [
+                    "id_X",
+                    "premz",
+                    "rtmed",
+                    "rtmean",
+                    "int",
+                    "col_eng",
+                    "pol",
+                    "ms2Peaks",
+                    "ms1Peaks",
+                    "MetFragCSV", # change
+                ]
+            ]
+            merged_df = sir_msv.merge(
+                spec_msv,
+                how="inner",
+                left_on=["premz", "rtmed", "rtmean", "int", "col_eng", "pol"],
+                right_on=["premz", "rtmed", "rtmean", "int", "col_eng", "pol"],
+            )
+            merged_df["Formula"] = np.nan
+            merged_df["SMILES"] = np.nan
+            merged_df["PubChemID"] = np.nan
+            merged_df["IUPAC"] = np.nan
+            merged_df["synonyms"] = np.nan
+            merged_df["AnnotationSources"] = np.nan
+            merged_df["AnnotationCount"] = np.nan
+            merged_df["MSILevel"] = np.nan
+            merged_df["MCSS"] = np.nan
+            merged_df["superclass"] = np.nan
+            merged_df["class"] = np.nan
+            merged_df["subclass"] = np.nan
+            merged_df["ClassificationSource"] = np.nan
+            
+            #for_only_formula = [] # change
+            #for_formula_canopus = [] # change
+
+            can_selec_dir = entry + "/Candidate_Selection"
+            if not os.path.isdir(can_selec_dir):
+                os.mkdir(can_selec_dir)
+            for mer, rows in merged_df.iterrows():
+                print(mer)
+                # change starts here
+    #             if not isNaN(merged_df["sirius_result_dir"][mer]):
+    #                 sirius_csv = merged_df["sirius_result_dir"][mer]
+    #                 # print(sirius_csv)
+    #             else:
+    #                 df = pd.DataFrame(list())
+    #                 # print(df)
+    #                 df.to_csv("./empty_csv.csv")
+    #                 sirius_csv = "./empty_csv.csv"
+                metfrag_csv = merged_df["MetFragCSV"][mer] # change 
+                mbank_csv = merged_df["mbank_results_csv"][mer]
+                gnps_csv = merged_df["gnps_results_csv"][mer]
+                hmdb_csv = merged_df["hmdb_results_csv"][mer]
+                if (
+                    os.path.exists(metfrag_csv)
+                    and os.path.exists(gnps_csv)
+                    and os.path.exists(mbank_csv)
+                    and os.path.exists(hmdb_csv)
+                ):
+                    metfrag_df = pd.read_csv(metfrag_csv) # change 
+                    # here I change Metfrag to SIRIUS just for convinience as a lot of code is develped based on SIRIUS
+                    # but same can be used for MetFrag
+                    sirius_df= metfrag_df
+                    if len(metfrag_df) > 0:
+                        sirius_df = sirius_df.drop_duplicates("SMILES")
+                        sirius_df = sirius_df.dropna(subset=["SMILES"])
+                    if len(metfrag_df) == 0:
+                        print("not gonna work")
+                        
+                    mbank_df = pd.read_csv(mbank_csv)
+                    if len(mbank_df) > 0:
+                        mbank_df = mbank_df.drop_duplicates("MBSMILES")
+                        mbank_df = mbank_df.dropna(subset=["MBSMILES"])
+
+                    gnps_df = pd.read_csv(gnps_csv)
+                    if len(gnps_df) > 0:
+                        gnps_df = gnps_df.drop_duplicates("GNPSSMILES")
+                        gnps_df = gnps_df.dropna(subset=["GNPSSMILES"])
+
+                    hmdb_df = pd.read_csv(hmdb_csv)
+                    # print(hmdb_df)
+                    if len(hmdb_df) > 0:
+                        hmdb_df = hmdb_df.drop_duplicates("HMDBSMILES")
+                        hmdb_df = hmdb_df.dropna(subset=["HMDBSMILES"])
+                
+                if (
+                    os.path.exists(metfrag_csv)
+                    and os.path.exists(gnps_csv)
+                    and os.path.exists(mbank_csv)
+                    and os.path.exists(hmdb_csv)
+                ):
+                    metfrag_df = pd.read_csv(metfrag_csv) # change 
+                    # here I change Metfrag to SIRIUS just for convinience as a lot of code is develped based on SIRIUS
+                    # but same can be used for MetFrag
+                    sirius_df= metfrag_df
+                    if len(metfrag_df) > 0:
+                        sirius_df = sirius_df.drop_duplicates("SMILES")
+                        sirius_df = sirius_df.dropna(subset=["SMILES"])
+                        
+                    mbank_df = pd.read_csv(mbank_csv)
+                    if len(mbank_df) > 0:
+                        mbank_df = mbank_df.drop_duplicates("MBSMILES")
+                        mbank_df = mbank_df.dropna(subset=["MBSMILES"])
+
+                    gnps_df = pd.read_csv(gnps_csv)
+                    if len(gnps_df) > 0:
+                        gnps_df = gnps_df.drop_duplicates("GNPSSMILES")
+                        gnps_df = gnps_df.dropna(subset=["GNPSSMILES"])
+
+                    hmdb_df = pd.read_csv(hmdb_csv)
+                    # print(hmdb_df)
+                    if len(hmdb_df) > 0:
+                        hmdb_df = hmdb_df.drop_duplicates("HMDBSMILES")
+                        hmdb_df = hmdb_df.dropna(subset=["HMDBSMILES"])
+                        
+                    # 1 SGHM
+                    if (
+                        len(sirius_df) > 0
+                        and len(gnps_df) > 0
+                        and len(mbank_df) > 0
+                        and len(hmdb_df) > 0
+                    ):
+                        mbank_df["rank_ids"] = ["M_" + str(s + 1) for s in range(len(mbank_df))]
+
+                        gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
+
+                        hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
+                        
+                        sirius_df["rank_ids"] = ["E_" + str(s) for s in range(len(sirius_df))]
+                        sirius_df["Source"] = "MetFrag"
+
+                        source_l1 = [
+                            *(list(sirius_df["Source"])),
+                            *(list(gnps_df["Source"])),
+                            *(list(mbank_df["Source"])),
+                            *(list(hmdb_df["Source"])),
+                        ]
+
+                        rank_l2 = [
+                            *(list(sirius_df["rank_ids"])),
+                            *(list(gnps_df["rank_ids"])),
+                            *(list(mbank_df["rank_ids"])),
+                            *(list(hmdb_df["rank_ids"])),
+                        ]
+
+                        smiles_l3 = [
+                            *(list(sirius_df["SMILES"])),
+                            *(list(gnps_df["GNPSSMILES"])),
+                            *(list(mbank_df["MBSMILES"])),
+                            *(list(hmdb_df["HMDBSMILES"])),
+                        ]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            sirius_df=sirius_df,
+                            mbank_df=mbank_df,
+                            gnps_df=gnps_df,
+                            hmdb_df=hmdb_df,
+                            Source="SGHM",
+                        )
+
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+                        if max(candidates_with_counts["Count"]) == 4:
+                            sources_4_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 3:
+                            sources_3_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 2:
+                            sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                    # 2 SGM
+                    elif (
+                        len(sirius_df) > 0
+                        and len(gnps_df) > 0
+                        and len(mbank_df) > 0
+                        and len(hmdb_df) == 0
+                    ):
+                        mbank_df["rank_ids"] = ["M_" + str(s + 1) for s in range(len(mbank_df))]
+
+                        gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
+
+                        sirius_df["rank_ids"] = ["E_" + str(s) for s in range(len(sirius_df))]
+                        sirius_df["Source"] = "MetFrag"
+
+                        source_l1 = [
+                            *(list(sirius_df["Source"])),
+                            *(list(gnps_df["Source"])),
+                            *(list(mbank_df["Source"])),
+                        ]
+
+                        rank_l2 = [
+                            *(list(sirius_df["rank_ids"])),
+                            *(list(gnps_df["rank_ids"])),
+                            *(list(mbank_df["rank_ids"])),
+                        ]
+
+                        smiles_l3 = [
+                            *(list(sirius_df["SMILES"])),
+                            *(list(gnps_df["GNPSSMILES"])),
+                            *(list(mbank_df["MBSMILES"])),
+                        ]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            sirius_df=sirius_df,
+                            mbank_df=mbank_df,
+                            gnps_df=gnps_df,
+                            # hmdb_df = hmdb_df,
+                            Source="SGM",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+
+                        if max(candidates_with_counts["Count"]) == 3:
+                            sources_3_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 2:
+                            sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                    # 3 SHM
+                    elif (
+                        len(sirius_df) > 0
+                        and len(gnps_df) == 0
+                        and len(mbank_df) > 0
+                        and len(hmdb_df) > 0
+                    ):
+
+                        mbank_df["rank_ids"] = ["M_" + str(s + 1) for s in range(len(mbank_df))]
+
+                        # gnps_df["rank_ids"] = ["G_" + str(s+1) for s in range(len(gnps_df))]
+
+                        hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
+
+                        sirius_df["rank_ids"] = ["E_" + str(s) for s in range(len(sirius_df))]
+                        sirius_df["Source"] = "MetFrag"
+
+                        source_l1 = [
+                            *(list(sirius_df["Source"])),
+                            *(list(mbank_df["Source"])),
+                            *(list(hmdb_df["Source"])),
+                        ]
+
+                        rank_l2 = [
+                            *(list(sirius_df["rank_ids"])),
+                            *(list(mbank_df["rank_ids"])),
+                            *(list(hmdb_df["rank_ids"])),
+                        ]
+
+                        smiles_l3 = [
+                            *(list(sirius_df["SMILES"])),
+                            *(list(mbank_df["MBSMILES"])),
+                            *(list(hmdb_df["HMDBSMILES"])),
+                        ]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            sirius_df=sirius_df,
+                            mbank_df=mbank_df,
+                            # gnps_df = gnps_df ,
+                            hmdb_df=hmdb_df,
+                            Source="SHM",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+
+                        if max(candidates_with_counts["Count"]) == 3:
+                            sources_3_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 2:
+                            sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                    # 4 SGH
+                    elif (
+                        len(sirius_df) > 0
+                        and len(gnps_df) > 0
+                        and len(mbank_df) == 0
+                        and len(hmdb_df) > 0
+                    ):
+                        # mbank_df["rank_ids"] = ["M_" + str(s+1) for s in range(len(mbank_df))]
+
+                        gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
+
+                        hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
+                        
+                        sirius_df["rank_ids"] = ["E_" + str(s) for s in range(len(sirius_df))]
+                        sirius_df["Source"] = "MetFrag"
+
+
+                        source_l1 = [
+                            *(list(sirius_df["Source"])),
+                            *(list(gnps_df["Source"])),
+                            *(list(hmdb_df["Source"])),
+                        ]
+
+                        rank_l2 = [
+                            *(list(sirius_df["rank_ids"])),
+                            *(list(gnps_df["rank_ids"])),
+                            *(list(hmdb_df["rank_ids"])),
+                        ]
+
+                        smiles_l3 = [
+                            *(list(sirius_df["SMILES"])),
+                            *(list(gnps_df["GNPSSMILES"])),
+                            *(list(hmdb_df["HMDBSMILES"])),
+                        ]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            sirius_df=sirius_df,
+                            # mbank_df = mbank_df,
+                            gnps_df=gnps_df,
+                            hmdb_df=hmdb_df,
+                            Source="SGH",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+                        if max(candidates_with_counts["Count"]) == 3:
+                            sources_3_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 2:
+                            sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                    # 5 GHM
+                    elif (
+                        len(sirius_df) == 0
+                        and len(gnps_df) > 0
+                        and len(mbank_df) > 0
+                        and len(hmdb_df) > 0
+                    ):
+                        mbank_df["rank_ids"] = ["M_" + str(s + 1) for s in range(len(mbank_df))]
+
+                        gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
+
+                        hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
+
+                        # sirius_df["rank_ids"] = ["S_" + str(s) for s in sirius_df["rank"]]
+                        # sirius_df["Source"] = "SIRIUS"
+
+                        source_l1 = [
+                            *(list(gnps_df["Source"])),
+                            *(list(mbank_df["Source"])),
+                            *(list(hmdb_df["Source"])),
+                        ]
+
+                        rank_l2 = [
+                            *(list(gnps_df["rank_ids"])),
+                            *(list(mbank_df["rank_ids"])),
+                            *(list(hmdb_df["rank_ids"])),
+                        ]
+
+                        smiles_l3 = [
+                            *(list(gnps_df["GNPSSMILES"])),
+                            *(list(mbank_df["MBSMILES"])),
+                            *(list(hmdb_df["HMDBSMILES"])),
+                        ]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            # sirius_df = sirius_df,
+                            mbank_df=mbank_df,
+                            gnps_df=gnps_df,
+                            hmdb_df=hmdb_df,
+                            Source="GHM",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+
+                        if max(candidates_with_counts["Count"]) == 3:
+                            sources_3_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+                        if max(candidates_with_counts["Count"]) == 2:
+                            sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+                    # 6 SG
+                    elif (
+                        len(sirius_df) > 0
+                        and len(gnps_df) > 0
+                        and len(mbank_df) == 0
+                        and len(hmdb_df) == 0
+                    ):
+                        # mbank_df["rank_ids"] = ["M_" + str(s+1) for s in range(len(mbank_df))]
+
+                        gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
+
+                        sirius_df["rank_ids"] = ["E_" + str(s) for s in range(len(sirius_df))]
+                        sirius_df["Source"] = "MetFrag"
+
+                        source_l1 = [
+                            *(list(sirius_df["Source"])),
+                            *(list(gnps_df["Source"])),
+                        ]
+                        # ,*(list(mbank_df["Source"]))]
+
+                        rank_l2 = [
+                            *(list(sirius_df["rank_ids"])),
+                            *(list(gnps_df["rank_ids"])),
+                        ]
+                        # ,*(list(mbank_df["rank_ids"]))]
+
+                        smiles_l3 = [
+                            *(list(sirius_df["SMILES"])),
+                            *(list(gnps_df["GNPSSMILES"])),
+                        ]
+                        # ,*(list(mbank_df["MBSMILES"]))]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            sirius_df=sirius_df,
+                            # mbank_df = mbank_df,
+                            gnps_df=gnps_df,
+                            # hmdb_df = hmdb_df,
+                            Source="SG",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+
+                        if max(candidates_with_counts["Count"]) == 2:
+                            sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                    # 7 SH
+                    elif (
+                        len(sirius_df) > 0
+                        and len(gnps_df) == 0
+                        and len(mbank_df) == 0
+                        and len(hmdb_df) > 0
+                    ):
+
+
+                        hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
+
+                        sirius_df["rank_ids"] = ["E_" + str(s) for s in range(len(sirius_df))]
+                        sirius_df["Source"] = "MetFrag"
+
+                        source_l1 = [
+                            *(list(sirius_df["Source"])),
+                            *(list(hmdb_df["Source"])),
+                        ]
+
+                        rank_l2 = [
+                            *(list(sirius_df["rank_ids"])),
+                            *(list(hmdb_df["rank_ids"])),
+                        ]
+
+                        smiles_l3 = [
+                            *(list(sirius_df["SMILES"])),
+                            *(list(hmdb_df["HMDBSMILES"])),
+                        ]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            sirius_df=sirius_df,
+                            # mbank_df = mbank_df,
+                            # gnps_df = gnps_df ,
+                            hmdb_df=hmdb_df,
+                            Source="SH",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+
+                        if max(candidates_with_counts["Count"]) == 2:
+                            sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                    # 8 SM
+                    elif (
+                        len(sirius_df) > 0
+                        and len(gnps_df) == 0
+                        and len(mbank_df) > 0
+                        and len(hmdb_df) == 0
+                    ):
+                        mbank_df["rank_ids"] = ["M_" + str(s + 1) for s in range(len(mbank_df))]
+
+                        sirius_df["rank_ids"] = ["E_" + str(s) for s in range(len(sirius_df))]
+                        sirius_df["Source"] = "MetFrag"
+
+                        source_l1 = [
+                            *(list(sirius_df["Source"])),
+                            *(list(mbank_df["Source"])),
+                        ]
+
+                        rank_l2 = [
+                            *(list(sirius_df["rank_ids"])),
+                            *(list(mbank_df["rank_ids"])),
+                        ]
+
+                        smiles_l3 = [
+                            *(list(sirius_df["SMILES"])),
+                            *(list(mbank_df["MBSMILES"])),
+                        ]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            sirius_df=sirius_df,
+                            mbank_df=mbank_df,
+                            # gnps_df = gnps_df ,
+                            # hmdb_df = hmdb_df,
+                            Source="SM",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+                        if max(candidates_with_counts["Count"]) == 2:
+                            sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                    # 9 GM
+                    elif (
+                        len(sirius_df) == 0
+                        and len(gnps_df) > 0
+                        and len(mbank_df) > 0
+                        and len(hmdb_df) == 0
+                    ):
+                        mbank_df["rank_ids"] = ["M_" + str(s + 1) for s in range(len(mbank_df))]
+
+                        gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
+
+                        # hmdb_df["rank_ids"] = ["H_" + str(s+1) for s in range(len(hmdb_df))]
+
+                        # sirius_df["rank_ids"] = ["S_" + str(s) for s in sirius_df["rank"]]
+                        # sirius_df["Source"] = "SIRIUS"
+
+                        source_l1 = [
+                            *(list(mbank_df["Source"])),
+                            *(list(gnps_df["Source"])),
+                        ]
+
+                        rank_l2 = [
+                            *(list(mbank_df["rank_ids"])),
+                            *(list(gnps_df["rank_ids"])),
+                        ]
+
+                        smiles_l3 = [
+                            *(list(mbank_df["MBSMILES"])),
+                            *(list(gnps_df["GNPSSMILES"])),
+                        ]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            # sirius_df = sirius_df,
+                            mbank_df=mbank_df,
+                            gnps_df=gnps_df,
+                            # hmdb_df = hmdb_df,
+                            Source="GM",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+                        if max(candidates_with_counts["Count"]) == 2:
+                            sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+                    # 10 GH
+                    elif (
+                        len(sirius_df) == 0
+                        and len(gnps_df) > 0
+                        and len(mbank_df) == 0
+                        and len(hmdb_df) > 0
+                    ):
+                        # mbank_df["rank_ids"] = ["M_" + str(s+1) for s in range(len(mbank_df))]
+
+                        gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
+
+                        hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
+
+                        # sirius_df["rank_ids"] = ["S_" + str(s) for s in sirius_df["rank"]]
+                        # sirius_df["Source"] = "SIRIUS"
+
+                        source_l1 = [
+                            *(list(gnps_df["Source"])),
+                            *(list(hmdb_df["Source"])),
+                        ]
+
+                        rank_l2 = [
+                            *(list(gnps_df["rank_ids"])),
+                            *(list(hmdb_df["rank_ids"])),
+                        ]
+
+                        smiles_l3 = [
+                            *(list(gnps_df["GNPSSMILES"])),
+                            *(list(hmdb_df["HMDBSMILES"])),
+                        ]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            # sirius_df = sirius_df,
+                            # mbank_df = mbank_df,
+                            gnps_df=gnps_df,
+                            hmdb_df=hmdb_df,
+                            Source="GH",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+
+                        if max(candidates_with_counts["Count"]) == 2:
+                            sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+                    # 11 HM
+                    elif (
+                        len(sirius_df) == 0
+                        and len(gnps_df) == 0
+                        and len(mbank_df) > 0
+                        and len(hmdb_df) > 0
+                    ):
+                        mbank_df["rank_ids"] = ["M_" + str(s + 1) for s in range(len(mbank_df))]
+
+                        # gnps_df["rank_ids"] = ["G_" + str(s+1) for s in range(len(gnps_df))]
+
+                        hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
+
+                        # sirius_df["rank_ids"] = ["S_" + str(s) for s in sirius_df["rank"]]
+                        # sirius_df["Source"] = "SIRIUS"
+
+                        source_l1 = [
+                            *(list(mbank_df["Source"])),
+                            *(list(hmdb_df["Source"])),
+                        ]
+
+                        rank_l2 = [
+                            *(list(mbank_df["rank_ids"])),
+                            *(list(hmdb_df["rank_ids"])),
+                        ]
+
+                        smiles_l3 = [
+                            *(list(mbank_df["MBSMILES"])),
+                            *(list(hmdb_df["HMDBSMILES"])),
+                        ]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            # sirius_df = sirius_df,
+                            mbank_df=mbank_df,
+                            # gnps_df = gnps_df ,
+                            hmdb_df=hmdb_df,
+                            Source="HM",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+                        if max(candidates_with_counts["Count"]) == 2:
+                            sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+                    # sS
+                    elif (
+                        len(sirius_df) > 0
+                        and len(gnps_df) == 0
+                        and len(mbank_df) == 0
+                        and len(hmdb_df) == 0
+                    ):
+
+                        sirius_df["rank_ids"] = ["E_" + str(s) for s in range(len(sirius_df))]
+                        sirius_df["Source"] = "MetFrag"
+
+                        source_l1 = [*(list(sirius_df["Source"]))]
+
+                        rank_l2 = [*(list(sirius_df["rank_ids"]))]
+
+                        smiles_l3 = [*(list(sirius_df["SMILES"]))]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            sirius_df=sirius_df,
+                            # mbank_df = mbank_df,
+                            # gnps_df = gnps_df ,
+                            # hmdb_df = hmdb_df,
+                            Source="S",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+                        print(candidates_with_counts["SMILES"])
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+                    # G
+                    elif (
+                        len(sirius_df) == 0
+                        and len(gnps_df) > 0
+                        and len(mbank_df) == 0
+                        and len(hmdb_df) == 0
+                    ):
+                        gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
+
+                        source_l1 = [*(list(gnps_df["Source"]))]
+
+                        rank_l2 = [*(list(gnps_df["rank_ids"]))]
+
+                        smiles_l3 = [*(list(gnps_df["GNPSSMILES"]))]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            # sirius_df = sirius_df,
+                            # mbank_df = mbank_df,
+                            gnps_df=gnps_df,
+                            # hmdb_df = hmdb_df,
+                            Source="G",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+                    # M
+                    elif (
+                        len(sirius_df) == 0
+                        and len(gnps_df) == 0
+                        and len(mbank_df) > 0
+                        and len(hmdb_df) == 0
+                    ):
+                        mbank_df["rank_ids"] = ["M_" + str(s + 1) for s in range(len(mbank_df))]
+
+                        source_l1 = [*(list(mbank_df["Source"]))]
+
+                        rank_l2 = [*(list(mbank_df["rank_ids"]))]
+
+                        smiles_l3 = [*(list(mbank_df["MBSMILES"]))]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            # sirius_df = sirius_df,
+                            mbank_df=mbank_df,
+                            # gnps_df = gnps_df ,
+                            # hmdb_df = hmdb_df,
+                            Source="M",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+                    # H
+                    elif (
+                        len(sirius_df) == 0
+                        and len(gnps_df) == 0
+                        and len(mbank_df) == 0
+                        and len(hmdb_df) > 0
+                    ):
+                        hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
+
+                        source_l1 = [*(list(hmdb_df["Source"]))]
+
+                        rank_l2 = [*(list(hmdb_df["rank_ids"]))]
+
+                        smiles_l3 = [*(list(hmdb_df["HMDBSMILES"]))]
+
+                        sm = pd.DataFrame(
+                            list(zip(source_l1, rank_l2, smiles_l3)),
+                            columns=["Source", "ranks", "SMILES"],
+                        )
+
+                        df_edge = chemMN_CandidateSelection(sm)
+                        if df_edge is not None:
+
+                            df_edge.to_csv(
+                                entry
+                                + "/"
+                                + "Candidate_Selection"
+                                + "/"
+                                + str(merged_df["premz"][mer])
+                                + "_ChemMNedges.tsv",
+                                sep="\t",
+                            )
+
+                        one_candidate = one_candidate_selection_metfrag(
+                            sm,
+                            #                                                                         sirius_df = sirius_df,
+                            #                                                                         mbank_df = mbank_df,
+                            #                                                                         gnps_df = gnps_df ,
+                            hmdb_df=hmdb_df,
+                            Source="H",
+                        )
+                        candidates_with_counts = add_count_column_metfrag(one_candidate)
+                        candidates_with_counts.to_csv(
+                            entry
+                            + "/"
+                            + "Candidate_Selection"
+                            + "/"
+                            + str(merged_df["premz"][mer])
+                            + "sorted_candidate_list.tsv",
+                            sep="\t",
+                        )
+
+                        if max(candidates_with_counts["Count"]) == 1:
+                            sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
+
+                        if standards:
+                            if not isNaN(merged_df["SMILES"][mer]):
+
+                                merged_df.loc[mer, "MSILevel"] = 1
+
+            merged_df.to_csv(
+                entry
+                + "/"
+                + "mergedResults-with-one-Candidates.csv"
+            )
+            #print(merged_df)
+            merged_df = checkSMILES_validity(resultcsv = entry
+                + "/"
+                + "mergedResults-with-one-Candidates.csv")
+            merged_df.to_csv(
+                entry
+                + "/"
+                + "mergedResults-with-one-Candidates.csv"
+            )
+
+# doesnt apply anymore here. because the argument is a single directory with results
 #@p.provenance()
 def merge_all_results(input_dir):
     names = []
@@ -3537,9 +5302,6 @@ def merge_all_results(input_dir):
            'MSILevel', 'MCSS', 'subclass', 'class', 'superclass', 'ClassificationSource']]
     merged.to_csv(input_dir + "/final_candidates.csv")
     return(merged)
-
-
-# In[24]:
 
 
 # Comparison with a list of SMILES from any Source
@@ -3593,19 +5355,11 @@ def SMILESscreening(input_dir, resultcsv, complist, listname):
                                 results["Annotation_Source"][i] + ", " + listname
                             )
 
-    frame.to_csv(
+    results.to_csv(
         input_dir + "MetabolomicsResults/final_curationListVS" + listname + ".csv"
     )
-    return frame
+    return results
 
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
 
 #@p.provenance()
 def classification(input_dir, resultcsv):
@@ -3729,10 +5483,6 @@ def classification(input_dir, resultcsv):
         frame.to_csv(result_csv)
         return frame
 
-
-# In[19]:
-
-
 # NP_Classifier classification
 def Np_pathways(input_dir, resultcsv):
     df = pd.read_csv(resultcsv)
@@ -3786,9 +5536,6 @@ def Np_pathways(input_dir, resultcsv):
     np_results.to_csv(input_dir + "/NPClassifier_Results.csv")
     df.to_csv(input_dir + "/final_results_with_Pathways.csv")
 
-
-# Chemical Similarity MN
-def chemMN(input_dir, resultcsv):
     # read csv
     df = pd.read_csv(resultcsv)
 
@@ -3891,7 +5638,6 @@ def chemMN(input_dir, resultcsv):
 
         return newdf
 
-
 def gnpsMNvsgnpsMAW(input_dir):
     
     """gnpsMNvsgnpsMAW checks with tanimoto similarity score, whether
@@ -3979,7 +5725,6 @@ def gnpsMNvsgnpsMAW(input_dir):
                     only_GNPS.loc[i, "index_MN_nodes"] = j
     only_GNPS.to_csv(input_dir + "/only_GNPS.csv")
     GMNdf.to_csv(input_dir + "/GMNdf.csv")
-
 
 # naming is any string used to name or put an id to the sunburst as many sunbursts will be created
 def sunburst(input_dir, input_csv, naming):
@@ -4075,18 +5820,92 @@ def sunburst(input_dir, input_csv, naming):
     fig.show()
     return data
 
+def list_all_folders(input_dir, list_of_words_to_remove, starting_words_for_all_folders = None):
+    #define the input directory
+    path = input_dir
+    # list all files
+    file = os.listdir(path)
+    if starting_words_for_all_folders:
+        # list all folders that start with "DS" and arent mzML files
+        folders = [x for x in os.listdir(path) if x.startswith(starting_words_for_all_folders)]
+    else:
+        # list all folders that start with "DS" and arent mzML files
+        folders = [x for x in os.listdir(path)]
+    
+    for i in list_of_words_to_remove:
+        folders = [x for x in folders if not i in x]
+        
+    return folders
 
+def chemMN(input_dir, input_csv, naming, name_col):
+    df = pd.read_csv(input_csv)
+    dbn= []
+    for i, row in df.iterrows():
+        for j, row in df.iterrows():
+            if df['SMILES'][i] != df['SMILES'][j]:
+                try:
+                    ms = [Chem.MolFromSmiles(df['SMILES'][i]), Chem.MolFromSmiles(df['SMILES'][j])]
+                    fps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in ms]
+                    tn = DataStructs.FingerprintSimilarity(fps[0],fps[1])
+                    dbn.append({
+                        'Namei':df[name_col][i],
+                        'Namej':df[name_col][j],
+                        'i': df['SMILES'][i],
+                        'j': df['SMILES'][j],
+                        'Tanimoto': tn
+                    })
+                except:
+                    pass
+        #print(i)
+    db_edge = pd.DataFrame(dbn)
+    db_edge.to_csv(input_dir+ "/"+ naming+ "_allVSall.csv")
+
+    dfe = []
+    x=0
+    for i, row in db_edge.iterrows():        
+        if db_edge['Tanimoto'][i] >= 0.85:
+            x=x+1
+            dfe.append({
+                'Start':db_edge['Namei'][i],
+                'End':db_edge['Namej'][i],
+                'Tanimoto':db_edge['Tanimoto'][i]
+            })
+    new_df = pd.DataFrame(dfe)
+    new_df['Start'] = new_df['Start'].astype(str)
+    new_df['End'] = new_df['End'].astype(str)
+    new_df['StartAtt']=np.nan
+    new_df['EndAtt']=np.nan
+    for i, row in new_df.iterrows():
+        for j, row in df.iterrows():
+            if new_df['Start'][i]==df[name_col][j]:
+                new_df.loc[i, 'StartAtt'] = df['superclass'][j]
+    for i, row in new_df.iterrows():
+        for j, row in df.iterrows():
+            if new_df['End'][i]==df[name_col][j]:
+                new_df.loc[i, 'EndAtt'] = df['superclass'][j]
+
+    new_df['sorted_names'] = new_df.apply(lambda row: '-'.join(sorted([row['Start'], row['End']])), axis=1)
+    new_df = new_df.drop_duplicates(subset=["sorted_names"], keep="last")
+    new_df.to_csv(input_dir + "/" + naming + "_chemMN_Cytoscape.tsv", sep='\t')
+    return new_df
 
 
 #Define input directory, keep all files in same directory and scripts so getwd works
 entry = sys.argv[1]
-#sirius_dirs = sys.argv[2:]
-
-
+sirius = sys.argv[2] == 'True'
+db = sys.argv[3]
+score_thresh = float(sys.argv[4])
+#sirius_dirs = sys.argv[5:]
 
 provenance_result = spec_postproc(entry, Source = "all")
-#sirius_postproc(entry, sirius_dirs)   
-#CandidateSelection_SimilarityandIdentity(entry, standards = False)
+
+# if sirius:
+#     sirius_postproc(entry, sirius_dirs)   
+#     CandidateSelection_SimilarityandIdentity(entry, standards = False)
+# else:    
+metfrag_postproc(entry, db, score_thresh)
+CandidateSelection_SimilarityandIdentity_Metfrag(entry, standards = False)
+
 
 
 # from ruamel.yaml.main import YAML
