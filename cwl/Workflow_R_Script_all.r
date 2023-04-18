@@ -1685,7 +1685,7 @@ cam_func <- function(fl, ms2features, result_dir){
     return(peaklist)
 }
 
-extract_cam_adducts <- function(cam_res){
+extract_cam_adducts <- function(cam_res, result_dir){
     ## add empty columns for just adducts, just neutral mass and isotope number
     final_file1 <- read.csv(cam_res)
     final_file1[,'newaddcts'] <- NA
@@ -2220,7 +2220,7 @@ if (runCamera){
     cam_res <- cam_func(fl = mzml_file, 
                     ms2features = paste(mzml_result, "/insilico/MS2DATA.csv", sep = ""),
                    result_dir = mzml_result)
-    adducts <- extract_cam_adducts(cam_res= paste(mzml_result,'/CAMERAResults.csv', sep = ""))
+    adducts <- extract_cam_adducts(cam_res= paste(mzml_result,'/CAMERAResults.csv', sep = ""), result_dir = mzml_result)
     # Extract MS1 peaks or isotopic peaks
     ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
                     y = paste(mzml_result,'/CAMERAResults.csv', sep = ""), 
