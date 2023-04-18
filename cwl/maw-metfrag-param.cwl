@@ -22,7 +22,7 @@ requirements:
         FragmentPeakMatchRelativeMassDeviation = 15
         MetFragCandidateWriter = CSV
         SampleName = $(inputs.SampleName)
-        ResultsPath = .
+        ResultsPath = $(inputs.ResultsPath)
         MetFragPreProcessingCandidateFilter = UnconnectedCompoundFilter
         MetFragPostProcessingCandidateFilter = InChIKeyFilter
         MaximumTreeDepth = 2
@@ -31,19 +31,18 @@ requirements:
 
 inputs: # additional inputs for all files; make them to show certain paths
   PeakList:
-        type: File
-
+      type: File
   IonizedPrecursorMass:
       type: string
-
   PrecursorIonMode:
       type: int
-
   IsPositiveIonMode:
       type: boolean
   LocalDatabase:
       type: File
   SampleName:
+      type: string
+  ResultsPath:
       type: string
 # MetFragDatabaseType:
   #     type: string
