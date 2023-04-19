@@ -21,7 +21,6 @@ options(warn=-1)
 library("mzR")
 library(curl)
 library(CompoundDb)
-library(rjson)
 
 
 download_specDB_new <- function(input_dir, db = "all"){
@@ -2243,6 +2242,10 @@ metfrag_param(x= paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""),
 
 # create JSON file and looks simsilar to cwl object
 # outputs from MAW_R
+
+library(rjson)
+library(jsonlite)
+
 #create empty json_data
 json_data <- list()
 
@@ -2251,48 +2254,65 @@ json_data$results <- list(
   path = mzml_result
 )
 
-
-library(jsonlite)
-
-# Create a list of file paths
-mzml_result <- "/Users/mahnoorzulfiqar/Downloads/New_ms2_spectra_endo_pos"
+# change this file later, at the moment it tales only non isotopic peaks
 sirius_paths <- read.csv(paste(mzml_result, "/insilico/MS1DATA_SiriusP.tsv", sep = ""), sep = "\t")
-sirius_paths
-files_list <- sirius_paths["sirius_param_file"]
-files_list
-# Loop over file paths and create file objects
-files <- list()
-for (path in files_list) {
-  file_obj <- list(
-    class = "File",
-    path = path
-  )
-  files <- c(files, file_obj)
+nrow(sirius_paths)
+files_list<- c()
+for (i in 1:nrow(sirius_paths)){
+    files_list<- c(files_list, sirius_paths[i, "sirius_param_file"])
 }
-files
-# Append the list of file objects to ms_files_no_isotope list in json_data
-json_data$ms_files_no_isotope <- c(json_data$ms_files_no_isotope, files)
-toJSON(json_data)
-# Convert json_data to JSON string
-json_string <- toJSON(json_data)
-json_string
-# Write JSON string to file
-writeLines(json_string, "output.json")
+
+files_list
+files_met <- list()
+for (i in seq_along(files_list)){
+    print(i)
+    file_obj <- list(
+    class = "File",
+    path = files_list[i]
+  )
+  files_met[[i]] <- file_obj
+}
+# Create a list with key "ms_files_no_isotope" and the files_list as its value
+json_data$ms_files_no_isotope <- files_met
 
 
+metfrag_param_files_list <- list.files(paste(mzml_result, "/insilico/MetFrag/coconut/", sep = ""), pattern = ".txt")
+metfrag_param_files_list
 
-
-
-
-
-
-
-
+listn <- list()
+peaks_param <- list()
+for (i in seq_along(metfrag_param_files_list)){
+    peak_file <- readLines(paste(mzml_result, "/insilico/MetFrag/coconut/", metfrag_param_files_list[i], sep = ""))
+    json_object <- list(
+        PeakList = list(
+            class = "File",
+            path = strsplit(peak_file[1], split = " = ")[[1]][2]
+            ),
+        IonizedPrecursorMass = as.character(strsplit(peak_file[2], split = " = ")[[1]][2]),
+        PrecursorIonMode = strsplit(peak_file[3], split = " = ")[[1]][2],
+        IsPositiveIonMode = strsplit(peak_file[4], split = " = ")[[1]][2],
+        LocalDatabase = list(
+            class = "File",
+            path = strsplit(peak_file[6], split = " = ")[[1]][2]
+        ),
+        SampleName = strsplit(peak_file[11], split = " = ")[[1]][2],
+        ResultsPath = list(
+            class = "Directory",
+            path = strsplit(peak_file[12], split = " = ")[[1]][2]
+        )
+    )
+    listn[[i]] <- json_object
+}
+# Create a final JSON object with the list of JSON objects
+json_data$peaks_and_parameters <- list(listn)
 
 json_data$provenance <- list(
   class = "Directory",
   path = paste(mzml_result, "/prov_console", sep = "")
 )
+# Convert json_data to JSON string
+json_string <- toJSON(json_data, auto_unbox = TRUE, pretty = FALSE)
+json_string
 json_string_pretty <- jsonlite::prettify(json_string)
 json_string_pretty
 writeLines(json_string_pretty, paste(mzml_result, "/cwl.output.json", sep = ""))
