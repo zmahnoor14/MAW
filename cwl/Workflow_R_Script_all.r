@@ -20,7 +20,7 @@ library(xml2)
 options(warn=-1)
 library("mzR")
 library(curl)
-library(CompoundDb)
+#library(CompoundDb)
 
 
 download_specDB_new <- function(input_dir, db = "all"){
@@ -2146,7 +2146,7 @@ metfrag_param <- function(x, result_dir, db_name, db_path, ppm_max = 5, ppm_max_
 
 ##### SCRIPT #####
 
-#libraries for parallelization od specdb function
+#libraries for parallelization of specdb function
 library(parallel)
 library(doParallel)
 library(future)
@@ -2179,11 +2179,10 @@ mbank_file <- args[4]
 mzml_result <- args[5]
 file_id <- args[6]
 ppmx = as.numeric(args[7])
-runCamera = as.logical(args[8])
-SL = as.logical(args[9])
-collision_info = as.logical(args[10])
-db_name = args[11]
-db_path = args[12]
+# runCamera = as.logical(args[8])
+# collision_info = as.logical(args[9])
+db_name = args[8]
+db_path = args[9]
 
 
 print(mzml_file)
@@ -2207,29 +2206,29 @@ spec_pr2 <- ms2_peaks(pre_tbl = paste(mzml_result, "/premz_list.txt", sep = ""),
                       result_dir = mzml_result,
                       file_id)
 
-# Extract information on MS1 peaks and isotopics peaks if present
-if (runCamera){
-    cam_res <- cam_func(fl = mzml_file, 
-                    ms2features = paste(mzml_result, "/insilico/MS2DATA.csv", sep = ""),
-                   result_dir = mzml_result)
-    adducts <- extract_cam_adducts(cam_res= paste(mzml_result,'/CAMERAResults.csv', sep = ""), result_dir = mzml_result)
-    # Extract MS1 peaks or isotopic peaks
-    ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
-                    y = paste(mzml_result,'/CAMERAResults.csv', sep = ""), 
-                    result_dir = mzml_result,
-                    QCfile = TRUE)
-}else{
-    ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
+# # Extract information on MS1 peaks and isotopics peaks if present
+# if (runCamera){
+#     cam_res <- cam_func(fl = mzml_file, 
+#                     ms2features = paste(mzml_result, "/insilico/MS2DATA.csv", sep = ""),
+#                    result_dir = mzml_result)
+#     adducts <- extract_cam_adducts(cam_res= paste(mzml_result,'/CAMERAResults.csv', sep = ""), result_dir = mzml_result)
+#     # Extract MS1 peaks or isotopic peaks
+#     ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
+#                     y = paste(mzml_result,'/CAMERAResults.csv', sep = ""), 
+#                     result_dir = mzml_result,
+#                     QCfile = TRUE)
+# }else{
+    
+# }
+ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
                     y = NA, 
                     result_dir = mzml_result,
                     QCfile = FALSE)
-}
-
 # write ms files for SIRIUS5
 sirius_param_files <- sirius_param(x = paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""),
                        result_dir = mzml_result,
-                       SL, 
-                       collision_info)
+                       SL = FALSE, 
+                       collision_info = TRUE)
 
 #write txt files for MetFrag
 metfrag_param(x= paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""), 
@@ -2304,19 +2303,27 @@ for (i in seq_along(metfrag_param_files_list)){
     listn[[i]] <- json_object
 }
 # Create a final JSON object with the list of JSON objects
-json_data$peaks_and_parameters <- list(listn)
+json_data$peaks_and_parameters <- listn
 
-json_data$provenance <- list(
-  class = "Directory",
-  path = paste(mzml_result, "/prov_console", sep = "")
-)
+# json_data$provenance <- list(
+#   class = "Directory",
+#   path = paste(mzml_result, "/prov_console", sep = "")
+# )
 # Convert json_data to JSON string
+json_data$json_file <- list(
+  class = "File",
+  path = "cwl.output.json"
+)
+
+
+
 json_string <- toJSON(json_data, auto_unbox = TRUE, pretty = FALSE)
 json_string
 json_string_pretty <- jsonlite::prettify(json_string)
 json_string_pretty
-writeLines(json_string_pretty, paste(mzml_result, "/cwl.output.json", sep = ""))
-
+#writeLines(json_string_pretty, paste(mzml_result, "/cwl.output.json", sep = ""))
+#writeLines(json_string_pretty, paste(getwd(), "/cwl.output.json", sep = ""))
+writeLines(json_string_pretty, "cwl.output.json")
 end.time <- Sys.time()
 
 # Time taken to run the analysis for MAW-R

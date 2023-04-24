@@ -2,45 +2,78 @@
 cwlVersion: v1.0
 class: CommandLineTool
 
-baseCommand: [ Rscript]
+baseCommand: ["Rscript"]                  
 
 requirements:
   DockerRequirement:
-    dockerPull: zmahnoor/maw-r:1.0.7
+    dockerPull: zmahnoor/maw-r:1.0.8
+  InlineJavascriptRequirement: {}
+  InitialWorkDirRequirement:
+    listing:
+    - entry: $(inputs.mzml_result)
+      writable: true
 
 inputs: 
   workflow_script: File
-  mzml_files:
+  mzml_file:
     type: File
     #format: http://edamontology.org/format_3244
-  gnps_rda:
+  gnps_file:
     type: File
-  hmdb_rda:
+  hmdb_file:
     type: File
-  mbank_rda:
+  mbank_file:
+    type: File
+  mzml_result:
+    type: Directory
+  file_id:
+    type: string
+  ppmx:
+    type: int
+  # runCamera: boolean
+  # collision_info: boolean
+  db_name:
+    type: string
+  db_path:
     type: File
 
 arguments: 
-    - $(inputs.workflow_script.path)
-    - $(inputs.mzml_files.path)
-    - $(inputs.gnps_rda.path)
-    - $(inputs.hmdb_rda.path)
-    - $(inputs.mbank_rda.path)
-    - .
+  # - Rscript
+  - $(inputs.workflow_script.path)
+  - $(inputs.mzml_file.path)
+  - $(inputs.gnps_file.path)
+  - $(inputs.hmdb_file.path)
+  - $(inputs.mbank_file.path)
+  - $(inputs.mzml_result)
+  - $(inputs.file_id)
+  - $(inputs.ppmx)
+  # - |
+  #   $(inputs.runCamera ? "TRUE" : "FALSE")
+  # - |
+  #   $(inputs.collision_info ? "TRUE" : "FALSE")
+  - $(inputs.db_name)
+  - $(inputs.db_path.path)
 # the no output binidng needed bceause the output.json will provide output
 outputs:
-  results: 
-    type: Directory
+  json_file: 
+    type: File
+    outputBinding:
+      glob: cwl.output.json
 
-  ms_files_isotope:
-    type: File[]?
+  # results:
+  #   type: Directory
 
-  ms_files_no_isotope:
-    type: File[]
+  # ms_files_isotope:
+  #   type: File[]?
+
+  # ms_files_no_isotope:
+  #   type: File[]
+
+  # peaks_and_parameters:
+  #   type: Any[]?
   
-  provenance:
-    type: Directory
+  # provenance:
+  #   type: Directory
 
-  peaks_and_parameters:
-    type: Any[]
+
 
