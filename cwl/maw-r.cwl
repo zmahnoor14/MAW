@@ -55,25 +55,23 @@ arguments:
   - $(inputs.db_path.path)
 # the no output binidng needed bceause the output.json will provide output
 outputs:
-  json_file: 
-    type: File
-    outputBinding:
-      glob: cwl.output.json
+  results:
+    type: Directory
 
-  # results:
-  #   type: Directory
+  ms_files_isotope:
+    type: File[]?
 
-  # ms_files_isotope:
-  #   type: File[]?
+  ms_files_no_isotope:
+    type: File[]
 
-  # ms_files_no_isotope:
-  #   type: File[]
-
-  # peaks_and_parameters:
-  #   type: Any[]?
+  peaks_and_parameters:
+    type: Any[]?
   
-  # provenance:
-  #   type: Directory
-
+  provenance:
+    type: Directory
+  # json_file: 
+  #   type: File
+  #   outputBinding:
+  #     glob: cwl.output.json
 
 

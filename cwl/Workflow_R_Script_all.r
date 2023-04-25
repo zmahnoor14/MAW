@@ -2305,15 +2305,15 @@ for (i in seq_along(metfrag_param_files_list)){
 # Create a final JSON object with the list of JSON objects
 json_data$peaks_and_parameters <- listn
 
-# json_data$provenance <- list(
-#   class = "Directory",
-#   path = paste(mzml_result, "/prov_console", sep = "")
-# )
-# Convert json_data to JSON string
-json_data$json_file <- list(
-  class = "File",
-  path = "cwl.output.json"
+json_data$provenance <- list(
+  class = "Directory",
+  path = "./prov_console"
 )
+# Convert json_data to JSON string
+# json_data$json_file <- list(
+#   class = "File",
+#   path = "cwl.output.json"
+# )
 
 
 
