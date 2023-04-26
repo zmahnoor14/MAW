@@ -1,29 +1,29 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# import yaml
-# import time
-# import provenance as p
-# from yaml.loader import SafeLoader
+import yaml
+import time
+import provenance as p
+from yaml.loader import SafeLoader
 
-# basic_config = {
-#     "blobstores": {
-#         "disk": {
-#             "type": "disk",
-#             "cachedir": "provenance-intro-artifacts",
-#             "read": True,
-#             "write": True,
-#             "delete": True,
-#         }
-#     },
-#     "artifact_repos": {
-#         "local": {
-#             "type": "memory"
-#         }
-#     },
-#     "default_repo": "local"
-# }
-# p.load_config(basic_config)
+basic_config = {
+    "blobstores": {
+        "disk": {
+            "type": "disk",
+            "cachedir": "provenance-intro-artifacts",
+            "read": True,
+            "write": True,
+            "delete": True,
+        }
+    },
+    "artifact_repos": {
+        "local": {
+            "type": "memory"
+        }
+    },
+    "default_repo": "local"
+}
+p.load_config(basic_config)
 
 import glob
 import json
@@ -54,7 +54,6 @@ import plotly.express as px
 
 def isNaN(string):
     return string != string
-
 
 # # SpecDB Post Processing
 #@p.provenance()
@@ -118,9 +117,9 @@ def spec_postproc(entry, Source="all"):
             return True
         else:
             return False
-    # in case if we need HMDB later
-    if os.path.exists(entry.split("/DS")[0] + "/hmdb_dframe_str.csv"):
-        extract_smiles = pd.read_csv(entry.split("/DS")[0] + "/hmdb_dframe_str.csv", low_memory=False)
+    # # in case if we need HMDB later
+    # if os.path.exists(entry.split("/DS")[0] + "/hmdb_dframe_str.csv"):
+    #     extract_smiles = pd.read_csv(entry.split("/DS")[0] + "/hmdb_dframe_str.csv", low_memory=False)
    
 
     msp_file = glob.glob(
@@ -3277,30 +3276,30 @@ def CandidateSelection_SimilarityandIdentity(entry, standards = False):
 # candidate selection for MetFrag; The naming convention is kept same as SIRIUS so dont be confused; 
 # in the results you will see the name metfrag
 
-def metfrag_postproc(entry, db, score_thresh):
-    sub_dir = entry + "/insilico/MetFrag/" + db 
-    msp_csv = entry + "/insilico/MS1DATA.csv"
-    if os.path.exists(msp_csv) and os.path.exists(sub_dir):
+# def metfrag_postproc(entry, sub_dir, score_thresh):
+#     #sub_dir = entry + "/insilico/MetFrag/" + db 
+#     msp_csv = entry + "/insilico/MS1DATA.csv"
+#     if os.path.exists(msp_csv) and os.path.exists(sub_dir):
 
-        files_M = [x for x in os.listdir(sub_dir) if x.endswith('.csv')]
-        # list of precursor m/z
-        msp = pd.read_csv(msp_csv)
-        msp["MetFragCSV"] = np.nan
-        # for each mz
-        for mz, row in msp.iterrows():
-            # make a list of files with this mz
-            files_for_mz = []
-            for file in files_M:
-                if str(msp["premz"][mz]) in file:
-                    files_for_mz.append(file)
-                    msp["MetFragCSV"][mz] = sub_dir + "/"+ file
-                    if os.path.exists(msp["MetFragCSV"][mz]):
-                        metfrag_res = pd.read_csv(msp["MetFragCSV"][mz])
-                        if len(metfrag_res)>0:
-                            metfrag_res = metfrag_res[metfrag_res['Score'] >= score_thresh]
-                            #print(metfrag_res['Score'])
-                            metfrag_res.to_csv(msp["MetFragCSV"][mz])
-        msp.to_csv(msp_csv)   
+#         files_M = [x for x in os.listdir(sub_dir) if x.endswith('.csv')]
+#         # list of precursor m/z
+#         msp = pd.read_csv(msp_csv)
+#         msp["MetFragCSV"] = np.nan
+#         # for each mz
+#         for mz, row in msp.iterrows():
+#             # make a list of files with this mz
+#             files_for_mz = []
+#             for file in files_M:
+#                 if str(msp["premz"][mz]) in file:
+#                     files_for_mz.append(file)
+#                     msp["MetFragCSV"][mz] = sub_dir + "/"+ file
+#                     if os.path.exists(msp["MetFragCSV"][mz]):
+#                         metfrag_res = pd.read_csv(msp["MetFragCSV"][mz])
+#                         if len(metfrag_res)>0:
+#                             metfrag_res = metfrag_res[metfrag_res['Score'] >= score_thresh]
+#                             #print(metfrag_res['Score'])
+#                             metfrag_res.to_csv(msp["MetFragCSV"][mz])
+#         msp.to_csv(msp_csv)   
 
 def one_candidate_selection_metfrag(
     df,
@@ -5891,20 +5890,20 @@ def chemMN(input_dir, input_csv, naming, name_col):
 
 
 #Define input directory, keep all files in same directory and scripts so getwd works
-entry = sys.argv[1]
-sirius = sys.argv[2] == 'True'
-db = sys.argv[3]
-score_thresh = float(sys.argv[4])
+# entry = sys.argv[1] # mzml_result
+# sirius = sys.argv[2] == 'True'
+# sub_dir = sys.argv[2]
+# score_thresh = float(sys.argv[3])
 #sirius_dirs = sys.argv[5:]
 
-provenance_result = spec_postproc(entry, Source = "all")
+# provenance_result = spec_postproc(entry, Source = "all")
 
 # if sirius:
 #     sirius_postproc(entry, sirius_dirs)   
 #     CandidateSelection_SimilarityandIdentity(entry, standards = False)
 # else:    
-metfrag_postproc(entry, db, score_thresh)
-CandidateSelection_SimilarityandIdentity_Metfrag(entry, standards = False)
+# metfrag_postproc(entry, sub_dir, score_thresh) # add args.candidates
+#CandidateSelection_SimilarityandIdentity_Metfrag(entry, standards = False)
 
 
 
@@ -5926,3 +5925,44 @@ CandidateSelection_SimilarityandIdentity_Metfrag(entry, standards = False)
 
 # import provenance.vis as vis
 # plot = vis.visualize_lineage(provenance_result)
+
+
+def metfrag_postproc(metfrag_candidates, score_thresh):
+    if os.path.exists(metfrag_candidates):
+        metfrag_res = pd.read_csv(metfrag_candidates)
+            if len(metfrag_res)>0:
+                metfrag_res = metfrag_res[metfrag_res['Score'] >= score_thresh]
+                metfrag_res.to_csv(metfrag_candidates)
+    return metfrag_candidates
+
+metfrag_candidate_list = []
+
+def metfrag_append(ms1data, metfrag_candidate_list):
+    if os.path.exists(ms1data):
+        msp = pd.read_csv(ms1data)
+        msp["MetFragCSV"] = np.nan
+        # for each mz
+        for mz, row in msp.iterrows():
+            # make a list of files with this mz
+            files_for_mz = []
+            for file in metfrag_candidate_list:
+                if str(msp["premz"][mz]) in file:
+                    files_for_mz.append(file)
+                            metfrag_res.to_csv(msp["MetFragCSV"][mz])
+        msp.to_csv(ms1data)  
+
+
+# args.candidates will be a python list
+parser = argparse.ArgumentParser()
+parser.add_argument("--ms1data")
+parser.add_argument("--candidates", action = "append")
+parser.add_argument("--score_thresh")
+
+# parser.add_argument("--gnps")
+# parser.add_argument("--hmdb")
+# parser.add_argument("--mbank")
+
+args = parser.parse_args()
+
+
+metfrag_postproc(ms1data, candidates, score_thresh)

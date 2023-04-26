@@ -1,7 +1,6 @@
 cwlVersion: v1.0
 class: Workflow
 
-
 inputs: 
     python_script:
       type: File
@@ -13,41 +12,58 @@ inputs:
        default:
          class: File
          path: Workflow_R_Script_all.r
-    mzml_files:
+    mzml_file:
         type: File
         #format: http://edamontology.org/format_3244
-    gnps_rda:
+    gnps_file:
         type: File
-    hmdb_rda:
+    hmdb_file:
         type: File
-    mbank_rda:
+    mbank_file:
         type: File
-    isotope:
-        type: boolean
-        default: False
+    mzml_result:
+        type: string
+    file_id:
+        type: string
+    ppmx:
+        type: int
+    db_name:
+        type: string
+    db_path:
+        type: File
+    # isotope:
+    #     type: boolean
+    #     default: False
   
 steps:
     dereplication:
         run: maw-r.cwl
         in:
             workflow_script: r_script
-            mzml_files: mzml_files
-            gnps_rda: gnps_rda
-            hmdb_rda: hmdb_rda
-            mbank_rda: mbank_rda
+            mzml_file: mzml_file
+            gnps_file: gnps_file
+            hmdb_file: hmdb_file
+            mbank_file: mbank_file
+            mzml_result: mzml_result
+            file_id: file_id
+            ppmx: ppmx
+            db_name: db_name
+            db_path: db_path
         out:
-            - ms_files
+            # - ms_files
             - results
             - peaks_and_parameters
+
     metfrag:
-        run: maw-metfrag-param.cwl
+        run: maw-metfrag.cwl
         scatter:
             - PeakList
             - IonizedPrecursorMass
             - PrecursorIonMode
-            - IsPositiveIonMode
+            # - IsPositiveIonMode
             - LocalDatabase
             - SampleName
+
         scatterMethod: dotproduct
         in:
             PeakList: 
@@ -59,50 +75,51 @@ steps:
             PrecursorIonMode:
                 source: dereplication/peaks_and_parameters
                 valueFrom: $(self.PrecursorIonMode)
-            IsPositiveIonMode:
-                source: dereplication/peaks_and_parameters
-                valueFrom: $(self.IsPositiveIonMode)
+            # IsPositiveIonMode:
+            #     source: dereplication/peaks_and_parameters
+            #     valueFrom: $(self.IsPositiveIonMode)
             LocalDatabase:
                 source: dereplication/peaks_and_parameters
                 valueFrom: $(self.LocalDatabase)
             SampleName:
                 source: dereplication/peaks_and_parameters
                 valueFrom: $(self.SampleName)
+
         out: [candidate_list]
 
-    sirius_isotope:
-        run: sirius-new.cwl
-        in:
-            spectrum: dereplication/ms_files
-            isotope: 
-                default: False
-            #parameter: dereplication/parameters
-        scatter:
-            - spectrum
-            #- parameter
-        out: [results]
+    # sirius_isotope:
+    #     run: sirius-new.cwl
+    #     in:
+    #         spectrum: dereplication/ms_files
+    #         isotope: 
+    #             default: False
+    #         #parameter: dereplication/parameters
+    #     scatter:
+    #         - spectrum
+    #         #- parameter
+    #     out: [results]
 
-    sirius_no_isotope:
-        run: sirius-new.cwl
-        in:
-            spectrum: dereplication/ms_files
-            isotope: 
-                default: True
-            #parameter: dereplication/parameters
-        scatter:
-            - spectrum
-            #- parameter
-        out: [results]
+    # sirius_no_isotope:
+    #     run: sirius-new.cwl
+    #     in:
+    #         spectrum: dereplication/ms_files
+    #         isotope: 
+    #             default: True
+    #         #parameter: dereplication/parameters
+    #     scatter:
+    #         - spectrum
+    #         #- parameter
+    #     out: [results]
 
     cheminformatics:
         run: maw-py.cwl
         in: 
             workflow_script: python_script
             mzml_files_results: dereplication/results
-            sirius_results: 
-                source: [sirius_no_isotope/results, sirius_isotope/results]
-                linkMerge: True
-            candidate_list: metfrag/candidate_list
+            # sirius_results: 
+            #     source: [sirius_no_isotope/results, sirius_isotope/results]
+            #     linkMerge: True
+            # candidate_list: metfrag/candidate_list
  
             
         out: [results, provenance]
@@ -116,3 +133,4 @@ outputs:
     outputSource: cheminformatics/provenance
 requirements:
     ScatterFeatureRequirement: {}
+    StepInputExpressionRequirement: {}

@@ -2188,6 +2188,9 @@ db_path = args[9]
 print(mzml_file)
 print(mzml_result)
 
+# add mzml_result name automatically
+#
+#
 # read mzML file and create output directory
 spec_pr <- spec_Processing(mzml_file, mzml_result)
 
@@ -2288,8 +2291,8 @@ for (i in seq_along(metfrag_param_files_list)){
             path = strsplit(peak_file[1], split = " = ")[[1]][2]
             ),
         IonizedPrecursorMass = as.character(strsplit(peak_file[2], split = " = ")[[1]][2]),
-        PrecursorIonMode = strsplit(peak_file[3], split = " = ")[[1]][2],
-        IsPositiveIonMode = strsplit(peak_file[4], split = " = ")[[1]][2],
+        PrecursorIonMode = as.numeric(strsplit(peak_file[3], split = " = ")[[1]][2]),
+        #IsPositiveIonMode = as.boolean(strsplit(peak_file[4], split = " = ")[[1]][2]),
         LocalDatabase = list(
             class = "File",
             path = strsplit(peak_file[6], split = " = ")[[1]][2]

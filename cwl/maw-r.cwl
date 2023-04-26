@@ -8,10 +8,10 @@ requirements:
   DockerRequirement:
     dockerPull: zmahnoor/maw-r:1.0.8
   InlineJavascriptRequirement: {}
-  InitialWorkDirRequirement:
-    listing:
-    - entry: $(inputs.mzml_result)
-      writable: true
+  # InitialWorkDirRequirement:
+  #   listing:
+  #   - entry: $(inputs.mzml_result)
+  #     writable: true
 
 inputs: 
   workflow_script: File
@@ -25,7 +25,7 @@ inputs:
   mbank_file:
     type: File
   mzml_result:
-    type: Directory
+    type: string
   file_id:
     type: string
   ppmx:
@@ -58,20 +58,17 @@ outputs:
   results:
     type: Directory
 
-  ms_files_isotope:
-    type: File[]?
+  # ms_files_isotope:
+  #   type: File[]?
 
-  ms_files_no_isotope:
-    type: File[]
+  # ms_files_no_isotope:
+  #   type: File[]
 
   peaks_and_parameters:
     type: Any[]?
   
   provenance:
     type: Directory
-  # json_file: 
-  #   type: File
-  #   outputBinding:
-  #     glob: cwl.output.json
+
 
 

@@ -16,10 +16,11 @@ inputs:
   workflow_script: File
   mzml_files_results:
     type: Directory
-  sirius_results:
-    type: Directory[]
-    inputBinding:
-      position: 3
+  # sirius_results:
+  #   type: Directory[]
+  #   inputBinding:
+  #     position: 3
+  
 
 
 arguments: 
