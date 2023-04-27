@@ -8,10 +8,6 @@ requirements:
   DockerRequirement:
     dockerPull: zmahnoor/maw-r:1.0.8
   InlineJavascriptRequirement: {}
-  # InitialWorkDirRequirement:
-  #   listing:
-  #   - entry: $(inputs.mzml_result)
-  #     writable: true
 
 inputs: 
   workflow_script: File
@@ -24,8 +20,6 @@ inputs:
     type: File
   mbank_file:
     type: File
-  mzml_result:
-    type: string
   file_id:
     type: string
   ppmx:
@@ -44,7 +38,6 @@ arguments:
   - $(inputs.gnps_file.path)
   - $(inputs.hmdb_file.path)
   - $(inputs.mbank_file.path)
-  - $(inputs.mzml_result)
   - $(inputs.file_id)
   - $(inputs.ppmx)
   # - |
