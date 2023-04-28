@@ -40,7 +40,7 @@ import pandas as pd
 import pubchempy as pcp
 
 
-#from pybatchclassyfire import *
+from pybatchclassyfire import *
 from pandas import json_normalize
 from rdkit import Chem
 from rdkit import DataStructs
@@ -1358,685 +1358,6 @@ def sources_4_metfrag(candidates_with_counts, merged_df, mer, sirius_df):
     return merged_df
 
 #@p.provenance()
-#### add here
-# doesnt apply anymore here. because the argument is a single directory with results
-#@p.provenance()
-def merge_all_results(input_dir):
-    names = []
-    
-    # entry is all files and folders in input_dir
-    for entry in os.listdir(input_dir):
-        # if the entry is also a directory
-        if os.path.isdir(os.path.join(input_dir, entry)):
-
-            # reach spectra_dereplication folder
-            merged_file_res = input_dir+ "/"+ entry+ "/mergedResults-with-one-Candidates.csv"
-
-            if os.path.exists(merged_file_res):
-                merged_csv = pd.read_csv(merged_file_res)
-                names.append(merged_csv)
-    merged = (pd.concat(names, ignore_index=True))
-    # Select the ones you want
-    merged = merged[['id_X_x', 'premz', 'rtmed', 'rtmean',
-           'int', 'col_eng', 'pol', 'rtmin', 'rtmax', 'source_file', 'Formula',
-                     'PubChemID',
-                    'SMILES', 'IUPAC', 'synonyms', 'AnnotationSources', 'AnnotationCount',
-           'MSILevel', 'MCSS', 'subclass', 'class', 'superclass', 'ClassificationSource']]
-    merged.to_csv(input_dir + "/final_candidates.csv")
-    return(merged)
-
-
-# Comparison with a list of SMILES from any Source
-def SMILESscreening(input_dir, resultcsv, complist, listname):
-   
-    """SMILESscreening takes a list of SMILES
-
-    Parameters:
-    input_dir (str): This is the input directory where all the .mzML
-    files and their respective result directories are stored.
-
-    resultcsv: df from combine_CuratedR or checkSMILES_validity or classification
-    complist: list of /n separated txt file conyaining smiles on each line
-    listname: name of the list of compounds
-
-    Returns:
-    dataframe: comparison with another list of compounds
-    csv: "MetabolomicsResults/final_curation_with_validSMILES.csv"
-
-    Usage:
-    checkSMILES_validity(input_dir = "usr/project/", results)
-
-    """
-
-    results = pd.read_csv(resultcsv)
-    with open(complist, "r") as text_file:
-        cd = text_file.read().split("\n")
-
-    for i, row in results.iterrows():
-        if not isNaN(results["SMILES"][i]):
-            if (
-                "invalid_SMILES" not in results["SMILES"][i]
-                and "invalid_chemistry" not in results["SMILES"][i]
-            ):
-                for j in cd:
-                    if not isNaN(j):
-                        CGms = [
-                            Chem.MolFromSmiles(results["SMILES"][i]),
-                            Chem.MolFromSmiles(j),
-                        ]
-                        CGfps = [
-                            AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=1024)
-                            for x in CGms
-                        ]
-                        CGtn = DataStructs.FingerprintSimilarity(CGfps[0], CGfps[1])
-                        if (
-                            CGtn == 1
-                            and listname not in results["Annotation_Source"][i]
-                        ):
-                            results["Annotation_Source"][i] = (
-                                results["Annotation_Source"][i] + ", " + listname
-                            )
-
-    results.to_csv(
-        input_dir + "MetabolomicsResults/final_curationListVS" + listname + ".csv"
-    )
-    return results
-
-
-#@p.provenance()
-def classification(input_dir, resultcsv):
-   
-
-    """classification function uses ClassyFire ChemONT
-
-    Parameters:
-    input_dir (str): This is the input directory where all the .mzML
-    files and their respective result directories are stored.
-
-    resultcsv: csv of df from combine_CuratedR or checkSMILES_validity
-
-    Returns:
-    dataframe: with classification
-    csv: "MetabolomicsResults/final_curationList.csv"
-
-    Usage:
-    checkSMILES_validity(input_dir = "usr/project/", frame)
-
-    """
-    
-    frame = pd.read_csv(resultcsv)
-    inchis = []
-    for i, row in frame.iterrows():
-        if not isNaN(frame["SMILES"][i]):
-            if "SIRIUS" not in frame["AnnotationSources"][i]:
-                try:
-                    InChI = Chem.MolToInchi(Chem.MolFromSmiles(frame["SMILES"][i]))
-                    InChIKey = Chem.inchi.InchiToInchiKey(InChI)
-                    inchis.append(
-                        {
-                            "index": i,
-                            "smiles": frame["SMILES"][i],
-                            "inchi": InChI,
-                            "inchikey": InChIKey,
-                        }
-                    )
-                except Exception:
-                    pass
-            elif "SIRIUS" in frame["AnnotationSources"][i]:
-                if isNaN(frame["superclass"][i]):
-                    try:
-                        InChI = Chem.MolToInchi(Chem.MolFromSmiles(frame["SMILES"][i]))
-                        InChIKey = Chem.inchi.InchiToInchiKey(InChI)
-                        inchis.append(
-                            {
-                                "index": i,
-                                "smiles": frame["SMILES"][i],
-                                "inchi": InChI,
-                                "inchikey": InChIKey,
-                            }
-                        )
-                    except Exception:
-                        pass
-    inchis = pd.DataFrame(inchis)
-    if len(inchis):
-        inchis = inchis.loc[-isNaN(inchis["inchikey"])]
-        # Retrieve ClassyFire classifications
-
-        # This first step is done using inchikey and interrogation of the gnps classified structures
-        """
-        gnps_proxy = True
-        url = "http://classyfire.wishartlab.com"
-        proxy_url = "https://gnps-classyfire.ucsd.edu"
-        chunk_size = 1000
-        sleep_interval = 12
-        """
-
-        all_inchi_keys = list(inchis["inchikey"].drop_duplicates())
-
-        resolved_ik_number_list = [0, 0]
-        # total_inchikey_number = len(all_inchi_keys)
-
-        while True:
-
-            # start_time = time.time()
-
-            # print('%s inchikey to resolve' % total_inchikey_number )
-            get_classifications_cf_mod(all_inchi_keys, par_level=6)
-
-            cleanse("all_json.json", "all_json.json")
-
-            with open("all_json.json") as tweetfile:
-                jsondic = json.loads(tweetfile.read())
-
-            df = json_normalize(jsondic)
-            df = df.drop_duplicates("inchikey")
-            resolved_ik_number = len(df.drop_duplicates("inchikey").inchikey)
-            resolved_ik_number_list.append(resolved_ik_number)
-            # print('%s resolved inchikeys' % resolved_ik_number )
-            # print("done in --- %s seconds ---" % (time.time() - start_time))
-
-            if (
-                resolved_ik_number_list[-1] < resolved_ik_number_list[-2]
-                or resolved_ik_number_list[-1] == resolved_ik_number_list[-3]
-            ):
-                break
-            cleanse("all_json.json", "all_json_cleaned.json")
-
-            with open("all_json_cleaned.json") as tweetfile:
-                jsondic = json.loads(tweetfile.read())
-
-        flattened_classified_json = json_normalize(jsondic)
-        flattened_df = flattened_classified_json.drop_duplicates("inchikey")
-        flattened_df["inchikey"] = flattened_df["inchikey"].str.replace(
-            r"InChIKey=", ""
-        )
-        df_merged = pd.merge(
-            inchis, flattened_df, left_on="inchikey", right_on="inchikey", how="left"
-        )
-
-        for p, rowp in df_merged.iterrows():
-            for q, rowq in frame.iterrows():
-                if df_merged["smiles_x"][p] is frame["SMILES"][q]:
-                    frame.loc[q, "subclass"] = df_merged["subclass.name"][p]
-                    frame.loc[q, "class"] = df_merged["class.name"][p]
-                    frame.loc[q, "superclass"] = df_merged["superclass.name"][p]
-                    frame.loc[q, "ClassificationSource"] = "ClassyFire"
-
-        frame.to_csv(result_csv)
-        return frame
-
-# NP_Classifier classification
-def Np_pathways(input_dir, resultcsv):
-    df = pd.read_csv(resultcsv)
-    npresults = []
-    for i, row in df.iterrows():
-        if not isNaN(df["SMILES"][i]):
-            try:
-                cvv = Chem.MolFromSmiles(df["SMILES"][i])
-                cvv = Chem.MolToSmiles(cvv, isomericSmiles=False)
-                c = urllib.parse.quote_plus(cvv, safe=" ")
-
-                url = "https://npclassifier.ucsd.edu/classify?smiles=" + c
-                names = str(df["id_X"][i])
-                outx = str("myFile" + names + ".txt")
-                file = wget.download(url, out=outx)
-                a_dataframe = pd.read_csv(file, delimiter="]")
-                xox = list(a_dataframe.columns.values)
-                splitting0 = xox[0].split(":")
-                xoc = re.sub('\ |\[|\]|"', " ", splitting0[1]).strip()
-                splitting1 = xox[1].split(":")
-                xos = re.sub('\ |\[|\]|"', " ", splitting1[1]).strip()
-                # except:
-                # splitting1 = xox[1].split(':')
-                # xos = re.sub('\ |\[|\]|\"', '', splitting1[0])
-                splitting2 = xox[2].split(":")
-                xop = re.sub('\ |\[|\]|"', " ", splitting2[1]).strip()
-                # df.loc[i, 'npclass'] = xoc
-                # df.loc[i, 'npsuper_class'] = xos
-                if not isNaN(df["class"][i]) and df["class"][i] in xoc:
-                    df.loc[i, "np_pathway"] = xop
-                os.remove(outx)
-                time.sleep(0.5)
-
-                npresults.append(
-                    {
-                        "index": i,
-                        # 'id': df['file_id'][i],
-                        "mz": df["premz"][i],
-                        "rt": df["rtmed"][i],
-                        "SMILES": df["SMILES"][i],
-                        "class": xoc,
-                        "subclass": xos,
-                        "pathway": xop,
-                    }
-                )
-                if df["class"][i] == xoc:
-                    df.loc[i, "pathway"]
-            except Exception:
-                pass
-    np_results = pd.DataFrame(npresults)
-    np_results.to_csv(input_dir + "/NPClassifier_Results.csv")
-    df.to_csv(input_dir + "/final_results_with_Pathways.csv")
-
-    # read csv
-    df = pd.read_csv(resultcsv)
-
-    # define empty variable
-    dbn = []
-
-    # check the result csv
-    for i, row in df.iterrows():
-        # to compare each element with each opther element
-        for j, row in df.iterrows():
-
-            # if its not same id
-            if df["SMILES"][i] != df["SMILES"][j]:
-
-                if not isNaN(df["SMILES"][i]):
-                    if not isNaN(df["SMILES"][j]):
-
-                        try:
-                            ms = [
-                                Chem.MolFromSmiles(df["SMILES"][i]),
-                                Chem.MolFromSmiles(df["SMILES"][j]),
-                            ]
-                            fps = [
-                                AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048)
-                                for x in ms
-                            ]
-                            tn = DataStructs.FingerprintSimilarity(fps[0], fps[1])
-                            dbn.append(
-                                {
-                                    "Name_i": df["IUPAC"][i],
-                                    "Name_j": df["IUPAC"][j],
-                                    "i": df["SMILES"][i],
-                                    "j": df["SMILES"][j],
-                                    "Tanimoto": tn,
-                                }
-                            )
-                        except Exception:
-                            pass
-    # save chemical similarities
-    db_edgenode = pd.DataFrame(dbn)
-
-    dfe = []
-    heavy_atoms = ["C", "N", "P", "O", "S"]
-    for i, row in db_edgenode.iterrows():
-        if db_edgenode["Tanimoto"][i] >= 0.85:
-            # list of mol used to calaculate the MCSS
-            n = [
-                Chem.MolFromSmiles(db_edgenode["i"][i]),
-                Chem.MolFromSmiles(db_edgenode["j"][i]),
-            ]
-            res = rdFMCS.FindMCS(n, timeout=60)
-            sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
-            # Check if the MCSS has one of the heavy atoms and whether they are
-            # more than 3
-            elem = [ele for ele in heavy_atoms if (ele in sm_res)]
-            if elem and len(sm_res) >= 3:
-                MCSS_SMILES = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
-
-            dfe.append(
-                {
-                    "Start": db_edgenode["Name_i"][i],
-                    "End": db_edgenode["Name_j"][i],
-                    "Tanimoto": db_edgenode["Tanimoto"][i],
-                    "Start_SMILES": db_edgenode["i"][i],
-                    "End_SMILES": db_edgenode["j"][i],
-                    # 'Start_Source':db_edgenode['Source_i'][i],
-                    # 'End_Source':db_edgenode['Source_j'][i],
-                    "MCSS": MCSS_SMILES,
-                }
-            )
-    if len(df_edge) > 0:
-        
-        df_edge = pd.DataFrame(dfe)
-        df_edge["Start"] = df_edge["Start"].astype(str)
-        df_edge["End"] = df_edge["End"].astype(str)
-        df_edge["sorted_row"] = [sorted([a, b]) for a, b in zip(df_edge.Start, df_edge.End)]
-        df_edge["sorted_row"] = df_edge["sorted_row"].astype(str)
-        df_edge.drop_duplicates(subset=["sorted_row"], inplace=True)
-
-        nodes = []
-        for i, row in df.iterrows():
-            n = df["IUPAC"][i]
-            nodes.append({"nodes": n})
-
-        node = pd.DataFrame(nodes)
-
-        df_edge.to_csv(input_dir + "/ChemMNedges.tsv", sep="\t")
-        node.to_csv(input_dir + "/ChemMNnodes.csv", index=False)
-
-        newdf = df_edge
-        newdf["StartAtt"] = np.nan
-        newdf["EndAtt"] = np.nan
-        for i, row in newdf.iterrows():
-            for j, row in df.iterrows():
-                if newdf["Start"][i] == df["IUPAC"][j]:
-                    newdf.loc[i, "StartAtt"] = df["class"][j]
-                if newdf["End"][i] == df["IUPAC"][j]:
-                    newdf.loc[i, "EndAtt"] = df["class"][j]
-        newdf.to_csv(input_dir + "/ChemMNcys.tsv", sep="\t")
-
-        return newdf
-
-def gnpsMNvsgnpsMAW(input_dir):
-    
-    """gnpsMNvsgnpsMAW checks with tanimoto similarity score, whether
-    results from MAW GNPS and GNPS MN Masst results give same candidate
-
-    Parameters:
-    input_dir = input directory where you have stored the cytoscape file
-    from GNPS MN results and have exported edge and node tables from cytoscape
-    These two csv egde and node files must have "edge" and "node" in their name
-
-    Returns:
-    GNPS results with cluster index named
-    GNPS MN results with a confirmation column if MAW detected same candidate,
-    file named:
-
-    Usage:
-    gnpsMNvsgnpsMAW(input_dir)
-
-    """
-    # extract files with edges from MN results
-    GMNfile_edge = [f for f in os.listdir(input_dir) if "edge" in f]
-    # extract files with nodes from MN results
-    GMNfile_node = [f for f in os.listdir(input_dir) if "node" in f]
-    # read the files
-    GMNdf_node = pd.read_csv(GMNfile_node[0])
-    GMNdf_edge = pd.read_csv(GMNfile_edge[0])
-
-    # extract only important columns from both csv files
-    GMNdf_node = GMNdf_node[
-        [
-            "precursor mass",
-            "RTMean",
-            "UniqueFileSources",
-            "charge",
-            "cluster index",
-            "componentindex",
-            "Compound_Name",
-            "Smiles",
-            "SpectrumID",
-        ]
-    ]
-    GMNdf_edge = GMNdf_edge[
-        ["cosine_score", "EdgeAnnotation", "node1", "node2", "mass_difference"]
-    ]
-
-    # rename node1 to cluster index to merge nodes and edges results from MN
-    GMNdf_edge = GMNdf_edge.rename(columns={"node1": "cluster index"})
-    GMNdf = pd.merge(GMNdf_node, GMNdf_edge, on="cluster index")
-
-    # Read results obtained from scoring_spec, named input_dir/MetabolomicsResults/scoredSpecDB.csv
-    SDB = pd.read_csv(input_dir + "/MetabolomicsResults/scoredSpecDB.csv")
-    # only keep GNPS resulst and remove other columns
-    only_GNPS = SDB[SDB["annotation"].str.contains("GNPS")]
-    only_GNPS = only_GNPS[
-        [
-            "id_X",
-            "premz_x",
-            "rtmean_x",
-            "GNPSmax_similarity",
-            "GNPSSMILES",
-            #"GNPSspectrumID",
-            "GNPScompound_name",
-            "GNPSmirrorSpec",
-        ]
-    ]
-
-    # from GNPS MAW results and GNPS MN results, calculate how many MAW results are same as MN:
-    for i, row in only_GNPS.iterrows():
-        for j, row in GMNdf.iterrows():
-            if not isNaN(only_GNPS["GNPSSMILES"][i]) and not isNaN(GMNdf["Smiles"][j]):
-                SKms = [
-                    Chem.MolFromSmiles(only_GNPS["GNPSSMILES"][i]),
-                    Chem.MolFromSmiles(GMNdf["Smiles"][j]),
-                ]
-                SKfps = [
-                    AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048)
-                    for x in SKms
-                ]
-                SKtn = DataStructs.FingerprintSimilarity(SKfps[0], SKfps[1])
-                if SKtn == 1.0:
-                    GMNdf.loc[j, "gnps_maw"] = "confirmed"
-                    only_GNPS.loc[i, "index_MN_nodes"] = j
-                elif SKtn < 1.0 and SKtn < 0.75:
-                    GMNdf.loc[j, "gnps_maw"] = "similar"
-                    only_GNPS.loc[i, "index_MN_nodes"] = j
-    only_GNPS.to_csv(input_dir + "/only_GNPS.csv")
-    GMNdf.to_csv(input_dir + "/GMNdf.csv")
-
-# naming is any string used to name or put an id to the sunburst as many sunbursts will be created
-def sunburst(input_dir, input_csv, naming):
-    
-    cl = pd.read_csv(input_csv)
-    class_data = cl[['superclass', 'class', 'subclass']]
-    spclass = list(class_data['superclass']) # all superclasses
-    uniq_spclass = list(np.unique(list(class_data['superclass']))) # only unique super classes
-    uniq_spc = [s for s in uniq_spclass if 'nan' not in s ] # only unique super classes with no NA values
-    print(len(uniq_spclass))
-    clss = list(class_data['class'])
-    uniq_class = list(np.unique(list(class_data['class'])))
-    uniq_c = [s for s in uniq_class if 'nan' not in s ]
-    len(uniq_class)
-    sbclass = list(class_data['subclass'])
-    uniq_sbclass = list(np.unique(list(class_data['subclass'])))
-    uniq_sbc = [s for s in uniq_sbclass if 'nan' not in s ]
-    len(uniq_sbclass)
-
-    #all characters
-    Names = ['Organic Compounds'] + uniq_spclass+uniq_class+uniq_sbclass
-
-    df = pd.DataFrame(Names)
-    df['values'] = ''
-    df['parents'] = ''
-
-    df = df.rename(columns={0: 'characters'})
-    
-    if "nan" in np.unique(df["characters"]):
-    
-        #for i, row in df.iterrows():
-        for i, row in df[0:len(df)-2].iterrows():
-            if 'Organic Compounds' in df['characters'][i]:
-                df.loc[i, 'values'] = 0
-                df.loc[i, 'parents'] = ''
-
-            elif df['characters'][i] in uniq_spclass:
-
-                df.loc[i, 'values'] = spclass.count(df['characters'][i])
-                df.loc[i, 'parents'] = 'Organic Compounds'
-
-            elif df['characters'][i] in uniq_class:
-
-                df.loc[i, 'values'] = clss.count(df['characters'][i])
-                df.loc[i, 'parents'] = 'Organic Compounds'
-
-                df.loc[i, 'values'] = clss.count(df['characters'][i])
-                clsp = class_data['superclass'][class_data[class_data['class'] == df['characters'][i]].index.tolist()[0]]
-                df.loc[i, 'parents'] = clsp
-
-
-            elif df['characters'][i] in uniq_sbclass:
-                df.loc[i, 'values'] = sbclass.count(df['characters'][i])
-                sbclsp = class_data['class'][class_data[class_data['subclass'] == df['characters'][i]].index.tolist()[0]]
-                df.loc[i, 'parents'] = sbclsp
-    else:
-        for i, row in df.iterrows():
-            if 'Organic Compounds' in df['characters'][i]:
-                df.loc[i, 'values'] = 0
-                df.loc[i, 'parents'] = ''
-
-            elif df['characters'][i] in uniq_spclass:
-
-                df.loc[i, 'values'] = spclass.count(df['characters'][i])
-                df.loc[i, 'parents'] = 'Organic Compounds'
-
-            elif df['characters'][i] in uniq_class:
-
-                df.loc[i, 'values'] = clss.count(df['characters'][i])
-                df.loc[i, 'parents'] = 'Organic Compounds'
-
-                df.loc[i, 'values'] = clss.count(df['characters'][i])
-                clsp = class_data['superclass'][class_data[class_data['class'] == df['characters'][i]].index.tolist()[0]]
-                df.loc[i, 'parents'] = clsp
-
-
-            elif df['characters'][i] in uniq_sbclass:
-                df.loc[i, 'values'] = sbclass.count(df['characters'][i])
-                sbclsp = class_data['class'][class_data[class_data['subclass'] == df['characters'][i]].index.tolist()[0]]
-                df.loc[i, 'parents'] = sbclsp
-    data = dict(character = df['characters'], parents = df['parents'], values = df['values'])
-    fig = px.sunburst(
-        data,
-        names='character',
-        parents='parents',
-        values='values',
-        
-    )
-    fig.update_layout(margin = dict(t=0, l=0, r=0, b=0))
-    name_html = input_dir+"/"+naming+"_sunburst.html"
-    print(name_html)
-    fig.write_html(name_html)
-    fig.show()
-    return data
-
-def list_all_folders(input_dir, list_of_words_to_remove, starting_words_for_all_folders = None):
-    #define the input directory
-    path = input_dir
-    # list all files
-    file = os.listdir(path)
-    if starting_words_for_all_folders:
-        # list all folders that start with "DS" and arent mzML files
-        folders = [x for x in os.listdir(path) if x.startswith(starting_words_for_all_folders)]
-    else:
-        # list all folders that start with "DS" and arent mzML files
-        folders = [x for x in os.listdir(path)]
-    
-    for i in list_of_words_to_remove:
-        folders = [x for x in folders if not i in x]
-        
-    return folders
-
-def chemMN(input_dir, input_csv, naming, name_col):
-    df = pd.read_csv(input_csv)
-    dbn= []
-    for i, row in df.iterrows():
-        for j, row in df.iterrows():
-            if df['SMILES'][i] != df['SMILES'][j]:
-                try:
-                    ms = [Chem.MolFromSmiles(df['SMILES'][i]), Chem.MolFromSmiles(df['SMILES'][j])]
-                    fps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in ms]
-                    tn = DataStructs.FingerprintSimilarity(fps[0],fps[1])
-                    dbn.append({
-                        'Namei':df[name_col][i],
-                        'Namej':df[name_col][j],
-                        'i': df['SMILES'][i],
-                        'j': df['SMILES'][j],
-                        'Tanimoto': tn
-                    })
-                except:
-                    pass
-        #print(i)
-    db_edge = pd.DataFrame(dbn)
-    db_edge.to_csv(input_dir+ "/"+ naming+ "_allVSall.csv")
-
-    dfe = []
-    x=0
-    for i, row in db_edge.iterrows():        
-        if db_edge['Tanimoto'][i] >= 0.85:
-            x=x+1
-            dfe.append({
-                'Start':db_edge['Namei'][i],
-                'End':db_edge['Namej'][i],
-                'Tanimoto':db_edge['Tanimoto'][i]
-            })
-    new_df = pd.DataFrame(dfe)
-    new_df['Start'] = new_df['Start'].astype(str)
-    new_df['End'] = new_df['End'].astype(str)
-    new_df['StartAtt']=np.nan
-    new_df['EndAtt']=np.nan
-    for i, row in new_df.iterrows():
-        for j, row in df.iterrows():
-            if new_df['Start'][i]==df[name_col][j]:
-                new_df.loc[i, 'StartAtt'] = df['superclass'][j]
-    for i, row in new_df.iterrows():
-        for j, row in df.iterrows():
-            if new_df['End'][i]==df[name_col][j]:
-                new_df.loc[i, 'EndAtt'] = df['superclass'][j]
-
-    new_df['sorted_names'] = new_df.apply(lambda row: '-'.join(sorted([row['Start'], row['End']])), axis=1)
-    new_df = new_df.drop_duplicates(subset=["sorted_names"], keep="last")
-    new_df.to_csv(input_dir + "/" + naming + "_chemMN_Cytoscape.tsv", sep='\t')
-    return new_df
-
-
-
-
-# provenance_result = spec_postproc(entry, Source = "all")
-
-# if sirius:
-#     sirius_postproc(entry, sirius_dirs)   
-#     CandidateSelection_SimilarityandIdentity(entry, standards = False)
-# else:    
-# metfrag_postproc(entry, sub_dir, score_thresh) # add args.candidates
-#CandidateSelection_SimilarityandIdentity_Metfrag(entry, standards = False)
-
-
-
-# from ruamel.yaml.main import YAML
-
-# with open("provenance_python.yaml", "w") as filehandle:
-#     yaml = YAML()
-#     yaml.default_flow_style = False
-#     yaml.indent = 4
-#     yaml.block_seq_indent = 2
-#     yaml.dump(
-#         { "fn_module": provenance_result.artifact.fn_module,
-#           "fn_name": provenance_result.artifact.fn_name,
-#           "run_info": provenance_result.artifact.run_info,
-#           "inputs": provenance_result.artifact.inputs
-#           },
-#         filehandle,
-#     )
-
-# import provenance.vis as vis
-# plot = vis.visualize_lineage(provenance_result)
-
-
-
-
-# Define the command-line arguments
-parser = argparse.ArgumentParser(description='MAW-Py')
-parser.add_argument('--metfrag_candidate_list', type=str, action='append', help='path to MetFrag candidate list CSV files')
-parser.add_argument('--ms1data', type=str, help='path to MS1 data CSV file')
-parser.add_argument('--score_thresh', type=float, default=0.75, help='score threshold for MetFrag results (default: 0.75)')
-parser.add_argument('--msp_file', type=str, help='path to spec result CSV file')
-parser.add_argument('--gnps_dir', type=str, help='path to GNPS directory')
-parser.add_argument('--hmdb_dir', type=str, help='path to HMDB directory')
-parser.add_argument('--mbank_dir', type=str, help='path to MassBank directory')
-# Parse the command-line arguments
-args = parser.parse_args()
-
-# Set the variables using the parsed arguments
-msp_file = args.msp_file
-gnps_dir = args.gnps_dir
-hmdb_dir = args.hmdb_dir
-mbank_dir = args.mbank_dir
-metfrag_candidate_list = args.metfrag_candidate_list
-ms1data = args.ms1data
-score_thresh = args.score_thresh
-
-
-# msp_file = "/Users/mahnoorzulfiqar/OneDriveUNI/MAW-FAIR/VN_211016_Sc_st_PRM_negjson/spectral_dereplication/spectral_results_for_checkRscript.csv"
-# gnps_dir = "/Users/mahnoorzulfiqar/OneDriveUNI/MAW-FAIR/VN_211016_Sc_st_PRM_negjson/spectral_dereplication/GNPS"
-# hmdb_dir = "/Users/mahnoorzulfiqar/OneDriveUNI/MAW-FAIR/VN_211016_Sc_st_PRM_negjson/spectral_dereplication/HMDB"
-# mbank_dir = "/Users/mahnoorzulfiqar/OneDriveUNI/MAW-FAIR/VN_211016_Sc_st_PRM_negjson/spectral_dereplication/MassBank"
-
-# msp_file
-# ms1data = "/Users/mahnoorzulfiqar/OneDriveUNI/MAW-FAIR/VN_211016_Sc_st_PRM_negjson/insilico/MS1DATA.csv"
-
 def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, standards = False):
     spec_msv = pd.read_csv(msp_file)
     sir_msv = pd.read_csv(ms1data)
@@ -3149,8 +2470,673 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, standard
     + "/"
     + "mergedResults-with-one-Candidates.csv"
     )
+    return merged_df
 
 
-spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir)
+# doesnt apply anymore here. because the argument is a single directory with results
+#@p.provenance()
+def merge_all_results(input_dir):
+    names = []
+    
+    # entry is all files and folders in input_dir
+    for entry in os.listdir(input_dir):
+        # if the entry is also a directory
+        if os.path.isdir(os.path.join(input_dir, entry)):
+
+            # reach spectra_dereplication folder
+            merged_file_res = input_dir+ "/"+ entry+ "/mergedResults-with-one-Candidates.csv"
+
+            if os.path.exists(merged_file_res):
+                merged_csv = pd.read_csv(merged_file_res)
+                names.append(merged_csv)
+    merged = (pd.concat(names, ignore_index=True))
+    # Select the ones you want
+    merged = merged[['id_X_x', 'premz', 'rtmed', 'rtmean',
+           'int', 'col_eng', 'pol', 'rtmin', 'rtmax', 'source_file', 'Formula',
+                     'PubChemID',
+                    'SMILES', 'IUPAC', 'synonyms', 'AnnotationSources', 'AnnotationCount',
+           'MSILevel', 'MCSS', 'subclass', 'class', 'superclass', 'ClassificationSource']]
+    merged.to_csv(input_dir + "/final_candidates.csv")
+    return(merged)
+
+
+# Comparison with a list of SMILES from any Source
+def SMILESscreening(input_dir, resultcsv, complist, listname):
+   
+    """SMILESscreening takes a list of SMILES
+
+    Parameters:
+    input_dir (str): This is the input directory where all the .mzML
+    files and their respective result directories are stored.
+
+    resultcsv: df from combine_CuratedR or checkSMILES_validity or classification
+    complist: list of /n separated txt file conyaining smiles on each line
+    listname: name of the list of compounds
+
+    Returns:
+    dataframe: comparison with another list of compounds
+    csv: "MetabolomicsResults/final_curation_with_validSMILES.csv"
+
+    Usage:
+    checkSMILES_validity(input_dir = "usr/project/", results)
+
+    """
+
+    results = pd.read_csv(resultcsv)
+    with open(complist, "r") as text_file:
+        cd = text_file.read().split("\n")
+
+    for i, row in results.iterrows():
+        if not isNaN(results["SMILES"][i]):
+            if (
+                "invalid_SMILES" not in results["SMILES"][i]
+                and "invalid_chemistry" not in results["SMILES"][i]
+            ):
+                for j in cd:
+                    if not isNaN(j):
+                        CGms = [
+                            Chem.MolFromSmiles(results["SMILES"][i]),
+                            Chem.MolFromSmiles(j),
+                        ]
+                        CGfps = [
+                            AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=1024)
+                            for x in CGms
+                        ]
+                        CGtn = DataStructs.FingerprintSimilarity(CGfps[0], CGfps[1])
+                        if (
+                            CGtn == 1
+                            and listname not in results["Annotation_Source"][i]
+                        ):
+                            results["Annotation_Source"][i] = (
+                                results["Annotation_Source"][i] + ", " + listname
+                            )
+
+    results.to_csv(
+        input_dir + "MetabolomicsResults/final_curationListVS" + listname + ".csv"
+    )
+    return results
+
+
+#@p.provenance()
+def classification(resultcsv):
+   
+
+    """classification function uses ClassyFire ChemONT
+
+    Parameters:
+    input_dir (str): This is the input directory where all the .mzML
+    files and their respective result directories are stored.
+
+    resultcsv: csv of df from combine_CuratedR or checkSMILES_validity
+
+    Returns:
+    dataframe: with classification
+    csv: "MetabolomicsResults/final_curationList.csv"
+
+    Usage:
+    checkSMILES_validity(input_dir = "usr/project/", frame)
+
+    """
+    
+    frame = pd.read_csv(resultcsv)
+    inchis = []
+    for i, row in frame.iterrows():
+        if not isNaN(frame["SMILES"][i]):
+            if "SIRIUS" not in frame["AnnotationSources"][i]:
+                try:
+                    InChI = Chem.MolToInchi(Chem.MolFromSmiles(frame["SMILES"][i]))
+                    InChIKey = Chem.inchi.InchiToInchiKey(InChI)
+                    inchis.append(
+                        {
+                            "index": i,
+                            "smiles": frame["SMILES"][i],
+                            "inchi": InChI,
+                            "inchikey": InChIKey,
+                        }
+                    )
+                except Exception:
+                    pass
+            elif "SIRIUS" in frame["AnnotationSources"][i]:
+                if isNaN(frame["superclass"][i]):
+                    try:
+                        InChI = Chem.MolToInchi(Chem.MolFromSmiles(frame["SMILES"][i]))
+                        InChIKey = Chem.inchi.InchiToInchiKey(InChI)
+                        inchis.append(
+                            {
+                                "index": i,
+                                "smiles": frame["SMILES"][i],
+                                "inchi": InChI,
+                                "inchikey": InChIKey,
+                            }
+                        )
+                    except Exception:
+                        pass
+    inchis = pd.DataFrame(inchis)
+    if len(inchis):
+        inchis = inchis.loc[-isNaN(inchis["inchikey"])]
+        # Retrieve ClassyFire classifications
+
+        # This first step is done using inchikey and interrogation of the gnps classified structures
+        """
+        gnps_proxy = True
+        url = "http://classyfire.wishartlab.com"
+        proxy_url = "https://gnps-classyfire.ucsd.edu"
+        chunk_size = 1000
+        sleep_interval = 12
+        """
+
+        all_inchi_keys = list(inchis["inchikey"].drop_duplicates())
+
+        resolved_ik_number_list = [0, 0]
+        # total_inchikey_number = len(all_inchi_keys)
+
+        while True:
+
+            # start_time = time.time()
+
+            # print('%s inchikey to resolve' % total_inchikey_number )
+            get_classifications_cf_mod(all_inchi_keys, par_level=6)
+
+            cleanse("all_json.json", "all_json.json")
+
+            with open("all_json.json") as tweetfile:
+                jsondic = json.loads(tweetfile.read())
+
+            df = json_normalize(jsondic)
+            df = df.drop_duplicates("inchikey")
+            resolved_ik_number = len(df.drop_duplicates("inchikey").inchikey)
+            resolved_ik_number_list.append(resolved_ik_number)
+            # print('%s resolved inchikeys' % resolved_ik_number )
+            # print("done in --- %s seconds ---" % (time.time() - start_time))
+
+            if (
+                resolved_ik_number_list[-1] < resolved_ik_number_list[-2]
+                or resolved_ik_number_list[-1] == resolved_ik_number_list[-3]
+            ):
+                break
+            cleanse("all_json.json", "all_json_cleaned.json")
+
+            with open("all_json_cleaned.json") as tweetfile:
+                jsondic = json.loads(tweetfile.read())
+
+        flattened_classified_json = json_normalize(jsondic)
+        flattened_df = flattened_classified_json.drop_duplicates("inchikey")
+        flattened_df["inchikey"] = flattened_df["inchikey"].str.replace(
+            r"InChIKey=", ""
+        )
+        df_merged = pd.merge(
+            inchis, flattened_df, left_on="inchikey", right_on="inchikey", how="left"
+        )
+        #df_merged.to_csv("check.csv")
+        for p, rowp in df_merged.iterrows():
+            for q, rowq in frame.iterrows():
+                if df_merged["smiles_x"][p] is frame["SMILES"][q]:
+                    if "subclass.name" in df_merged.columns:
+                        frame.loc[q, "subclass"] = df_merged["subclass.name"][p]
+
+                    frame.loc[q, "class"] = df_merged["class.name"][p]
+                    frame.loc[q, "superclass"] = df_merged["superclass.name"][p]
+                    frame.loc[q, "ClassificationSource"] = "ClassyFire"
+
+        frame.to_csv(resultcsv)
+        return frame
+
+# NP_Classifier classification
+def Np_pathways(input_dir, resultcsv):
+    df = pd.read_csv(resultcsv)
+    npresults = []
+    for i, row in df.iterrows():
+        if not isNaN(df["SMILES"][i]):
+            try:
+                cvv = Chem.MolFromSmiles(df["SMILES"][i])
+                cvv = Chem.MolToSmiles(cvv, isomericSmiles=False)
+                c = urllib.parse.quote_plus(cvv, safe=" ")
+
+                url = "https://npclassifier.ucsd.edu/classify?smiles=" + c
+                names = str(df["id_X"][i])
+                outx = str("myFile" + names + ".txt")
+                file = wget.download(url, out=outx)
+                a_dataframe = pd.read_csv(file, delimiter="]")
+                xox = list(a_dataframe.columns.values)
+                splitting0 = xox[0].split(":")
+                xoc = re.sub('\ |\[|\]|"', " ", splitting0[1]).strip()
+                splitting1 = xox[1].split(":")
+                xos = re.sub('\ |\[|\]|"', " ", splitting1[1]).strip()
+                # except:
+                # splitting1 = xox[1].split(':')
+                # xos = re.sub('\ |\[|\]|\"', '', splitting1[0])
+                splitting2 = xox[2].split(":")
+                xop = re.sub('\ |\[|\]|"', " ", splitting2[1]).strip()
+                # df.loc[i, 'npclass'] = xoc
+                # df.loc[i, 'npsuper_class'] = xos
+                if not isNaN(df["class"][i]) and df["class"][i] in xoc:
+                    df.loc[i, "np_pathway"] = xop
+                os.remove(outx)
+                time.sleep(0.5)
+
+                npresults.append(
+                    {
+                        "index": i,
+                        # 'id': df['file_id'][i],
+                        "mz": df["premz"][i],
+                        "rt": df["rtmed"][i],
+                        "SMILES": df["SMILES"][i],
+                        "class": xoc,
+                        "subclass": xos,
+                        "pathway": xop,
+                    }
+                )
+                if df["class"][i] == xoc:
+                    df.loc[i, "pathway"]
+            except Exception:
+                pass
+    np_results = pd.DataFrame(npresults)
+    np_results.to_csv(input_dir + "/NPClassifier_Results.csv")
+    df.to_csv(input_dir + "/final_results_with_Pathways.csv")
+
+    # read csv
+    df = pd.read_csv(resultcsv)
+
+    # define empty variable
+    dbn = []
+
+    # check the result csv
+    for i, row in df.iterrows():
+        # to compare each element with each opther element
+        for j, row in df.iterrows():
+
+            # if its not same id
+            if df["SMILES"][i] != df["SMILES"][j]:
+
+                if not isNaN(df["SMILES"][i]):
+                    if not isNaN(df["SMILES"][j]):
+
+                        try:
+                            ms = [
+                                Chem.MolFromSmiles(df["SMILES"][i]),
+                                Chem.MolFromSmiles(df["SMILES"][j]),
+                            ]
+                            fps = [
+                                AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048)
+                                for x in ms
+                            ]
+                            tn = DataStructs.FingerprintSimilarity(fps[0], fps[1])
+                            dbn.append(
+                                {
+                                    "Name_i": df["IUPAC"][i],
+                                    "Name_j": df["IUPAC"][j],
+                                    "i": df["SMILES"][i],
+                                    "j": df["SMILES"][j],
+                                    "Tanimoto": tn,
+                                }
+                            )
+                        except Exception:
+                            pass
+    # save chemical similarities
+    db_edgenode = pd.DataFrame(dbn)
+
+    dfe = []
+    heavy_atoms = ["C", "N", "P", "O", "S"]
+    for i, row in db_edgenode.iterrows():
+        if db_edgenode["Tanimoto"][i] >= 0.85:
+            # list of mol used to calaculate the MCSS
+            n = [
+                Chem.MolFromSmiles(db_edgenode["i"][i]),
+                Chem.MolFromSmiles(db_edgenode["j"][i]),
+            ]
+            res = rdFMCS.FindMCS(n, timeout=60)
+            sm_res = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+            # Check if the MCSS has one of the heavy atoms and whether they are
+            # more than 3
+            elem = [ele for ele in heavy_atoms if (ele in sm_res)]
+            if elem and len(sm_res) >= 3:
+                MCSS_SMILES = Chem.MolToSmiles(Chem.MolFromSmarts(res.smartsString))
+
+            dfe.append(
+                {
+                    "Start": db_edgenode["Name_i"][i],
+                    "End": db_edgenode["Name_j"][i],
+                    "Tanimoto": db_edgenode["Tanimoto"][i],
+                    "Start_SMILES": db_edgenode["i"][i],
+                    "End_SMILES": db_edgenode["j"][i],
+                    # 'Start_Source':db_edgenode['Source_i'][i],
+                    # 'End_Source':db_edgenode['Source_j'][i],
+                    "MCSS": MCSS_SMILES,
+                }
+            )
+    if len(df_edge) > 0:
+        
+        df_edge = pd.DataFrame(dfe)
+        df_edge["Start"] = df_edge["Start"].astype(str)
+        df_edge["End"] = df_edge["End"].astype(str)
+        df_edge["sorted_row"] = [sorted([a, b]) for a, b in zip(df_edge.Start, df_edge.End)]
+        df_edge["sorted_row"] = df_edge["sorted_row"].astype(str)
+        df_edge.drop_duplicates(subset=["sorted_row"], inplace=True)
+
+        nodes = []
+        for i, row in df.iterrows():
+            n = df["IUPAC"][i]
+            nodes.append({"nodes": n})
+
+        node = pd.DataFrame(nodes)
+
+        df_edge.to_csv(input_dir + "/ChemMNedges.tsv", sep="\t")
+        node.to_csv(input_dir + "/ChemMNnodes.csv", index=False)
+
+        newdf = df_edge
+        newdf["StartAtt"] = np.nan
+        newdf["EndAtt"] = np.nan
+        for i, row in newdf.iterrows():
+            for j, row in df.iterrows():
+                if newdf["Start"][i] == df["IUPAC"][j]:
+                    newdf.loc[i, "StartAtt"] = df["class"][j]
+                if newdf["End"][i] == df["IUPAC"][j]:
+                    newdf.loc[i, "EndAtt"] = df["class"][j]
+        newdf.to_csv(input_dir + "/ChemMNcys.tsv", sep="\t")
+
+        return newdf
+
+def gnpsMNvsgnpsMAW(input_dir):
+    
+    """gnpsMNvsgnpsMAW checks with tanimoto similarity score, whether
+    results from MAW GNPS and GNPS MN Masst results give same candidate
+
+    Parameters:
+    input_dir = input directory where you have stored the cytoscape file
+    from GNPS MN results and have exported edge and node tables from cytoscape
+    These two csv egde and node files must have "edge" and "node" in their name
+
+    Returns:
+    GNPS results with cluster index named
+    GNPS MN results with a confirmation column if MAW detected same candidate,
+    file named:
+
+    Usage:
+    gnpsMNvsgnpsMAW(input_dir)
+
+    """
+    # extract files with edges from MN results
+    GMNfile_edge = [f for f in os.listdir(input_dir) if "edge" in f]
+    # extract files with nodes from MN results
+    GMNfile_node = [f for f in os.listdir(input_dir) if "node" in f]
+    # read the files
+    GMNdf_node = pd.read_csv(GMNfile_node[0])
+    GMNdf_edge = pd.read_csv(GMNfile_edge[0])
+
+    # extract only important columns from both csv files
+    GMNdf_node = GMNdf_node[
+        [
+            "precursor mass",
+            "RTMean",
+            "UniqueFileSources",
+            "charge",
+            "cluster index",
+            "componentindex",
+            "Compound_Name",
+            "Smiles",
+            "SpectrumID",
+        ]
+    ]
+    GMNdf_edge = GMNdf_edge[
+        ["cosine_score", "EdgeAnnotation", "node1", "node2", "mass_difference"]
+    ]
+
+    # rename node1 to cluster index to merge nodes and edges results from MN
+    GMNdf_edge = GMNdf_edge.rename(columns={"node1": "cluster index"})
+    GMNdf = pd.merge(GMNdf_node, GMNdf_edge, on="cluster index")
+
+    # Read results obtained from scoring_spec, named input_dir/MetabolomicsResults/scoredSpecDB.csv
+    SDB = pd.read_csv(input_dir + "/MetabolomicsResults/scoredSpecDB.csv")
+    # only keep GNPS resulst and remove other columns
+    only_GNPS = SDB[SDB["annotation"].str.contains("GNPS")]
+    only_GNPS = only_GNPS[
+        [
+            "id_X",
+            "premz_x",
+            "rtmean_x",
+            "GNPSmax_similarity",
+            "GNPSSMILES",
+            #"GNPSspectrumID",
+            "GNPScompound_name",
+            "GNPSmirrorSpec",
+        ]
+    ]
+
+    # from GNPS MAW results and GNPS MN results, calculate how many MAW results are same as MN:
+    for i, row in only_GNPS.iterrows():
+        for j, row in GMNdf.iterrows():
+            if not isNaN(only_GNPS["GNPSSMILES"][i]) and not isNaN(GMNdf["Smiles"][j]):
+                SKms = [
+                    Chem.MolFromSmiles(only_GNPS["GNPSSMILES"][i]),
+                    Chem.MolFromSmiles(GMNdf["Smiles"][j]),
+                ]
+                SKfps = [
+                    AllChem.GetMorganFingerprintAsBitVect(x, 2, nBits=2048)
+                    for x in SKms
+                ]
+                SKtn = DataStructs.FingerprintSimilarity(SKfps[0], SKfps[1])
+                if SKtn == 1.0:
+                    GMNdf.loc[j, "gnps_maw"] = "confirmed"
+                    only_GNPS.loc[i, "index_MN_nodes"] = j
+                elif SKtn < 1.0 and SKtn < 0.75:
+                    GMNdf.loc[j, "gnps_maw"] = "similar"
+                    only_GNPS.loc[i, "index_MN_nodes"] = j
+    only_GNPS.to_csv(input_dir + "/only_GNPS.csv")
+    GMNdf.to_csv(input_dir + "/GMNdf.csv")
+
+# naming is any string used to name or put an id to the sunburst as many sunbursts will be created
+def sunburst(input_dir, input_csv, naming):
+    
+    cl = pd.read_csv(input_csv)
+    class_data = cl[['superclass', 'class', 'subclass']]
+    spclass = list(class_data['superclass']) # all superclasses
+    uniq_spclass = list(np.unique(list(class_data['superclass']))) # only unique super classes
+    uniq_spc = [s for s in uniq_spclass if 'nan' not in s ] # only unique super classes with no NA values
+    print(len(uniq_spclass))
+    clss = list(class_data['class'])
+    uniq_class = list(np.unique(list(class_data['class'])))
+    uniq_c = [s for s in uniq_class if 'nan' not in s ]
+    len(uniq_class)
+    sbclass = list(class_data['subclass'])
+    uniq_sbclass = list(np.unique(list(class_data['subclass'])))
+    uniq_sbc = [s for s in uniq_sbclass if 'nan' not in s ]
+    len(uniq_sbclass)
+
+    #all characters
+    Names = ['Organic Compounds'] + uniq_spclass+uniq_class+uniq_sbclass
+
+    df = pd.DataFrame(Names)
+    df['values'] = ''
+    df['parents'] = ''
+
+    df = df.rename(columns={0: 'characters'})
+    
+    if "nan" in np.unique(df["characters"]):
+    
+        #for i, row in df.iterrows():
+        for i, row in df[0:len(df)-2].iterrows():
+            if 'Organic Compounds' in df['characters'][i]:
+                df.loc[i, 'values'] = 0
+                df.loc[i, 'parents'] = ''
+
+            elif df['characters'][i] in uniq_spclass:
+
+                df.loc[i, 'values'] = spclass.count(df['characters'][i])
+                df.loc[i, 'parents'] = 'Organic Compounds'
+
+            elif df['characters'][i] in uniq_class:
+
+                df.loc[i, 'values'] = clss.count(df['characters'][i])
+                df.loc[i, 'parents'] = 'Organic Compounds'
+
+                df.loc[i, 'values'] = clss.count(df['characters'][i])
+                clsp = class_data['superclass'][class_data[class_data['class'] == df['characters'][i]].index.tolist()[0]]
+                df.loc[i, 'parents'] = clsp
+
+
+            elif df['characters'][i] in uniq_sbclass:
+                df.loc[i, 'values'] = sbclass.count(df['characters'][i])
+                sbclsp = class_data['class'][class_data[class_data['subclass'] == df['characters'][i]].index.tolist()[0]]
+                df.loc[i, 'parents'] = sbclsp
+    else:
+        for i, row in df.iterrows():
+            if 'Organic Compounds' in df['characters'][i]:
+                df.loc[i, 'values'] = 0
+                df.loc[i, 'parents'] = ''
+
+            elif df['characters'][i] in uniq_spclass:
+
+                df.loc[i, 'values'] = spclass.count(df['characters'][i])
+                df.loc[i, 'parents'] = 'Organic Compounds'
+
+            elif df['characters'][i] in uniq_class:
+
+                df.loc[i, 'values'] = clss.count(df['characters'][i])
+                df.loc[i, 'parents'] = 'Organic Compounds'
+
+                df.loc[i, 'values'] = clss.count(df['characters'][i])
+                clsp = class_data['superclass'][class_data[class_data['class'] == df['characters'][i]].index.tolist()[0]]
+                df.loc[i, 'parents'] = clsp
+
+
+            elif df['characters'][i] in uniq_sbclass:
+                df.loc[i, 'values'] = sbclass.count(df['characters'][i])
+                sbclsp = class_data['class'][class_data[class_data['subclass'] == df['characters'][i]].index.tolist()[0]]
+                df.loc[i, 'parents'] = sbclsp
+    data = dict(character = df['characters'], parents = df['parents'], values = df['values'])
+    fig = px.sunburst(
+        data,
+        names='character',
+        parents='parents',
+        values='values',
+        
+    )
+    fig.update_layout(margin = dict(t=0, l=0, r=0, b=0))
+    name_html = input_dir+"/"+naming+"_sunburst.html"
+    print(name_html)
+    fig.write_html(name_html)
+    fig.show()
+    return data
+
+def list_all_folders(input_dir, list_of_words_to_remove, starting_words_for_all_folders = None):
+    #define the input directory
+    path = input_dir
+    # list all files
+    file = os.listdir(path)
+    if starting_words_for_all_folders:
+        # list all folders that start with "DS" and arent mzML files
+        folders = [x for x in os.listdir(path) if x.startswith(starting_words_for_all_folders)]
+    else:
+        # list all folders that start with "DS" and arent mzML files
+        folders = [x for x in os.listdir(path)]
+    
+    for i in list_of_words_to_remove:
+        folders = [x for x in folders if not i in x]
+        
+    return folders
+
+def chemMN(input_dir, input_csv, naming, name_col):
+    df = pd.read_csv(input_csv)
+    dbn= []
+    for i, row in df.iterrows():
+        for j, row in df.iterrows():
+            if df['SMILES'][i] != df['SMILES'][j]:
+                try:
+                    ms = [Chem.MolFromSmiles(df['SMILES'][i]), Chem.MolFromSmiles(df['SMILES'][j])]
+                    fps = [AllChem.GetMorganFingerprintAsBitVect(x,2, nBits=1024) for x in ms]
+                    tn = DataStructs.FingerprintSimilarity(fps[0],fps[1])
+                    dbn.append({
+                        'Namei':df[name_col][i],
+                        'Namej':df[name_col][j],
+                        'i': df['SMILES'][i],
+                        'j': df['SMILES'][j],
+                        'Tanimoto': tn
+                    })
+                except:
+                    pass
+        #print(i)
+    db_edge = pd.DataFrame(dbn)
+    db_edge.to_csv(input_dir+ "/"+ naming+ "_allVSall.csv")
+
+    dfe = []
+    x=0
+    for i, row in db_edge.iterrows():        
+        if db_edge['Tanimoto'][i] >= 0.85:
+            x=x+1
+            dfe.append({
+                'Start':db_edge['Namei'][i],
+                'End':db_edge['Namej'][i],
+                'Tanimoto':db_edge['Tanimoto'][i]
+            })
+    new_df = pd.DataFrame(dfe)
+    new_df['Start'] = new_df['Start'].astype(str)
+    new_df['End'] = new_df['End'].astype(str)
+    new_df['StartAtt']=np.nan
+    new_df['EndAtt']=np.nan
+    for i, row in new_df.iterrows():
+        for j, row in df.iterrows():
+            if new_df['Start'][i]==df[name_col][j]:
+                new_df.loc[i, 'StartAtt'] = df['superclass'][j]
+    for i, row in new_df.iterrows():
+        for j, row in df.iterrows():
+            if new_df['End'][i]==df[name_col][j]:
+                new_df.loc[i, 'EndAtt'] = df['superclass'][j]
+
+    new_df['sorted_names'] = new_df.apply(lambda row: '-'.join(sorted([row['Start'], row['End']])), axis=1)
+    new_df = new_df.drop_duplicates(subset=["sorted_names"], keep="last")
+    new_df.to_csv(input_dir + "/" + naming + "_chemMN_Cytoscape.tsv", sep='\t')
+    return new_df
+
+
+
+# Define the command-line arguments
+parser = argparse.ArgumentParser(description='MAW-Py')
+parser.add_argument('--msp_file', type=str, help='path to spec result CSV file')
+parser.add_argument('--gnps_dir', type=str, help='path to GNPS directory')
+parser.add_argument('--hmdb_dir', type=str, help='path to HMDB directory')
+parser.add_argument('--mbank_dir', type=str, help='path to MassBank directory')
+parser.add_argument('--metfrag_candidate_list', type=str, action='append', help='path to MetFrag candidate list CSV files')
+parser.add_argument('--ms1data', type=str, help='path to MS1 data CSV file')
+parser.add_argument('--score_thresh', type=float, default=0.75, help='score threshold for MetFrag results (default: 0.75)')
+# Parse the command-line arguments
+args = parser.parse_args()
+
+# Set the variables using the parsed arguments
+msp_file = args.msp_file
+gnps_dir = args.gnps_dir
+hmdb_dir = args.hmdb_dir
+mbank_dir = args.mbank_dir
+metfrag_candidate_list = args.metfrag_candidate_list
+ms1data = args.ms1data
+score_thresh = args.score_thresh
+
+
+
+provenance_result = spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir)
 metfrag_postproc(ms1data, metfrag_candidate_list, score_thresh)
 CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, standards = False)
+
+resultcsv = ms1data.replace("insilico/MS1DATA.csv", "")+"mergedResults-with-one-Candidates.csv"
+classification(resultcsv)
+
+
+
+
+from ruamel.yaml.main import YAML
+
+with open("provenance_python.yaml", "w") as filehandle:
+    yaml = YAML()
+    yaml.default_flow_style = False
+    yaml.indent = 4
+    yaml.block_seq_indent = 2
+    yaml.dump(
+        { "fn_module": provenance_result.artifact.fn_module,
+          "fn_name": provenance_result.artifact.fn_name,
+          "run_info": provenance_result.artifact.run_info,
+          "inputs": provenance_result.artifact.inputs
+          },
+        filehandle,
+    )
+
+import provenance.vis as vis
+plot = vis.visualize_lineage(provenance_result)
