@@ -59,6 +59,21 @@ outputs:
 
   peaks_and_parameters:
     type: Any[]?
+
+  msp_file:
+    type: File
+
+  ms1data:
+    type: File
+
+  gnps_dir:
+    type: Directory
+
+  hmdb_dir:
+    type: Directory
+
+  mbank_dir:
+    type: Directory
   
   provenance:
     type: Directory

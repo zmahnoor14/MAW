@@ -14,18 +14,21 @@ requirements:
         writable: true
 inputs: 
   workflow_script: File
-  mzml_files_results:
-    type: Directory
-  # sirius_results:
-  #   type: Directory[]
-  #   inputBinding:
-  #     position: 3
-  
-
-
+  msp_file: File
+  gnps_dir: Directory
+  hmdb_dir: Directory
+  mbank_dir: Directory
+  metfrag_candidate_list: 
+    type: File[]
+  ms1data: File
+  score_thresh:
+    type: float
+    default: 0.75
+    
 arguments: 
     - $(inputs.workflow_script.path)
-    - $(inputs.mzml_files_results.path)
+    - cwl.output.json
+
 outputs:
   results: 
     type: Directory
