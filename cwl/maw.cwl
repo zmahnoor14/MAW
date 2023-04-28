@@ -21,8 +21,6 @@ inputs:
         type: File
     mbank_file:
         type: File
-    mzml_result:
-        type: string
     file_id:
         type: string
     ppmx:
@@ -44,7 +42,6 @@ steps:
             gnps_file: gnps_file
             hmdb_file: hmdb_file
             mbank_file: mbank_file
-            mzml_result: mzml_result
             file_id: file_id
             ppmx: ppmx
             db_name: db_name
@@ -53,6 +50,11 @@ steps:
             # - ms_files
             - results
             - peaks_and_parameters
+            - msp_file
+            - ms1data
+            - gnps_dir
+            - hmdb_dir
+            - mbank_dir
 
     metfrag:
         run: maw-metfrag.cwl
@@ -60,8 +62,7 @@ steps:
             - PeakList
             - IonizedPrecursorMass
             - PrecursorIonMode
-            # - IsPositiveIonMode
-            - LocalDatabase
+            - LocalDatabasePath
             - SampleName
 
         scatterMethod: dotproduct
@@ -75,17 +76,14 @@ steps:
             PrecursorIonMode:
                 source: dereplication/peaks_and_parameters
                 valueFrom: $(self.PrecursorIonMode)
-            # IsPositiveIonMode:
-            #     source: dereplication/peaks_and_parameters
-            #     valueFrom: $(self.IsPositiveIonMode)
-            LocalDatabase:
+            LocalDatabasePath:
                 source: dereplication/peaks_and_parameters
-                valueFrom: $(self.LocalDatabase)
+                valueFrom: $(self.LocalDatabasePath)
             SampleName:
                 source: dereplication/peaks_and_parameters
                 valueFrom: $(self.SampleName)
 
-        out: [candidate_list]
+        out: [metfrag_candidate_list]
 
     # sirius_isotope:
     #     run: sirius-new.cwl
@@ -115,13 +113,26 @@ steps:
         run: maw-py.cwl
         in: 
             workflow_script: python_script
-            mzml_files_results: dereplication/results
+            msp_file: 
+                source: dereplication/msp_file
+                valueFrom: $(self.msp_file)
+            gnps_dir: 
+                source: dereplication/gnps_dir
+                valueFrom: $(self.gnps_dir)
+            hmdb_dir: 
+                source: dereplication/hmdb_dir
+                valueFrom: $(self.hmdb_dir)
+            mbank_dir: 
+                source: dereplication/mbank_dir
+                valueFrom: $(self.mbank_dir)
             # sirius_results: 
             #     source: [sirius_no_isotope/results, sirius_isotope/results]
             #     linkMerge: True
-            # candidate_list: metfrag/candidate_list
- 
-            
+            metfrag_candidate_list: 
+                source: [metfrag/metfrag_candidate_list]
+            ms1data: 
+                source: dereplication/ms1data
+                valueFrom: $(self.ms1data)
         out: [results, provenance]
 
 outputs:
