@@ -2185,11 +2185,8 @@ db_name = args[7]
 db_path = args[8]
 
 
-mzml_result <- str_remove(mzml_file, ".mzML")
-if (!file.exists(mzml_result)){
-    dir.create(mzml_result) ##create folder
-}
-
+mzml_result <- str_remove(basename(mzml_file), ".mzML")
+dir.create(mzml_result)
 print(mzml_file)
 print(mzml_result)
 
@@ -2294,7 +2291,6 @@ for (i in seq_along(metfrag_param_files_list)){
             ),
         IonizedPrecursorMass = as.character(strsplit(peak_file[2], split = " = ")[[1]][2]),
         PrecursorIonMode = as.numeric(strsplit(peak_file[3], split = " = ")[[1]][2]),
-        #IsPositiveIonMode = as.boolean(strsplit(peak_file[4], split = " = ")[[1]][2]),
         LocalDatabase = list(
             class = "File",
             path = strsplit(peak_file[6], split = " = ")[[1]][2]
@@ -2310,35 +2306,35 @@ for (i in seq_along(metfrag_param_files_list)){
 # Create a final JSON object with the list of JSON objects
 json_data$peaks_and_parameters <- listn
 
+json_data$msp_file <- list(
+  class = "File",
+  path = unlist(list.files(path = paste(mzml_result, "/spectral_dereplication", sep = ""), pattern = ".csv", full.names = TRUE))
+)
+
 json_data$ms1data <- list(
   class = "File",
   path = paste(mzml_result,'/insilico/MS1DATA.csv', sep = "")
 )
 
-json_data$msp_file <- list(
-  class = "File",
-  path = paste(mzml_result, "/", (list.files(paste(mzml_result, "/spectral_dereplication", sep =""), pattern = "*.csv")[1]), sep = "")
-)
-
 json_data$gnps_dir <- list(
-  class = "File",
+  class = "Directory",
   path = paste(mzml_result, "/spectral_dereplication/GNPS", sep ="")
 )
 
 json_data$hmdb_dir <- list(
-  class = "File",
+  class = "Directory",
   path = paste(mzml_result, "/spectral_dereplication/HMDB", sep ="")
 )
 
 json_data$mbank_dir <- list(
-  class = "File",
+  class = "Directory",
   path = paste(mzml_result, "/spectral_dereplication/MassBank", sep ="")
 )
 
 
 json_data$provenance <- list(
   class = "Directory",
-  path = "./prov_console"
+  path = "prov_console"
 )
 # Convert json_data to JSON string
 
@@ -2360,6 +2356,5 @@ print(time.taken)
 
 prov.save()
 prov.quit()
-
 
 
