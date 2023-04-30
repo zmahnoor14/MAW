@@ -1,29 +1,29 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# import yaml
-# import time
-# import provenance as p
-# from yaml.loader import SafeLoader
+import yaml
+import time
+import provenance as p
+from yaml.loader import SafeLoader
 
-# basic_config = {
-#     "blobstores": {
-#         "disk": {
-#             "type": "disk",
-#             "cachedir": "provenance-intro-artifacts",
-#             "read": True,
-#             "write": True,
-#             "delete": True,
-#         }
-#     },
-#     "artifact_repos": {
-#         "local": {
-#             "type": "memory"
-#         }
-#     },
-#     "default_repo": "local"
-# }
-# p.load_config(basic_config)
+basic_config = {
+    "blobstores": {
+        "disk": {
+            "type": "disk",
+            "cachedir": "provenance-intro-artifacts",
+            "read": True,
+            "write": True,
+            "delete": True,
+        }
+    },
+    "artifact_repos": {
+        "local": {
+            "type": "memory"
+        }
+    },
+    "default_repo": "local"
+}
+p.load_config(basic_config)
 
 import glob
 import json

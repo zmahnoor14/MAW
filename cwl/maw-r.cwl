@@ -78,5 +78,5 @@ outputs:
   provenance:
     type: Directory
 
-
-
+# $namespaces:
+#   edam: http://edamontology.org/

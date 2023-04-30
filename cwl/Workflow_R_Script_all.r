@@ -2107,7 +2107,7 @@ metfrag_param <- function(x, result_dir, db_name, db_path, ppm_max = 5, ppm_max_
         
         
         if (x[j, 'neutral_mass'] == "no mass from CAMERA"){
-            writeLines(paste("IonizedPrecursorMass = ", x[j, "premz"]), con = file.conn)
+            writeLines(paste("IonizedPrecursorMass = ", x[j, "premz"], sep =""), con = file.conn)
             
             if (x[j, 'pol'] == "neg"){
                 writeLines("PrecursorIonMode = -1", con = file.conn)
@@ -2291,15 +2291,15 @@ for (i in seq_along(metfrag_param_files_list)){
             ),
         IonizedPrecursorMass = as.character(strsplit(peak_file[2], split = " = ")[[1]][2]),
         PrecursorIonMode = as.numeric(strsplit(peak_file[3], split = " = ")[[1]][2]),
-        LocalDatabase = list(
+        LocalDatabasePath = list(
             class = "File",
             path = strsplit(peak_file[6], split = " = ")[[1]][2]
         ),
-        SampleName = strsplit(peak_file[11], split = " = ")[[1]][2],
-        ResultsPath = list(
-            class = "Directory",
-            path = strsplit(peak_file[12], split = " = ")[[1]][2]
-        )
+        SampleName = strsplit(peak_file[11], split = " = ")[[1]][2]
+        # ResultsPath = list(
+        #     class = "Directory",
+        #     path = strsplit(peak_file[12], split = " = ")[[1]][2]
+        # )
     )
     listn[[i]] <- json_object
 }
@@ -2337,9 +2337,6 @@ json_data$provenance <- list(
   path = "prov_console"
 )
 # Convert json_data to JSON string
-
-
-
 
 json_string <- toJSON(json_data, auto_unbox = TRUE, pretty = FALSE)
 json_string

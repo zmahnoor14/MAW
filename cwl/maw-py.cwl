@@ -7,11 +7,11 @@ baseCommand: [python3]
 requirements:
   DockerRequirement:
     dockerPull: zmahnoor/maw-py:1.0.7
-
-  InitialWorkDirRequirement:
-    listing:
-      - entry: $(inputs.mzml_files_results)
-        writable: true
+  InlineJavascriptRequirement: {}
+  # InitialWorkDirRequirement: {}
+    # listing:
+    #   - entry: $(inputs.mzml_files_results)
+    #     writable: true
 inputs: 
   workflow_script: File
   msp_file: File
@@ -27,13 +27,13 @@ inputs:
     
 arguments: 
     - $(inputs.workflow_script.path)
-    - cwl.output.json
+    - $(runtime.outdir)/cwl.output.json
 
 outputs:
   results: 
-    type: Directory
+    type: File
     outputBinding:
-       glob: $(inputs.mzml_files_results.basename)
+       glob: "mergedResults-with-one-Candidates.csv"
   provenance:
     type: File
     outputBinding:

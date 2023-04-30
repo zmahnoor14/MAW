@@ -5,7 +5,7 @@ baseCommand: ['java', '-jar', '/usr/src/myapp/MetFragCommandLine-2.5.0.jar']
 
 requirements:
   DockerRequirement:
-    dockerPull: docker.io/zmahnoor/maw-metfrag_2.5.0:1.0.4
+    dockerPull: docker.io/zmahnoor/maw-metfrag_2.5.0:1.0.5
   InlineJavascriptRequirement: {}
   InitialWorkDirRequirement:
     listing:
@@ -21,11 +21,12 @@ requirements:
         FragmentPeakMatchRelativeMassDeviation = 15
         MetFragCandidateWriter = CSV
         SampleName = $(inputs.SampleName)
-        ResultsPath = $(runtime.outdir)/metfrag
+        #ResultsPath = $(runtime.outdir)/metfrag
+        ResultsPath = $(runtime.outdir)
         MetFragPreProcessingCandidateFilter = UnconnectedCompoundFilter
         MetFragPostProcessingCandidateFilter = InChIKeyFilter
         MaximumTreeDepth = 2
-        NumberThreads = $(runtime.cores)
+        NumberThreads = 1
 
 
 inputs: # additional inputs for all files; make them to show certain paths
@@ -64,12 +65,13 @@ inputs: # additional inputs for all files; make them to show certain paths
   #     type: int
 
 arguments: 
-  - cwl.output.json
+  #- $(runtime.outdir)/cwl.output.json
+  - $(runtime.outdir)/metfrag.inputs
 
 outputs:
-
   metfrag_candidate_list:
     type: File
     outputBinding:
-        glob: "$(runtime.outdir)/metfrag/*.csv"
+        #glob: "$(runtime.outdir)/metfrag/*.csv"
+        glob: "$(runtime.outdir)/*.csv"
         #loadContents: true

@@ -137,7 +137,7 @@ steps:
 
 outputs:
   results: 
-    type: Directory
+    type: File
     outputSource: cheminformatics/results
   cheminformatics_prov:
     type: File
@@ -145,3 +145,7 @@ outputs:
 requirements:
     ScatterFeatureRequirement: {}
     StepInputExpressionRequirement: {}
+    InlineJavascriptRequirement: {}
+
+# $namespaces:
+#   edam: http://edamontology.org/
