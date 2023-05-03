@@ -1,29 +1,29 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import yaml
-import time
-import provenance as p
-from yaml.loader import SafeLoader
+# import yaml
+# import time
+# import provenance as p
+# from yaml.loader import SafeLoader
 
-basic_config = {
-    "blobstores": {
-        "disk": {
-            "type": "disk",
-            "cachedir": "provenance-intro-artifacts",
-            "read": True,
-            "write": True,
-            "delete": True,
-        }
-    },
-    "artifact_repos": {
-        "local": {
-            "type": "memory"
-        }
-    },
-    "default_repo": "local"
-}
-p.load_config(basic_config)
+# basic_config = {
+#     "blobstores": {
+#         "disk": {
+#             "type": "disk",
+#             "cachedir": "provenance-intro-artifacts",
+#             "read": True,
+#             "write": True,
+#             "delete": True,
+#         }
+#     },
+#     "artifact_repos": {
+#         "local": {
+#             "type": "memory"
+#         }
+#     },
+#     "default_repo": "local"
+# }
+# p.load_config(basic_config)
 
 import glob
 import json
@@ -75,14 +75,15 @@ def spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir):
             return True
         else:
             return False
-
+    
     if os.path.exists(msp_file):
         msp = pd.read_csv(msp_file)
         msp["mbank_results_csv"] = np.nan
         msp["gnps_results_csv"] = np.nan
 
         for mz, row in msp.iterrows():
-
+            if not os.path.isdir("proc_gnps"):
+                os.mkdir("proc_gnps")
             if os.path.exists(gnps_dir):
 
                 files_g = glob.glob(gnps_dir + "/*.csv")
@@ -176,16 +177,17 @@ def spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir):
                                         gnps_df.loc[k, "GNPSinchi"] = ""
 
                         gnps_df = gnps_df.dropna(axis=0, how="all")
-                        csvname = ((os.path.splitext(fls_g)[0]) + "proc" + ".csv")
+                        #csvname = ((os.path.splitext(fls_g)[0]) + "proc" + ".csv")
+                        
+                        csvname = "proc_gnps/" + os.path.basename((os.path.splitext(fls_g)[0]) + "proc" + ".csv")
+                        print(csvname)
                         msp.loc[mz, "gnps_results_csv"] = csvname
+                        gnps_df.to_csv(csvname)
                             
-                        if not os.path.exists(csvname):
-                            #print("this is wrong?")
-                            #print(csvname)
-                            #print(os.path.splitext(fls_g)[0])
-                            gnps_df.to_csv(csvname)
-                # HMDB Results
 
+                # HMDB Results
+            if not os.path.isdir("proc_hmdb"):
+                os.mkdir("proc_hmdb")
             if os.path.exists(hmdb_dir):
                 files_h = glob.glob(hmdb_dir + "/*.csv")
                 files_h = [item for item in files_h if 'proc' not in item]
@@ -195,34 +197,37 @@ def spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir):
                         #print(mz)
                         # print(msp["id_X"][mz])
                         for fls_h in files_h:
-                                if msp["id_X"][mz] in fls_h:
-                                    hmdb_df = pd.read_csv(fls_h)
+                            if msp["id_X"][mz] in fls_h:
+                                hmdb_df = pd.read_csv(fls_h)
 
-                                    if len(hmdb_df) > 0:
-                                        if "HMDBSMILES" in hmdb_df.columns:
-                                            #print(hmdb_df)
-                                            for i, row in hmdb_df.iterrows():
-                                            # if compound name is present
-                                                if not HMDB_Scoring(hmdb_df, i):
-                                                    hmdb_df.drop(i, inplace=True)
-                                            hmdb_df = hmdb_df.drop_duplicates(subset=["HMDBSMILES"])
+                                if len(hmdb_df) > 0:
+                                    if "HMDBSMILES" in hmdb_df.columns:
+                                        #print(hmdb_df)
+                                        for i, row in hmdb_df.iterrows():
+                                        # if compound name is present
+                                            if not HMDB_Scoring(hmdb_df, i):
+                                                hmdb_df.drop(i, inplace=True)
+                                        hmdb_df = hmdb_df.drop_duplicates(subset=["HMDBSMILES"])
 
 
-                                            csvname = (
-                                                (os.path.splitext(fls_h)[0])
-                                                + "proc"
-                                                + ".csv"
-                                            )  
-                                            msp.loc[
-                                                mz, "hmdb_results_csv"
-                                            ] = csvname
+                                        csvname = (
+                                            (os.path.splitext(fls_h)[0])
+                                            + "proc"
+                                            + ".csv"
+                                        )  
+                                        msp.loc[
+                                            mz, "hmdb_results_csv"
+                                        ] = csvname
 
-                                            if not os.path.exists(csvname):
-                                                hmdb_df.to_csv(csvname) 
-                                csvname = ((os.path.splitext(fls_h)[0])+ "proc"+ ".csv")  
+                                        if not os.path.exists(csvname):
+                                            hmdb_df.to_csv(csvname) 
+                                
+                                csvname = "proc_hmdb/" + os.path.basename((os.path.splitext(fls_h)[0])+ "proc"+ ".csv")  
                                 msp.loc[mz, "hmdb_results_csv"] = csvname
-                                if not os.path.exists(csvname):
-                                    hmdb_df.to_csv(csvname) 
+                                hmdb_df.to_csv(csvname) 
+            
+            if not os.path.isdir("proc_mbank"):
+                os.mkdir("proc_mbank")
             # MASSBANK Results
             if os.path.exists(mbank_dir):
                 files_m = glob.glob(mbank_dir + "/*.csv")
@@ -231,19 +236,17 @@ def spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir):
                     for fls_m in files_m:
                         if msp["id_X"][mz] in fls_m:
                             mbank_df = pd.read_csv(fls_m)
-                            if len(mbank_df) > 0:
-
-                                for i, row in mbank_df.iterrows():
-                                    # if compound name is present
-                                    if not MB_Scoring(mbank_df, i):
-                                        mbank_df.drop(i, inplace=True)
-                                mbank_df = mbank_df.drop_duplicates(subset=["MBSMILES"])
-                                csvname = ((os.path.splitext(fls_m)[0])+ "proc"+ ".csv")
-                                msp.loc[mz, "mbank_results_csv"] = csvname
-                                if not os.path.exists(csvname):
-                                    mbank_df.to_csv(csvname)
-        msp.to_csv(msp_file)
-        return msp_file
+                            for i, row in mbank_df.iterrows():
+                                # if compound name is present
+                                if not MB_Scoring(mbank_df, i):
+                                    mbank_df.drop(i, inplace=True)
+                            mbank_df = mbank_df.drop_duplicates(subset=["MBSMILES"])
+                            
+                            csvname = "proc_mbank/" + os.path.basename((os.path.splitext(fls_m)[0])+ "proc"+ ".csv")
+                            msp.loc[mz, "mbank_results_csv"] = csvname
+                            mbank_df.to_csv(csvname)
+        msp.to_csv(os.path.basename(msp_file))
+        return msp
 
 def metfrag_postproc(ms1data, metfrag_candidate_list, score_thresh):
     if os.path.exists(ms1data):
@@ -256,12 +259,16 @@ def metfrag_postproc(ms1data, metfrag_candidate_list, score_thresh):
             for file in metfrag_candidate_list:
                 if str(msp["premz"][mz]) in file:
                     metfrag_res = pd.read_csv(file)
-                    if len(metfrag_res)>0:
+                    if len(metfrag_res)>0 and len(metfrag_res)<=10:
                         metfrag_res = metfrag_res[metfrag_res['Score'] >= score_thresh]
+                        metfrag_res.to_csv(file)
+                    else:
+                        metfrag_res = metfrag_res[0:9]
                         metfrag_res.to_csv(file)
                     files_for_mz.append(file)
             msp.loc[mz, "MetFragCSV"] = files_for_mz[0]
-        msp.to_csv(ms1data)  
+        
+        msp.to_csv(os.path.basename(ms1data))  
         return msp
 
 def SuspectListScreening(input_dir, SuspectListPath, tanimoto, Source):
@@ -1358,12 +1365,14 @@ def sources_4_metfrag(candidates_with_counts, merged_df, mer, sirius_df):
     return merged_df
 
 #@p.provenance()
-def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, standards = False):
-    spec_msv = pd.read_csv(msp_file)
-    sir_msv = pd.read_csv(ms1data)
-    spec_msv = spec_msv[["id_X", "premz", "rtmin","rtmax", "rtmed","rtmean", "col_eng","pol",
+def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, standards = False):
+    # spec_msv = pd.read_csv(msp_file)
+    # sir_msv = pd.read_csv(ms1data)
+    spec_msv = msp_file
+    sir_msv = ms1data
+    spec_msv = spec_msv[["id_X", "ft_id","premz", "rtmin","rtmax", "rtmed","rtmean", "col_eng","pol",
             "int","source_file","mbank_results_csv","gnps_results_csv","hmdb_results_csv"]]
-    sir_msv = sir_msv[["id_X","premz","rtmed", "rtmean","int","col_eng", "pol",
+    sir_msv = sir_msv[["id_X","ft_id","premz","rtmed", "rtmean","int","col_eng", "pol",
             "ms2Peaks","ms1Peaks","MetFragCSV"]]
     merged_df = sir_msv.merge(spec_msv,
         how="inner",
@@ -1384,9 +1393,11 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, standard
     merged_df["ClassificationSource"] = np.nan
                 
 
-    entry = os.path.dirname(msp_file)
-    entry = entry.replace("/spectral_dereplication", "")
+    # entry = os.path.dirname(msp_file)
+    # entry = entry.replace("/spectral_dereplication", "")
     can_selec_dir = entry + "/Candidate_Selection"
+    if not os.path.isdir(entry):
+        os.mkdir(entry)
     if not os.path.isdir(can_selec_dir):
         os.mkdir(can_selec_dir)
 
@@ -2456,20 +2467,10 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, standard
 
                         merged_df.loc[mer, "MSILevel"] = 1
 
-    merged_df.to_csv(
-    entry
-    + "/"
-    + "mergedResults-with-one-Candidates.csv"
-    )
+    merged_df.to_csv("mergedResults-with-one-Candidates.csv")
     #print(merged_df)
-    merged_df = checkSMILES_validity(resultcsv = entry
-    + "/"
-    + "mergedResults-with-one-Candidates.csv")
-    merged_df.to_csv(
-    entry
-    + "/"
-    + "mergedResults-with-one-Candidates.csv"
-    )
+    merged_df = checkSMILES_validity(resultcsv = "mergedResults-with-one-Candidates.csv")
+    merged_df.to_csv("mergedResults-with-one-Candidates.csv")
     return merged_df
 
 
@@ -3109,34 +3110,38 @@ mbank_dir = args.mbank_dir
 metfrag_candidate_list = args.metfrag_candidate_list
 ms1data = args.ms1data
 score_thresh = args.score_thresh
+# metfrag_candidate_list = pd.read_csv("/Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/MAW/cwl/ms2_spectra_EXO_neg/insilico/metparam_list.txt", sep = "\t", header=None, names=["metfrag_csv"])
+# metfrag_candidate_list = metfrag_candidate_list['metfrag_csv'].tolist()
+
+# metfrag_candidate_list = [sub.replace('txt', 'csv') for sub in metfrag_candidate_list]
+print("spec_postproc starts")
+msp_file_df = spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir)
+print(msp_file_df)
+print("metfrag_postproc starts")
+ms1data_df = metfrag_postproc(ms1data, metfrag_candidate_list, score_thresh)
+print(ms1data_df)
+print("CandidateSelection starts")
+CandidateSelection_SimilarityandIdentity_Metfrag(msp_file = msp_file_df, 
+ms1data = ms1data_df, entry = "final_results", standards = False)
+classification(resultcsv = "mergedResults-with-one-Candidates.csv")
 
 
 
-provenance_result = spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir)
-metfrag_postproc(ms1data, metfrag_candidate_list, score_thresh)
-CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, standards = False)
+# from ruamel.yaml.main import YAML
 
-resultcsv = ms1data.replace("insilico/MS1DATA.csv", "")+"mergedResults-with-one-Candidates.csv"
-classification(resultcsv)
+# with open("provenance_python.yaml", "w") as filehandle:
+#     yaml = YAML()
+#     yaml.default_flow_style = False
+#     yaml.indent = 4
+#     yaml.block_seq_indent = 2
+#     yaml.dump(
+#         { "fn_module": provenance_result.artifact.fn_module,
+#           "fn_name": provenance_result.artifact.fn_name,
+#           "run_info": provenance_result.artifact.run_info,
+#           "inputs": provenance_result.artifact.inputs
+#           },
+#         filehandle,
+#     )
 
-
-
-
-from ruamel.yaml.main import YAML
-
-with open("provenance_python.yaml", "w") as filehandle:
-    yaml = YAML()
-    yaml.default_flow_style = False
-    yaml.indent = 4
-    yaml.block_seq_indent = 2
-    yaml.dump(
-        { "fn_module": provenance_result.artifact.fn_module,
-          "fn_name": provenance_result.artifact.fn_name,
-          "run_info": provenance_result.artifact.run_info,
-          "inputs": provenance_result.artifact.inputs
-          },
-        filehandle,
-    )
-
-import provenance.vis as vis
-plot = vis.visualize_lineage(provenance_result)
+# import provenance.vis as vis
+# plot = vis.visualize_lineage(provenance_result)

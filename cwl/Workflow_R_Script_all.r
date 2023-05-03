@@ -9,7 +9,7 @@ prov.init(prov.dir = ".")
 # Load Libraries
 library(Spectra)
 library(MsBackendMgf)
-library(MsBackendHmdb)
+#library(MsBackendHmdb)
 library(MsCoreUtils)
 library(MsBackendMsp)
 library(readr)
@@ -444,6 +444,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
     # common feature information
 
     id_X <- c() # id
+    ft_id <- c() # scan number
     premz <- c() # precursor mz
     rtmin <- c() # stores rtmin
     rtmax <- c() # stores rtmax
@@ -466,10 +467,15 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
         # this is done to extract all common information for id_X
         spsrt <- filterPrecursorMzRange(sps_all, x)
         # id based on file id,
+        
         id_Xx <- paste(file_id,  "M",  as.character(round(x, digits = 0)),
                         "R", as.character(round(median(spsrt$rtime, na.rm = TRUE), digits = 0)),
                         "ID", as.character(nx), sep = '')
         id_X <- c(id_X, id_Xx)
+
+        ft_id1 <- spsrt$spectrumId
+        ft_id <- c(ft_id, ft_id1)
+
         # pre_mas
         pre <- x
         premz <- c(premz, pre)
@@ -1472,7 +1478,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
     pre_mzs <- as.list(pre_mzs)
     v_pre_mzs <- future::value(pre_mzs)
     result_dir_spectra <- paste(result_dir, "/spectral_dereplication", sep = "")
-    spectra_input <- data.frame(cbind(id_X, premz, rtmin,
+    spectra_input <- data.frame(cbind(id_X, ft_id, premz, rtmin,
                                       rtmax, rtmed, rtmean,
                                       col_eng, pol, int, source_file))
     write.csv(spectra_input, file = paste(result_dir_spectra, "/spectral_results_for_", file_id, ".csv", sep = ""))
@@ -1503,6 +1509,7 @@ ms2_peaks <- function(pre_tbl, proc_mzml, result_dir, file_id){
     ms2Peaks <- c() # stores the peak list file directory
     id_X <- c() # creates a unique ID based on mz, rt and also the index
         #(since the mz and rt can be similar in some cases)
+    ft_id <- c()
     no_of_ms2_peaks <- c()
     int <- c() # stores intensity of the MS1 feature
     nx <- 0 # stores number for the ID
@@ -1524,8 +1531,9 @@ ms2_peaks <- function(pre_tbl, proc_mzml, result_dir, file_id){
                               "R", as.character(round(median(sps$rtime, na.rm = TRUE), digits = 0)),
                               "ID", as.character(nx), sep = '')
             id_X <- c(id_X, id_Xx)
-
-
+            #ft number
+            ft_id1 <- sps$spectrumId
+            ft_id <- c(ft_id, ft_id1)
             #mz
             premz <- c(premz, i)
 
@@ -1599,7 +1607,7 @@ ms2_peaks <- function(pre_tbl, proc_mzml, result_dir, file_id){
 
 
 
-    first_list <- data.frame(cbind(id_X, premz, rtmed, rtmean, int ,col_eng, pol, ms2Peaks))
+    first_list <- data.frame(cbind(id_X, ft_id, premz, rtmed, rtmean, int ,col_eng, pol, ms2Peaks))
     write.csv(first_list, file = paste(result_dir,'/insilico/MS2DATA.csv', sep = ""))
     return(first_list)
 }
@@ -2193,7 +2201,7 @@ print(mzml_result)
 # read mzML file and create output directory
 spec_pr <- spec_Processing(mzml_file, mzml_result)
 
-# perform spectral database dereplication with HMDB, GNPS and MassBank
+# # perform spectral database dereplication with HMDB, GNPS and MassBank
 df_derep <- spec_dereplication_file(mzml_file = mzml_file,
                                     pre_tbl = paste(mzml_result, "/premz_list.txt", sep = ""),
                                     proc_mzml = paste(mzml_result, "/processedSpectra.mzML", sep = ""),
@@ -2230,7 +2238,7 @@ ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
 sirius_param_files <- sirius_param(x = paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""),
                        result_dir = mzml_result,
                        SL = FALSE, 
-                       collision_info = TRUE)
+                       collision_info = FALSE)
 
 #write txt files for MetFrag
 metfrag_param(x= paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""), 
@@ -2291,10 +2299,11 @@ for (i in seq_along(metfrag_param_files_list)){
             ),
         IonizedPrecursorMass = as.character(strsplit(peak_file[2], split = " = ")[[1]][2]),
         PrecursorIonMode = as.numeric(strsplit(peak_file[3], split = " = ")[[1]][2]),
-        LocalDatabasePath = list(
-            class = "File",
-            path = strsplit(peak_file[6], split = " = ")[[1]][2]
-        ),
+        # only for MertFrag
+        # LocalDatabasePath = list(
+        #     class = "File",
+        #     path = strsplit(peak_file[6], split = " = ")[[1]][2]
+        # ),
         SampleName = strsplit(peak_file[11], split = " = ")[[1]][2]
         # ResultsPath = list(
         #     class = "Directory",

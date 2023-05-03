@@ -14,7 +14,7 @@ inputs:
          path: Workflow_R_Script_all.r
     mzml_file:
         type: File
-        #format: http://edamontology.org/format_3244
+        #format: http://edamontology.org/format_3244 # yaml input file
     gnps_file:
         type: File
     hmdb_file:
@@ -62,7 +62,6 @@ steps:
             - PeakList
             - IonizedPrecursorMass
             - PrecursorIonMode
-            - LocalDatabasePath
             - SampleName
 
         scatterMethod: dotproduct
@@ -76,12 +75,10 @@ steps:
             PrecursorIonMode:
                 source: dereplication/peaks_and_parameters
                 valueFrom: $(self.PrecursorIonMode)
-            LocalDatabasePath:
-                source: dereplication/peaks_and_parameters
-                valueFrom: $(self.LocalDatabasePath)
             SampleName:
                 source: dereplication/peaks_and_parameters
                 valueFrom: $(self.SampleName)
+            LocalDatabasePath: db_path
 
         out: [metfrag_candidate_list]
 
@@ -113,35 +110,34 @@ steps:
         run: maw-py.cwl
         in: 
             workflow_script: python_script
-            msp_file: 
-                source: dereplication/msp_file
-                valueFrom: $(self.msp_file)
-            gnps_dir: 
-                source: dereplication/gnps_dir
-                valueFrom: $(self.gnps_dir)
-            hmdb_dir: 
-                source: dereplication/hmdb_dir
-                valueFrom: $(self.hmdb_dir)
-            mbank_dir: 
-                source: dereplication/mbank_dir
-                valueFrom: $(self.mbank_dir)
+            msp_file: dereplication/msp_file
+            gnps_dir: dereplication/gnps_dir
+            hmdb_dir: dereplication/hmdb_dir
+            mbank_dir: dereplication/mbank_dir
             # sirius_results: 
             #     source: [sirius_no_isotope/results, sirius_isotope/results]
             #     linkMerge: True
-            metfrag_candidate_list: 
-                source: [metfrag/metfrag_candidate_list]
-            ms1data: 
-                source: dereplication/ms1data
-                valueFrom: $(self.ms1data)
-        out: [results, provenance]
+            metfrag_candidate_list: metfrag/metfrag_candidate_list
+            ms1data: dereplication/ms1data
+
+        #out: [results, provenance]
+        out: 
+            - msp_file_df
+            - ms1data_df
+            #- candidate_directory
+            - result
 
 outputs:
-  results: 
-    type: File
-    outputSource: cheminformatics/results
-  cheminformatics_prov:
-    type: File
-    outputSource: cheminformatics/provenance
+    msp_file_modified: 
+        type: File
+        outputSource: cheminformatics/msp_file_df
+    ms1data_modified: 
+        type: File
+        outputSource: cheminformatics/ms1data_df
+    result: 
+        type: File
+        outputSource: cheminformatics/result
+
 requirements:
     ScatterFeatureRequirement: {}
     StepInputExpressionRequirement: {}
