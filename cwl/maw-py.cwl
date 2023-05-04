@@ -39,18 +39,18 @@ arguments:
     - $(inputs.score_thresh)
 
 outputs:
-  msp_file_df:
-    type: File
-    outputBinding:
-       glob: "spec_results_for*.csv"
-  ms1data_df:
-    type: File
-    outputBinding:
-      glob: "MS1DATA.csv"
-  # candidate_directory:
-  #   type: Directory
+  # msp_file_df:
+  #   type: File
   #   outputBinding:
-  #     glob: "final_results/Candidate_Selection"
+  #      glob: "$(runtime.outdir)/spectral_dereplication/spec_results.csv"
+  # ms1data_df:
+  #   type: File
+  #   outputBinding:
+  #     glob: "$(runtime.outdir)/metfrag/MS1DATA.csv"
+  candidate_files:
+    type: File[]
+    outputBinding:
+      glob: "Candidate_Selection/*.tsv"
   result: 
     type: File
     outputBinding:

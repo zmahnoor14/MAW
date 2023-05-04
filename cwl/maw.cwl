@@ -81,6 +81,7 @@ steps:
             LocalDatabasePath: db_path
 
         out: [metfrag_candidate_list]
+        #out: metfrag_candidate_list 
 
     # sirius_isotope:
     #     run: sirius-new.cwl
@@ -122,18 +123,15 @@ steps:
 
         #out: [results, provenance]
         out: 
-            - msp_file_df
-            - ms1data_df
-            #- candidate_directory
+            # - msp_file_df
+            # - ms1data_df
+            - candidate_files
             - result
 
 outputs:
-    msp_file_modified: 
-        type: File
-        outputSource: cheminformatics/msp_file_df
-    ms1data_modified: 
-        type: File
-        outputSource: cheminformatics/ms1data_df
+    candidate_files:
+        type: File[]
+        outputSource: cheminformatics/candidate_files
     result: 
         type: File
         outputSource: cheminformatics/result

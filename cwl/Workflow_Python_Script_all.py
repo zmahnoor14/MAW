@@ -75,15 +75,16 @@ def spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir):
             return True
         else:
             return False
-    
+    if not os.path.isdir("spectral_dereplication"):
+        os.mkdir("spectral_dereplication")
     if os.path.exists(msp_file):
         msp = pd.read_csv(msp_file)
         msp["mbank_results_csv"] = np.nan
         msp["gnps_results_csv"] = np.nan
 
         for mz, row in msp.iterrows():
-            if not os.path.isdir("proc_gnps"):
-                os.mkdir("proc_gnps")
+            if not os.path.isdir("spectral_dereplication/proc_gnps"):
+                os.mkdir("spectral_dereplication/proc_gnps")
             if os.path.exists(gnps_dir):
 
                 files_g = glob.glob(gnps_dir + "/*.csv")
@@ -179,15 +180,15 @@ def spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir):
                         gnps_df = gnps_df.dropna(axis=0, how="all")
                         #csvname = ((os.path.splitext(fls_g)[0]) + "proc" + ".csv")
                         
-                        csvname = "proc_gnps/" + os.path.basename((os.path.splitext(fls_g)[0]) + "proc" + ".csv")
+                        csvname = "spectral_dereplication/proc_gnps/" + os.path.basename((os.path.splitext(fls_g)[0]) + "proc" + ".csv")
                         print(csvname)
                         msp.loc[mz, "gnps_results_csv"] = csvname
                         gnps_df.to_csv(csvname)
                             
 
                 # HMDB Results
-            if not os.path.isdir("proc_hmdb"):
-                os.mkdir("proc_hmdb")
+            if not os.path.isdir("spectral_dereplication/proc_hmdb"):
+                os.mkdir("spectral_dereplication/proc_hmdb")
             if os.path.exists(hmdb_dir):
                 files_h = glob.glob(hmdb_dir + "/*.csv")
                 files_h = [item for item in files_h if 'proc' not in item]
@@ -222,12 +223,12 @@ def spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir):
                                         if not os.path.exists(csvname):
                                             hmdb_df.to_csv(csvname) 
                                 
-                                csvname = "proc_hmdb/" + os.path.basename((os.path.splitext(fls_h)[0])+ "proc"+ ".csv")  
+                                csvname = "spectral_dereplication/proc_hmdb/" + os.path.basename((os.path.splitext(fls_h)[0])+ "proc"+ ".csv")  
                                 msp.loc[mz, "hmdb_results_csv"] = csvname
                                 hmdb_df.to_csv(csvname) 
             
-            if not os.path.isdir("proc_mbank"):
-                os.mkdir("proc_mbank")
+            if not os.path.isdir("spectral_dereplication/proc_mbank"):
+                os.mkdir("spectral_dereplication/proc_mbank")
             # MASSBANK Results
             if os.path.exists(mbank_dir):
                 files_m = glob.glob(mbank_dir + "/*.csv")
@@ -242,33 +243,35 @@ def spec_postproc(msp_file, gnps_dir, hmdb_dir, mbank_dir):
                                     mbank_df.drop(i, inplace=True)
                             mbank_df = mbank_df.drop_duplicates(subset=["MBSMILES"])
                             
-                            csvname = "proc_mbank/" + os.path.basename((os.path.splitext(fls_m)[0])+ "proc"+ ".csv")
+                            csvname = "spectral_dereplication/proc_mbank/" + os.path.basename((os.path.splitext(fls_m)[0])+ "proc"+ ".csv")
                             msp.loc[mz, "mbank_results_csv"] = csvname
                             mbank_df.to_csv(csvname)
-        msp.to_csv(os.path.basename(msp_file))
+        msp.to_csv("spectral_dereplication/" + os.path.basename(msp_file))
         return msp
 
 def metfrag_postproc(ms1data, metfrag_candidate_list, score_thresh):
     if os.path.exists(ms1data):
         msp = pd.read_csv(ms1data)
         msp["MetFragCSV"] = np.nan
+        if not os.path.isdir("metfrag"):
+            os.mkdir("metfrag")
         # for each mz
         for mz, row in msp.iterrows():
             # make a list of files with this mz
             files_for_mz = []
-            for file in metfrag_candidate_list:
+            for file in np.unique(metfrag_candidate_list):
                 if str(msp["premz"][mz]) in file:
                     metfrag_res = pd.read_csv(file)
                     if len(metfrag_res)>0 and len(metfrag_res)<=10:
                         metfrag_res = metfrag_res[metfrag_res['Score'] >= score_thresh]
-                        metfrag_res.to_csv(file)
+                        metfrag_res.to_csv("metfrag/"+os.path.basename(file))
                     else:
                         metfrag_res = metfrag_res[0:9]
-                        metfrag_res.to_csv(file)
-                    files_for_mz.append(file)
-            msp.loc[mz, "MetFragCSV"] = files_for_mz[0]
+                        metfrag_res.to_csv("metfrag/"+os.path.basename(file))
+                    files_for_mz.append("metfrag/"+os.path.basename(file))
+            msp.loc[mz, "MetFragCSV"] = "metfrag/"+os.path.basename(file)
         
-        msp.to_csv(os.path.basename(ms1data))  
+        msp.to_csv("metfrag/" + os.path.basename(ms1data))  
         return msp
 
 def SuspectListScreening(input_dir, SuspectListPath, tanimoto, Source):
@@ -1370,9 +1373,9 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
     # sir_msv = pd.read_csv(ms1data)
     spec_msv = msp_file
     sir_msv = ms1data
-    spec_msv = spec_msv[["id_X", "ft_id","premz", "rtmin","rtmax", "rtmed","rtmean", "col_eng","pol",
+    spec_msv = spec_msv[["id_X","premz", "rtmin","rtmax", "rtmed","rtmean", "col_eng","pol",
             "int","source_file","mbank_results_csv","gnps_results_csv","hmdb_results_csv"]]
-    sir_msv = sir_msv[["id_X","ft_id","premz","rtmed", "rtmean","int","col_eng", "pol",
+    sir_msv = sir_msv[["id_X","premz","rtmed", "rtmean","int","col_eng", "pol",
             "ms2Peaks","ms1Peaks","MetFragCSV"]]
     merged_df = sir_msv.merge(spec_msv,
         how="inner",
@@ -1387,17 +1390,13 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
     merged_df["AnnotationCount"] = np.nan
     merged_df["MSILevel"] = np.nan
     merged_df["MCSS"] = np.nan
+    merged_df["candidate_list"] = np.nan
     merged_df["superclass"] = np.nan
     merged_df["class"] = np.nan
     merged_df["subclass"] = np.nan
     merged_df["ClassificationSource"] = np.nan
                 
-
-    # entry = os.path.dirname(msp_file)
-    # entry = entry.replace("/spectral_dereplication", "")
-    can_selec_dir = entry + "/Candidate_Selection"
-    if not os.path.isdir(entry):
-        os.mkdir(entry)
+    can_selec_dir = "Candidate_Selection"
     if not os.path.isdir(can_selec_dir):
         os.mkdir(can_selec_dir)
 
@@ -1485,9 +1484,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -1504,14 +1501,14 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
 
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
+
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 4:
                     sources_4_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
                 if max(candidates_with_counts["Count"]) == 3:
@@ -1561,9 +1558,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -1574,14 +1569,11 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                     sirius_df=sirius_df,
                     mbank_df=mbank_df,
                     gnps_df=gnps_df,
-                    # hmdb_df = hmdb_df,
                     Source="SGM",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
@@ -1594,6 +1586,8 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                     sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
                 if max(candidates_with_counts["Count"]) == 1:
                     sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
+
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
             # 3 SHM
             elif (
                 len(sirius_df) > 0
@@ -1603,8 +1597,6 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
             ):
 
                 mbank_df["rank_ids"] = ["M_" + str(s + 1) for s in range(len(mbank_df))]
-
-                # gnps_df["rank_ids"] = ["G_" + str(s+1) for s in range(len(gnps_df))]
 
                 hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
 
@@ -1638,9 +1630,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -1650,21 +1640,18 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                     sm,
                     sirius_df=sirius_df,
                     mbank_df=mbank_df,
-                    # gnps_df = gnps_df ,
                     hmdb_df=hmdb_df,
                     Source="SHM",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
-
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 3:
                     sources_3_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
                 if max(candidates_with_counts["Count"]) == 2:
@@ -1678,7 +1665,6 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 and len(mbank_df) == 0
                 and len(hmdb_df) > 0
             ):
-                # mbank_df["rank_ids"] = ["M_" + str(s+1) for s in range(len(mbank_df))]
 
                 gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
 
@@ -1716,9 +1702,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -1727,21 +1711,19 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 one_candidate = one_candidate_selection_metfrag(
                     sm,
                     sirius_df=sirius_df,
-                    # mbank_df = mbank_df,
                     gnps_df=gnps_df,
                     hmdb_df=hmdb_df,
                     Source="SGH",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 3:
                     sources_3_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
                 if max(candidates_with_counts["Count"]) == 2:
@@ -1761,9 +1743,6 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
 
                 hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
 
-                # sirius_df["rank_ids"] = ["S_" + str(s) for s in sirius_df["rank"]]
-                # sirius_df["Source"] = "SIRIUS"
-
                 source_l1 = [
                     *(list(gnps_df["Source"])),
                     *(list(mbank_df["Source"])),
@@ -1791,9 +1770,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -1801,7 +1778,6 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                     )
                 one_candidate = one_candidate_selection_metfrag(
                     sm,
-                    # sirius_df = sirius_df,
                     mbank_df=mbank_df,
                     gnps_df=gnps_df,
                     hmdb_df=hmdb_df,
@@ -1809,15 +1785,13 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
-
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 3:
                     sources_3_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
                 if max(candidates_with_counts["Count"]) == 2:
@@ -1831,7 +1805,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 and len(mbank_df) == 0
                 and len(hmdb_df) == 0
             ):
-                # mbank_df["rank_ids"] = ["M_" + str(s+1) for s in range(len(mbank_df))]
+
 
                 gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
 
@@ -1842,19 +1816,16 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                     *(list(sirius_df["Source"])),
                     *(list(gnps_df["Source"])),
                 ]
-                # ,*(list(mbank_df["Source"]))]
 
                 rank_l2 = [
                     *(list(sirius_df["rank_ids"])),
                     *(list(gnps_df["rank_ids"])),
                 ]
-                # ,*(list(mbank_df["rank_ids"]))]
 
                 smiles_l3 = [
                     *(list(sirius_df["SMILES"])),
                     *(list(gnps_df["GNPSSMILES"])),
                 ]
-                # ,*(list(mbank_df["MBSMILES"]))]
 
                 sm = pd.DataFrame(
                     list(zip(source_l1, rank_l2, smiles_l3)),
@@ -1865,9 +1836,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -1877,22 +1846,20 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 one_candidate = one_candidate_selection_metfrag(
                     sm,
                     sirius_df=sirius_df,
-                    # mbank_df = mbank_df,
+
                     gnps_df=gnps_df,
-                    # hmdb_df = hmdb_df,
+
                     Source="SG",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
-
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 2:
                     sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
                 if max(candidates_with_counts["Count"]) == 1:
@@ -1934,9 +1901,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -1946,22 +1911,18 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 one_candidate = one_candidate_selection_metfrag(
                     sm,
                     sirius_df=sirius_df,
-                    # mbank_df = mbank_df,
-                    # gnps_df = gnps_df ,
                     hmdb_df=hmdb_df,
                     Source="SH",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
-
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 2:
                     sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
                 if max(candidates_with_counts["Count"]) == 1:
@@ -2002,9 +1963,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -2015,20 +1974,17 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                     sm,
                     sirius_df=sirius_df,
                     mbank_df=mbank_df,
-                    # gnps_df = gnps_df ,
-                    # hmdb_df = hmdb_df,
                     Source="SM",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 2:
                     sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
                 if max(candidates_with_counts["Count"]) == 1:
@@ -2044,11 +2000,6 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
 
                 gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
 
-                # hmdb_df["rank_ids"] = ["H_" + str(s+1) for s in range(len(hmdb_df))]
-
-                # sirius_df["rank_ids"] = ["S_" + str(s) for s in sirius_df["rank"]]
-                # sirius_df["Source"] = "SIRIUS"
-
                 source_l1 = [
                     *(list(mbank_df["Source"])),
                     *(list(gnps_df["Source"])),
@@ -2073,9 +2024,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -2084,22 +2033,19 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
 
                 one_candidate = one_candidate_selection_metfrag(
                     sm,
-                    # sirius_df = sirius_df,
                     mbank_df=mbank_df,
                     gnps_df=gnps_df,
-                    # hmdb_df = hmdb_df,
                     Source="GM",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 2:
                     sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
                 if max(candidates_with_counts["Count"]) == 1:
@@ -2111,14 +2057,10 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 and len(mbank_df) == 0
                 and len(hmdb_df) > 0
             ):
-                # mbank_df["rank_ids"] = ["M_" + str(s+1) for s in range(len(mbank_df))]
 
                 gnps_df["rank_ids"] = ["G_" + str(s + 1) for s in range(len(gnps_df))]
 
                 hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
-
-                # sirius_df["rank_ids"] = ["S_" + str(s) for s in sirius_df["rank"]]
-                # sirius_df["Source"] = "SIRIUS"
 
                 source_l1 = [
                     *(list(gnps_df["Source"])),
@@ -2143,9 +2085,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -2153,23 +2093,19 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                     )
                 one_candidate = one_candidate_selection_metfrag(
                     sm,
-                    # sirius_df = sirius_df,
-                    # mbank_df = mbank_df,
                     gnps_df=gnps_df,
                     hmdb_df=hmdb_df,
                     Source="GH",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
-
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 2:
                     sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
                 if max(candidates_with_counts["Count"]) == 1:
@@ -2183,12 +2119,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
             ):
                 mbank_df["rank_ids"] = ["M_" + str(s + 1) for s in range(len(mbank_df))]
 
-                # gnps_df["rank_ids"] = ["G_" + str(s+1) for s in range(len(gnps_df))]
-
                 hmdb_df["rank_ids"] = ["H_" + str(s + 1) for s in range(len(hmdb_df))]
-
-                # sirius_df["rank_ids"] = ["S_" + str(s) for s in sirius_df["rank"]]
-                # sirius_df["Source"] = "SIRIUS"
 
                 source_l1 = [
                     *(list(mbank_df["Source"])),
@@ -2214,9 +2145,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -2224,22 +2153,19 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                     )
                 one_candidate = one_candidate_selection_metfrag(
                     sm,
-                    # sirius_df = sirius_df,
                     mbank_df=mbank_df,
-                    # gnps_df = gnps_df ,
                     hmdb_df=hmdb_df,
                     Source="HM",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 2:
                     sources_2_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
                 if max(candidates_with_counts["Count"]) == 1:
@@ -2271,9 +2197,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -2283,22 +2207,17 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 one_candidate = one_candidate_selection_metfrag(
                     sm,
                     sirius_df=sirius_df,
-                    # mbank_df = mbank_df,
-                    # gnps_df = gnps_df ,
-                    # hmdb_df = hmdb_df,
                     Source="S",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
-                print(candidates_with_counts["SMILES"])
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 1:
                     sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df)
             # G
@@ -2325,9 +2244,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -2336,22 +2253,20 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
 
                 one_candidate = one_candidate_selection_metfrag(
                     sm,
-                    # sirius_df = sirius_df,
-                    # mbank_df = mbank_df,
+
                     gnps_df=gnps_df,
-                    # hmdb_df = hmdb_df,
+
                     Source="G",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 1:
                     sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
             # M
@@ -2378,9 +2293,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -2389,22 +2302,18 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
 
                 one_candidate = one_candidate_selection_metfrag(
                     sm,
-                    # sirius_df = sirius_df,
                     mbank_df=mbank_df,
-                    # gnps_df = gnps_df ,
-                    # hmdb_df = hmdb_df,
                     Source="M",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 1:
                     sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
             # H
@@ -2431,9 +2340,7 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
                 if df_edge is not None:
 
                     df_edge.to_csv(
-                        entry
-                        + "/"
-                        + "Candidate_Selection"
+                        "Candidate_Selection"
                         + "/"
                         + str(merged_df["premz"][mer])
                         + "_ChemMNedges.tsv",
@@ -2442,29 +2349,23 @@ def CandidateSelection_SimilarityandIdentity_Metfrag(msp_file, ms1data, entry, s
 
                 one_candidate = one_candidate_selection_metfrag(
                     sm,
-                    #                                                                         sirius_df = sirius_df,
-                    #                                                                         mbank_df = mbank_df,
-                    #                                                                         gnps_df = gnps_df ,
                     hmdb_df=hmdb_df,
                     Source="H",
                 )
                 candidates_with_counts = add_count_column_metfrag(one_candidate)
                 candidates_with_counts.to_csv(
-                    entry
-                    + "/"
-                    + "Candidate_Selection"
+                    "Candidate_Selection"
                     + "/"
                     + str(merged_df["premz"][mer])
                     + "sorted_candidate_list.tsv",
                     sep="\t",
                 )
-
+                merged_df["candidate_list"][mer] = "Candidate_Selection/"+str(merged_df["premz"][mer])+"sorted_candidate_list.tsv"
                 if max(candidates_with_counts["Count"]) == 1:
                     sources_1_metfrag(candidates_with_counts, merged_df, mer, sirius_df=None)
 
                 if standards:
                     if not isNaN(merged_df["SMILES"][mer]):
-
                         merged_df.loc[mer, "MSILevel"] = 1
 
     merged_df.to_csv("mergedResults-with-one-Candidates.csv")

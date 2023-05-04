@@ -12,6 +12,9 @@ start.time <- Sys.time()
 met_param <- args[1]
 MetFragjarFile <- args[2]
 
+
+
+
 print(met_param)
 print(MetFragjarFile)
 

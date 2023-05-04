@@ -444,7 +444,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
     # common feature information
 
     id_X <- c() # id
-    ft_id <- c() # scan number
+    #ft_id <- c() # scan number
     premz <- c() # precursor mz
     rtmin <- c() # stores rtmin
     rtmax <- c() # stores rtmax
@@ -473,8 +473,8 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                         "ID", as.character(nx), sep = '')
         id_X <- c(id_X, id_Xx)
 
-        ft_id1 <- spsrt$spectrumId
-        ft_id <- c(ft_id, ft_id1)
+        # ft_id1 <- spsrt$spectrumId
+        # ft_id <- c(ft_id, ft_id1)
 
         # pre_mas
         pre <- x
@@ -1478,10 +1478,10 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
     pre_mzs <- as.list(pre_mzs)
     v_pre_mzs <- future::value(pre_mzs)
     result_dir_spectra <- paste(result_dir, "/spectral_dereplication", sep = "")
-    spectra_input <- data.frame(cbind(id_X, ft_id, premz, rtmin,
+    spectra_input <- data.frame(cbind(id_X, premz, rtmin,
                                       rtmax, rtmed, rtmean,
                                       col_eng, pol, int, source_file))
-    write.csv(spectra_input, file = paste(result_dir_spectra, "/spectral_results_for_", file_id, ".csv", sep = ""))
+    write.csv(spectra_input, file = paste(result_dir_spectra, "/spectral_results.csv", sep = ""))
 }
 
 #' Extract MS2 Fragment peaks
@@ -1509,8 +1509,8 @@ ms2_peaks <- function(pre_tbl, proc_mzml, result_dir, file_id){
     ms2Peaks <- c() # stores the peak list file directory
     id_X <- c() # creates a unique ID based on mz, rt and also the index
         #(since the mz and rt can be similar in some cases)
-    ft_id <- c()
-    no_of_ms2_peaks <- c()
+    #ft_id <- c()
+    #no_of_ms2_peaks <- c()
     int <- c() # stores intensity of the MS1 feature
     nx <- 0 # stores number for the ID
     indeX <- 0 # stores number to name the peaklist files
@@ -1532,8 +1532,8 @@ ms2_peaks <- function(pre_tbl, proc_mzml, result_dir, file_id){
                               "ID", as.character(nx), sep = '')
             id_X <- c(id_X, id_Xx)
             #ft number
-            ft_id1 <- sps$spectrumId
-            ft_id <- c(ft_id, ft_id1)
+            # ft_id1 <- sps$spectrumId
+            # ft_id <- c(ft_id, ft_id1)
             #mz
             premz <- c(premz, i)
 
@@ -1607,7 +1607,7 @@ ms2_peaks <- function(pre_tbl, proc_mzml, result_dir, file_id){
 
 
 
-    first_list <- data.frame(cbind(id_X, ft_id, premz, rtmed, rtmean, int ,col_eng, pol, ms2Peaks))
+    first_list <- data.frame(cbind(id_X, premz, rtmed, rtmean, int ,col_eng, pol, ms2Peaks))
     write.csv(first_list, file = paste(result_dir,'/insilico/MS2DATA.csv', sep = ""))
     return(first_list)
 }
