@@ -1,0 +1,24 @@
+r_script:  # default value of type "File".
+    class: File
+    path: file:///Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/MAW/cwl/Workflow_R_Script_all.r
+python_script:  # default value of type "File".
+    class: File
+    path: file:///Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/MAW/cwl/Workflow_Python_Script_all.py
+ppmx: 0  # type "int"
+mzml_file:  # type "File"
+    class: File
+    path: a/file/path
+mbank_file:  # type "File"
+    class: File
+    path: a/file/path
+hmdb_file:  # type "File"
+    class: File
+    path: a/file/path
+gnps_file:  # type "File"
+    class: File
+    path: a/file/path
+file_id: a_string  # type "string"
+db_path:  # type "File"
+    class: File
+    path: a/file/path
+db_name: a_string  # type "string"
