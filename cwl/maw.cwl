@@ -14,7 +14,6 @@ inputs:
          path: Workflow_R_Script_all.r
     mzml_file:
         type: File
-        #format: http://edamontology.org/format_3244 # yaml input file
     gnps_file:
         type: File
     hmdb_file:
@@ -25,6 +24,8 @@ inputs:
         type: string
     ppmx:
         type: int
+    collision_info:
+        type: boolean
     db_name:
         type: string
     db_path:
@@ -44,6 +45,7 @@ steps:
             mbank_file: mbank_file
             file_id: file_id
             ppmx: ppmx
+            collision_info: collision_info
             db_name: db_name
             db_path: db_path
         out:

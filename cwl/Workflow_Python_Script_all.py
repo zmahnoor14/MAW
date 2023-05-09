@@ -2997,7 +2997,8 @@ parser.add_argument('--msp_file', type=str, help='path to spec result CSV file')
 parser.add_argument('--gnps_dir', type=str, help='path to GNPS directory')
 parser.add_argument('--hmdb_dir', type=str, help='path to HMDB directory')
 parser.add_argument('--mbank_dir', type=str, help='path to MassBank directory')
-parser.add_argument('--metfrag_candidate_list', type=str, action='append', help='path to MetFrag candidate list CSV files')
+#name it metfrag_candidate
+parser.add_argument('--metfrag_candidate_list', type=str, action='append', help='path to MetFrag candidate table CSV file')
 parser.add_argument('--ms1data', type=str, help='path to MS1 data CSV file')
 parser.add_argument('--score_thresh', type=float, default=0.75, help='score threshold for MetFrag results (default: 0.75)')
 # Parse the command-line arguments

@@ -2184,13 +2184,12 @@ mzml_file <- args[1]
 gnps_file <- args[2]
 hmdb_file <- args[3]
 mbank_file <- args[4]
-#mzml_result <- args[5] # change this now
 file_id <- args[5]
 ppmx = as.numeric(args[6])
 # runCamera = as.logical(args[8])
-# collision_info = as.logical(args[9])
-db_name = args[7]
-db_path = args[8]
+collision_info = as.logical(args[7])
+db_name = args[8]
+db_path = args[9]
 
 
 mzml_result <- str_remove(basename(mzml_file), ".mzML")
@@ -2238,7 +2237,7 @@ ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
 sirius_param_files <- sirius_param(x = paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""),
                        result_dir = mzml_result,
                        SL = FALSE, 
-                       collision_info = FALSE)
+                       collision_info)
 
 #write txt files for MetFrag
 metfrag_param(x= paste(mzml_result,'/insilico/MS1DATA.csv', sep = ""), 

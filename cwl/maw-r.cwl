@@ -13,7 +13,6 @@ inputs:
   workflow_script: File
   mzml_file:
     type: File
-    #format: http://edamontology.org/format_3244
   gnps_file:
     type: File
   hmdb_file:
@@ -25,7 +24,7 @@ inputs:
   ppmx:
     type: int
   # runCamera: boolean
-  # collision_info: boolean
+  collision_info: boolean
   db_name:
     type: string
   db_path:
@@ -40,13 +39,11 @@ arguments:
   - $(inputs.mbank_file.path)
   - $(inputs.file_id)
   - $(inputs.ppmx)
-  # - |
-  #   $(inputs.runCamera ? "TRUE" : "FALSE")
-  # - |
-  #   $(inputs.collision_info ? "TRUE" : "FALSE")
+  - |
+    $(inputs.collision_info ? "TRUE" : "FALSE")
   - $(inputs.db_name)
   - $(inputs.db_path.path)
-# the no output binidng needed bceause the output.json will provide output
+# the no output binding needed bceause the output.json will provide output
 outputs:
   results:
     type: Directory
