@@ -31,19 +31,27 @@ Install Docker on your [MAC OS](https://www.docker.com/get-started/) OR on [Linu
 At the moment MAW runs R script, MetFrag, and Python Script. Note that SIRIUS5 is not yet implemented yet, but is in progress.
 So, here we have two docker containers and 3 scripts --> (MAW-R, MetFrag.r, and MAW-Py).
 
-### Pull maw-r Docker Image
+#### Pull maw-r Docker Image
 To pull MAW-R R-docker image, run the following command on your terminal:
 ```
 docker pull zmahnoor/maw-r:1.0.8 --platform=linux/amd64
 ```
 This will creat a R-Docker image on your system. This image contains /opt/workdir as the working directory. This docker image will be used to run not only MAW-R but also MetFrag.
 
-### Pull maw-py Docker Image
+#### Pull maw-py Docker Image
 To pull MAW-Py Python-docker image, run the following command on your terminal:
 ```
 docker pull zmahnoor/maw-py:1.0.7 --platform=linux/amd64
 ```
 This will create a Python-Docker image on your system. This image contains /opt/workdir as the working directory.
+
+#### Files
+
+1. Download [cwl/Workflow_R_Script_all_MetFrag.r](https://github.com/zmahnoor14/MAW/blob/provenance/cwl/Workflow_R_Script_all_MetFrag.r), and [cwl/Workflow_Python_Script_all.py](https://github.com/zmahnoor14/MAW/blob/provenance/cwl/Workflow_Python_Script_all.py).
+2. Download the databases gnps.rda, hmdb.rda, and mbankNIST.rda from https://zenodo.org/record/7519270. This submission contains GNPS saved at 2023-01-09 15:24:46, HMDB Current Version (5.0), MassBank version 2022.12.
+3. Download COCONUT database to use with MetFrag from https://zenodo.org/record/7704937. If the user wants to use any other local libary, it is possible to use that instead of COCONUT. We recommend that the local file should be a csv file with atleast the following columns:     "Identifier"    "InChI"   "SMILES"    "molecular_weight". If you don't have information on all columns, these can be calculated with either RDKit or PubChempy automatically or can be done manually. If any important column is missing, MetFrag will give an error stating the name of the column.
+4. Download MetFragCL [Jar file](https://github.com/ipb-halle/MetFragRelaunched/releases/download/v.2.5.0/MetFragCommandLine-2.5.0.jar). 
+5. The most important file is the query input .mzML file
 
 ## Run MAW
 
@@ -58,20 +66,42 @@ maw.cwl will run the workflow taking the inputs from yaml file and store all the
 
 ### With Docker
 
-Docker is a bit more complicated to use but gives more freedom and options right now as cwl is still in its development phase.
+#### Run MAW-R and MetFrag
 
 ```
-docker run --name example_maw-r -i -t zmahnoor/maw-r:1.0.0 /bin/bash
+docker run --name sample_name_maw-r -v $(pwd):/opt/workdir/ --platform linux/amd64  -it zmahnoor/maw-r:1.0.8 /bin/bash
+```
+Now you have entered a docker container with the name `sample_name_maw-r` and your pwd is mounted to /opt/workdir, so all the files necessary for docker will be mounted to /opt/workdir given that they were in your pwd. Note that using Workflow_R_Script_all_MetFrag.r you will run MAW-R and MetFrag in one script. pwd is your present working directory.
+```
+Rscript --no-save --no-restore --verbose Workflow_R_Script_all_MetFrag.r your_file_name.mzML gnps.rda hmdb.rda mbankNIST.rda give_an_id 15 TRUE coconut COCONUT_Jan2022.csv your_file_name/insilico/metparam_list.txt MetFragCommandLine-2.5.0.jar >script_output_Run_1.txt 2>&1 &
+
+```
+Only replace the `your_file_name` from the above command and it should work, also you can change the `give_an_id` and give your stdout file at the end a name of your choice. Also, if you use any local database, change the path to coconut and also change the `coconut` in the command line to any name you want to give to your database. The results will be stored like: /insilico/MetFrag/your_databasename.
+<br>
+one precursor mass takes 2 minutes on an Ubuntu system with 64GB RAM to run Workflow_R_Script_all_MetFrag.r. But since the files have more than one precursor mass, I recommend to run: `disown PID`. You will get a PID number when you enter and run the above Rscript command. The workflow will run on the background and you can exit your terminal, but before that you also need to exit the docker container as well. To do that, press CTRL+q and CTRL+p. Now the docker container runs in daemon mode.  To re enter the container:
+
+```
+docker exec -it sample_name_maw-r /bin/bash
+```
+The results will be saved in pwd.
+
+#### Run MAW-Py
+```
+docker run --name sample_name_maw-py -v $(pwd):/opt/workdir/ --platform linux/amd64 -i -t zmahnoor/maw-py:1.0.7 /bin/bash
 ```
 Once you enter the docker container, you can run the script and check the results.
 ```
-Rscript --no-save --no-restore --verbose Workflow_R_Script.r >outputFile.txt 2>&1
+python3.10 Workflow_Python_Script_all.py --file_id give_an_id --msp_file your_file_name/spectral_dereplication/spectral_results.csv --gnps_dir your_file_name/spectral_dereplication/GNPS --hmdb_dir your_file_name/spectral_dereplication/HMDB --mbank_dir your_file_name/spectral_dereplication/MassBank --MS1data your_file_name/insilico/MS1DATA.csv --score_thresh 0.75 > maw_py_log_file.txt 2>&1 &
 ```
-This command will run the Workflow_R_Script.r which is an example script for /data/example_Tyrosine.mzML. The calculation takes about 2 minutes on an Ubuntu system with 64GB RAM.
+This command will run the Workflow_Python_Script.py which will postprocess the results obtained earlier with MAW-R. In order to leave the container without killing the process, add & at the end of commands inside of the container. Then disown the PID and leave the container with CTRL+p and CTRL+q. <br>
 
-### [NEW] 2. Updated with SIRIUS5
+The final results can be seen in the give_an_id_mergedResults-with-one-Candidates.csv.
+<br>
 
-SIRIUS version 5 can be used using another docker container made for SIRIUS5. to run this, it is important athat you alsready have .md files in the SIRIUS folder generated from the MAW-R part of the workflow in the correct order of directory. Also, you would need to add your SIRIUS credentials after you enter the docker container. THere is an R script called Run_SIRIUS5.r which contains the libraries, the function to run SIRIUS5 from R and a function call with your data. 
+
+### Updated with SIRIUS5
+It is possible to run SIRIUS and obtain results from [SIRIUS5](https://github.com/zmahnoor14/MAW/blob/provenance/cwl/Run_Sirius.r), however, MAW currently doesn't perform candidate selection with SIRIUS5 yet.
+SIRIUS version 5 can be used using another docker container made for SIRIUS5. to run this, it is important that you already have .ms files in the SIRIUS folder generated from the MAW-R part of the workflow in the correct order of directory. Also, you would need to add your SIRIUS credentials after you enter the docker container. There is an R script called Run_SIRIUS5.r which contains the libraries, the function to run SIRIUS5 from R and a function call with your data. 
 
 ```R
 run_sirius(files= './insilico/MS1DATA_SiriusP.tsv',
@@ -85,7 +115,7 @@ run_sirius(files= './insilico/MS1DATA_SiriusP.tsv',
            db = "coconut")
 ```
 
-Please check the R script and make the changes in the parameters above according to your data needs. SL means suspect list but this function is currently being updated by SIRIUS5 and shoulbe kept ```FALSE```. profile can be the mass spectrometer used, either "orbitrap" or "qtof". db can be "ALL", "bio", "coconut" or any relevant database that is already provided by SIRIUS5. Also, for files, provide the full path of your './insilico/MS1DATA_SiriusP.tsv'. Run the function for each of your input files.
+ SL means suspect list but this function is currently being updated by SIRIUS5 and shoulbe kept `FALSE`. profile can be the mass spectrometer used, either "orbitrap" or "qtof". db can be "ALL", "bio", "coconut" or any relevant database that is already provided by SIRIUS5. Also, for files, provide the full path of your './insilico/MS1DATA_SiriusP.tsv'. Run the function for each of your input files.
 
 Enter docker container:
 ```
@@ -97,25 +127,12 @@ Enter login info:
 ```
 sirius login -u user@email.com -p --show
 ```
-Th prompt will ask for your password, so enter the pssowrd and hit enter.
+Th prompt will ask for your password, so enter the psasword and hit enter.
 
 ```
 cd /data
-Rscript --no-save --no-restore --verbose Run_SIRIUS5.r >outputFile.txt 2>&1
+Rscript Run_Sirius.r --files /your_file_name/insilico/MS1DATA_SiriusP.tsv --QC FALSE --SL FALSE SL_Path NA --profile orbitrap --db coconut >outputFile.txt 2>&1
 ```
-
-### 3. Run maw-py
-```
-docker run --name example_maw-py -i -t zmahnoor/maw-py:1.0.0 /bin/bash
-```
-Once you enter the docker container, you can run the script and check the results.
-```
-python3 Workflow_Python_Script.py
-```
-This command will run the Workflow_Python_Script.py which is an example script for /data/Example_Tyrosine/ obtained earlier with MAW-R. In order to leave the container without killing the process, add $ at the end of commands inside of the container. Then disown the PID and leave the container with CTRL+P and CTRL+Q. <br>
-
-The results can be seen in the /data/final_candidates.csv.
-<br>
 
 > **Important Note**
 > For details on using the workflow on Jupyter notebooks in a more interactive mode, please follow the Tutorial part on wiki page of this repository
