@@ -47,7 +47,7 @@ This will create a Python-Docker image on your system. This image contains /opt/
 
 #### Files
 
-1. Download [cwl/Workflow_R_Script_all_MetFrag.r](https://github.com/zmahnoor14/MAW/blob/provenance/cwl/Workflow_R_Script_all_MetFrag.r), and [cwl/Workflow_Python_Script_all.py](https://github.com/zmahnoor14/MAW/blob/provenance/cwl/Workflow_Python_Script_all.py).
+1. Download [cwl/Workflow_R_Script_all_MetFrag.r](https://github.com/zmahnoor14/MAW/blob/provenance/cwl/Workflow_R_Script_all_MetFrag.r), and [cwl/Workflow_Python_Script_all_docker.py](https://github.com/zmahnoor14/MAW/blob/provenance/cwl/Workflow_Python_Script_all_docker.py).
 2. Download the databases gnps.rda, hmdb.rda, and mbankNIST.rda from https://zenodo.org/record/7519270. This submission contains GNPS saved at 2023-01-09 15:24:46, HMDB Current Version (5.0), MassBank version 2022.12.
 3. Download COCONUT database to use with MetFrag from https://zenodo.org/record/7704937. If the user wants to use any other local libary, it is possible to use that instead of COCONUT. We recommend that the local file should be a csv file with atleast the following columns:     "Identifier"    "InChI"   "SMILES"    "molecular_weight". If you don't have information on all columns, these can be calculated with either RDKit or PubChempy automatically or can be done manually. If any important column is missing, MetFrag will give an error stating the name of the column.
 4. Download MetFragCL [Jar file](https://github.com/ipb-halle/MetFragRelaunched/releases/download/v.2.5.0/MetFragCommandLine-2.5.0.jar). 
@@ -90,8 +90,18 @@ The results will be saved in pwd.
 docker run --name sample_name_maw-py -v $(pwd):/opt/workdir/ --platform linux/amd64 -i -t zmahnoor/maw-py:1.0.7 /bin/bash
 ```
 Once you enter the docker container, you can run the script and check the results.
+Please make the following change in the script before running:
+
 ```
-python3.10 Workflow_Python_Script_all.py --file_id give_an_id --msp_file your_file_name/spectral_dereplication/spectral_results.csv --gnps_dir your_file_name/spectral_dereplication/GNPS --hmdb_dir your_file_name/spectral_dereplication/HMDB --mbank_dir your_file_name/spectral_dereplication/MassBank --MS1data your_file_name/insilico/MS1DATA.csv --score_thresh 0.75 > maw_py_log_file.txt 2>&1 &
+metfrag_candidate_list = pd.read_csv("ms2_spectra_ENDOpos/insilico/metparam_list.txt", sep = "\t", header=None, names=["metfrag_csv"])
+```
+TO
+```
+metfrag_candidate_list = pd.read_csv("your_file_name/insilico/metparam_list.txt", sep = "\t", header=None, names=["metfrag_csv"])
+```
+Then run the following command on terminal:
+```
+python3.10 Workflow_Python_Script_all_docker.py --file_id give_an_id --msp_file your_file_name/spectral_dereplication/spectral_results.csv --gnps_dir your_file_name/spectral_dereplication/GNPS --hmdb_dir your_file_name/spectral_dereplication/HMDB --mbank_dir your_file_name/spectral_dereplication/MassBank --MS1data your_file_name/insilico/MS1DATA.csv --score_thresh 0.75 > maw_py_log_file.txt 2>&1 &
 ```
 This command will run the Workflow_Python_Script.py which will postprocess the results obtained earlier with MAW-R. In order to leave the container without killing the process, add & at the end of commands inside of the container. Then disown the PID and leave the container with CTRL+p and CTRL+q. <br>
 
@@ -127,7 +137,7 @@ Enter login info:
 ```
 sirius login -u user@email.com -p --show
 ```
-Th prompt will ask for your password, so enter the psasword and hit enter.
+Th prompt will ask for your password, so enter the password and hit enter.
 
 ```
 cd /data
@@ -138,6 +148,7 @@ Rscript Run_Sirius.r --files /your_file_name/insilico/MS1DATA_SiriusP.tsv --QC F
 > For details on using the workflow on Jupyter notebooks in a more interactive mode, please follow the Tutorial part on wiki page of this repository
 > The current version only takes on .mzML file; the Batch processing of multiple .mzML files will be available soon
 > At the moment, MAW runs MetFrag instead of SIRIUS5, however, MAW-R still generates input .ms files that can be used with SIRIUS5. We will very soon integrate SIRIUS5 in MAW (however, a SIRIUS account is required now which is free for academic use).
+> Please add an issue for any bug report or any problems while running the workflow or write me an email at mahnoor.zulfiqar@uni-jena.de.
 
 ## Citation
 Zulfiqar, M., Gadelha, L., Steinbeck, C., Sorokina, M., & Peters, K. (2022). Metabolome Annotation Workflow (MAW) (Version 1.0.0) [Computer software]. https://doi.org/10.5281/zenodo.7148450
