@@ -8,6 +8,7 @@ import time
 import wget
 import urllib.parse
 import argparse
+import ast
 import sys
 
 from pybatchclassyfire import *
@@ -24,7 +25,7 @@ def isNaN(string):
     return string != string
 
 def chemMN(dataframe, naming, name_col):
-    #df = pd.read_csv(input_csv)
+    #df = pd.read_csv(dataframe)
     df = dataframe
     dbn= []
     for i, row in df.iterrows():
@@ -76,7 +77,6 @@ def chemMN(dataframe, naming, name_col):
     new_df_filename = naming + "_chemMN_Cytoscape.tsv"
     new_df.to_csv(new_df_filename, sep='\t')
     return new_df_filename
-
 
 def sunburst(dataframe, naming):
     
@@ -170,6 +170,7 @@ def sunburst(dataframe, naming):
     print(name_html)
     fig.write_html(name_html)
     fig.show()
+    print("DONE")
     return data
 
 def merge_results(list_of_results):
@@ -185,21 +186,35 @@ def merge_results(list_of_results):
     return all_msi_df, filename
 
 parser = argparse.ArgumentParser(description='MAW-Summary')
-parser.add_argument('--results', type=str, action='append', help ="list of paths of merged_results_with_one_Candidates.csv")
 parser.add_argument('--naming', type=str, help='can be based on your project name or condition')
-parser.add_argument('--name_col', type=str, default = "IUPAC", help='name of name column in the csv, generally MAW fetches the IUPAC names and not generic names')
+# parser.add_argument('--name_col', type=str, default = "IUPAC", help='name of name column in the csv, generally MAW fetches the IUPAC names and not generic names')
+# parser.add_argument('--list_of_results', type=str, action = "append", nargs='+', help ="list of paths of merged_results_with_one_Candidates.csv")
+
 
 # Parse the command-line arguments
 args = parser.parse_args()
-list_of_results = args.results
-naming = args.naming
-name_col = args.name_col
+# naming = args.naming
+list_of_results = args.list_of_results
 
+# naming = "coculture"
+# list_of_results = ["/Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/MAW/cwl/Linking/exo_neg_mergedResults-with-one-Candidates.csv", 
+# "/Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/MAW/cwl/Linking/exo_pos_mergedResults-with-one-Candidates.csv", 
+# "/Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/MAW/cwl/Linking/endo_pos_mergedResults-with-one-Candidates.csv", 
+# "/Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/MAW/cwl/Linking/endo_neg_mergedResults-with-one-Candidates.csv"]
+# print("python script starts")
+# print(naming)
+print(list_of_results)
 
+# new_results_list = []
+# for i in list_of_results:
+#     print(i)
+#     new_results_list.append(str(i[0]))
 df,combineresult = merge_results(list_of_results)
+
 
 print(f"Combine results written to {combineresult!r}.", file= sys.stderr)
 
-chemMN(df, naming, name_col)
+#chemMN(df, naming, name_col = "IUPAC")
 
-sunburst(df, naming)
+
+# sunburst(df, naming)
