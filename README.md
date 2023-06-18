@@ -104,7 +104,7 @@ metfrag_candidate_list = pd.read_csv("your_file_name/insilico/metparam_list.txt"
 ```
 Then run the following command on terminal:
 ```
-python3.10 Workflow_Python_Script_all_docker.py --file_id give_an_id --msp_file your_file_name/spectral_dereplication/spectral_results.csv --gnps_dir your_file_name/spectral_dereplication/GNPS --hmdb_dir your_file_name/spectral_dereplication/HMDB --mbank_dir your_file_name/spectral_dereplication/MassBank --MS1data your_file_name/insilico/MS1DATA.csv --score_thresh 0.75 > maw_py_log_file.txt 2>&1 &
+python3.10 Workflow_Python_Script_all_docker.py --file_id give_an_id --msp_file your_file_name/spectral_dereplication/spectral_results.csv --gnps_dir your_file_name/spectral_dereplication/GNPS --hmdb_dir your_file_name/spectral_dereplication/HMDB --mbank_dir your_file_name/spectral_dereplication/MassBank --ms1data your_file_name/insilico/MS1DATA.csv --score_thresh 0.75 > maw_py_log_file.txt 2>&1 &
 ```
 This command will run the Workflow_Python_Script.py which will postprocess the results obtained earlier with MAW-R. In order to leave the container without killing the process, add & at the end of commands inside of the container. Then disown the PID and leave the container with CTRL+p and CTRL+q. <br>
 
