@@ -5,6 +5,34 @@ FROM rocker/r-ver:4.2.1
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+RUN apt-get update && apt-get -y install \
+	libxml2-dev \
+	librsvg2-bin \
+	libssl-dev \
+	libnode-dev \
+	librdf0 \
+	librdf0-dev \
+	libnetcdf-dev \
+	libharfbuzz-dev \
+	libfribidi-dev \
+	libgit2-dev \
+	libfreetype6-dev \
+	libpng-dev \
+	libtiff5-dev \
+	libjpeg-dev \
+	libfontconfig1-dev \
+	python3.10 \
+	python3-pip \
+	unzip \
+	wget \
+	default-jre \
+	build-essential \
+	libglpk40 \
+	ant \
+	default-jdk \
+	git \
+	&& apt-get clean
+
 RUN apt-get update && apt-get -y install libnode-dev librdf0 librdf0-dev unzip wget default-jre && apt-get clean
 
 RUN apt-get update
@@ -34,8 +62,10 @@ ENV PATH="/opt/workdir/sirius/bin:${PATH}"
 COPY install_packages.R .
 RUN Rscript install_packages.R
 
+RUN mkdir /opt/workdir/data/insilico
+RUN mkdir /opt/workdir/data/insilico/SIRIUS
 
-COPY Run_SIRIUS5.r .
-COPY insilico/MS1DATA_SiriusP.tsv .
 
-COPY insilico/SIRIUS/1_NA_iso_NA_MS1p_204.122756958008_SIRIUS_param.ms .
+COPY Run_SIRIUS5.r /opt/workdir/data
+COPY insilico/MS1DATA_SiriusP.tsv /opt/workdir/data/insilico
+COPY insilico/SIRIUS/1_NA_iso_NA_MS1p_204.122756958008_SIRIUS_param.ms /opt/workdir/data/insilico/SIRIUS

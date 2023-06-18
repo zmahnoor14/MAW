@@ -1,5 +1,7 @@
 cwlVersion: v1.0
 class: Workflow
+doc: |
+    multiple mzml files, all with the same condition
 
 inputs: 
     python_script:
@@ -12,8 +14,8 @@ inputs:
        default:
          class: File
          path: Workflow_R_Script_all.r
-    mzml_file:
-        type: File
+    mzml_files:
+        type: File[]
     gnps_file:
         type: File
     hmdb_file:
@@ -35,11 +37,12 @@ inputs:
     #     default: False
   
 steps:
-    dereplication:
-        run: maw-r.cwl
+    analysis:
+        run: maw_single.cwl
         in:
-            workflow_script: r_script
-            mzml_file: mzml_file
+            python_script: python_script
+            r_script: r_script
+            mzml_file: mzml_files
             gnps_file: gnps_file
             hmdb_file: hmdb_file
             mbank_file: mbank_file
@@ -48,100 +51,24 @@ steps:
             collision_info: collision_info
             db_name: db_name
             db_path: db_path
-        out:
-            # - ms_files
-            - results
-            - peaks_and_parameters
-            - msp_file
-            - ms1data
-            - gnps_dir
-            - hmdb_dir
-            - mbank_dir
-
-    metfrag:
-        run: maw-metfrag.cwl
-        scatter:
-            - PeakList
-            - IonizedPrecursorMass
-            - PrecursorIonMode
-            - SampleName
-
-        scatterMethod: dotproduct
-        in:
-            PeakList: 
-                source: dereplication/peaks_and_parameters
-                valueFrom: $(self.PeakList)
-            IonizedPrecursorMass:
-                source: dereplication/peaks_and_parameters
-                valueFrom: $(self.IonizedPrecursorMass)
-            PrecursorIonMode:
-                source: dereplication/peaks_and_parameters
-                valueFrom: $(self.PrecursorIonMode)
-            SampleName:
-                source: dereplication/peaks_and_parameters
-                valueFrom: $(self.SampleName)
-            LocalDatabasePath: db_path
-
-        out: [metfrag_candidate_list]
-        #out: metfrag_candidate_list 
-
-    # sirius_isotope:
-    #     run: sirius-new.cwl
-    #     in:
-    #         spectrum: dereplication/ms_files
-    #         isotope: 
-    #             default: False
-    #         #parameter: dereplication/parameters
-    #     scatter:
-    #         - spectrum
-    #         #- parameter
-    #     out: [results]
-
-    # sirius_no_isotope:
-    #     run: sirius-new.cwl
-    #     in:
-    #         spectrum: dereplication/ms_files
-    #         isotope: 
-    #             default: True
-    #         #parameter: dereplication/parameters
-    #     scatter:
-    #         - spectrum
-    #         #- parameter
-    #     out: [results]
-
-    cheminformatics:
-        run: maw-py.cwl
-        in: 
-            workflow_script: python_script
-            msp_file: dereplication/msp_file
-            gnps_dir: dereplication/gnps_dir
-            hmdb_dir: dereplication/hmdb_dir
-            mbank_dir: dereplication/mbank_dir
-            # sirius_results: 
-            #     source: [sirius_no_isotope/results, sirius_isotope/results]
-            #     linkMerge: True
-            metfrag_candidate_list: metfrag/metfrag_candidate_list
-            ms1data: dereplication/ms1data
-
-        #out: [results, provenance]
+        scatter: mzml_file
         out: 
-            # - msp_file_df
-            # - ms1data_df
             - candidate_files
             - result
 
 outputs:
     candidate_files:
-        type: File[]
-        outputSource: cheminformatics/candidate_files
+        type: 
+            type: array
+            items: 
+                type: array
+                items: File
+        outputSource: analysis/candidate_files
     result: 
-        type: File
-        outputSource: cheminformatics/result
+        type: File[]
+        outputSource: analysis/result
 
 requirements:
     ScatterFeatureRequirement: {}
-    StepInputExpressionRequirement: {}
-    InlineJavascriptRequirement: {}
+    SubworkflowFeatureRequirement: {}
 
-# $namespaces:
-#   edam: http://edamontology.org/

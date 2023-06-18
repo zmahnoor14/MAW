@@ -444,7 +444,7 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
     # common feature information
 
     id_X <- c() # id
-    #ft_id <- c() # scan number
+    # ft_id <- c() # scan number
     premz <- c() # precursor mz
     rtmin <- c() # stores rtmin
     rtmax <- c() # stores rtmax
@@ -472,9 +472,11 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
                         "R", as.character(round(median(spsrt$rtime, na.rm = TRUE), digits = 0)),
                         "ID", as.character(nx), sep = '')
         id_X <- c(id_X, id_Xx)
-
-        # ft_id1 <- spsrt$spectrumId
-        # ft_id <- c(ft_id, ft_id1)
+        # if (ftid){
+        #     ft_id1 <- spsrt$spectrumId
+        #     ft_id <- c(ft_id, ft_id1)
+        # }
+        
 
         # pre_mas
         pre <- x
@@ -1478,9 +1480,14 @@ spec_dereplication_file <- function(mzml_file, pre_tbl, proc_mzml, db, result_di
     pre_mzs <- as.list(pre_mzs)
     v_pre_mzs <- future::value(pre_mzs)
     result_dir_spectra <- paste(result_dir, "/spectral_dereplication", sep = "")
+    # if (ftid){
+    #     spectra_input <- data.frame(cbind(id_X, ft_id, premz, rtmin,
+    #                                   rtmax, rtmed, rtmean,
+    #                                   col_eng, pol, int, source_file))
     spectra_input <- data.frame(cbind(id_X, premz, rtmin,
-                                      rtmax, rtmed, rtmean,
-                                      col_eng, pol, int, source_file))
+                                    rtmax, rtmed, rtmean,
+                                    col_eng, pol, int, source_file))
+    
     write.csv(spectra_input, file = paste(result_dir_spectra, "/spectral_results.csv", sep = ""))
 }
 
@@ -1509,7 +1516,7 @@ ms2_peaks <- function(pre_tbl, proc_mzml, result_dir, file_id){
     ms2Peaks <- c() # stores the peak list file directory
     id_X <- c() # creates a unique ID based on mz, rt and also the index
         #(since the mz and rt can be similar in some cases)
-    #ft_id <- c()
+    # ft_id <- c()
     #no_of_ms2_peaks <- c()
     int <- c() # stores intensity of the MS1 feature
     nx <- 0 # stores number for the ID
@@ -1532,8 +1539,11 @@ ms2_peaks <- function(pre_tbl, proc_mzml, result_dir, file_id){
                               "ID", as.character(nx), sep = '')
             id_X <- c(id_X, id_Xx)
             #ft number
-            # ft_id1 <- sps$spectrumId
-            # ft_id <- c(ft_id, ft_id1)
+            # if (ftid){
+            #     ft_id1 <- sps$spectrumId
+            #     ft_id <- c(ft_id, ft_id1)
+            # }
+            
             #mz
             premz <- c(premz, i)
 
@@ -2188,6 +2198,7 @@ file_id <- args[5]
 ppmx = as.numeric(args[6])
 # runCamera = as.logical(args[8])
 collision_info = as.logical(args[7])
+# ftid = as.logical(args[8])
 db_name = args[8]
 db_path = args[9]
 

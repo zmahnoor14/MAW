@@ -2,10 +2,13 @@
 install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'uuid', 'digest')) #repos="https://cloud.r-project.org"))
 
 install.packages(c("rvest", "xml2", "dplyr", "stringr", "readr", "remotes", "ncdf4", 
-                   "parallel", "doParallel", "foreach", "future", "listenv", "curl", "provViz"))
+                   "parallel", "doParallel", "foreach", "future", "listenv", "curl", "provViz",
+		   "rjson", "jsonlite"))
 #install.packages("devtools", repos="http://cloud.r-project.org")
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
+BiocManager::install(version = "3.16")
+
 BiocManager::install(c("Spectra", "MsCoreUtils", "mzR"))
 BiocManager::install(c("CompoundDb"))
 BiocManager::install("CAMERA")

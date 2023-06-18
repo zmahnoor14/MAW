@@ -6,7 +6,7 @@ r_script:
   path: Workflow_R_Script_all.r
 mzml_file:
   class: File
-  path: /Users/mahnoorzulfiqar/OneDriveUNI/MAW-FAIR/VN_211016_Sc_QC_PRM_neg.mzML
+  path: /Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/CoCulture/ms2_spectra_ENDOneg.mzML
   format: http://edamontology.org/format_3244
 gnps_file:
   class: File
@@ -17,7 +17,7 @@ hmdb_file:
 mbank_file: 
   class: File
   path: /Users/mahnoorzulfiqar/OneDriveUNI/MAW-data/newDBs/mbankNIST.rda  
-file_id: "DS_PRM_YAML"
+file_id: "exo_neg"
 ppmx: 15
 collision_info: TRUE
 db_name: coconut
