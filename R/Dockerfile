@@ -5,8 +5,35 @@ FROM rocker/r-ver:4.2.1
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get -y install libnode-dev librdf0 librdf0-dev unzip wget default-jre && apt-get clean
+RUN apt-get update && apt-get -y install \
+	libxml2-dev \
+	librsvg2-bin \
+	libssl-dev \
+	libnode-dev \
+	librdf0 \
+	librdf0-dev \
+	libnetcdf-dev \
+	libharfbuzz-dev \
+	libfribidi-dev \
+	libgit2-dev \
+	libfreetype6-dev \
+	libpng-dev \
+	libtiff5-dev \
+	libjpeg-dev \
+	libfontconfig1-dev \
+	python3.10 \
+	python3-pip \
+	unzip \
+	wget \
+	default-jre \
+	build-essential \
+	libglpk40 \
+	ant \
+	default-jdk \
+	git \
+	&& apt-get clean
 
+<<<<<<< HEAD
 RUN apt-get update
 
 RUN apt-get install -y libnetcdf-dev libxml2-dev libcurl4-openssl-dev librsvg2-bin libssl-dev
@@ -20,6 +47,9 @@ RUN apt-get update
 RUN apt-get install -y \
   build-essential \
   libglpk40
+=======
+RUN pip3 install provbook
+>>>>>>> provenance
 
 RUN apt-get install -y libharfbuzz-dev libfribidi-dev libgit2-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libfontconfig1-dev
 
@@ -43,6 +73,7 @@ RUN Rscript install_packages.R
 COPY install_packages_devtools.R .
 RUN Rscript install_packages_devtools.R
 
+<<<<<<< HEAD
 RUN apt-get update
 
 RUN apt-get install -y ant default-jdk git
@@ -66,3 +97,10 @@ WORKDIR /opt/workdir
 COPY Workflow_R_Functions.r .
 COPY Workflow_R_Script.r .
 COPY Workflow_R_Script.ipynb .
+=======
+RUN git clone https://github.com/End-to-end-provenance/DDG-Explorer.git
+WORKDIR /opt/workdir/DDG-Explorer
+RUN ant build-project
+RUN ant ddg-explorer
+
+>>>>>>> provenance

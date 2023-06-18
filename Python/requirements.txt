@@ -14,4 +14,9 @@ plotly
 kaleido
 matplotlib
 matplotlib_venn
-
+graphviz
+frozendict
+pyyaml
+provenance
+prov
+provbook
