@@ -135,7 +135,7 @@ run_sirius(files= './insilico/MS1DATA_SiriusP.tsv',
 
 Enter docker container:
 ```
-docker run --platform linux/x86_64 -i -t zmahnoor/maw-sirius5-old /bin/bash
+docker run --name maw-sirius -v $(pwd):/opt/workdir/ --platform linux/amd64 -i -t zmahnoor/maw-sirius5-old /bin/bash
 ```
 
 Enter login info:
