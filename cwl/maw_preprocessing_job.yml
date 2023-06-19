@@ -1,6 +1,0 @@
-mzml_files: [ {class: File, location: /Users/lgadelha/MAW_data/VN_211016_betaine.mzML},
-              {class: File, location: /Users/lgadelha/MAW_data/VN_211016_pipecolate.mzML}]
-
-results:
-  class: Directory
-  location: /Users/lgadelha/MAW_data
