@@ -146,7 +146,6 @@ sirius login -u user@email.com -p --show
 Th prompt will ask for your password, so enter the password and hit enter.
 
 ```
-cd /data
 Rscript Run_Sirius.r --files /your_file_name/insilico/MS1DATA_SiriusP.tsv --QC FALSE --SL FALSE SL_Path NA --profile orbitrap --db coconut >outputFile.txt 2>&1
 ```
 
