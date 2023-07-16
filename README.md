@@ -117,10 +117,29 @@ For further information on the scripts used for the Bechmark datasets to validat
 
 ### Updated with SIRIUS5
 It is possible to run SIRIUS and obtain results from [SIRIUS5](https://github.com/zmahnoor14/MAW/blob/provenance/cwl/Run_Sirius.r), however, MAW currently doesn't perform candidate selection with SIRIUS5 yet.
-SIRIUS version 5 can be used using another docker container made for SIRIUS5. to run this, it is important that you already have .ms files in the SIRIUS folder generated from the MAW-R part of the workflow in the correct order of directory. Also, you would need to add your SIRIUS credentials after you enter the docker container. There is an R script called Run_SIRIUS5.r which contains the libraries, the function to run SIRIUS5 from R and a function call with your data. 
+SIRIUS version 5 can be used using another docker container made for SIRIUS5. to run this, it is important that you already have .ms files in the SIRIUS folder generated from the MAW-R part of the workflow in the correct order of directory --> "file.mzML/insilico/SIRIUS/no_isotope (because so far no isotopic information is included; working on it though). Also, you would need to add your SIRIUS credentials after you enter the docker container. There is an R script called Run_SIRIUS5.r which contains the libraries, the function to run SIRIUS5 from R and a function call with your data. This file is already in docker container. So following the steps, it is possible to run SIRIUS5.
 
+1. Run a container with the working directory where you file.mzML and its result directory /file is stored:
+```
+docker run --name name_your_container -v $(pwd):/opt/workdir/data --platform linux/amd64 -it zmahnoor/maw-sirius5-old:1.0.0 /bin/bash
+```
+2. Put your credentials, this is important whenever you create a new container.
+Enter login info:
+
+```
+sirius login -u user@email.com -p --show
+```
+Th prompt will ask for your password, so enter the password and hit enter.
+
+3. When you enter the container, the current directory is /opt/workdir, which contains the /data diretory with your current working directoyr mounted to it, so it will have all your files e.g: /opt/workdir/data/file/insilico/SIRIUS/no_isotope/example.ms<br>
+To run the Rscript "/opt/workdir/Run_Sirius.r", which is already in the container, run the following command:
+```
+cd data
+Rscript /opt/workdir/Run_Sirius.r /opt/workdir/data/your_file_name/insilico/MS1DATA_SiriusP.tsv FALSE FALSE NA orbitrap coconut >outputFile.txt 2>&1&
+```
+The arguments after the R script can be explained by the R function that runs SIRIUS within R.
 ```R
-run_sirius(files= './insilico/MS1DATA_SiriusP.tsv',
+run_sirius(files= '/opt/workdir/data/your_file_name/insilico/MS1DATA_SiriusP.tsv',
            ppm_max = 5, 
            ppm_max_ms2 = 15, 
            QC = FALSE, 
@@ -131,24 +150,9 @@ run_sirius(files= './insilico/MS1DATA_SiriusP.tsv',
            db = "coconut")
 ```
 
- SL means suspect list but this function is currently being updated by SIRIUS5 and shoulbe kept `FALSE`. profile can be the mass spectrometer used, either "orbitrap" or "qtof". db can be "ALL", "bio", "coconut" or any relevant database that is already provided by SIRIUS5. Also, for files, provide the full path of your './insilico/MS1DATA_SiriusP.tsv'. Run the function for each of your input files.
+First user defined argument is named files, which is generally named like this in the workflow: /opt/workdir/data/your_file_name/insilico/MS1DATA_SiriusP.tsv and is generated during the MAW_R script. It contains the .ms input files and their paths, and the corresponding .json output directory where SIRIUS writes its outputs. The next argument is QC which remains `FALSE`, the SL means suspect list but this function is currently being updated by SIRIUS5 and shoulbe kept `FALSE`, and henxe the SL_path is NA. Profile can be the mass spectrometer used, either "orbitrap" or "qtof". db can be "ALL", "bio", "coconut" or any relevant database that is already provided by SIRIUS5. 
 
-Enter docker container:
-```
-docker run --name maw-sirius -v $(pwd):/opt/workdir/ --platform linux/amd64 -i -t zmahnoor/maw-sirius5:dev /bin/bash
-```
 
-Enter login info:
-
-```
-sirius login -u user@email.com -p --show
-```
-Th prompt will ask for your password, so enter the password and hit enter.
-
-```
-cd data
-Rscript Run_Sirius.r your_file_name/insilico/MS1DATA_SiriusP.tsv FALSE FALSE NA orbitrap coconut >outputFile.txt 2>&1&
-```
 
 > **Important Note**
 > For details on using the workflow on Jupyter notebooks in a more interactive mode, please follow the Tutorial part on wiki page of this repository
