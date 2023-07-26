@@ -9,7 +9,6 @@ requirements:
     dockerPull: zmahnoor/maw-py:1.0.7
   InlineJavascriptRequirement: {}
 inputs: 
-  file_id: string
   workflow_script: File
   msp_file: File
   gnps_dir: Directory
@@ -26,8 +25,6 @@ inputs:
     
 arguments: 
     - $(inputs.workflow_script.path)
-    - --file_id
-    - $(inputs.file_id)
     - --msp_file
     - $(inputs.msp_file.path)
     - --gnps_dir

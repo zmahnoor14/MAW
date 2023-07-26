@@ -22,8 +22,6 @@ inputs:
         type: File
     mbank_file:
         type: File
-    file_id:
-        type: string
     ppmx:
         type: int
     collision_info:
@@ -46,7 +44,6 @@ steps:
             gnps_file: gnps_file
             hmdb_file: hmdb_file
             mbank_file: mbank_file
-            file_id: file_id
             ppmx: ppmx
             collision_info: collision_info
             db_name: db_name

@@ -19,8 +19,6 @@ inputs:
     type: File
   mbank_file:
     type: File
-  file_id:
-    type: string
   ppmx:
     type: int
   # runCamera: boolean
@@ -37,7 +35,6 @@ arguments:
   - $(inputs.gnps_file.path)
   - $(inputs.hmdb_file.path)
   - $(inputs.mbank_file.path)
-  - $(inputs.file_id)
   - $(inputs.ppmx)
   - |
     $(inputs.collision_info ? "TRUE" : "FALSE")
