@@ -3001,7 +3001,6 @@ def chemMN(input_dir, input_csv, naming, name_col):
 
 # Define the command-line arguments
 parser = argparse.ArgumentParser(description='MAW-Py')
-parser.add_argument('--file_id', type=str, help='file_id')
 parser.add_argument('--msp_file', type=str, help='path to spec result CSV file')
 parser.add_argument('--gnps_dir', type=str, help='path to GNPS directory')
 parser.add_argument('--hmdb_dir', type=str, help='path to HMDB directory')
@@ -3013,8 +3012,6 @@ parser.add_argument('--score_thresh', type=float, default=0.75, help='score thre
 # Parse the command-line arguments
 args = parser.parse_args()
 
-file_id = args.file_id
-
 msp_file = args.msp_file
 gnps_dir = args.gnps_dir
 hmdb_dir = args.hmdb_dir
@@ -3022,6 +3019,8 @@ mbank_dir = args.mbank_dir
 metfrag_candidate_list = args.metfrag_candidate_list
 ms1data = args.ms1data
 score_thresh = args.score_thresh
+
+file_id = msp_file.replace("/spectral_dereplication/spectral_results.csv", "")
 # metfrag_candidate_list = pd.read_csv("ms2_spectra_ENDOpos/insilico/metparam_list.txt", sep = "\t", header=None, names=["metfrag_csv"])
 # metfrag_candidate_list = metfrag_candidate_list['metfrag_csv'].tolist()
 
@@ -3035,7 +3034,7 @@ ms1data_df = metfrag_postproc(ms1data, metfrag_candidate_list, file_id, score_th
 print("CandidateSelection starts")
 CandidateSelection_SimilarityandIdentity_Metfrag(file_id = file_id, msp_file = msp_file_df, 
 ms1data = ms1data_df, standards = False)
-classification(resultcsv = file_id + "_mergedResults-with-one-Candidates.csv")
+# classification(resultcsv = file_id + "_mergedResults-with-one-Candidates.csv")
 
 
 

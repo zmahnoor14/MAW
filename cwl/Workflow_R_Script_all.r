@@ -2194,16 +2194,17 @@ mzml_file <- args[1]
 gnps_file <- args[2]
 hmdb_file <- args[3]
 mbank_file <- args[4]
-file_id <- args[5]
-ppmx = as.numeric(args[6])
+#file_id <- args[5]
+ppmx = as.numeric(args[5])
 # runCamera = as.logical(args[8])
-collision_info = as.logical(args[7])
+collision_info = as.logical(args[6])
 # ftid = as.logical(args[8])
-db_name = args[8]
-db_path = args[9]
+db_name = args[7]
+db_path = args[8]
 
 
 mzml_result <- str_remove(basename(mzml_file), ".mzML")
+file_id <- str_remove(basename(mzml_file), ".mzML")
 dir.create(mzml_result)
 print(mzml_file)
 print(mzml_result)
@@ -2241,7 +2242,7 @@ spec_pr2 <- ms2_peaks(pre_tbl = paste(mzml_result, "/premz_list.txt", sep = ""),
     
 # }
 ms1p <- ms1_peaks(x = paste(mzml_result,'/insilico/MS2DATA.csv', sep = ""),
-                    y = NA, 
+                    y = NA,  
                     result_dir = mzml_result,
                     QCfile = FALSE)
 # write ms files for SIRIUS5
