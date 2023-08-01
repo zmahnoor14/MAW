@@ -3031,7 +3031,7 @@ input_string = file_csv["id_X"][0]
 file_id = extract_substring(input_string)
 print(file_id)
 
-metfrag_candidate_list = pd.read_csv("ms2_spectra_ENDOpos/insilico/metparam_list.txt", sep = "\t", header=None, names=["metfrag_csv"])
+metfrag_candidate_list = pd.read_csv(file_id+"/insilico/metparam_list.txt", sep = "\t", header=None, names=["metfrag_csv"])
 metfrag_candidate_list = metfrag_candidate_list['metfrag_csv'].tolist()
 
 metfrag_candidate_list = [sub.replace('txt', 'csv') for sub in metfrag_candidate_list]
