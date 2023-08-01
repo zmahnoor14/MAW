@@ -1,0 +1,28 @@
+python_script:
+  class: File
+  path: Workflow_Python_Script_all.py
+r_script:
+  class: File
+  path: Workflow_R_Script_all.r
+mzml_files:
+  - class: File 
+    path: /Users/mahnoorzulfiqar/OneDriveUNI/MAW-FAIR/VN_211016_Sc_QC_PRM_neg.mzML
+    format: http://edamontology.org/format_3244
+  - class: File 
+    path: /Users/mahnoorzulfiqar/OneDriveUNI/MAW-FAIR/VN_211016_Sc_st_PRM_neg.mzML
+    format: http://edamontology.org/format_3244
+gnps_file:
+  class: File
+  path: /Users/mahnoorzulfiqar/OneDriveUNI/MAW-data/newDBs/gnps.rda
+hmdb_file:
+  class: File
+  path: /Users/mahnoorzulfiqar/OneDriveUNI/MAW-data/newDBs/hmdb.rda 
+mbank_file: 
+  class: File
+  path: /Users/mahnoorzulfiqar/OneDriveUNI/MAW-data/newDBs/mbankNIST.rda  
+ppmx: 15
+collision_info: TRUE
+db_name: coconut
+db_path: 
+  class: File
+  path: /Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/COCONUT_Jan2022.csv
