@@ -3516,19 +3516,10 @@ def chemMN(input_dir, input_csv, naming, name_col):
     new_df.to_csv(input_dir + "/" + naming + "_chemMN_Cytoscape.tsv", sep='\t')
     return new_df
 
-def extract_substring(input_string):
-    pattern = r".*?(?=M\d+R)"  # r".*?(?=M\d+R)" matches anything before "M*some_number*R"
-    match = re.search(pattern, input_string)
-    if match:
-        return match.group(0)
-    else:
-        return None
 
-
-
-        
 # Define the command-line arguments
 parser = argparse.ArgumentParser(description='MAW-Py')
+parser.add_argument('--file_id', type=str, help='file_id')
 parser.add_argument('--msp_file', type=str, help='path to spec result CSV file')
 parser.add_argument('--gnps_dir', type=str, help='path to GNPS directory')
 parser.add_argument('--hmdb_dir', type=str, help='path to HMDB directory')
@@ -3539,6 +3530,7 @@ parser.add_argument('--db', type=str, help='name of database used for SIRIUS')
 # Parse the command-line arguments
 args = parser.parse_args()
 
+file_id = args.file_id
 
 msp_file = args.msp_file
 gnps_dir = args.gnps_dir
@@ -3548,10 +3540,6 @@ mbank_dir = args.mbank_dir
 ms1data = args.ms1data
 db = args.db
 
-file_csv = pd.read_csv(msp_file)
-input_string = file_csv["id_X"][0]
-file_id = extract_substring(input_string)
-print(file_id)
 
 sirius_candidate_json_path = r'{}/insilico/SIRIUS/no_isotope/*.json'.format(file_id)
 sirius_candidate_json = glob.glob(sirius_candidate_json_path)
