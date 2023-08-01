@@ -1967,20 +1967,21 @@ mzml_file <- args[1]
 gnps_file <- args[2]
 hmdb_file <- args[3]
 mbank_file <- args[4]
-file_id <- args[5]
-ppmx = as.numeric(args[6])
+ppmx = as.numeric(args[5])
 # runCamera = as.logical(args[8])
-collision_info = as.logical(args[7])
+collision_info = as.logical(args[6])
 # ftid = as.logical(args[8])
-db_name = args[8]
-db_path = args[9]
-met_param = args[10]
-MetFragjarFile = args[11]
+db_name = args[7]
+db_path = args[8]
+met_param = args[9]
+MetFragjarFile = args[10]
 
 mzml_result <- str_remove(basename(mzml_file), ".mzML")
+file_id <- str_remove(basename(mzml_file), ".mzML")
 dir.create(mzml_result)
 print(mzml_file)
 print(mzml_result)
+print(file_id)
 
 # read mzML file and create output directory
 spec_pr <- spec_Processing(mzml_file, mzml_result)
