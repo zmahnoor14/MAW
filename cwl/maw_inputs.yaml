@@ -5,22 +5,27 @@ r_script:
   class: File
   path: Workflow_R_Script_all.r
 mzml_file:
-  class: File
-  path: /Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/CoCulture/ms2_spectra_ENDOneg.mzML
-  format: http://edamontology.org/format_3244
+  - class: File
+    path: ms2_spectra_file1.mzML
+    format: http://edamontology.org/format_3244
+  - class: File
+    path: ms2_spectra_file2.mzML
+    format: http://edamontology.org/format_3244
 gnps_file:
   class: File
-  path: /Users/mahnoorzulfiqar/OneDriveUNI/MAW-data/newDBs/gnps.rda
+  path: gnps.rda
 hmdb_file:
   class: File
-  path: /Users/mahnoorzulfiqar/OneDriveUNI/MAW-data/newDBs/hmdb.rda 
+  path: hmdb.rda 
 mbank_file: 
   class: File
-  path: /Users/mahnoorzulfiqar/OneDriveUNI/MAW-data/newDBs/mbankNIST.rda  
-file_id: "exo_neg"
+  path: mbankNIST.rda  
+file_id: 
+- "file1"
+- "file2"
 ppmx: 15
 collision_info: TRUE
 db_name: coconut
 db_path: 
   class: File
-  path: /Users/mahnoorzulfiqar/OneDriveUNI/GitHub-Repos/COCONUT_Jan2022.csv
+  path: COCONUT_Jan2022.csv
