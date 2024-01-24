@@ -53,4 +53,4 @@ cwltool --singularity --parallel --outdir ara_outputs maw.cwl maw-inputs-mutiple
 # Reproducible Results
 
 The two input files annotate for 1-chlorobenzotriazole as an output from MAW on both systems. <br>
-Please refer to the following files for results: 
+Please refer to the following files for results: [mac_file_1](https://github.com/zmahnoor14/MAW/blob/main/cwl/MAC_Results_VN_211016_Sc_QC_PRM_neg_mergedResults-with-one-Candidates.csv), [mac_file_2](https://github.com/zmahnoor14/MAW/blob/main/cwl/MAC_Results_VN_211016_Sc_st_PRM_neg_mergedResults-with-one-Candidates.csv), [hpc_file_1](https://github.com/zmahnoor14/MAW/blob/main/cwl/HPC_RESULTS_VN_211016_Sc_QC_PRM_neg_mergedResults-with-one-Candidates.csv), [hpc_file_2](https://github.com/zmahnoor14/MAW/blob/main/cwl/HPC_RESULTS_VN_211016_Sc_st_PRM_neg_mergedResults-with-one-Candidates.csv).
