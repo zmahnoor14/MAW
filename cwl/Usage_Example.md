@@ -2,9 +2,6 @@
 
 Please follow the instructions given on the MAW [README.md](https://github.com/zmahnoor14/MAW/tree/main?tab=readme-ov-file#installation) file. 
 
-## Extra steps to installation on an HPC cluster
-
-
 ## Input files:
 1. [cwl/maw-r.cwl](https://github.com/zmahnoor14/MAW/blob/main/cwl/maw-r.cwl)
 2. [cwl/maw-py.cwl](https://github.com/zmahnoor14/MAW/blob/main/cwl/maw-py.cwl)
@@ -31,8 +28,24 @@ The input file should contain paths to the following files:
 * Memory: 32 GB
 
 ## Execute MAW on Mac Terminal
+Make sure dopcker is running
 ```shell
 cd cwl_input_dir
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
-cwltool --cachedir cache maw.cwl maw-inputs-multiple_ara.yaml --outputdir ./
+cwltool --parallel --outdir mac_outputs_parallel maw.cwl maw-inputs-mutiple_ara.yaml
+```
+## HPC Cluster 
+
+### System Specifications
+* Operating system: CentOS Linux release 7.6
+* Processors: 140 nodes, each with 24 CPU cores
+
+### Extra steps to installation on an HPC cluster
+Load necessary modules: `module load tools/singularity`
+Install nodejs and add CWL_SINGULARITY_CACHE  to ENV variable
+
+## Execute MAW on Terminal
+```shell
+cd cwl_input_dir
+cwltool --singularity --parallel --outdir ara_outputs maw.cwl maw-inputs-mutiple_ara_wo_paths.yaml
 ```
