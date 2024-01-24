@@ -27,8 +27,8 @@ The input file should contain paths to the following files:
 ## MAC system
 
 ### System Specifications
-Chip: Apple M1 Max
-Memory: 32 GB
+* Chip: Apple M1 Max
+* Memory: 32 GB
 
 ## Execute MAW on Mac Terminal
 ```shell
