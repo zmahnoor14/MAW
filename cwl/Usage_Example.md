@@ -47,5 +47,5 @@ Install nodejs and add CWL_SINGULARITY_CACHE  to ENV variable
 ## Execute MAW on Terminal
 ```shell
 cd cwl_input_dir
-cwltool --singularity --parallel --outdir ara_outputs maw.cwl maw-inputs-mutiple_ara_wo_paths.yaml
+cwltool --singularity --parallel --outdir ara_outputs maw.cwl maw-inputs-mutiple_ara.yaml
 ```
