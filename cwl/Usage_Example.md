@@ -30,7 +30,9 @@ The input file should contain paths to the following files:
 Chip: Apple M1 Max
 Memory: 32 GB
 
-## Execute MAW on Mac 
+## Execute MAW on Mac Terminal
 ```shell
+cd cwl_input_dir
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
+cwltool --cachedir cache maw.cwl maw-inputs-multiple_ara.yaml --outputdir ./
 ```
