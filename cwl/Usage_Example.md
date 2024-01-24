@@ -49,3 +49,8 @@ Install nodejs and add CWL_SINGULARITY_CACHE  to ENV variable
 cd cwl_input_dir
 cwltool --singularity --parallel --outdir ara_outputs maw.cwl maw-inputs-mutiple_ara.yaml
 ```
+
+# Reproducible Results
+
+The two input files annotate for 1-chlorobenzotriazole as an output from MAW on both systems. <br>
+Please refer to the following files for results: 
